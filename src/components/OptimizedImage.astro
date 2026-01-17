@@ -1,0 +1,266 @@
+---
+/**
+ * Optimized Image Component
+ *
+ * A performance-optimized image component that supports:
+ * - Lazy loading (native or intersection observer)
+ * - Responsive images with srcset
+ * - WebP format with fallback
+ * - Proper width/height to prevent CLS
+ * - Loading placeholder/blur-up effect
+ *
+ * @example Basic usage:
+ * ```astro
+ * <OptimizedImage
+ *   src="/images/hero.jpg"
+ *   alt="Hero image"
+ *   width={1200}
+ *   height={630}
+ * />
+ * ```
+ *
+ * @example With responsive sizes:
+ * ```astro
+ * <OptimizedImage
+ *   src="/images/portfolio/project.jpg"
+ *   alt="Project screenshot"
+ *   width={800}
+ *   height={600}
+ *   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+ *   responsive
+ * />
+ * ```
+ */
+
+interface Props {
+  /** Image source URL */
+  src: string;
+  /** Alternative text for accessibility */
+  alt: string;
+  /** Image width (required for CLS prevention) */
+  width: number;
+  /** Image height (required for CLS prevention) */
+  height: number;
+  /** CSS class for the image */
+  class?: string;
+  /** Loading strategy: 'lazy' | 'eager' */
+  loading?: 'lazy' | 'eager';
+  /** Decoding hint */
+  decoding?: 'async' | 'sync' | 'auto';
+  /** Fetch priority */
+  fetchPriority?: 'high' | 'low' | 'auto';
+  /** Sizes attribute for responsive images */
+  sizes?: string;
+  /** Generate responsive srcset */
+  responsive?: boolean;
+  /** Use blur-up placeholder */
+  placeholder?: boolean;
+  /** Custom srcset */
+  srcset?: string;
+  /** Object fit style */
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+  /** Object position */
+  objectPosition?: string;
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  class: className = '',
+  loading = 'lazy',
+  decoding = 'async',
+  fetchPriority = 'auto',
+  sizes,
+  responsive = false,
+  placeholder = false,
+  srcset,
+  objectFit,
+  objectPosition,
+} = Astro.props;
+
+// Generate responsive widths for srcset
+const responsiveWidths = [320, 480, 640, 768, 1024, 1280, 1536, 1920];
+
+// Function to get WebP version of an image
+function getWebPSrc(imageSrc: string): string {
+  if (imageSrc.endsWith('.svg')) return imageSrc;
+  const lastDot = imageSrc.lastIndexOf('.');
+  if (lastDot === -1) return imageSrc;
+  return imageSrc.substring(0, lastDot) + '.webp';
+}
+
+// Function to generate srcset string
+function generateSrcSet(imageSrc: string, widths: number[]): string {
+  return widths
+    .filter(w => w <= width) // Only include widths smaller than original
+    .map(w => {
+      // For dynamic image resizing, you would append width parameter
+      // This assumes images are pre-generated at various sizes
+      return `${imageSrc} ${w}w`;
+    })
+    .join(', ');
+}
+
+// Compute srcset
+const computedSrcSet = srcset || (responsive ? generateSrcSet(src, responsiveWidths) : undefined);
+
+// Compute sizes (default responsive sizes)
+const computedSizes = sizes || (responsive
+  ? '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+  : undefined);
+
+// Check if image is SVG (no WebP conversion needed)
+const isSVG = src.endsWith('.svg');
+
+// Compute style object
+const imageStyle = [
+  objectFit && `object-fit: ${objectFit}`,
+  objectPosition && `object-position: ${objectPosition}`,
+].filter(Boolean).join('; ');
+
+// Compute aspect ratio for placeholder
+const aspectRatio = width / height;
+---
+
+<div
+  class:list={['optimized-image-wrapper', { 'has-placeholder': placeholder }]}
+  style={`aspect-ratio: ${aspectRatio};`}
+>
+  {!isSVG ? (
+    <picture>
+      {/* WebP source for modern browsers */}
+      <source
+        type="image/webp"
+        srcset={computedSrcSet ? computedSrcSet.replace(/\.(jpg|jpeg|png|gif)/gi, '.webp') : getWebPSrc(src)}
+        sizes={computedSizes}
+      />
+      {/* Fallback for older browsers */}
+      <img
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        decoding={decoding}
+        fetchpriority={fetchPriority}
+        class:list={['optimized-image', className]}
+        srcset={computedSrcSet}
+        sizes={computedSizes}
+        style={imageStyle || undefined}
+      />
+    </picture>
+  ) : (
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={loading}
+      decoding={decoding}
+      fetchpriority={fetchPriority}
+      class:list={['optimized-image', className]}
+      style={imageStyle || undefined}
+    />
+  )}
+
+  {/* Placeholder overlay for blur-up effect */}
+  {placeholder && (
+    <div class="optimized-image-placeholder" aria-hidden="true"></div>
+  )}
+</div>
+
+<style>
+  .optimized-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-background-muted, #f3f4f6);
+  }
+
+  .optimized-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: opacity var(--duration-300, 300ms) var(--ease-out, ease-out);
+  }
+
+  /* Placeholder for blur-up effect */
+  .has-placeholder .optimized-image {
+    opacity: 0;
+  }
+
+  .has-placeholder .optimized-image.loaded {
+    opacity: 1;
+  }
+
+  .optimized-image-placeholder {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      var(--color-background-muted, #f3f4f6) 0%,
+      var(--color-background-subtle, #e5e7eb) 50%,
+      var(--color-background-muted, #f3f4f6) 100%
+    );
+    background-size: 200% 200%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  .has-placeholder .optimized-image.loaded + .optimized-image-placeholder {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .optimized-image-placeholder {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  // Add loaded class when image finishes loading
+  document.addEventListener('DOMContentLoaded', () => {
+    const images = document.querySelectorAll('.optimized-image');
+
+    images.forEach((img) => {
+      const imgElement = img as HTMLImageElement;
+
+      if (imgElement.complete) {
+        imgElement.classList.add('loaded');
+      } else {
+        imgElement.addEventListener('load', () => {
+          imgElement.classList.add('loaded');
+        });
+      }
+    });
+  });
+
+  // Re-run on Astro page transitions
+  document.addEventListener('astro:page-load', () => {
+    const images = document.querySelectorAll('.optimized-image:not(.loaded)');
+
+    images.forEach((img) => {
+      const imgElement = img as HTMLImageElement;
+
+      if (imgElement.complete) {
+        imgElement.classList.add('loaded');
+      } else {
+        imgElement.addEventListener('load', () => {
+          imgElement.classList.add('loaded');
+        });
+      }
+    });
+  });
+</script>

@@ -1,0 +1,472 @@
+---
+/**
+ * Hero Section Component
+ * A conversion-optimized hero section for the homepage that immediately
+ * communicates value to small business owners in  Houston.
+ *
+ * Features:
+ * - Mobile-first responsive design
+ * - Clear visual hierarchy: headline → value prop → subheadline → CTA
+ * - WCAG 2.1 AA compliant contrast and touch targets
+ * - Semantic HTML structure for accessibility and SEO
+ * - Smooth responsive scaling without horizontal scroll
+ * - Optional secondary CTA button
+ *
+ * @example Basic usage
+ * ```astro
+ * <HeroSection
+ *   headline="Grow Your Business Online"
+ *   valueProposition="Expert web solutions for local small businesses"
+ *   subheadline="Custom websites, SEO, and digital marketing designed specifically for businesses in the Energy Corridor, Katy, and Memorial areas."
+ *   primaryCTA={{ text: "Get Your Free Consultation", href: "/contact" }}
+ * />
+ * ```
+ */
+
+import type { HeroSectionProps } from '../types/hero';
+import Button from './Button.astro';
+
+interface Props extends HeroSectionProps {}
+
+const {
+  headline,
+  valueProposition,
+  subheadline,
+  primaryCTA,
+  secondaryCTA,
+  id = 'hero',
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'hero',
+  className,
+].filter(Boolean).join(' ');
+---
+
+<section class={sectionClasses} id={id} aria-labelledby={`${id}-headline`}>
+  <div class="hero__container">
+    <div class="hero__content">
+      <!-- Main Headline -->
+      <h1 id={`${id}-headline`} class="hero__headline">
+        {headline}
+      </h1>
+
+      <!-- Value Proposition -->
+      {valueProposition && (
+        <p class="hero__value-prop">
+          {valueProposition}
+        </p>
+      )}
+
+      <!-- Subheadline -->
+      {subheadline && (
+        <p class="hero__subheadline">
+          {subheadline}
+        </p>
+      )}
+
+      <!-- CTA Buttons -->
+      {(primaryCTA || secondaryCTA) && (
+        <div class="hero__cta-group">
+          {primaryCTA && (
+            <Button
+              text={primaryCTA.text}
+              href={primaryCTA.href}
+              variant={primaryCTA.variant || 'primary'}
+              size="large"
+              class="hero__cta hero__cta--primary"
+            />
+          )}
+          {secondaryCTA && (
+            <Button
+              text={secondaryCTA.text}
+              href={secondaryCTA.href}
+              variant={secondaryCTA.variant || 'secondary'}
+              size="large"
+              class="hero__cta hero__cta--secondary"
+            />
+          )}
+        </div>
+      )}
+    </div>
+  </div>
+
+  <!-- Decorative background element -->
+  <div class="hero__background" aria-hidden="true"></div>
+</section>
+
+<style>
+  /* =================================================================
+   * HERO SECTION COMPONENT STYLES
+   * =================================================================
+   * Mobile-first approach with responsive breakpoints
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: var(--spacing-16) var(--spacing-4);
+    overflow: hidden;
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-700) 50%,
+      var(--color-primary-800) 100%
+    );
+  }
+
+  /* Decorative background */
+  .hero__background {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(
+        ellipse 80% 50% at 50% -20%,
+        rgba(255, 255, 255, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        ellipse 60% 40% at 100% 100%,
+        rgba(54, 83, 149, 0.3) 0%,
+        transparent 50%
+      );
+  }
+
+  .hero__container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  .hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-6);
+  }
+
+  /* =================================================================
+   * TYPOGRAPHY - Mobile First
+   * =================================================================
+   */
+
+  /* Main Headline - H1 */
+  .hero__headline {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--color-text-inverse);
+    margin: 0;
+    max-width: 20ch;
+  }
+
+  /* Value Proposition */
+  .hero__value-prop {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-snug);
+    color: var(--color-primary-100);
+    margin: 0;
+    max-width: 35ch;
+    padding: var(--spacing-3) var(--spacing-4);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  /* Subheadline */
+  .hero__subheadline {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-primary-100);
+    margin: 0;
+    max-width: 50ch;
+    opacity: 0.9;
+  }
+
+  /* =================================================================
+   * CTA BUTTONS
+   * =================================================================
+   */
+
+  .hero__cta-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-4);
+    width: 100%;
+  }
+
+  /* Full width CTAs on mobile */
+  .hero__cta {
+    width: 100%;
+    max-width: 20rem;
+  }
+
+  /* Override button styles for better contrast in hero */
+  .hero :global(.btn--primary) {
+    background-color: var(--color-background);
+    color: var(--color-primary-700);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .hero :global(.btn--primary:hover:not(.btn--disabled)) {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-800);
+    box-shadow: var(--shadow-xl);
+    transform: translateY(-2px);
+  }
+
+  .hero :global(.btn--primary:active:not(.btn--disabled)) {
+    background-color: var(--color-primary-100);
+    transform: translateY(0);
+  }
+
+  .hero :global(.btn--primary:focus-visible) {
+    box-shadow:
+      0 0 0 var(--focus-ring-offset) var(--color-primary-800),
+      0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--color-background);
+  }
+
+  .hero :global(.btn--secondary) {
+    background-color: transparent;
+    color: var(--color-text-inverse);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .hero :global(.btn--secondary:hover:not(.btn--disabled)) {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.8);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Tablet (640px+)
+   * =================================================================
+   */
+
+  @media screen and (min-width: 640px) {
+    .hero {
+      padding: var(--spacing-20) var(--spacing-6);
+      min-height: 65vh;
+    }
+
+    .hero__content {
+      gap: var(--spacing-6);
+    }
+
+    .hero__headline {
+      font-size: var(--font-size-4xl);
+      max-width: 18ch;
+    }
+
+    .hero__value-prop {
+      font-size: var(--font-size-xl);
+      padding: var(--spacing-4) var(--spacing-6);
+    }
+
+    .hero__subheadline {
+      font-size: var(--font-size-md);
+    }
+
+    .hero__cta-group {
+      flex-direction: row;
+      justify-content: center;
+      margin-top: var(--spacing-6);
+    }
+
+    .hero__cta {
+      width: auto;
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Desktop (1024px+)
+   * =================================================================
+   */
+
+  @media screen and (min-width: 1024px) {
+    .hero {
+      padding: var(--spacing-24) var(--spacing-8);
+      min-height: 60vh;
+    }
+
+    .hero__content {
+      gap: var(--spacing-8);
+    }
+
+    .hero__headline {
+      font-size: var(--font-size-5xl);
+      max-width: 20ch;
+    }
+
+    .hero__value-prop {
+      font-size: var(--font-size-xl);
+      max-width: 40ch;
+    }
+
+    .hero__subheadline {
+      font-size: var(--font-size-lg);
+      max-width: 60ch;
+    }
+
+    .hero__cta-group {
+      gap: var(--spacing-6);
+      margin-top: var(--spacing-8);
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Large Desktop (1280px+)
+   * =================================================================
+   */
+
+  @media screen and (min-width: 1280px) {
+    .hero {
+      min-height: 70vh;
+    }
+
+    .hero__headline {
+      font-size: var(--font-size-6xl);
+    }
+
+    .hero__value-prop {
+      font-size: var(--font-size-2xl);
+    }
+
+    .hero__subheadline {
+      font-size: var(--font-size-xl);
+    }
+  }
+
+  /* =================================================================
+   * ANIMATIONS
+   * Staggered fade-in for visual interest
+   * =================================================================
+   */
+
+  .hero__headline {
+    animation: heroFadeIn 0.6s ease-out 0.1s backwards;
+  }
+
+  .hero__value-prop {
+    animation: heroFadeIn 0.6s ease-out 0.2s backwards;
+  }
+
+  .hero__subheadline {
+    animation: heroFadeIn 0.6s ease-out 0.3s backwards;
+  }
+
+  .hero__cta-group {
+    animation: heroFadeIn 0.6s ease-out 0.4s backwards;
+  }
+
+  @keyframes heroFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * =================================================================
+   */
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__headline,
+    .hero__value-prop,
+    .hero__subheadline,
+    .hero__cta-group {
+      animation: none;
+    }
+
+    .hero :global(.btn:hover:not(.btn--disabled)) {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * Ensure visibility in Windows High Contrast mode
+   * =================================================================
+   */
+
+  @media (forced-colors: active) {
+    .hero {
+      background: Canvas;
+      border: 2px solid CanvasText;
+    }
+
+    .hero__headline,
+    .hero__value-prop,
+    .hero__subheadline {
+      color: CanvasText;
+    }
+
+    .hero__value-prop {
+      border: 1px solid CanvasText;
+      background: transparent;
+    }
+
+    .hero__background {
+      display: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+
+  @media print {
+    .hero {
+      min-height: auto;
+      padding: var(--spacing-8) 0;
+      background: transparent;
+      color: var(--color-text-primary);
+    }
+
+    .hero__headline,
+    .hero__value-prop,
+    .hero__subheadline {
+      color: var(--color-text-primary);
+      animation: none;
+    }
+
+    .hero__value-prop {
+      background: transparent;
+      border: 1px solid var(--color-border);
+    }
+
+    .hero__background {
+      display: none;
+    }
+
+    .hero__cta-group {
+      display: none;
+    }
+  }
+</style>

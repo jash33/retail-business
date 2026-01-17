@@ -1,0 +1,31 @@
+{
+  "category": "Uncategorized",
+  "description": "the expandable FAQ text - the answers to the questions need spacing above the paragraph, just a litt.e",
+  "title": "Add spacing above FAQ answers",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "waiting_approval",
+  "id": "feature-1768610155582-hongxuirj",
+  "descriptionHistory": [
+    {
+      "description": "the expandable FAQ text - the answers to the questions need spacing above the paragraph, just a litt.e",
+      "timestamp": "2026-01-17T00:35:55.695Z",
+      "source": "initial"
+    }
+  ],
+  "branchName": "master",
+  "startedAt": "2026-01-17T01:13:28.879Z",
+  "updatedAt": "2026-01-17T01:14:17.925Z",
+  "justFinishedAt": "2026-01-17T01:14:17.925Z"
+}

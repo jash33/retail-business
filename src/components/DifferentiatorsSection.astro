@@ -1,0 +1,264 @@
+---
+/**
+ * DifferentiatorsSection Component
+ * A responsive section displaying unique selling points/differentiators in a grid layout.
+ * Designed for showcasing competitive advantages with icons and concise first-person messaging.
+ *
+ * Features:
+ * - Responsive grid: 1 column (mobile) -> 2 columns (tablet) -> 4 columns (desktop)
+ * - Section heading and subheading
+ * - Consistent card sizing and spacing
+ * - Accessible with proper semantic structure
+ * - Loading/empty state handling
+ * - Smooth animations with reduced motion support
+ * - Visual balance for 3-4 differentiators
+ *
+ * @example Basic usage
+ * ```astro
+ * <DifferentiatorsSection
+ *   heading="Why Choose Us"
+ *   differentiators={[
+ *     { id: 'local', title: 'Local Expertise', description: '...' },
+ *     { id: 'pricing', title: 'Transparent Pricing', description: '...' },
+ *   ]}
+ * />
+ * ```
+ *
+ * @example With subheading
+ * ```astro
+ * <DifferentiatorsSection
+ *   heading="Why Work With Me"
+ *   subheading="Here's what sets my web services apart"
+ *   differentiators={differentiators}
+ * />
+ * ```
+ */
+
+import type { DifferentiatorsSectionProps, Differentiator } from '../types/differentiator';
+import DifferentiatorCard from './DifferentiatorCard.astro';
+
+interface Props extends DifferentiatorsSectionProps {}
+
+const {
+  heading = 'Why Choose Us',
+  subheading,
+  differentiators = [],
+  id = 'why-choose-us',
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'differentiators-section',
+  className,
+].filter(Boolean).join(' ');
+
+// Check if we have differentiators to display
+const hasDifferentiators = differentiators && differentiators.length > 0;
+---
+
+<section class={sectionClasses} id={id} aria-labelledby={`${id}-heading`}>
+  <div class="differentiators-section__container">
+    <!-- Section Header -->
+    <header class="differentiators-section__header">
+      <h2 id={`${id}-heading`} class="differentiators-section__heading">{heading}</h2>
+      {subheading && (
+        <p class="differentiators-section__subheading">{subheading}</p>
+      )}
+    </header>
+
+    <!-- Differentiators Grid -->
+    {hasDifferentiators ? (
+      <div class="differentiators-section__grid">
+        {differentiators.map((differentiator) => (
+          <DifferentiatorCard
+            id={differentiator.id}
+            title={differentiator.title}
+            description={differentiator.description}
+            icon={differentiator.icon}
+          />
+        ))}
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="differentiators-section__empty" role="status" aria-live="polite">
+        <p class="differentiators-section__empty-text">Differentiators information coming soon.</p>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * DIFFERENTIATORS SECTION COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .differentiators-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .differentiators-section__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* Section Header */
+  .differentiators-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .differentiators-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .differentiators-section__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Differentiators Grid */
+  .differentiators-section__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* Empty State */
+  .differentiators-section__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-16) var(--spacing-8);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .differentiators-section__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * =================================================================
+   */
+
+  /* Tablet (768px) - 2 columns */
+  @media screen and (min-width: 768px) {
+    .differentiators-section {
+      padding: var(--spacing-20) var(--spacing-8);
+    }
+
+    .differentiators-section__header {
+      margin-bottom: var(--spacing-16);
+    }
+
+    .differentiators-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+
+    .differentiators-section__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-8);
+    }
+  }
+
+  /* Desktop (1024px) - 4 columns for visual balance */
+  @media screen and (min-width: 1024px) {
+    .differentiators-section__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* Large Desktop (1280px) */
+  @media screen and (min-width: 1280px) {
+    .differentiators-section {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+  }
+
+  /* =================================================================
+   * ANIMATION - Staggered card appearance
+   * =================================================================
+   */
+  .differentiators-section__grid > :global(*) {
+    animation: fadeSlideUp 0.5s ease-out backwards;
+  }
+
+  .differentiators-section__grid > :global(*:nth-child(1)) {
+    animation-delay: 0.1s;
+  }
+
+  .differentiators-section__grid > :global(*:nth-child(2)) {
+    animation-delay: 0.2s;
+  }
+
+  .differentiators-section__grid > :global(*:nth-child(3)) {
+    animation-delay: 0.3s;
+  }
+
+  .differentiators-section__grid > :global(*:nth-child(4)) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * =================================================================
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .differentiators-section__grid > :global(*) {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+  @media print {
+    .differentiators-section {
+      padding: var(--spacing-8) 0;
+      background-color: transparent;
+    }
+
+    .differentiators-section__grid {
+      gap: var(--spacing-4);
+    }
+
+    .differentiators-section__grid > :global(*) {
+      animation: none;
+    }
+  }
+</style>

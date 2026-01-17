@@ -1,0 +1,495 @@
+---
+/**
+ * SEO Component
+ * A centralized, reusable component for managing all SEO-related meta tags,
+ * Open Graph tags, Twitter Cards, and structured data (JSON-LD).
+ *
+ * @example Basic usage:
+ * ```astro
+ * <SEO
+ *   title="About Us"
+ *   description="Learn about Houston Web Services and our mission."
+ * />
+ * ```
+ *
+ * @example Advanced usage with all options:
+ * ```astro
+ * <SEO
+ *   title="Web Design Services"
+ *   description="Custom web design services for small businesses."
+ *   canonicalUrl="https://example.com/services"
+ *   image="/images/services-og.jpg"
+ *   openGraph={{
+ *     type: 'website',
+ *     locale: 'en_US'
+ *   }}
+ *   twitter={{
+ *     card: 'summary_large_image',
+ *     creator: '@username'
+ *   }}
+ *   jsonLd={{
+ *     type: 'WebPage',
+ *     name: 'Web Design Services',
+ *     description: 'Custom web design services for small businesses.'
+ *   }}
+ * />
+ * ```
+ */
+
+import type {
+  SEOProps,
+  JsonLdSchema,
+  ArticleSchema,
+  OrganizationSchema,
+  ProductSchema,
+  BreadcrumbSchema,
+  WebPageSchema,
+  CustomMetaTag,
+} from '../types/seo';
+import {
+  seoConfig,
+  SEO_LIMITS,
+  truncateText,
+  escapeHtml,
+  toAbsoluteUrl,
+  validateSEOProps,
+} from '../config/seo.config';
+
+import { generateLocalBusinessSchema } from '../utils/local-business-jsonld';
+import type { LocalBusinessSchema, LocalBusinessType } from '../types/seo';
+// Define props interface using Astro's Props pattern
+interface Props extends SEOProps {}
+
+const {
+  // Required props
+  title,
+  description,
+
+  // Optional standard meta
+  keywords,
+  robots = seoConfig.defaultRobots,
+  author,
+
+  // URL configuration
+  canonicalUrl,
+  siteUrl = seoConfig.siteUrl,
+
+  // Open Graph
+  openGraph = {},
+
+  // Twitter
+  twitter = {},
+
+  // Structured Data
+  jsonLd,
+
+  // Language & Locale
+  lang = seoConfig.defaultLang,
+  alternateLanguages,
+
+  // Title configuration
+  titleTemplate = seoConfig.titleTemplate,
+  noTitleTemplate = false,
+
+  // Image configuration
+  image,
+  imageAlt,
+
+  // Additional configuration
+  additionalMetaTags = [],
+  additionalLinkTags = [],
+
+  // Charset & Viewport
+  charset = 'UTF-8',
+  viewport = 'width=device-width, initial-scale=1',
+
+  // Theme & App
+  themeColor = seoConfig.themeColor,
+  appleMobileWebAppTitle,
+  applicationName,
+} = Astro.props;
+
+// === Validate and warn in development ===
+if (import.meta.env.DEV) {
+  const warnings = validateSEOProps({
+    title,
+    description,
+    image: image || seoConfig.defaultImage,
+    canonicalUrl,
+  });
+  warnings.forEach((warning) => console.warn(warning));
+}
+
+// === Process title ===
+const processedTitle = noTitleTemplate
+  ? title
+  : titleTemplate.replace('%s', title);
+
+// === Process image URLs (make absolute for social media crawlers) ===
+const absoluteImage = toAbsoluteUrl(
+  image || openGraph.image || seoConfig.defaultImage,
+  siteUrl
+);
+const resolvedImageAlt = imageAlt || openGraph.imageAlt || seoConfig.defaultImageAlt;
+
+// === Compute canonical URL ===
+const computedCanonicalUrl = canonicalUrl
+  ? toAbsoluteUrl(canonicalUrl, siteUrl)
+  : toAbsoluteUrl(Astro.url.pathname, siteUrl);
+
+// === Open Graph computed values ===
+const ogTitle = truncateText(
+  openGraph.title || title,
+  SEO_LIMITS.OG_TITLE_MAX_LENGTH
+);
+const ogDescription = truncateText(
+  openGraph.description || description,
+  SEO_LIMITS.OG_DESCRIPTION_MAX_LENGTH
+);
+const ogType = openGraph.type || seoConfig.defaultOgType;
+const ogLocale = openGraph.locale || seoConfig.defaultLocale;
+const ogSiteName = openGraph.siteName || seoConfig.siteName;
+const ogUrl = openGraph.url || computedCanonicalUrl;
+
+// === Twitter computed values ===
+const twitterCard = twitter.card || seoConfig.twitterCardType;
+const twitterTitle = truncateText(
+  twitter.title || ogTitle,
+  SEO_LIMITS.TWITTER_TITLE_MAX_LENGTH
+);
+const twitterDescription = truncateText(
+  twitter.description || ogDescription,
+  SEO_LIMITS.TWITTER_DESCRIPTION_MAX_LENGTH
+);
+const twitterImage = twitter.image
+  ? toAbsoluteUrl(twitter.image, siteUrl)
+  : absoluteImage;
+const twitterSite = twitter.site || seoConfig.twitterSite;
+
+// === JSON-LD Generation Functions ===
+function generateArticleSchema(schema: ArticleSchema): object {
+  const authors = Array.isArray(schema.author)
+    ? schema.author.map((name) => ({ '@type': 'Person', name }))
+    : { '@type': 'Person', name: schema.author };
+
+  const images = schema.image
+    ? Array.isArray(schema.image)
+      ? schema.image.map((img) => toAbsoluteUrl(img, siteUrl))
+      : [toAbsoluteUrl(schema.image, siteUrl)]
+    : absoluteImage
+      ? [absoluteImage]
+      : undefined;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': schema.type,
+    headline: escapeHtml(schema.headline),
+    description: schema.description ? escapeHtml(schema.description) : undefined,
+    author: authors,
+    datePublished: schema.datePublished,
+    dateModified: schema.dateModified || schema.datePublished,
+    image: images,
+    publisher: schema.publisher
+      ? {
+          '@type': 'Organization',
+          name: schema.publisher.name,
+          logo: schema.publisher.logo
+            ? {
+                '@type': 'ImageObject',
+                url: toAbsoluteUrl(schema.publisher.logo, siteUrl),
+              }
+            : undefined,
+        }
+      : seoConfig.organization
+        ? {
+            '@type': 'Organization',
+            name: seoConfig.organization.name,
+            logo: seoConfig.organization.logo
+              ? {
+                  '@type': 'ImageObject',
+                  url: toAbsoluteUrl(seoConfig.organization.logo, siteUrl),
+                }
+              : undefined,
+          }
+        : undefined,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': computedCanonicalUrl,
+    },
+    articleSection: schema.articleSection,
+    wordCount: schema.wordCount,
+  };
+}
+
+function generateOrganizationSchema(schema: OrganizationSchema): object {
+  return {
+    '@context': 'https://schema.org',
+    '@type': schema.type,
+    name: escapeHtml(schema.name),
+    description: schema.description ? escapeHtml(schema.description) : undefined,
+    url: schema.url || siteUrl,
+    logo: schema.logo ? toAbsoluteUrl(schema.logo, siteUrl) : undefined,
+    contactPoint: schema.contactPoint
+      ? {
+          '@type': 'ContactPoint',
+          telephone: schema.contactPoint.telephone,
+          email: schema.contactPoint.email,
+          contactType: schema.contactPoint.contactType || 'customer service',
+        }
+      : undefined,
+    sameAs: schema.sameAs?.length ? schema.sameAs : undefined,
+    address: schema.address
+      ? {
+          '@type': 'PostalAddress',
+          streetAddress: schema.address.streetAddress,
+          addressLocality: schema.address.addressLocality,
+          addressRegion: schema.address.addressRegion,
+          postalCode: schema.address.postalCode,
+          addressCountry: schema.address.addressCountry,
+        }
+      : undefined,
+  };
+}
+
+function generateProductSchema(schema: ProductSchema): object {
+  const images = schema.image
+    ? Array.isArray(schema.image)
+      ? schema.image.map((img) => toAbsoluteUrl(img, siteUrl))
+      : [toAbsoluteUrl(schema.image, siteUrl)]
+    : undefined;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: escapeHtml(schema.name),
+    description: schema.description ? escapeHtml(schema.description) : undefined,
+    image: images,
+    brand: schema.brand
+      ? {
+          '@type': 'Brand',
+          name: schema.brand,
+        }
+      : undefined,
+    sku: schema.sku,
+    offers: schema.offers
+      ? {
+          '@type': 'Offer',
+          price: schema.offers.price,
+          priceCurrency: schema.offers.priceCurrency,
+          availability: schema.offers.availability
+            ? `https://schema.org/${schema.offers.availability}`
+            : undefined,
+          url: schema.offers.url || computedCanonicalUrl,
+          validFrom: schema.offers.validFrom,
+          priceValidUntil: schema.offers.priceValidUntil,
+        }
+      : undefined,
+    aggregateRating: schema.aggregateRating
+      ? {
+          '@type': 'AggregateRating',
+          ratingValue: schema.aggregateRating.ratingValue,
+          reviewCount: schema.aggregateRating.reviewCount,
+        }
+      : undefined,
+  };
+}
+
+function generateBreadcrumbSchema(schema: BreadcrumbSchema): object {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: schema.items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: escapeHtml(item.name),
+      item: item.url ? toAbsoluteUrl(item.url, siteUrl) : undefined,
+    })),
+  };
+}
+
+function generateWebPageSchema(schema: WebPageSchema): object {
+  return {
+    '@context': 'https://schema.org',
+    '@type': schema.type,
+    name: escapeHtml(schema.name),
+    description: schema.description ? escapeHtml(schema.description) : undefined,
+    url: schema.url || computedCanonicalUrl,
+    lastReviewed: schema.lastReviewed,
+    primaryImageOfPage: schema.primaryImageOfPage
+      ? {
+          '@type': 'ImageObject',
+          url: toAbsoluteUrl(schema.primaryImageOfPage, siteUrl),
+        }
+      : undefined,
+  };
+}
+
+function generateJsonLd(schema: JsonLdSchema): object {
+  switch (schema.type) {
+    case 'Article':
+    case 'NewsArticle':
+    case 'BlogPosting':
+      return generateArticleSchema(schema as ArticleSchema);
+    case 'Organization':
+      return generateOrganizationSchema(schema as OrganizationSchema);
+    case 'ProfessionalService':
+    case 'LocalBusiness':
+    case 'Store':
+    case 'Restaurant':
+    case 'MedicalBusiness':
+    case 'FinancialService':
+    case 'LegalService':
+    case 'RealEstateAgent':
+    case 'AutoRepair':
+    case 'HealthAndBeautyBusiness':
+    case 'HomeAndConstructionBusiness':
+    case 'EntertainmentBusiness':
+    case 'FoodEstablishment':
+    case 'LodgingBusiness':
+      // Use the comprehensive LocalBusiness generator for all LocalBusiness subtypes
+      return generateLocalBusinessSchema(schema as LocalBusinessSchema, siteUrl);
+    case 'Product':
+      return generateProductSchema(schema as ProductSchema);
+    case 'BreadcrumbList':
+      return generateBreadcrumbSchema(schema as BreadcrumbSchema);
+    case 'WebPage':
+    case 'AboutPage':
+    case 'ContactPage':
+    case 'FAQPage':
+    case 'CollectionPage':
+      return generateWebPageSchema(schema as WebPageSchema);
+    default:
+      console.warn(`SEO Warning: Unknown JSON-LD schema type: ${(schema as JsonLdSchema).type}`);
+      return {};
+  }
+}
+
+// === Process JSON-LD schemas ===
+const jsonLdSchemas: object[] = [];
+if (jsonLd) {
+  if (Array.isArray(jsonLd)) {
+    jsonLd.forEach((schema) => {
+      const generated = generateJsonLd(schema);
+      if (Object.keys(generated).length > 0) {
+        jsonLdSchemas.push(generated);
+      }
+    });
+  } else {
+    const generated = generateJsonLd(jsonLd);
+    if (Object.keys(generated).length > 0) {
+      jsonLdSchemas.push(generated);
+    }
+  }
+}
+
+// === Clean undefined values from objects ===
+function cleanObject(obj: object): object {
+  return JSON.parse(
+    JSON.stringify(obj, (_, value) => (value === undefined ? undefined : value))
+  );
+}
+---
+
+<!-- Charset (must be within first 1024 bytes) -->
+<meta charset={charset} />
+
+<!-- Viewport -->
+<meta name="viewport" content={viewport} />
+
+<!-- Title -->
+<title>{processedTitle}</title>
+
+<!-- Standard Meta Tags -->
+<meta name="description" content={escapeHtml(description)} />
+{keywords && <meta name="keywords" content={escapeHtml(keywords)} />}
+{robots && <meta name="robots" content={robots} />}
+{author && <meta name="author" content={escapeHtml(author)} />}
+
+<!-- Canonical URL -->
+{computedCanonicalUrl && <link rel="canonical" href={computedCanonicalUrl} />}
+
+<!-- Language & Locale -->
+{
+  alternateLanguages &&
+    alternateLanguages.map((alt) => (
+      <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+    ))
+}
+
+<!-- Open Graph Tags -->
+<meta property="og:title" content={escapeHtml(ogTitle)} />
+<meta property="og:description" content={escapeHtml(ogDescription)} />
+<meta property="og:type" content={ogType} />
+{ogUrl && <meta property="og:url" content={ogUrl} />}
+{ogSiteName && <meta property="og:site_name" content={escapeHtml(ogSiteName)} />}
+<meta property="og:locale" content={ogLocale} />
+{
+  openGraph.localeAlternate &&
+    openGraph.localeAlternate.map((locale) => (
+      <meta property="og:locale:alternate" content={locale} />
+    ))
+}
+
+<!-- Open Graph Image -->
+{absoluteImage && <meta property="og:image" content={absoluteImage} />}
+{resolvedImageAlt && <meta property="og:image:alt" content={escapeHtml(resolvedImageAlt)} />}
+{openGraph.imageWidth && <meta property="og:image:width" content={String(openGraph.imageWidth)} />}
+{openGraph.imageHeight && <meta property="og:image:height" content={String(openGraph.imageHeight)} />}
+
+<!-- Twitter Card Tags -->
+<meta name="twitter:card" content={twitterCard} />
+<meta name="twitter:title" content={escapeHtml(twitterTitle)} />
+<meta name="twitter:description" content={escapeHtml(twitterDescription)} />
+{twitterImage && <meta name="twitter:image" content={twitterImage} />}
+{twitter.imageAlt && <meta name="twitter:image:alt" content={escapeHtml(twitter.imageAlt)} />}
+{twitterSite && <meta name="twitter:site" content={twitterSite} />}
+{twitter.creator && <meta name="twitter:creator" content={twitter.creator} />}
+
+<!-- Theme Color -->
+{themeColor && <meta name="theme-color" content={themeColor} />}
+
+<!-- App Configuration -->
+{appleMobileWebAppTitle && <meta name="apple-mobile-web-app-title" content={escapeHtml(appleMobileWebAppTitle)} />}
+{applicationName && <meta name="application-name" content={escapeHtml(applicationName)} />}
+
+<!-- Generator (Astro) -->
+<meta name="generator" content={Astro.generator} />
+
+<!-- Additional Meta Tags -->
+{
+  additionalMetaTags.map((tag: CustomMetaTag) => {
+    if (tag.name) {
+      return <meta name={tag.name} content={escapeHtml(tag.content)} />;
+    }
+    if (tag.property) {
+      return <meta property={tag.property} content={escapeHtml(tag.content)} />;
+    }
+    if (tag.httpEquiv) {
+      return <meta http-equiv={tag.httpEquiv} content={escapeHtml(tag.content)} />;
+    }
+    return null;
+  })
+}
+
+<!-- Additional Link Tags -->
+{
+  additionalLinkTags.map((link) => (
+    <link
+      rel={link.rel}
+      href={link.href}
+      hreflang={link.hreflang}
+      type={link.type}
+      sizes={link.sizes}
+    />
+  ))
+}
+
+<!-- JSON-LD Structured Data -->
+{
+  jsonLdSchemas.map((schema) => (
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(cleanObject(schema), null, 0)}
+    />
+  ))
+}

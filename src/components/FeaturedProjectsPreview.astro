@@ -1,0 +1,360 @@
+---
+/**
+ * FeaturedProjectsPreview Component
+ * A homepage section showcasing 2-3 featured portfolio projects to give visitors
+ * an immediate sense of the quality and style of work.
+ *
+ * Features:
+ * - Displays 2-3 featured projects in a responsive grid layout
+ * - Each project shows thumbnail, title, brief description, and CTA link
+ * - Prominent "View All Projects" call-to-action button
+ * - Responsive design: 1 column (mobile) -> 2-3 columns (tablet/desktop)
+ * - Hover effects and smooth transitions
+ * - Lazy loading images for performance
+ * - Full accessibility support (WCAG 2.1 AA)
+ * - Reduced motion support
+ * - Configurable through props for easy updating
+ *
+ * @example Basic usage with projects data
+ * ```astro
+ * <FeaturedProjectsPreview
+ *   heading="Featured Work"
+ *   subheading="Check out some of our recent projects"
+ *   projects={featuredProjects}
+ * />
+ * ```
+ *
+ * @example Minimal usage
+ * ```astro
+ * <FeaturedProjectsPreview projects={featuredProjects} />
+ * ```
+ */
+
+import type { Project } from '../types/portfolio';
+import ProjectCard from './ProjectCard.astro';
+import Button from './Button.astro';
+
+interface Props {
+  /** Section heading text */
+  heading?: string;
+  /** Section subheading/description text */
+  subheading?: string;
+  /** Array of featured projects to display (2-3 recommended) */
+  projects: Project[];
+  /** Optional section ID for anchor links */
+  id?: string;
+  /** Additional CSS class names */
+  class?: string;
+  /** Text for the "View All" CTA button */
+  viewAllText?: string;
+  /** URL for the "View All" CTA button */
+  viewAllHref?: string;
+}
+
+const {
+  heading = 'Featured Work',
+  subheading = 'Explore some of our recent projects that showcase our expertise in web design and development.',
+  projects = [],
+  id = 'featured-projects',
+  class: className = '',
+  viewAllText = 'View All Projects',
+  viewAllHref = '/portfolio',
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'featured-projects',
+  className,
+].filter(Boolean).join(' ');
+
+// Check if we have projects to display
+const hasProjects = projects && projects.length > 0;
+
+// Limit to 3 projects maximum for the preview
+const displayProjects = projects.slice(0, 3);
+
+// Arrow icon for the CTA button
+const arrowIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/></svg>`;
+---
+
+<section class={sectionClasses} id={id} aria-labelledby={`${id}-heading`}>
+  <div class="featured-projects__container">
+    <!-- Section Header -->
+    <header class="featured-projects__header">
+      <h2 id={`${id}-heading`} class="featured-projects__heading">{heading}</h2>
+      {subheading && (
+        <p class="featured-projects__subheading">{subheading}</p>
+      )}
+    </header>
+
+    <!-- Projects Grid -->
+    {hasProjects ? (
+      <div class="featured-projects__grid" role="list" aria-label="Featured projects">
+        {displayProjects.map((project) => (
+          <div class="featured-projects__item" role="listitem">
+            <ProjectCard
+              id={project.id}
+              title={project.title}
+              description={project.description}
+              thumbnail={project.thumbnail}
+              technologies={project.technologies}
+              category={project.category}
+              links={project.links}
+              featured={project.featured}
+            />
+          </div>
+        ))}
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="featured-projects__empty" role="status" aria-live="polite">
+        <div class="featured-projects__empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+            <path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <p class="featured-projects__empty-text">Featured projects coming soon.</p>
+      </div>
+    )}
+
+    <!-- View All CTA -->
+    {hasProjects && (
+      <div class="featured-projects__cta">
+        <Button
+          text={viewAllText}
+          href={viewAllHref}
+          variant="secondary"
+          size="large"
+          iconPosition="trailing"
+          ariaLabel="View all portfolio projects"
+        >
+          <Fragment slot="icon" set:html={arrowIcon} />
+        </Button>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * FEATURED PROJECTS PREVIEW COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .featured-projects {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .featured-projects__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * SECTION HEADER
+   * ================================================================= */
+  .featured-projects__header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .featured-projects__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .featured-projects__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * PROJECTS GRID
+   * ================================================================= */
+  .featured-projects__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  .featured-projects__item {
+    /* Animation handled by staggered appearance below */
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+  .featured-projects__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-16) var(--spacing-8);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .featured-projects__empty-icon {
+    width: var(--spacing-16);
+    height: var(--spacing-16);
+    color: var(--color-text-tertiary);
+  }
+
+  .featured-projects__empty-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .featured-projects__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* =================================================================
+   * VIEW ALL CTA
+   * ================================================================= */
+  .featured-projects__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--spacing-10);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Tablet (768px) - 2 columns */
+  @media screen and (min-width: 768px) {
+    .featured-projects {
+      padding: var(--spacing-20) var(--spacing-8);
+    }
+
+    .featured-projects__header {
+      margin-bottom: var(--spacing-12);
+    }
+
+    .featured-projects__heading {
+      font-size: var(--font-size-4xl);
+    }
+
+    .featured-projects__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-8);
+    }
+
+    .featured-projects__cta {
+      margin-top: var(--spacing-12);
+    }
+  }
+
+  /* Desktop (1024px) - 3 columns */
+  @media screen and (min-width: 1024px) {
+    .featured-projects__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Large Desktop (1280px) */
+  @media screen and (min-width: 1280px) {
+    .featured-projects {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+  }
+
+  /* =================================================================
+   * ANIMATION - Staggered card appearance
+   * ================================================================= */
+  .featured-projects__item {
+    animation: fadeSlideUp 0.5s ease-out backwards;
+  }
+
+  .featured-projects__item:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .featured-projects__item:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .featured-projects__item:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* CTA button fade in */
+  .featured-projects__cta {
+    animation: fadeIn 0.5s ease-out 0.4s backwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .featured-projects__item,
+    .featured-projects__cta {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .featured-projects {
+      padding: var(--spacing-8) 0;
+      background-color: transparent;
+    }
+
+    .featured-projects__grid {
+      gap: var(--spacing-4);
+    }
+
+    .featured-projects__item {
+      animation: none;
+    }
+
+    .featured-projects__cta {
+      display: none;
+    }
+  }
+</style>

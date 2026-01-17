@@ -1,0 +1,293 @@
+---
+/**
+ * ServicesSection Component
+ * A responsive section displaying service offerings in a grid layout.
+ * Designed for homepage use to showcase key services.
+ *
+ * Features:
+ * - Responsive grid: 1 column (mobile) -> 2 columns (tablet) -> 3-4 columns (desktop)
+ * - Configurable number of columns (3 or 4)
+ * - Section heading and subheading
+ * - Consistent card sizing and spacing
+ * - Accessible with proper semantic structure
+ * - Loading/empty state handling
+ * - Smooth animations with reduced motion support
+ *
+ * @example Basic usage
+ * ```astro
+ * <ServicesSection
+ *   heading="Our Services"
+ *   services={[
+ *     { id: 'web', title: 'Web Design', description: '...' },
+ *     { id: 'seo', title: 'SEO', description: '...' },
+ *   ]}
+ * />
+ * ```
+ *
+ * @example With 4 columns
+ * ```astro
+ * <ServicesSection
+ *   heading="What We Offer"
+ *   subheading="Comprehensive web solutions for your business"
+ *   services={services}
+ *   columns={4}
+ * />
+ * ```
+ */
+
+import type { ServicesSectionProps, Service } from '../types/service';
+import ServiceCard from './ServiceCard.astro';
+
+interface Props extends ServicesSectionProps {}
+
+const {
+  heading = 'Our Services',
+  subheading,
+  services = [],
+  columns = 3,
+  id = 'services',
+  class: className = '',
+} = Astro.props;
+
+// Determine grid column class based on column count
+const gridClass = columns === 4 ? 'services-section__grid--four-cols' : 'services-section__grid--three-cols';
+
+// Build CSS classes
+const sectionClasses = [
+  'services-section',
+  className,
+].filter(Boolean).join(' ');
+
+const gridClasses = [
+  'services-section__grid',
+  gridClass,
+].filter(Boolean).join(' ');
+
+// Check if we have services to display
+const hasServices = services && services.length > 0;
+---
+
+<section class={sectionClasses} id={id} aria-labelledby={`${id}-heading`}>
+  <div class="services-section__container">
+    <!-- Section Header -->
+    <header class="services-section__header">
+      <h2 id={`${id}-heading`} class="services-section__heading">{heading}</h2>
+      {subheading && (
+        <p class="services-section__subheading">{subheading}</p>
+      )}
+    </header>
+
+    <!-- Services Grid -->
+    {hasServices ? (
+      <div class={gridClasses}>
+        {services.map((service) => (
+          <ServiceCard
+            id={service.id}
+            title={service.title}
+            description={service.description}
+            icon={service.icon}
+            cta={service.cta}
+          />
+        ))}
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="services-section__empty" role="status" aria-live="polite">
+        <p class="services-section__empty-text">Services information coming soon.</p>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * SERVICES SECTION COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .services-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .services-section__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* Section Header */
+  .services-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .services-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .services-section__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Services Grid */
+  .services-section__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* 3-Column Grid (default) */
+  .services-section__grid--three-cols {
+    /* Mobile: 1 column (default above) */
+  }
+
+  /* 4-Column Grid */
+  .services-section__grid--four-cols {
+    /* Mobile: 1 column (default above) */
+  }
+
+  /* Empty State */
+  .services-section__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-16) var(--spacing-8);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .services-section__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * =================================================================
+   */
+
+  /* Tablet (768px) - 2 columns */
+  @media screen and (min-width: 768px) {
+    .services-section {
+      padding: var(--spacing-20) var(--spacing-8);
+    }
+
+    .services-section__header {
+      margin-bottom: var(--spacing-16);
+    }
+
+    .services-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+
+    .services-section__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-8);
+    }
+  }
+
+  /* Desktop (1024px) - 3 columns */
+  @media screen and (min-width: 1024px) {
+    .services-section__grid--three-cols {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .services-section__grid--four-cols {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Large Desktop (1280px) - 3 or 4 columns depending on config */
+  @media screen and (min-width: 1280px) {
+    .services-section {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+
+    .services-section__grid--four-cols {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* =================================================================
+   * ANIMATION - Staggered card appearance
+   * =================================================================
+   */
+  .services-section__grid > :global(*) {
+    animation: fadeSlideUp 0.5s ease-out backwards;
+  }
+
+  .services-section__grid > :global(*:nth-child(1)) {
+    animation-delay: 0.1s;
+  }
+
+  .services-section__grid > :global(*:nth-child(2)) {
+    animation-delay: 0.2s;
+  }
+
+  .services-section__grid > :global(*:nth-child(3)) {
+    animation-delay: 0.3s;
+  }
+
+  .services-section__grid > :global(*:nth-child(4)) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * =================================================================
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .services-section__grid > :global(*) {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+  @media print {
+    .services-section {
+      padding: var(--spacing-8) 0;
+      background-color: transparent;
+    }
+
+    .services-section__grid {
+      gap: var(--spacing-4);
+    }
+
+    .services-section__grid > :global(*) {
+      animation: none;
+    }
+  }
+</style>

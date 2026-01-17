@@ -1,0 +1,42 @@
+{
+  "id": "contact-form",
+  "category": "UI",
+  "title": "Contact Form with Validation",
+  "description": "Add Contact Page with Form Validation and Spam Prevention\n\nCreate a fully functional contact page that allows users to submit inquiries through a validated form with comprehensive error handling and spam protection.\n\nRequirements:\n\nForm Fields:\n- Name (text input, required)\n- Email (email input, required, must validate email format)\n- Phone (tel input, optional, validate format if provided)\n- Business Name (text input, optional)\n- Project Type (dropdown/select, required, with predefined options)\n- Budget Range (dropdown/select or radio buttons, required, with predefined ranges)\n- Message (textarea, required, minimum character count)\n\nValidation:\n- Implement client-side validation for all required fields\n- Display inline error messages adjacent to invalid fields\n- Show real-time validation feedback as user completes fields\n- Prevent form submission if validation fails\n- Validate email format using standard email regex\n- Validate phone format based on expected format (specify country/region)\n- Ensure dropdown selections are made (not default/placeholder values)\n\nSpam Prevention:\n- Add honeypot field (hidden from legitimate users, styled off-screen)\n- Reject submissions if honeypot field contains data\n- Consider time-based validation (reject submissions completed too quickly)\n\nAccessibility:\n- Associate all form inputs with proper <label> elements\n- Use aria-describedby for error message association\n- Ensure proper tab order through form fields\n- Include focus indicators for keyboard navigation\n- Use semantic HTML form elements\n- Ensure sufficient color contrast for error messages\n\nUser Feedback:\n- Display success message after successful submission\n- Show error state if submission fails (network error, server error)\n- Disable submit button and show loading state during submission\n- Clear form after successful submission or provide option to submit another\n- Make success/error messages screen reader accessible\n\nEdge Cases to Consider:\n- Handle special characters in text inputs\n- Prevent double-submission with disabled button state\n- Handle network timeout scenarios\n- Validate data length limits to prevent overflow\n- Consider GDPR/privacy notice if collecting personal data",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "complex",
+  "dependencies": [
+    "seo-head-component",
+    "header-navigation",
+    "footer-component",
+    "css-variables-typography"
+  ],
+  "createdAt": "2026-01-16T22:50:41.443Z",
+  "updatedAt": "2026-01-16T23:29:55.031Z",
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "current",
+  "descriptionHistory": [
+    {
+      "description": "Create contact page with form fields (name, email, phone, business name, project type dropdown, budget range, message), client-side validation with inline error messages, honeypot spam prevention, and accessible form labels. Includes success/error state displays.",
+      "timestamp": "2026-01-16T23:04:21.996Z",
+      "source": "initial"
+    },
+    {
+      "description": "Add Contact Page with Form Validation and Spam Prevention\n\nCreate a fully functional contact page that allows users to submit inquiries through a validated form with comprehensive error handling and spam protection.\n\nRequirements:\n\nForm Fields:\n- Name (text input, required)\n- Email (email input, required, must validate email format)\n- Phone (tel input, optional, validate format if provided)\n- Business Name (text input, optional)\n- Project Type (dropdown/select, required, with predefined options)\n- Budget Range (dropdown/select or radio buttons, required, with predefined ranges)\n- Message (textarea, required, minimum character count)\n\nValidation:\n- Implement client-side validation for all required fields\n- Display inline error messages adjacent to invalid fields\n- Show real-time validation feedback as user completes fields\n- Prevent form submission if validation fails\n- Validate email format using standard email regex\n- Validate phone format based on expected format (specify country/region)\n- Ensure dropdown selections are made (not default/placeholder values)\n\nSpam Prevention:\n- Add honeypot field (hidden from legitimate users, styled off-screen)\n- Reject submissions if honeypot field contains data\n- Consider time-based validation (reject submissions completed too quickly)\n\nAccessibility:\n- Associate all form inputs with proper <label> elements\n- Use aria-describedby for error message association\n- Ensure proper tab order through form fields\n- Include focus indicators for keyboard navigation\n- Use semantic HTML form elements\n- Ensure sufficient color contrast for error messages\n\nUser Feedback:\n- Display success message after successful submission\n- Show error state if submission fails (network error, server error)\n- Disable submit button and show loading state during submission\n- Clear form after successful submission or provide option to submit another\n- Make success/error messages screen reader accessible\n\nEdge Cases to Consider:\n- Handle special characters in text inputs\n- Prevent double-submission with disabled button state\n- Handle network timeout scenarios\n- Validate data length limits to prevent overflow\n- Consider GDPR/privacy notice if collecting personal data",
+      "timestamp": "2026-01-16T23:04:21.996Z",
+      "source": "enhance",
+      "enhancementMode": "improve"
+    }
+  ],
+  "branchName": "master",
+  "startedAt": "2026-01-16T23:23:26.658Z",
+  "justFinishedAt": "2026-01-16T23:29:55.031Z"
+}

@@ -1,0 +1,31 @@
+{
+  "category": "Uncategorized",
+  "description": "significantly reduce the pricing throughout the app. I'm new to this and will need to be affordable to get customers.",
+  "title": "Reduce app pricing for affordability",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "waiting_approval",
+  "id": "feature-1768611203692-wm4sr1r00",
+  "descriptionHistory": [
+    {
+      "description": "significantly reduce the pricing throughout the app. I'm new to this and will need to be affordable to get customers.",
+      "timestamp": "2026-01-17T00:53:23.814Z",
+      "source": "initial"
+    }
+  ],
+  "branchName": "master",
+  "startedAt": "2026-01-17T00:58:00.602Z",
+  "updatedAt": "2026-01-17T01:02:12.762Z",
+  "justFinishedAt": "2026-01-17T01:02:12.762Z"
+}

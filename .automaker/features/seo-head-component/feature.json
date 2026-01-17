@@ -1,0 +1,37 @@
+{
+  "id": "seo-head-component",
+  "category": "Core",
+  "title": "SEO Head Component",
+  "description": "Create Reusable SEO Head Component\n\nBuild a centralized, reusable SEO component that manages all meta tags, structured data, and SEO-related head elements across the application to ensure consistent search engine optimization and social media sharing functionality.\n\nRequirements:\n- Create a single SEO component that accepts props for all SEO-related metadata\n- Support standard meta tags (title, description, keywords, robots)\n- Implement Open Graph tags for Facebook and LinkedIn sharing (og:title, og:description, og:image, og:url, og:type)\n- Implement Twitter Card tags (twitter:card, twitter:title, twitter:description, twitter:image)\n- Support canonical URL configuration to prevent duplicate content issues\n- Add structured data (JSON-LD) support for common schema types (Article, Organization, Product, BreadcrumbList)\n- Provide sensible default values that can be overridden per-page\n- Support dynamic title templates (e.g., \"Page Title | Site Name\")\n- Include viewport and charset meta tags\n- Support language and locale configuration (hreflang, og:locale)\n- Allow custom additional meta tags through a flexible prop\n- Ensure proper tag ordering and duplicate prevention\n- Make all image URLs absolute for social media crawlers\n- Validate required props and provide helpful error messages\n- Add TypeScript types or PropTypes for type safety\n- Create comprehensive documentation with usage examples\n- Test rendering in various social media debuggers (Facebook, Twitter, LinkedIn)\n\nEdge Cases to Consider:\n- Pages without images (provide default fallback)\n- Very long titles or descriptions (truncate appropriately)\n- Special characters in meta content (proper escaping)\n- Multiple instances of the component on one page (warn or merge)\n- Missing or invalid structured data schemas",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-16T22:50:41.429Z",
+  "updatedAt": "2026-01-16T23:15:42.092Z",
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "current",
+  "descriptionHistory": [
+    {
+      "description": "Create reusable SEO Head component that handles meta tags (title, description, Open Graph, Twitter cards), canonical URLs, and structured data. This component will be used across all pages to ensure consistent and optimized SEO metadata.",
+      "timestamp": "2026-01-16T22:59:55.219Z",
+      "source": "initial"
+    },
+    {
+      "description": "Create Reusable SEO Head Component\n\nBuild a centralized, reusable SEO component that manages all meta tags, structured data, and SEO-related head elements across the application to ensure consistent search engine optimization and social media sharing functionality.\n\nRequirements:\n- Create a single SEO component that accepts props for all SEO-related metadata\n- Support standard meta tags (title, description, keywords, robots)\n- Implement Open Graph tags for Facebook and LinkedIn sharing (og:title, og:description, og:image, og:url, og:type)\n- Implement Twitter Card tags (twitter:card, twitter:title, twitter:description, twitter:image)\n- Support canonical URL configuration to prevent duplicate content issues\n- Add structured data (JSON-LD) support for common schema types (Article, Organization, Product, BreadcrumbList)\n- Provide sensible default values that can be overridden per-page\n- Support dynamic title templates (e.g., \"Page Title | Site Name\")\n- Include viewport and charset meta tags\n- Support language and locale configuration (hreflang, og:locale)\n- Allow custom additional meta tags through a flexible prop\n- Ensure proper tag ordering and duplicate prevention\n- Make all image URLs absolute for social media crawlers\n- Validate required props and provide helpful error messages\n- Add TypeScript types or PropTypes for type safety\n- Create comprehensive documentation with usage examples\n- Test rendering in various social media debuggers (Facebook, Twitter, LinkedIn)\n\nEdge Cases to Consider:\n- Pages without images (provide default fallback)\n- Very long titles or descriptions (truncate appropriately)\n- Special characters in meta content (proper escaping)\n- Multiple instances of the component on one page (warn or merge)\n- Missing or invalid structured data schemas",
+      "timestamp": "2026-01-16T22:59:55.219Z",
+      "source": "enhance",
+      "enhancementMode": "improve"
+    }
+  ],
+  "branchName": "master",
+  "startedAt": "2026-01-16T23:09:36.580Z",
+  "justFinishedAt": "2026-01-16T23:15:42.092Z"
+}

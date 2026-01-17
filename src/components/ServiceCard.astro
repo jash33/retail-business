@@ -1,0 +1,244 @@
+---
+/**
+ * ServiceCard Component
+ * A card component for displaying a single service offering with icon,
+ * title, description, and optional call-to-action.
+ *
+ * Features:
+ * - Icon/visual element display
+ * - Clear service title
+ * - Brief description (2-3 sentences)
+ * - Optional 'Learn More' CTA link/button
+ * - Hover animations for enhanced interactivity
+ * - Accessible with proper heading hierarchy
+ * - Touch-friendly target sizes on mobile
+ *
+ * @example Basic usage
+ * ```astro
+ * <ServiceCard
+ *   id="web-design"
+ *   title="Website Design"
+ *   description="Custom, responsive websites tailored to your business."
+ * />
+ * ```
+ *
+ * @example With icon and CTA
+ * ```astro
+ * <ServiceCard
+ *   id="web-design"
+ *   title="Website Design"
+ *   description="Custom, responsive websites tailored to your business."
+ *   icon="<svg>...</svg>"
+ *   cta={{ text: 'Learn More', href: '/services/web-design' }}
+ * />
+ * ```
+ */
+
+import type { ServiceCardProps } from '../types/service';
+import Button from './Button.astro';
+
+interface Props extends ServiceCardProps {}
+
+const {
+  id,
+  title,
+  description,
+  icon,
+  cta,
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const cardClasses = [
+  'service-card',
+  className,
+].filter(Boolean).join(' ');
+---
+
+<article class={cardClasses} id={`service-${id}`}>
+  {icon && (
+    <div class="service-card__icon" aria-hidden="true">
+      <Fragment set:html={icon} />
+    </div>
+  )}
+
+  <div class="service-card__content">
+    <h3 class="service-card__title">{title}</h3>
+    <p class="service-card__description">{description}</p>
+  </div>
+
+  {cta && (
+    <div class="service-card__footer">
+      <Button
+        text={cta.text}
+        href={cta.href}
+        variant="secondary"
+        size="small"
+        openInNewTab={cta.openInNewTab}
+        class="service-card__cta"
+      />
+    </div>
+  )}
+</article>
+
+<style>
+  /* =================================================================
+   * SERVICE CARD COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .service-card {
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+
+    /* Box model */
+    padding: var(--spacing-6);
+
+    /* Visual */
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+
+    /* Animation */
+    transition:
+      box-shadow var(--duration-200) var(--ease-in-out),
+      transform var(--duration-200) var(--ease-in-out),
+      border-color var(--duration-200) var(--ease-in-out);
+  }
+
+  .service-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    border-color: var(--color-primary-200);
+  }
+
+  /* Icon Container */
+  .service-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-14);
+    height: var(--spacing-14);
+    background-color: var(--color-primary-50);
+    border-radius: var(--radius-lg);
+    color: var(--color-primary);
+    transition:
+      background-color var(--duration-200) var(--ease-in-out),
+      transform var(--duration-200) var(--ease-in-out);
+  }
+
+  .service-card:hover .service-card__icon {
+    background-color: var(--color-primary-100);
+    transform: scale(1.05);
+  }
+
+  .service-card__icon :global(svg) {
+    width: var(--spacing-7);
+    height: var(--spacing-7);
+  }
+
+  /* Content Area */
+  .service-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    flex: 1;
+  }
+
+  .service-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .service-card__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  /* Footer with CTA */
+  .service-card__footer {
+    margin-top: auto;
+    padding-top: var(--spacing-4);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * =================================================================
+   */
+
+  /* Tablet and up (768px) */
+  @media screen and (min-width: 768px) {
+    .service-card {
+      padding: var(--spacing-8);
+      gap: var(--spacing-5);
+    }
+
+    .service-card__icon {
+      width: var(--spacing-16);
+      height: var(--spacing-16);
+    }
+
+    .service-card__icon :global(svg) {
+      width: var(--spacing-8);
+      height: var(--spacing-8);
+    }
+
+    .service-card__title {
+      font-size: var(--font-size-2xl);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * =================================================================
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .service-card,
+    .service-card__icon {
+      transition: none;
+    }
+
+    .service-card:hover {
+      transform: none;
+    }
+
+    .service-card:hover .service-card__icon {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+  @media print {
+    .service-card {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .service-card:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .service-card__footer {
+      display: none;
+    }
+  }
+</style>

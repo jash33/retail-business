@@ -1,0 +1,41 @@
+{
+  "id": "services-pricing-page",
+  "category": "UI",
+  "title": "Services & Pricing Page",
+  "description": "Build Comprehensive Services and Pricing Page\n\nCreate a dedicated services page that clearly communicates available service tiers, pricing, and the client engagement process through an organized, card-based layout.\n\nRequirements:\n\nHero Section:\n- Create compelling headline that communicates value proposition\n- Include brief overview of services offered\n- Add supporting imagery or visual elements\n- Ensure responsive design across all device sizes\n\nPricing Tier Cards:\n- Design 2-3 distinct pricing tier cards with visual hierarchy\n- Starter tier: approximately $800 (define specific deliverables)\n- Professional tier: approximately $1,500 (define specific deliverables)\n- Premium tier: $2,500+ (define specific deliverables)\n- Highlight recommended or most popular tier\n- Include clear CTA buttons for each tier\n\nWhat's Included Checklists:\n- Create itemized checklist for each pricing tier\n- Use checkmarks or icons for visual clarity\n- Clearly differentiate features between tiers\n- Show what additional features higher tiers include\n\nAdd-ons Pricing Table:\n- Design structured table listing optional add-on services\n- Include clear pricing for each add-on\n- Provide brief description of what each add-on includes\n- Make it clear which tiers can access which add-ons\n\nProcess Timeline:\n- Visualize typical project workflow from start to finish\n- Define key phases (e.g., Discovery, Design, Development, Launch)\n- Include approximate timeframes for each phase\n- Set clear expectations for client involvement\n\nDesign Specifications:\n- Use consistent card-based layout throughout the page\n- Maintain pricing transparency with no hidden costs\n- Ensure strong visual hierarchy and readability\n- Apply brand colors and typography consistently\n- Optimize for mobile, tablet, and desktop viewports\n\nEdge Cases to Consider:\n- How to handle custom pricing requests\n- Display of seasonal promotions or discounts\n- Handling of \"Contact for pricing\" scenarios in Premium tier\n- Currency display and international pricing if applicable",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "complex",
+  "dependencies": [
+    "seo-head-component",
+    "cta-button-component",
+    "header-navigation",
+    "footer-component"
+  ],
+  "createdAt": "2026-01-16T22:50:41.439Z",
+  "updatedAt": "2026-01-16T23:45:55.715Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "current",
+  "descriptionHistory": [
+    {
+      "description": "Build dedicated services page with hero section, 2-3 pricing tier cards (Starter ~$800, Professional ~$1,500, Premium $2,500+), What's Included checklists, add-ons pricing table, and process timeline. Uses card-based layout with clear pricing transparency.",
+      "timestamp": "2026-01-16T23:05:04.399Z",
+      "source": "initial"
+    },
+    {
+      "description": "Build Comprehensive Services and Pricing Page\n\nCreate a dedicated services page that clearly communicates available service tiers, pricing, and the client engagement process through an organized, card-based layout.\n\nRequirements:\n\nHero Section:\n- Create compelling headline that communicates value proposition\n- Include brief overview of services offered\n- Add supporting imagery or visual elements\n- Ensure responsive design across all device sizes\n\nPricing Tier Cards:\n- Design 2-3 distinct pricing tier cards with visual hierarchy\n- Starter tier: approximately $800 (define specific deliverables)\n- Professional tier: approximately $1,500 (define specific deliverables)\n- Premium tier: $2,500+ (define specific deliverables)\n- Highlight recommended or most popular tier\n- Include clear CTA buttons for each tier\n\nWhat's Included Checklists:\n- Create itemized checklist for each pricing tier\n- Use checkmarks or icons for visual clarity\n- Clearly differentiate features between tiers\n- Show what additional features higher tiers include\n\nAdd-ons Pricing Table:\n- Design structured table listing optional add-on services\n- Include clear pricing for each add-on\n- Provide brief description of what each add-on includes\n- Make it clear which tiers can access which add-ons\n\nProcess Timeline:\n- Visualize typical project workflow from start to finish\n- Define key phases (e.g., Discovery, Design, Development, Launch)\n- Include approximate timeframes for each phase\n- Set clear expectations for client involvement\n\nDesign Specifications:\n- Use consistent card-based layout throughout the page\n- Maintain pricing transparency with no hidden costs\n- Ensure strong visual hierarchy and readability\n- Apply brand colors and typography consistently\n- Optimize for mobile, tablet, and desktop viewports\n\nEdge Cases to Consider:\n- How to handle custom pricing requests\n- Display of seasonal promotions or discounts\n- Handling of \"Contact for pricing\" scenarios in Premium tier\n- Currency display and international pricing if applicable",
+      "timestamp": "2026-01-16T23:05:04.399Z",
+      "source": "enhance",
+      "enhancementMode": "improve"
+    }
+  ],
+  "branchName": "master",
+  "startedAt": "2026-01-16T23:38:50.578Z"
+}

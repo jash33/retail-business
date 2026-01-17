@@ -1,0 +1,690 @@
+---
+/**
+ * PortfolioSection Component
+ * A responsive section displaying portfolio projects in a dynamic grid layout
+ * with optional filtering by category or technology.
+ *
+ * Features:
+ * - Responsive grid: 1 column (mobile) -> 2 columns (tablet) -> 3-4 columns (desktop)
+ * - Configurable number of columns (3 or 4)
+ * - Section heading and subheading
+ * - Optional filtering by project category
+ * - Featured projects shown first (optional)
+ * - Consistent card sizing and spacing
+ * - Accessible with proper semantic structure
+ * - Loading/empty state handling
+ * - Smooth animations with reduced motion support
+ * - Keyboard navigation for filter buttons
+ *
+ * @example Basic usage
+ * ```astro
+ * <PortfolioSection
+ *   heading="Our Work"
+ *   projects={[
+ *     { id: 'p1', title: 'Project 1', description: '...', ... },
+ *     { id: 'p2', title: 'Project 2', description: '...', ... },
+ *   ]}
+ * />
+ * ```
+ *
+ * @example With filtering enabled
+ * ```astro
+ * <PortfolioSection
+ *   heading="Portfolio"
+ *   subheading="Browse our recent work"
+ *   projects={projects}
+ *   columns={3}
+ *   enableFiltering={true}
+ *   showFeaturedFirst={true}
+ * />
+ * ```
+ */
+
+import type { PortfolioSectionProps, Project, FilterOption } from '../types/portfolio';
+import { PROJECT_CATEGORIES } from '../types/portfolio';
+import ProjectCard from './ProjectCard.astro';
+
+interface Props extends PortfolioSectionProps {}
+
+const {
+  heading = 'Our Portfolio',
+  subheading,
+  projects = [],
+  columns = 3,
+  id = 'portfolio',
+  class: className = '',
+  enableFiltering = false,
+  initialFilter = 'all',
+  showFeaturedFirst = true,
+} = Astro.props;
+
+// Sort projects: featured first if enabled, then by date
+const sortedProjects = [...projects].sort((a, b) => {
+  if (showFeaturedFirst) {
+    if (a.featured && !b.featured) return -1;
+    if (!a.featured && b.featured) return 1;
+  }
+  // Then sort by completion date (most recent first)
+  if (a.completedDate && b.completedDate) {
+    return new Date(b.completedDate).getTime() - new Date(a.completedDate).getTime();
+  }
+  return 0;
+});
+
+// Calculate filter counts
+const filterCounts: Record<string, number> = { all: projects.length };
+projects.forEach(project => {
+  filterCounts[project.category] = (filterCounts[project.category] || 0) + 1;
+});
+
+// Get available filters based on projects
+const availableFilters: FilterOption[] = PROJECT_CATEGORIES
+  .filter(cat => cat.value === 'all' || filterCounts[cat.value] > 0)
+  .map(cat => ({
+    ...cat,
+    count: filterCounts[cat.value] || 0,
+  }));
+
+// Determine grid column class based on column count
+const gridClass = columns === 4 ? 'portfolio-section__grid--four-cols' : 'portfolio-section__grid--three-cols';
+
+// Build CSS classes
+const sectionClasses = [
+  'portfolio-section',
+  className,
+].filter(Boolean).join(' ');
+
+const gridClasses = [
+  'portfolio-section__grid',
+  gridClass,
+].filter(Boolean).join(' ');
+
+// Check if we have projects to display
+const hasProjects = projects && projects.length > 0;
+
+// Generate unique ID for accessibility
+const filterId = `${id}-filters`;
+const gridId = `${id}-grid`;
+---
+
+<section class={sectionClasses} id={id} aria-labelledby={`${id}-heading`}>
+  <div class="portfolio-section__container">
+    <!-- Section Header -->
+    <header class="portfolio-section__header">
+      <h2 id={`${id}-heading`} class="portfolio-section__heading">{heading}</h2>
+      {subheading && (
+        <p class="portfolio-section__subheading">{subheading}</p>
+      )}
+    </header>
+
+    <!-- Filter Controls -->
+    {enableFiltering && hasProjects && (
+      <nav class="portfolio-section__filters" aria-label="Filter projects by category">
+        <ul class="portfolio-section__filter-list" role="tablist" aria-label="Project categories" id={filterId}>
+          {availableFilters.map((filter, index) => (
+            <li class="portfolio-section__filter-item" role="presentation">
+              <button
+                type="button"
+                role="tab"
+                class={`portfolio-section__filter-btn ${filter.value === initialFilter ? 'portfolio-section__filter-btn--active' : ''}`}
+                data-filter={filter.value}
+                aria-selected={filter.value === initialFilter ? 'true' : 'false'}
+                aria-controls={gridId}
+                tabindex={filter.value === initialFilter ? '0' : '-1'}
+              >
+                {filter.label}
+                {filter.count !== undefined && (
+                  <span class="portfolio-section__filter-count" aria-label={`${filter.count} projects`}>
+                    {filter.count}
+                  </span>
+                )}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )}
+
+    <!-- Projects Grid -->
+    {hasProjects ? (
+      <div
+        class={gridClasses}
+        id={gridId}
+        role={enableFiltering ? 'tabpanel' : undefined}
+        aria-labelledby={enableFiltering ? filterId : undefined}
+        aria-live={enableFiltering ? 'polite' : undefined}
+      >
+        {sortedProjects.map((project) => (
+          <div
+            class="portfolio-section__item"
+            data-category={project.category}
+            data-visible={project.category === initialFilter || initialFilter === 'all' ? 'true' : 'false'}
+          >
+            <ProjectCard
+              id={project.id}
+              title={project.title}
+              description={project.description}
+              thumbnail={project.thumbnail}
+              technologies={project.technologies}
+              category={project.category}
+              links={project.links}
+              featured={project.featured}
+            />
+          </div>
+        ))}
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="portfolio-section__empty" role="status" aria-live="polite">
+        <div class="portfolio-section__empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+            <path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <p class="portfolio-section__empty-text">Portfolio projects coming soon.</p>
+      </div>
+    )}
+
+    <!-- No Results State (shown via JS when filtering) -->
+    <div class="portfolio-section__no-results" role="status" aria-live="polite" hidden>
+      <p class="portfolio-section__no-results-text">No projects match the selected filter.</p>
+      <button type="button" class="portfolio-section__reset-btn" data-reset-filter>
+        Show all projects
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Client-side filtering script -->
+{enableFiltering && hasProjects && (
+  <script>
+    // Filter functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      const section = document.getElementById('portfolio');
+      if (!section) return;
+
+      const filterBtns = section.querySelectorAll('[data-filter]');
+      const projectItems = section.querySelectorAll('[data-category]');
+      const noResultsEl = section.querySelector('.portfolio-section__no-results');
+      const resetBtn = section.querySelector('[data-reset-filter]');
+
+      let activeFilter = 'all';
+
+      function updateFilter(filter: string) {
+        activeFilter = filter;
+        let visibleCount = 0;
+
+        // Update button states
+        filterBtns.forEach((btn) => {
+          const isActive = btn.getAttribute('data-filter') === filter;
+          btn.classList.toggle('portfolio-section__filter-btn--active', isActive);
+          btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          btn.setAttribute('tabindex', isActive ? '0' : '-1');
+        });
+
+        // Update project visibility
+        projectItems.forEach((item) => {
+          const category = item.getAttribute('data-category');
+          const isVisible = filter === 'all' || category === filter;
+          item.setAttribute('data-visible', isVisible ? 'true' : 'false');
+          if (isVisible) visibleCount++;
+        });
+
+        // Show/hide no results message
+        if (noResultsEl) {
+          noResultsEl.hidden = visibleCount > 0;
+        }
+      }
+
+      // Filter button click handlers
+      filterBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const filter = btn.getAttribute('data-filter');
+          if (filter) updateFilter(filter);
+        });
+      });
+
+      // Reset button handler
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          updateFilter('all');
+        });
+      }
+
+      // Keyboard navigation for tabs
+      const filterList = section.querySelector('[role="tablist"]');
+      if (filterList) {
+        filterList.addEventListener('keydown', (e: KeyboardEvent) => {
+          const buttons = Array.from(filterBtns) as HTMLElement[];
+          const currentIndex = buttons.findIndex(btn => btn.getAttribute('aria-selected') === 'true');
+          let newIndex = currentIndex;
+
+          switch (e.key) {
+            case 'ArrowRight':
+            case 'ArrowDown':
+              e.preventDefault();
+              newIndex = (currentIndex + 1) % buttons.length;
+              break;
+            case 'ArrowLeft':
+            case 'ArrowUp':
+              e.preventDefault();
+              newIndex = (currentIndex - 1 + buttons.length) % buttons.length;
+              break;
+            case 'Home':
+              e.preventDefault();
+              newIndex = 0;
+              break;
+            case 'End':
+              e.preventDefault();
+              newIndex = buttons.length - 1;
+              break;
+            default:
+              return;
+          }
+
+          const newBtn = buttons[newIndex];
+          const filter = newBtn.getAttribute('data-filter');
+          if (filter) {
+            updateFilter(filter);
+            newBtn.focus();
+          }
+        });
+      }
+    });
+  </script>
+)}
+
+<style>
+  /* =================================================================
+   * PORTFOLIO SECTION COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .portfolio-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .portfolio-section__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * SECTION HEADER
+   * ================================================================= */
+  .portfolio-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .portfolio-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .portfolio-section__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * FILTER CONTROLS
+   * ================================================================= */
+  .portfolio-section__filters {
+    margin-bottom: var(--spacing-10);
+  }
+
+  .portfolio-section__filter-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .portfolio-section__filter-item {
+    margin: 0;
+    padding: 0;
+  }
+
+  .portfolio-section__filter-btn {
+    /* Reset */
+    appearance: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+
+    /* Layout */
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+
+    /* Sizing - touch-friendly */
+    padding: var(--spacing-2) var(--spacing-4);
+    min-height: 44px;
+
+    /* Typography */
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+
+    /* Visual */
+    color: var(--color-text-secondary);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+
+    /* Animation */
+    transition:
+      color var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .portfolio-section__filter-btn:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary-200);
+    background-color: var(--color-primary-50);
+  }
+
+  .portfolio-section__filter-btn--active {
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .portfolio-section__filter-btn--active:hover {
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+  }
+
+  .portfolio-section__filter-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .portfolio-section__filter-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--spacing-5);
+    height: var(--spacing-5);
+    padding: 0 var(--spacing-1);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-full);
+    transition: background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .portfolio-section__filter-btn--active .portfolio-section__filter-count {
+    background-color: var(--color-primary-700);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * PROJECTS GRID
+   * ================================================================= */
+  .portfolio-section__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* 3-Column Grid (default) */
+  .portfolio-section__grid--three-cols {
+    /* Mobile: 1 column (default above) */
+  }
+
+  /* 4-Column Grid */
+  .portfolio-section__grid--four-cols {
+    /* Mobile: 1 column (default above) */
+  }
+
+  /* Grid items with visibility control */
+  .portfolio-section__item {
+    transition: opacity var(--duration-200) var(--ease-out);
+  }
+
+  .portfolio-section__item[data-visible="false"] {
+    display: none;
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+  .portfolio-section__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-16) var(--spacing-8);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .portfolio-section__empty-icon {
+    width: var(--spacing-16);
+    height: var(--spacing-16);
+    color: var(--color-text-tertiary);
+  }
+
+  .portfolio-section__empty-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .portfolio-section__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* =================================================================
+   * NO RESULTS STATE
+   * ================================================================= */
+  .portfolio-section__no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-12) var(--spacing-8);
+    text-align: center;
+  }
+
+  .portfolio-section__no-results[hidden] {
+    display: none;
+  }
+
+  .portfolio-section__no-results-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .portfolio-section__reset-btn {
+    /* Reset */
+    appearance: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+
+    /* Typography */
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    text-decoration: underline;
+
+    /* Interaction */
+    padding: var(--spacing-2);
+    min-height: 44px;
+
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .portfolio-section__reset-btn:hover {
+    color: var(--color-primary-dark);
+  }
+
+  .portfolio-section__reset-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-radius: var(--radius-md);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Tablet (768px) - 2 columns */
+  @media screen and (min-width: 768px) {
+    .portfolio-section {
+      padding: var(--spacing-20) var(--spacing-8);
+    }
+
+    .portfolio-section__header {
+      margin-bottom: var(--spacing-12);
+    }
+
+    .portfolio-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+
+    .portfolio-section__filters {
+      margin-bottom: var(--spacing-12);
+    }
+
+    .portfolio-section__filter-list {
+      gap: var(--spacing-3);
+    }
+
+    .portfolio-section__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-8);
+    }
+  }
+
+  /* Desktop (1024px) - 3 columns */
+  @media screen and (min-width: 1024px) {
+    .portfolio-section__grid--three-cols {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .portfolio-section__grid--four-cols {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Large Desktop (1280px) - 3 or 4 columns depending on config */
+  @media screen and (min-width: 1280px) {
+    .portfolio-section {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+
+    .portfolio-section__grid--four-cols {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* =================================================================
+   * ANIMATION - Staggered card appearance
+   * ================================================================= */
+  .portfolio-section__grid > :global(*) {
+    animation: fadeSlideUp 0.5s ease-out backwards;
+  }
+
+  .portfolio-section__grid > :global(*:nth-child(1)) { animation-delay: 0.05s; }
+  .portfolio-section__grid > :global(*:nth-child(2)) { animation-delay: 0.1s; }
+  .portfolio-section__grid > :global(*:nth-child(3)) { animation-delay: 0.15s; }
+  .portfolio-section__grid > :global(*:nth-child(4)) { animation-delay: 0.2s; }
+  .portfolio-section__grid > :global(*:nth-child(5)) { animation-delay: 0.25s; }
+  .portfolio-section__grid > :global(*:nth-child(6)) { animation-delay: 0.3s; }
+  .portfolio-section__grid > :global(*:nth-child(7)) { animation-delay: 0.35s; }
+  .portfolio-section__grid > :global(*:nth-child(8)) { animation-delay: 0.4s; }
+  .portfolio-section__grid > :global(*:nth-child(9)) { animation-delay: 0.45s; }
+  .portfolio-section__grid > :global(*:nth-child(10)) { animation-delay: 0.5s; }
+  .portfolio-section__grid > :global(*:nth-child(11)) { animation-delay: 0.55s; }
+  .portfolio-section__grid > :global(*:nth-child(12)) { animation-delay: 0.6s; }
+
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .portfolio-section__grid > :global(*) {
+      animation: none;
+    }
+
+    .portfolio-section__filter-btn,
+    .portfolio-section__filter-count,
+    .portfolio-section__item,
+    .portfolio-section__reset-btn {
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .portfolio-section {
+      padding: var(--spacing-8) 0;
+      background-color: transparent;
+    }
+
+    .portfolio-section__filters {
+      display: none;
+    }
+
+    .portfolio-section__grid {
+      gap: var(--spacing-4);
+    }
+
+    .portfolio-section__grid > :global(*) {
+      animation: none;
+    }
+
+    .portfolio-section__item[data-visible="false"] {
+      display: block;
+    }
+
+    .portfolio-section__no-results {
+      display: none;
+    }
+  }
+</style>

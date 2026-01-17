@@ -1,0 +1,351 @@
+/**
+ * =================================================================
+ * HOUSTON WEB SERVICES - GLOBAL STYLES
+ * =================================================================
+ *
+ * This file imports the design system variables and applies global
+ * base styles to the application.
+ *
+ * =================================================================
+ */
+
+/* Import design system variables */
+@import './variables.css';
+
+/* Import performance utilities */
+@import './performance.css';
+
+/* =================================================================
+ * FONT IMPORTS
+ * =================================================================
+ * Import Inter and DM Sans from Google Fonts
+ * Inter: Body text font with excellent readability
+ * DM Sans: Heading font with geometric, modern style
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+/* =================================================================
+ * CSS RESET & BASE STYLES
+ * =================================================================
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* Prevent font size inflation on mobile */
+  -moz-text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+  /* Smooth scrolling for anchor links */
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  /* Apply design system typography */
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+
+  /* Improve text rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* =================================================================
+ * TYPOGRAPHY BASE STYLES
+ * =================================================================
+ */
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--font-size-5xl);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+h2 {
+  font-size: var(--font-size-4xl);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+h3 {
+  font-size: var(--font-size-3xl);
+}
+
+h4 {
+  font-size: var(--font-size-2xl);
+}
+
+h5 {
+  font-size: var(--font-size-xl);
+}
+
+h6 {
+  font-size: var(--font-size-lg);
+}
+
+/* Paragraphs */
+p {
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  text-wrap: pretty;
+}
+
+/* Small text */
+small {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}
+
+/* Lead/intro text */
+.lead {
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+}
+
+/* =================================================================
+ * LINKS
+ * =================================================================
+ */
+
+a {
+  color: var(--color-text-link);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  transition: color var(--duration-150) var(--ease-in-out);
+}
+
+a:hover {
+  color: var(--color-text-link-hover);
+}
+
+a:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--radius-sm);
+}
+
+/* =================================================================
+ * IMAGES & MEDIA
+ * =================================================================
+ */
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* =================================================================
+ * FORM ELEMENTS
+ * =================================================================
+ */
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* Remove default button styles on iOS */
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+}
+
+/* =================================================================
+ * LISTS
+ * =================================================================
+ */
+
+ul,
+ol {
+  list-style-position: inside;
+}
+
+/* Remove list styles when role="list" is set (for nav lists, etc.) */
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+}
+
+/* =================================================================
+ * CODE & PREFORMATTED TEXT
+ * =================================================================
+ */
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+
+code {
+  background-color: var(--color-background-muted);
+  padding: var(--spacing-0-5) var(--spacing-1);
+  border-radius: var(--radius-base);
+}
+
+pre {
+  background-color: var(--color-background-muted);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+/* =================================================================
+ * TABLES
+ * =================================================================
+ */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  font-weight: var(--font-weight-semibold);
+  text-align: left;
+}
+
+/* =================================================================
+ * SELECTION
+ * =================================================================
+ */
+
+::selection {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-900);
+}
+
+/* =================================================================
+ * FOCUS STYLES (Accessibility)
+ * =================================================================
+ */
+
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Remove focus outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* =================================================================
+ * REDUCED MOTION
+ * =================================================================
+ * Respect user preferences for reduced motion
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =================================================================
+ * UTILITY CLASSES
+ * =================================================================
+ */
+
+/* Screen reader only - visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Skip link for keyboard navigation */
+.skip-link {
+  position: absolute;
+  top: var(--spacing-4);
+  left: var(--spacing-4);
+  z-index: var(--z-max);
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--color-background);
+  border: var(--border-width-2) solid var(--color-primary);
+  border-radius: var(--radius-md);
+  transform: translateY(-200%);
+  transition: transform var(--duration-150) var(--ease-in-out);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* =================================================================
+ * LAYOUT HELPERS
+ * =================================================================
+ */
+
+/* Main content wrapper - ensures content doesn't start behind sticky header */
+#main-content {
+  /* Scroll margin for anchor links to account for sticky header */
+  scroll-margin-top: calc(44px + var(--spacing-8) + 1px);
+}
+
+/* Ensure anchored elements have proper scroll margin */
+[id]:target {
+  scroll-margin-top: calc(44px + var(--spacing-8) + 1px);
+}

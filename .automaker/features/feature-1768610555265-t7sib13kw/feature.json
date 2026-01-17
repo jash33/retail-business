@@ -1,0 +1,31 @@
+{
+  "category": "Uncategorized",
+  "description": "Add \"SEO Optimization\" Page. There's a link on the front page to this page, but it doesn't exist yet.",
+  "title": "Add SEO Optimization page with front page link",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "priority": 2,
+  "planningMode": "lite",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "waiting_approval",
+  "id": "feature-1768610555265-t7sib13kw",
+  "descriptionHistory": [
+    {
+      "description": "Add \"SEO Optimization\" Page. There's a link on the front page to this page, but it doesn't exist yet.",
+      "timestamp": "2026-01-17T00:42:35.389Z",
+      "source": "initial"
+    }
+  ],
+  "branchName": "master",
+  "startedAt": "2026-01-17T00:42:36.070Z",
+  "updatedAt": "2026-01-17T00:45:37.600Z",
+  "justFinishedAt": "2026-01-17T00:45:37.600Z"
+}

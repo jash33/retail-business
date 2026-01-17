@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "The budget dropdown on the contact page has way too large pricing options - it needs to be in line with the pricing in the rest of the application, and support (under 500) as a category.",
+  "title": "Standardize budget dropdown pricing options and add under 500 category",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "backlog",
+  "id": "feature-1768613060209-m1gtjzyin",
+  "descriptionHistory": [
+    {
+      "description": "The budget dropdown on the contact page has way too large pricing options - it needs to be in line with the pricing in the rest of the application, and support (under 500) as a category.",
+      "timestamp": "2026-01-17T01:24:20.340Z",
+      "source": "initial"
+    }
+  ],
+  "branchName": "master",
+  "startedAt": "2026-01-17T01:25:50.823Z",
+  "updatedAt": "2026-01-17T01:25:53.805Z"
+}

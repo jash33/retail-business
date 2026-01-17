@@ -1,0 +1,768 @@
+---
+/**
+ * Services & Pricing Page - Houston Web Services
+ * A comprehensive page showcasing service tiers, pricing, add-ons,
+ * and the project process for small businesses in  Houston.
+ *
+ * Sections:
+ * 1. Hero Section - Value proposition and overview
+ * 2. Pricing Tiers - Three distinct service packages
+ * 3. Add-ons Table - Optional additional services
+ * 4. Process Timeline - Project workflow visualization
+ * 5. FAQ/Custom Pricing - Contact for custom needs
+ */
+
+import Layout from '../layouts/Layout.astro';
+import HeroSection from '../components/HeroSection.astro';
+import PricingCard from '../components/PricingCard.astro';
+import AddonsTable from '../components/AddonsTable.astro';
+import ProcessTimeline from '../components/ProcessTimeline.astro';
+import Button from '../components/Button.astro';
+import type { PricingCardProps } from '../components/PricingCard.astro';
+import type { Addon } from '../components/AddonsTable.astro';
+import type { ProcessPhase } from '../components/ProcessTimeline.astro';
+
+// Pricing tier data
+const pricingTiers: PricingCardProps[] = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    price: '$499',
+    priceNote: 'One-time',
+    description: 'Perfect for small businesses just getting started online. A professional single-page website that establishes your digital presence.',
+    features: [
+      'Custom single-page design',
+      'Mobile responsive layout',
+      'Basic SEO optimization',
+      'Contact form integration',
+      'Social media links',
+      'Google Analytics setup',
+      '1 round of revisions',
+      '2-week delivery',
+    ],
+    excludedFeatures: [
+      'Multi-page website',
+      'Content management system',
+      'E-commerce functionality',
+    ],
+    cta: {
+      text: 'Get Started',
+      href: '/contact?tier=starter',
+    },
+  },
+  {
+    id: 'professional',
+    name: 'Professional',
+    price: '$899',
+    priceNote: 'One-time',
+    description: 'Ideal for growing businesses that need a complete website with multiple pages and enhanced features.',
+    features: [
+      'Up to 5 custom pages',
+      'Mobile responsive design',
+      'Advanced SEO optimization',
+      'Contact form with validation',
+      'Blog or news section',
+      'Content management system',
+      'Social media integration',
+      'Google Analytics & Search Console',
+      'Image optimization',
+      '2 rounds of revisions',
+      '3-week delivery',
+    ],
+    excludedFeatures: [
+      'E-commerce functionality',
+      'Custom animations',
+    ],
+    cta: {
+      text: 'Choose Professional',
+      href: '/contact?tier=professional',
+    },
+    isPopular: true,
+    popularLabel: 'Most Popular',
+  },
+  {
+    id: 'premium',
+    name: 'Premium',
+    price: '$1,499+',
+    priceNote: 'Starting at',
+    description: 'For established businesses requiring advanced functionality, e-commerce capabilities, or custom solutions.',
+    features: [
+      'Unlimited custom pages',
+      'Premium responsive design',
+      'Comprehensive SEO strategy',
+      'E-commerce integration',
+      'Custom animations & interactions',
+      'Advanced content management',
+      'Blog with categories & tags',
+      'Newsletter integration',
+      'Performance optimization',
+      'Security hardening',
+      'Priority support',
+      '3 rounds of revisions',
+      '4-6 week delivery',
+    ],
+    cta: {
+      text: 'Contact for Quote',
+      href: '/contact?tier=premium',
+    },
+  },
+];
+
+// Add-on services data
+const addons: Addon[] = [
+  {
+    name: 'Monthly Maintenance',
+    price: '$59/mo',
+    description: 'Regular updates, security patches, backups, and performance monitoring to keep your site running smoothly.',
+    note: 'Popular',
+  },
+  {
+    name: 'Logo Design',
+    price: '$199',
+    description: 'Professional logo design with 3 initial concepts, 2 revision rounds, and final files in multiple formats.',
+  },
+  {
+    name: 'Copywriting',
+    price: '$99/page',
+    description: 'Professional SEO-optimized content writing for your website pages, tailored to your brand voice.',
+  },
+  {
+    name: 'Photography',
+    price: '$179',
+    description: 'Professional product or business photography session with 10 edited high-resolution images.',
+  },
+  {
+    name: 'Domain & Hosting Setup',
+    price: '$49',
+    description: 'Domain registration assistance and hosting configuration for the first year of your website.',
+  },
+  {
+    name: 'SSL Certificate',
+    price: '$35/yr',
+    description: 'Secure your website with HTTPS encryption, essential for customer trust and SEO rankings.',
+  },
+  {
+    name: 'Additional Pages',
+    price: '$69/page',
+    description: 'Add extra pages to your website package beyond the included amount.',
+  },
+  {
+    name: 'Rush Delivery',
+    price: '+50%',
+    description: 'Expedite your project timeline by 50% for urgent business needs.',
+    note: 'Limited',
+  },
+];
+
+// Process timeline phases
+const processPhases: ProcessPhase[] = [
+  {
+    name: 'Discovery',
+    description: 'We start with a free consultation to understand your business, goals, and target audience. We\'ll discuss your vision, review competitor websites, and define the project scope.',
+    duration: '1-2 days',
+    clientInvolvement: 'High',
+  },
+  {
+    name: 'Design',
+    description: 'Our designers create wireframes and visual mockups for your approval. You\'ll see your website taking shape and provide feedback on layouts, colors, and overall look.',
+    duration: '3-5 days',
+    clientInvolvement: 'Medium',
+  },
+  {
+    name: 'Development',
+    description: 'Once designs are approved, we build your website with clean, optimized code. We implement all features, ensure mobile responsiveness, and integrate necessary tools.',
+    duration: '1-2 weeks',
+    clientInvolvement: 'Low',
+  },
+  {
+    name: 'Review',
+    description: 'You\'ll test the website on a staging environment. We gather your feedback and make revisions to ensure everything meets your expectations before launch.',
+    duration: '2-3 days',
+    clientInvolvement: 'High',
+  },
+  {
+    name: 'Launch',
+    description: 'After final approval, we deploy your website to your domain, configure DNS settings, and perform final testing. Your new website is now live!',
+    duration: '1 day',
+    clientInvolvement: 'Low',
+  },
+  {
+    name: 'Support',
+    description: 'We provide 30 days of complimentary support after launch for any questions or minor adjustments. Optional ongoing maintenance plans available.',
+    duration: 'Ongoing',
+    clientInvolvement: 'Low',
+  },
+];
+---
+
+<Layout
+  title="Services & Pricing"
+  description="Professional web design and development services for small businesses in  Houston. Choose from our Starter, Professional, or Premium packages. Transparent pricing with no hidden costs."
+  openGraph={{
+    type: 'website',
+  }}
+>
+  <main>
+    <!-- Hero Section -->
+    <HeroSection
+      id="services-hero"
+      headline="Web Solutions That Grow With Your Business"
+      valueProposition="Transparent pricing, no hidden costs"
+      subheadline="From simple single-page sites to full-featured e-commerce platforms, we offer flexible packages designed for Houston small businesses at every stage of growth."
+      primaryCTA={{
+        text: "View Pricing",
+        href: "#pricing",
+      }}
+      secondaryCTA={{
+        text: "Our Process",
+        href: "#process",
+      }}
+    />
+
+    <!-- Services Overview Section -->
+    <section class="services-overview" aria-labelledby="services-overview-heading">
+      <div class="services-overview__container">
+        <header class="services-overview__header">
+          <h2 id="services-overview-heading" class="services-overview__heading">
+            What We Offer
+          </h2>
+          <p class="services-overview__description">
+            We specialize in creating custom websites for small businesses in the Energy Corridor, Katy, and Memorial areas. Every project includes personalized service, modern design, and code built to last.
+          </p>
+        </header>
+
+        <div class="services-overview__features">
+          <div class="feature-item">
+            <div class="feature-item__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            </div>
+            <h3 class="feature-item__title">Custom Design</h3>
+            <p class="feature-item__description">No templates. Every website is designed specifically for your brand and business goals.</p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-item__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/>
+              </svg>
+            </div>
+            <h3 class="feature-item__title">Mobile First</h3>
+            <p class="feature-item__description">Every site looks perfect on phones, tablets, and desktops. Over 60% of web traffic is mobile.</p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-item__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+            </div>
+            <h3 class="feature-item__title">SEO Optimized</h3>
+            <p class="feature-item__description">Built-in search engine optimization to help your business get found by local customers.</p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-item__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+              </svg>
+            </div>
+            <h3 class="feature-item__title">Secure & Fast</h3>
+            <p class="feature-item__description">Modern, secure code with optimized performance. Your site will be fast and protected.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing-section" aria-labelledby="pricing-heading">
+      <div class="pricing-section__container">
+        <header class="pricing-section__header">
+          <h2 id="pricing-heading" class="pricing-section__heading">
+            Choose Your Package
+          </h2>
+          <p class="pricing-section__description">
+            Select the package that best fits your business needs. All packages include our quality guarantee and dedicated support.
+          </p>
+        </header>
+
+        <div class="pricing-section__grid">
+          {pricingTiers.map((tier) => (
+            <PricingCard {...tier} />
+          ))}
+        </div>
+
+        <div class="pricing-section__note">
+          <p>
+            <strong>Need something custom?</strong> We also offer tailored solutions for unique business requirements.
+            <a href="/contact?inquiry=custom">Contact us</a> for a personalized quote.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Add-ons Section -->
+    <section id="addons" class="addons-section-wrapper" aria-labelledby="addons-heading">
+      <div class="addons-section-wrapper__container">
+        <AddonsTable
+          addons={addons}
+          heading="Enhance Your Package"
+          subheading="Add these optional services to any package for a complete solution tailored to your needs."
+        />
+      </div>
+    </section>
+
+    <!-- Process Timeline Section -->
+    <section id="process" class="process-section-wrapper" aria-labelledby="process-heading">
+      <div class="process-section-wrapper__container">
+        <ProcessTimeline
+          phases={processPhases}
+          heading="How We Work"
+          subheading="From initial consultation to launch and beyond, here's what you can expect when working with us."
+        />
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" aria-labelledby="cta-heading">
+      <div class="cta-section__container">
+        <div class="cta-section__content">
+          <h2 id="cta-heading" class="cta-section__heading">
+            Ready to Get Started?
+          </h2>
+          <p class="cta-section__description">
+            Let's discuss your project and find the perfect solution for your business. Schedule a free consultation today.
+          </p>
+          <div class="cta-section__buttons">
+            <Button
+              text="Get Your Free Consultation"
+              href="/contact"
+              variant="primary"
+              size="large"
+            />
+            <Button
+              text="Call (713) 555-0123"
+              href="tel:+17135550123"
+              variant="secondary"
+              size="large"
+            />
+          </div>
+          <p class="cta-section__reassurance">
+            No obligation. No pressure. Just a friendly conversation about your goals.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * SERVICES PAGE STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention
+   */
+
+  /* =================================================================
+   * SERVICES OVERVIEW SECTION
+   * ================================================================= */
+
+  .services-overview {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .services-overview__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  .services-overview__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .services-overview__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .services-overview__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    max-width: 65ch;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .services-overview__features {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  .feature-item {
+    background-color: var(--color-background-elevated);
+    padding: var(--spacing-6);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border);
+    text-align: center;
+    transition:
+      box-shadow var(--duration-200) var(--ease-in-out),
+      transform var(--duration-200) var(--ease-in-out);
+  }
+
+  .feature-item:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .feature-item__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-14);
+    height: var(--spacing-14);
+    margin: 0 auto var(--spacing-4);
+    background-color: var(--color-primary-50);
+    border-radius: var(--radius-lg);
+    color: var(--color-primary);
+  }
+
+  .feature-item__icon svg {
+    width: var(--spacing-7);
+    height: var(--spacing-7);
+  }
+
+  .feature-item__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .feature-item__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * PRICING SECTION
+   * ================================================================= */
+
+  .pricing-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .pricing-section__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  .pricing-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .pricing-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .pricing-section__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    max-width: 55ch;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .pricing-section__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-8);
+    margin-bottom: var(--spacing-10);
+  }
+
+  .pricing-section__note {
+    text-align: center;
+    padding: var(--spacing-6);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border);
+  }
+
+  .pricing-section__note p {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .pricing-section__note strong {
+    color: var(--color-text-primary);
+  }
+
+  .pricing-section__note a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .pricing-section__note a:hover {
+    color: var(--color-primary-hover);
+  }
+
+  /* =================================================================
+   * ADD-ONS SECTION
+   * ================================================================= */
+
+  .addons-section-wrapper {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .addons-section-wrapper__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * PROCESS SECTION
+   * ================================================================= */
+
+  .process-section-wrapper {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .process-section-wrapper__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * CTA SECTION
+   * ================================================================= */
+
+  .cta-section {
+    padding: var(--spacing-20) var(--spacing-4);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-700) 50%,
+      var(--color-primary-800) 100%
+    );
+  }
+
+  .cta-section__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .cta-section__content {
+    text-align: center;
+  }
+
+  .cta-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-inverse);
+    margin: 0 0 var(--spacing-4) 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .cta-section__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-primary-100);
+    max-width: 50ch;
+    margin: 0 auto var(--spacing-8);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .cta-section__buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+  }
+
+  .cta-section :global(.btn--primary) {
+    background-color: var(--color-background);
+    color: var(--color-primary-700);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .cta-section :global(.btn--primary:hover:not(.btn--disabled)) {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-800);
+    transform: translateY(-2px);
+  }
+
+  .cta-section :global(.btn--secondary) {
+    background-color: transparent;
+    color: var(--color-text-inverse);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .cta-section :global(.btn--secondary:hover:not(.btn--disabled)) {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+
+  .cta-section__reassurance {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-primary-200);
+    margin: 0;
+    font-style: italic;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Tablet (640px+)
+   * ================================================================= */
+
+  @media screen and (min-width: 640px) {
+    .services-overview__features {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cta-section__buttons {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Tablet (768px+)
+   * ================================================================= */
+
+  @media screen and (min-width: 768px) {
+    .services-overview {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .services-overview__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    .pricing-section {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .pricing-section__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    .pricing-section__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .addons-section-wrapper {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .process-section-wrapper {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .cta-section {
+      padding: var(--spacing-24) var(--spacing-6);
+    }
+
+    .cta-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Desktop (1024px+)
+   * ================================================================= */
+
+  @media screen and (min-width: 1024px) {
+    .services-overview__features {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .pricing-section__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Make the popular card slightly larger */
+    .pricing-section__grid :global(.pricing-card--popular) {
+      transform: scale(1.05);
+      z-index: 1;
+    }
+
+    .pricing-section__grid :global(.pricing-card--popular:hover) {
+      transform: scale(1.08) translateY(-4px);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .feature-item {
+      transition: none;
+    }
+
+    .feature-item:hover {
+      transform: none;
+    }
+
+    .pricing-section__grid :global(.pricing-card--popular),
+    .pricing-section__grid :global(.pricing-card--popular:hover) {
+      transform: none;
+    }
+
+    .cta-section :global(.btn:hover) {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+
+  @media print {
+    .services-overview,
+    .pricing-section,
+    .addons-section-wrapper,
+    .process-section-wrapper {
+      padding: var(--spacing-8) 0;
+    }
+
+    .cta-section {
+      display: none;
+    }
+
+    .feature-item,
+    .pricing-section__grid :global(.pricing-card--popular) {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+</style>

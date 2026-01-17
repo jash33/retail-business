@@ -1,0 +1,31 @@
+{
+  "category": "Uncategorized",
+  "description": "Some kind of indicator around the cookie warning. it blends in too much with the bacckground right now.",
+  "title": "Improve cookie warning visibility with contrast indicator",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "waiting_approval",
+  "id": "feature-1768610075681-7ontivdwk",
+  "descriptionHistory": [
+    {
+      "description": "Some kind of indicator around the cookie warning. it blends in too much with the bacckground right now.",
+      "timestamp": "2026-01-17T00:34:35.797Z",
+      "source": "initial"
+    }
+  ],
+  "branchName": "master",
+  "startedAt": "2026-01-17T00:34:36.091Z",
+  "updatedAt": "2026-01-17T00:36:36.359Z",
+  "justFinishedAt": "2026-01-17T00:36:36.359Z"
+}

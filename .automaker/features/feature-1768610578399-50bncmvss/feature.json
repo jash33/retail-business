@@ -1,0 +1,31 @@
+{
+  "category": "Uncategorized",
+  "description": "Add \"Web Hosting\" Page. There's a link on the front page to this page, but it doesn't exist yet.",
+  "title": "Add Web Hosting Page",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "priority": 2,
+  "planningMode": "lite",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "waiting_approval",
+  "id": "feature-1768610578399-50bncmvss",
+  "descriptionHistory": [
+    {
+      "description": "Add \"Web Hosting\" Page. There's a link on the front page to this page, but it doesn't exist yet.",
+      "timestamp": "2026-01-17T00:42:58.515Z",
+      "source": "initial"
+    }
+  ],
+  "branchName": "master",
+  "startedAt": "2026-01-17T00:43:39.170Z",
+  "updatedAt": "2026-01-17T00:47:09.815Z",
+  "justFinishedAt": "2026-01-17T00:47:09.815Z"
+}

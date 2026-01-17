@@ -1,0 +1,1170 @@
+---
+/**
+ * Contact Form Component
+ * A fully accessible, validated contact form with spam prevention.
+ *
+ * Features:
+ * - Real-time client-side validation
+ * - Honeypot spam prevention
+ * - Time-based submission validation
+ * - WCAG 2.1 AA compliant accessibility
+ * - Loading and success/error states
+ * - Responsive design
+ *
+ * @example
+ * ```astro
+ * <ContactForm />
+ * ```
+ */
+
+import {
+  PROJECT_TYPE_OPTIONS,
+  BUDGET_RANGE_OPTIONS,
+  DEFAULT_VALIDATION_CONFIG,
+} from '../types/contact-form';
+
+const projectOptions = PROJECT_TYPE_OPTIONS;
+const budgetOptions = BUDGET_RANGE_OPTIONS;
+const config = DEFAULT_VALIDATION_CONFIG;
+---
+
+<section class="contact-form-section" aria-labelledby="contact-form-heading">
+  <div class="contact-form-container">
+    <div class="contact-form-header">
+      <h2 id="contact-form-heading" class="contact-form-title">Get in Touch</h2>
+      <p class="contact-form-description">
+        Ready to start your project? Fill out the form below and we'll get back to you within 24 hours.
+      </p>
+    </div>
+
+    <form
+      id="contact-form"
+      class="contact-form"
+      novalidate
+      aria-describedby="form-description"
+    >
+      <!-- Hidden field for spam prevention timing -->
+      <input type="hidden" id="form-start-time" name="formStartTime" value="" />
+
+      <!-- Honeypot field - hidden from real users -->
+      <div class="contact-form__honeypot" aria-hidden="true" tabindex="-1">
+        <label for="website-url">Website URL</label>
+        <input
+          type="text"
+          id="website-url"
+          name="websiteUrl"
+          autocomplete="off"
+          tabindex="-1"
+        />
+      </div>
+
+      <p id="form-description" class="sr-only">
+        Required fields are marked with an asterisk (*).
+      </p>
+
+      <!-- Name Field -->
+      <div class="contact-form__field">
+        <label for="name" class="contact-form__label">
+          Name <span class="contact-form__required" aria-label="required">*</span>
+        </label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          class="contact-form__input"
+          required
+          autocomplete="name"
+          maxlength={config.maxNameLength}
+          aria-describedby="name-error"
+          aria-invalid="false"
+          placeholder="Your full name"
+        />
+        <span id="name-error" class="contact-form__error" role="alert" aria-live="polite"></span>
+      </div>
+
+      <!-- Email Field -->
+      <div class="contact-form__field">
+        <label for="email" class="contact-form__label">
+          Email <span class="contact-form__required" aria-label="required">*</span>
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="contact-form__input"
+          required
+          autocomplete="email"
+          maxlength={config.maxEmailLength}
+          aria-describedby="email-error"
+          aria-invalid="false"
+          placeholder="your@email.com"
+        />
+        <span id="email-error" class="contact-form__error" role="alert" aria-live="polite"></span>
+      </div>
+
+      <!-- Phone Field (Optional) -->
+      <div class="contact-form__field">
+        <label for="phone" class="contact-form__label">
+          Phone <span class="contact-form__optional">(optional)</span>
+        </label>
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          class="contact-form__input"
+          autocomplete="tel"
+          maxlength={config.maxPhoneLength}
+          aria-describedby="phone-hint phone-error"
+          aria-invalid="false"
+          placeholder="(123) 456-7890"
+        />
+        <span id="phone-hint" class="contact-form__hint">US format: (123) 456-7890</span>
+        <span id="phone-error" class="contact-form__error" role="alert" aria-live="polite"></span>
+      </div>
+
+      <!-- Business Name Field (Optional) -->
+      <div class="contact-form__field">
+        <label for="business-name" class="contact-form__label">
+          Business Name <span class="contact-form__optional">(optional)</span>
+        </label>
+        <input
+          type="text"
+          id="business-name"
+          name="businessName"
+          class="contact-form__input"
+          autocomplete="organization"
+          maxlength={config.maxBusinessNameLength}
+          aria-describedby="business-name-error"
+          aria-invalid="false"
+          placeholder="Your company or business name"
+        />
+        <span id="business-name-error" class="contact-form__error" role="alert" aria-live="polite"></span>
+      </div>
+
+      <!-- Project Type Dropdown -->
+      <div class="contact-form__field">
+        <label for="project-type" class="contact-form__label">
+          Project Type <span class="contact-form__required" aria-label="required">*</span>
+        </label>
+        <select
+          id="project-type"
+          name="projectType"
+          class="contact-form__select"
+          required
+          aria-describedby="project-type-error"
+          aria-invalid="false"
+        >
+          {projectOptions.map((option) => (
+            <option value={option.value} disabled={option.value === ''} selected={option.value === ''}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <span id="project-type-error" class="contact-form__error" role="alert" aria-live="polite"></span>
+      </div>
+
+      <!-- Budget Range Dropdown -->
+      <div class="contact-form__field">
+        <label for="budget-range" class="contact-form__label">
+          Budget Range <span class="contact-form__required" aria-label="required">*</span>
+        </label>
+        <select
+          id="budget-range"
+          name="budgetRange"
+          class="contact-form__select"
+          required
+          aria-describedby="budget-range-error"
+          aria-invalid="false"
+        >
+          {budgetOptions.map((option) => (
+            <option value={option.value} disabled={option.value === ''} selected={option.value === ''}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <span id="budget-range-error" class="contact-form__error" role="alert" aria-live="polite"></span>
+      </div>
+
+      <!-- Message Textarea -->
+      <div class="contact-form__field contact-form__field--full">
+        <label for="message" class="contact-form__label">
+          Message <span class="contact-form__required" aria-label="required">*</span>
+        </label>
+        <textarea
+          id="message"
+          name="message"
+          class="contact-form__textarea"
+          required
+          rows="5"
+          minlength={config.minMessageLength}
+          maxlength={config.maxMessageLength}
+          aria-describedby="message-hint message-error message-count"
+          aria-invalid="false"
+          placeholder="Tell us about your project, goals, and timeline..."
+        ></textarea>
+        <div class="contact-form__textarea-footer">
+          <span id="message-hint" class="contact-form__hint">
+            Minimum {config.minMessageLength} characters
+          </span>
+          <span id="message-count" class="contact-form__char-count" aria-live="polite">
+            <span class="contact-form__char-current">0</span>/<span class="contact-form__char-max">{config.maxMessageLength}</span>
+          </span>
+        </div>
+        <span id="message-error" class="contact-form__error" role="alert" aria-live="polite"></span>
+      </div>
+
+      <!-- Privacy Notice -->
+      <div class="contact-form__privacy">
+        <p>
+          By submitting this form, you agree to our
+          <a href="/privacy" class="contact-form__link">Privacy Policy</a>.
+          Your information will only be used to respond to your inquiry.
+        </p>
+      </div>
+
+      <!-- Form Error Message (general) -->
+      <div
+        id="form-error"
+        class="contact-form__message contact-form__message--error"
+        role="alert"
+        aria-live="assertive"
+        hidden
+      >
+        <svg class="contact-form__message-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+        </svg>
+        <span id="form-error-text">An error occurred. Please try again.</span>
+      </div>
+
+      <!-- Success Message -->
+      <div
+        id="form-success"
+        class="contact-form__message contact-form__message--success"
+        role="status"
+        aria-live="polite"
+        hidden
+      >
+        <svg class="contact-form__message-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+        </svg>
+        <div class="contact-form__success-content">
+          <strong>Thank you for your message!</strong>
+          <p>We'll get back to you within 24 hours.</p>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="contact-form__actions">
+        <button
+          type="submit"
+          id="submit-button"
+          class="contact-form__submit"
+          aria-describedby="submit-hint"
+        >
+          <span class="contact-form__submit-text">Send Message</span>
+          <span class="contact-form__submit-loading" aria-hidden="true">
+            <svg class="contact-form__spinner" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="31.4 31.4" />
+            </svg>
+            <span>Sending...</span>
+          </span>
+        </button>
+        <span id="submit-hint" class="sr-only">
+          Submitting will send your information to Houston Web Services
+        </span>
+      </div>
+    </form>
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * CONTACT FORM SECTION
+   * ================================================================= */
+  .contact-form-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .contact-form-container {
+    max-width: var(--container-3xl);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * HEADER
+   * ================================================================= */
+  .contact-form-header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .contact-form-title {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .contact-form-description {
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    max-width: 40rem;
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * FORM LAYOUT
+   * ================================================================= */
+  .contact-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+    background-color: var(--color-background);
+    padding: var(--spacing-8);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-lg);
+  }
+
+  @media (min-width: 768px) {
+    .contact-form {
+      grid-template-columns: 1fr 1fr;
+      padding: var(--spacing-10);
+    }
+  }
+
+  /* =================================================================
+   * HONEYPOT (SPAM PREVENTION)
+   * ================================================================= */
+  .contact-form__honeypot {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    opacity: 0;
+    pointer-events: none;
+    height: 0;
+    width: 0;
+    overflow: hidden;
+  }
+
+  /* =================================================================
+   * FORM FIELD
+   * ================================================================= */
+  .contact-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .contact-form__field--full {
+    grid-column: 1 / -1;
+  }
+
+  /* =================================================================
+   * LABEL
+   * ================================================================= */
+  .contact-form__label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  .contact-form__required {
+    color: var(--color-error);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .contact-form__optional {
+    color: var(--color-text-tertiary);
+    font-weight: var(--font-weight-normal);
+  }
+
+  /* =================================================================
+   * INPUT & SELECT BASE STYLES
+   * ================================================================= */
+  .contact-form__input,
+  .contact-form__select,
+  .contact-form__textarea {
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-base);
+    font-family: var(--font-body);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    border: var(--border-width-1) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition:
+      border-color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .contact-form__input::placeholder,
+  .contact-form__textarea::placeholder {
+    color: var(--color-text-placeholder);
+  }
+
+  /* Hover State */
+  .contact-form__input:hover:not(:focus):not([aria-invalid="true"]),
+  .contact-form__select:hover:not(:focus):not([aria-invalid="true"]),
+  .contact-form__textarea:hover:not(:focus):not([aria-invalid="true"]) {
+    border-color: var(--color-border-dark);
+  }
+
+  /* Focus State */
+  .contact-form__input:focus,
+  .contact-form__select:focus,
+  .contact-form__textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-primary-100);
+  }
+
+  /* Error State */
+  .contact-form__input[aria-invalid="true"],
+  .contact-form__select[aria-invalid="true"],
+  .contact-form__textarea[aria-invalid="true"] {
+    border-color: var(--color-error);
+    background-color: var(--color-error-light);
+  }
+
+  .contact-form__input[aria-invalid="true"]:focus,
+  .contact-form__select[aria-invalid="true"]:focus,
+  .contact-form__textarea[aria-invalid="true"]:focus {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-error-light);
+  }
+
+  /* Valid State */
+  .contact-form__input[data-valid="true"],
+  .contact-form__select[data-valid="true"],
+  .contact-form__textarea[data-valid="true"] {
+    border-color: var(--color-success);
+  }
+
+  /* =================================================================
+   * SELECT SPECIFIC STYLES
+   * ================================================================= */
+  .contact-form__select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right var(--spacing-3) center;
+    background-repeat: no-repeat;
+    background-size: 1.25rem;
+    padding-right: var(--spacing-10);
+    cursor: pointer;
+  }
+
+  /* =================================================================
+   * TEXTAREA SPECIFIC STYLES
+   * ================================================================= */
+  .contact-form__textarea {
+    min-height: 8rem;
+    resize: vertical;
+  }
+
+  .contact-form__textarea-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-4);
+  }
+
+  .contact-form__char-count {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .contact-form__char-count[data-over="true"] {
+    color: var(--color-error);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .contact-form__char-count[data-near="true"] {
+    color: var(--color-warning-dark);
+  }
+
+  /* =================================================================
+   * HINT TEXT
+   * ================================================================= */
+  .contact-form__hint {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  /* =================================================================
+   * ERROR MESSAGE
+   * ================================================================= */
+  .contact-form__error {
+    font-size: var(--font-size-sm);
+    color: var(--color-error-text);
+    min-height: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+
+  .contact-form__error:empty {
+    display: none;
+  }
+
+  .contact-form__error::before {
+    content: '';
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23991b1b'%3E%3Cpath fill-rule='evenodd' d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-size: contain;
+    flex-shrink: 0;
+  }
+
+  .contact-form__error:empty::before {
+    display: none;
+  }
+
+  /* =================================================================
+   * PRIVACY NOTICE
+   * ================================================================= */
+  .contact-form__privacy {
+    grid-column: 1 / -1;
+    padding: var(--spacing-4);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+  }
+
+  .contact-form__privacy p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    margin: 0;
+  }
+
+  .contact-form__link {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .contact-form__link:hover {
+    color: var(--color-primary-hover);
+  }
+
+  /* =================================================================
+   * FORM MESSAGES (SUCCESS/ERROR)
+   * ================================================================= */
+  .contact-form__message {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+  }
+
+  .contact-form__message[hidden] {
+    display: none;
+  }
+
+  .contact-form__message--success {
+    background-color: var(--color-success-light);
+    border: var(--border-width-1) solid var(--color-success-border);
+    color: var(--color-success-text);
+  }
+
+  .contact-form__message--error {
+    background-color: var(--color-error-light);
+    border: var(--border-width-1) solid var(--color-error-border);
+    color: var(--color-error-text);
+  }
+
+  .contact-form__message-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .contact-form__success-content p {
+    margin: var(--spacing-1) 0 0;
+    font-weight: var(--font-weight-normal);
+  }
+
+  /* =================================================================
+   * SUBMIT BUTTON
+   * ================================================================= */
+  .contact-form__actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+  }
+
+  .contact-form__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    min-width: 12rem;
+    padding: var(--spacing-3) var(--spacing-8);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .contact-form__submit:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .contact-form__submit:active:not(:disabled) {
+    background-color: var(--color-primary-active);
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .contact-form__submit:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 var(--focus-ring-offset) var(--color-background),
+      0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--color-primary-900);
+  }
+
+  .contact-form__submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .contact-form__submit-loading {
+    display: none;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  .contact-form__submit[data-loading="true"] .contact-form__submit-text {
+    display: none;
+  }
+
+  .contact-form__submit[data-loading="true"] .contact-form__submit-loading {
+    display: flex;
+  }
+
+  .contact-form__spinner {
+    width: 1.25rem;
+    height: 1.25rem;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* =================================================================
+   * SCREEN READER ONLY
+   * ================================================================= */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE ADJUSTMENTS
+   * ================================================================= */
+  @media (max-width: 767px) {
+    .contact-form-section {
+      padding: var(--spacing-10) var(--spacing-4);
+    }
+
+    .contact-form-title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .contact-form {
+      padding: var(--spacing-6);
+    }
+
+    .contact-form__submit {
+      width: 100%;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .contact-form__submit {
+      transition: none;
+    }
+
+    .contact-form__submit:hover:not(:disabled) {
+      transform: none;
+    }
+
+    .contact-form__spinner {
+      animation: none;
+    }
+
+    .contact-form__input,
+    .contact-form__select,
+    .contact-form__textarea {
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .contact-form__input,
+    .contact-form__select,
+    .contact-form__textarea {
+      border: 2px solid CanvasText;
+    }
+
+    .contact-form__input:focus,
+    .contact-form__select:focus,
+    .contact-form__textarea:focus {
+      outline: 3px solid Highlight;
+      outline-offset: 2px;
+    }
+
+    .contact-form__submit {
+      border: 2px solid currentColor;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Contact Form Client-Side Logic
+   * Handles validation, spam prevention, and form submission
+   */
+
+  // Import validation config constants
+  const VALIDATION_CONFIG = {
+    minMessageLength: 25,
+    maxMessageLength: 2000,
+    maxNameLength: 100,
+    maxBusinessNameLength: 150,
+    maxEmailLength: 254,
+    maxPhoneLength: 20,
+    minSubmitTime: 3000, // 3 seconds
+  };
+
+  // Regex patterns
+  const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  const US_PHONE_REGEX = /^(\+1\s?)?(\([0-9]{3}\)|[0-9]{3})[\s.\-]?[0-9]{3}[\s.\-]?[0-9]{4}$/;
+  const DANGEROUS_CONTENT_REGEX = /<script|<\/script|javascript:|on\w+\s*=/i;
+
+  // Form elements
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const formStartTimeInput = document.getElementById('form-start-time') as HTMLInputElement;
+  const honeypotInput = document.getElementById('website-url') as HTMLInputElement;
+  const submitButton = document.getElementById('submit-button') as HTMLButtonElement;
+  const formError = document.getElementById('form-error') as HTMLDivElement;
+  const formErrorText = document.getElementById('form-error-text') as HTMLSpanElement;
+  const formSuccess = document.getElementById('form-success') as HTMLDivElement;
+
+  // Field elements
+  const nameInput = document.getElementById('name') as HTMLInputElement;
+  const emailInput = document.getElementById('email') as HTMLInputElement;
+  const phoneInput = document.getElementById('phone') as HTMLInputElement;
+  const businessNameInput = document.getElementById('business-name') as HTMLInputElement;
+  const projectTypeSelect = document.getElementById('project-type') as HTMLSelectElement;
+  const budgetRangeSelect = document.getElementById('budget-range') as HTMLSelectElement;
+  const messageTextarea = document.getElementById('message') as HTMLTextAreaElement;
+  const charCountSpan = document.getElementById('message-count') as HTMLSpanElement;
+  const charCurrentSpan = charCountSpan?.querySelector('.contact-form__char-current') as HTMLSpanElement;
+
+  // Error elements
+  const errorElements: Record<string, HTMLSpanElement | null> = {
+    name: document.getElementById('name-error') as HTMLSpanElement,
+    email: document.getElementById('email-error') as HTMLSpanElement,
+    phone: document.getElementById('phone-error') as HTMLSpanElement,
+    businessName: document.getElementById('business-name-error') as HTMLSpanElement,
+    projectType: document.getElementById('project-type-error') as HTMLSpanElement,
+    budgetRange: document.getElementById('budget-range-error') as HTMLSpanElement,
+    message: document.getElementById('message-error') as HTMLSpanElement,
+  };
+
+  // Track form start time for spam prevention
+  let formStartTime: number;
+
+  // Initialize form
+  function initForm(): void {
+    formStartTime = Date.now();
+    formStartTimeInput.value = formStartTime.toString();
+
+    // Add event listeners for real-time validation
+    nameInput?.addEventListener('blur', () => validateField('name'));
+    nameInput?.addEventListener('input', () => clearFieldError('name'));
+
+    emailInput?.addEventListener('blur', () => validateField('email'));
+    emailInput?.addEventListener('input', () => clearFieldError('email'));
+
+    phoneInput?.addEventListener('blur', () => validateField('phone'));
+    phoneInput?.addEventListener('input', () => clearFieldError('phone'));
+
+    businessNameInput?.addEventListener('blur', () => validateField('businessName'));
+    businessNameInput?.addEventListener('input', () => clearFieldError('businessName'));
+
+    projectTypeSelect?.addEventListener('change', () => validateField('projectType'));
+    projectTypeSelect?.addEventListener('blur', () => validateField('projectType'));
+
+    budgetRangeSelect?.addEventListener('change', () => validateField('budgetRange'));
+    budgetRangeSelect?.addEventListener('blur', () => validateField('budgetRange'));
+
+    messageTextarea?.addEventListener('blur', () => validateField('message'));
+    messageTextarea?.addEventListener('input', () => {
+      clearFieldError('message');
+      updateCharCount();
+    });
+
+    // Form submission
+    form?.addEventListener('submit', handleSubmit);
+
+    // Initial char count
+    updateCharCount();
+  }
+
+  // Validation functions
+  function validateName(value: string): string | null {
+    const trimmed = value.trim();
+    if (!trimmed) return 'Name is required';
+    if (trimmed.length < 2) return 'Name must be at least 2 characters';
+    if (trimmed.length > VALIDATION_CONFIG.maxNameLength) {
+      return `Name must be less than ${VALIDATION_CONFIG.maxNameLength} characters`;
+    }
+    if (DANGEROUS_CONTENT_REGEX.test(trimmed)) return 'Name contains invalid characters';
+    return null;
+  }
+
+  function validateEmail(value: string): string | null {
+    const trimmed = value.trim();
+    if (!trimmed) return 'Email is required';
+    if (trimmed.length > VALIDATION_CONFIG.maxEmailLength) {
+      return `Email must be less than ${VALIDATION_CONFIG.maxEmailLength} characters`;
+    }
+    if (!EMAIL_REGEX.test(trimmed)) return 'Please enter a valid email address';
+    return null;
+  }
+
+  function validatePhone(value: string): string | null {
+    const trimmed = value.trim();
+    if (!trimmed) return null; // Optional field
+    if (trimmed.length > VALIDATION_CONFIG.maxPhoneLength) {
+      return `Phone must be less than ${VALIDATION_CONFIG.maxPhoneLength} characters`;
+    }
+    if (!US_PHONE_REGEX.test(trimmed)) return 'Please enter a valid US phone number';
+    return null;
+  }
+
+  function validateBusinessName(value: string): string | null {
+    const trimmed = value.trim();
+    if (!trimmed) return null; // Optional field
+    if (trimmed.length > VALIDATION_CONFIG.maxBusinessNameLength) {
+      return `Business name must be less than ${VALIDATION_CONFIG.maxBusinessNameLength} characters`;
+    }
+    if (DANGEROUS_CONTENT_REGEX.test(trimmed)) return 'Business name contains invalid characters';
+    return null;
+  }
+
+  function validateProjectType(value: string): string | null {
+    if (!value) return 'Please select a project type';
+    return null;
+  }
+
+  function validateBudgetRange(value: string): string | null {
+    if (!value) return 'Please select a budget range';
+    return null;
+  }
+
+  function validateMessage(value: string): string | null {
+    const trimmed = value.trim();
+    if (!trimmed) return 'Message is required';
+    if (trimmed.length < VALIDATION_CONFIG.minMessageLength) {
+      return `Message must be at least ${VALIDATION_CONFIG.minMessageLength} characters`;
+    }
+    if (trimmed.length > VALIDATION_CONFIG.maxMessageLength) {
+      return `Message must be less than ${VALIDATION_CONFIG.maxMessageLength} characters`;
+    }
+    if (DANGEROUS_CONTENT_REGEX.test(trimmed)) return 'Message contains invalid content';
+    return null;
+  }
+
+  // Validate a single field
+  function validateField(fieldName: string): boolean {
+    let error: string | null = null;
+    let inputElement: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null = null;
+
+    switch (fieldName) {
+      case 'name':
+        inputElement = nameInput;
+        error = validateName(nameInput?.value || '');
+        break;
+      case 'email':
+        inputElement = emailInput;
+        error = validateEmail(emailInput?.value || '');
+        break;
+      case 'phone':
+        inputElement = phoneInput;
+        error = validatePhone(phoneInput?.value || '');
+        break;
+      case 'businessName':
+        inputElement = businessNameInput;
+        error = validateBusinessName(businessNameInput?.value || '');
+        break;
+      case 'projectType':
+        inputElement = projectTypeSelect;
+        error = validateProjectType(projectTypeSelect?.value || '');
+        break;
+      case 'budgetRange':
+        inputElement = budgetRangeSelect;
+        error = validateBudgetRange(budgetRangeSelect?.value || '');
+        break;
+      case 'message':
+        inputElement = messageTextarea;
+        error = validateMessage(messageTextarea?.value || '');
+        break;
+    }
+
+    const errorElement = errorElements[fieldName];
+
+    if (error) {
+      if (errorElement) errorElement.textContent = error;
+      inputElement?.setAttribute('aria-invalid', 'true');
+      inputElement?.removeAttribute('data-valid');
+      return false;
+    } else {
+      if (errorElement) errorElement.textContent = '';
+      inputElement?.setAttribute('aria-invalid', 'false');
+      // Only show valid state for required fields that have content
+      if (inputElement?.value.trim()) {
+        inputElement?.setAttribute('data-valid', 'true');
+      }
+      return true;
+    }
+  }
+
+  // Clear field error (for real-time feedback)
+  function clearFieldError(fieldName: string): void {
+    const errorElement = errorElements[fieldName];
+    if (errorElement) {
+      errorElement.textContent = '';
+    }
+
+    let inputElement: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null = null;
+    switch (fieldName) {
+      case 'name': inputElement = nameInput; break;
+      case 'email': inputElement = emailInput; break;
+      case 'phone': inputElement = phoneInput; break;
+      case 'businessName': inputElement = businessNameInput; break;
+      case 'projectType': inputElement = projectTypeSelect; break;
+      case 'budgetRange': inputElement = budgetRangeSelect; break;
+      case 'message': inputElement = messageTextarea; break;
+    }
+
+    inputElement?.setAttribute('aria-invalid', 'false');
+    inputElement?.removeAttribute('data-valid');
+  }
+
+  // Update character count
+  function updateCharCount(): void {
+    const currentLength = messageTextarea?.value.length || 0;
+    if (charCurrentSpan) {
+      charCurrentSpan.textContent = currentLength.toString();
+    }
+
+    // Update visual state
+    if (charCountSpan) {
+      const isOver = currentLength > VALIDATION_CONFIG.maxMessageLength;
+      const isNear = currentLength > VALIDATION_CONFIG.maxMessageLength * 0.9;
+
+      charCountSpan.setAttribute('data-over', isOver.toString());
+      charCountSpan.setAttribute('data-near', (!isOver && isNear).toString());
+    }
+  }
+
+  // Validate all fields
+  function validateAllFields(): boolean {
+    const fields = ['name', 'email', 'phone', 'businessName', 'projectType', 'budgetRange', 'message'];
+    let allValid = true;
+
+    for (const field of fields) {
+      const isValid = validateField(field);
+      if (!isValid) allValid = false;
+    }
+
+    return allValid;
+  }
+
+  // Check honeypot (spam prevention)
+  function isHoneypotFilled(): boolean {
+    return honeypotInput?.value.trim() !== '';
+  }
+
+  // Check submission time (spam prevention)
+  function isSubmittedTooQuickly(): boolean {
+    const elapsedTime = Date.now() - formStartTime;
+    return elapsedTime < VALIDATION_CONFIG.minSubmitTime;
+  }
+
+  // Set loading state
+  function setLoadingState(loading: boolean): void {
+    if (submitButton) {
+      submitButton.disabled = loading;
+      submitButton.setAttribute('data-loading', loading.toString());
+    }
+  }
+
+  // Show form error
+  function showFormError(message: string): void {
+    if (formError && formErrorText) {
+      formErrorText.textContent = message;
+      formError.hidden = false;
+      formSuccess.hidden = true;
+
+      // Focus on error for screen readers
+      formError.focus();
+    }
+  }
+
+  // Show form success
+  function showFormSuccess(): void {
+    if (formSuccess && formError) {
+      formSuccess.hidden = false;
+      formError.hidden = true;
+
+      // Focus on success message for screen readers
+      formSuccess.focus();
+    }
+  }
+
+  // Hide all messages
+  function hideMessages(): void {
+    if (formError) formError.hidden = true;
+    if (formSuccess) formSuccess.hidden = true;
+  }
+
+  // Reset form
+  function resetForm(): void {
+    form?.reset();
+    formStartTime = Date.now();
+    formStartTimeInput.value = formStartTime.toString();
+    updateCharCount();
+
+    // Clear all error states
+    const fields = ['name', 'email', 'phone', 'businessName', 'projectType', 'budgetRange', 'message'];
+    for (const field of fields) {
+      clearFieldError(field);
+    }
+  }
+
+  // Handle form submission
+  async function handleSubmit(event: Event): Promise<void> {
+    event.preventDefault();
+    hideMessages();
+
+    // Check honeypot (spam)
+    if (isHoneypotFilled()) {
+      // Silently reject spam - don't reveal detection
+      showFormSuccess();
+      return;
+    }
+
+    // Check submission time (spam)
+    if (isSubmittedTooQuickly()) {
+      showFormError('Please take a moment to fill out the form completely.');
+      return;
+    }
+
+    // Validate all fields
+    if (!validateAllFields()) {
+      showFormError('Please correct the errors above before submitting.');
+
+      // Focus on first invalid field
+      const firstInvalidField = form?.querySelector('[aria-invalid="true"]') as HTMLElement;
+      firstInvalidField?.focus();
+      return;
+    }
+
+    // Set loading state
+    setLoadingState(true);
+
+    try {
+      // Collect form data
+      const formData = new FormData(form);
+      const data = {
+        name: formData.get('name')?.toString().trim() || '',
+        email: formData.get('email')?.toString().trim() || '',
+        phone: formData.get('phone')?.toString().trim() || '',
+        businessName: formData.get('businessName')?.toString().trim() || '',
+        projectType: formData.get('projectType')?.toString() || '',
+        budgetRange: formData.get('budgetRange')?.toString() || '',
+        message: formData.get('message')?.toString().trim() || '',
+      };
+
+      // Simulate API call (replace with actual API endpoint)
+      // For now, we'll simulate a successful submission
+      await simulateApiCall(data);
+
+      // Show success
+      showFormSuccess();
+      resetForm();
+
+    } catch (error) {
+      console.error('Form submission error:', error);
+
+      if (error instanceof Error) {
+        if (error.message === 'Network error') {
+          showFormError('Unable to connect. Please check your internet connection and try again.');
+        } else if (error.message === 'Timeout') {
+          showFormError('The request timed out. Please try again.');
+        } else {
+          showFormError('An unexpected error occurred. Please try again later.');
+        }
+      } else {
+        showFormError('An unexpected error occurred. Please try again later.');
+      }
+    } finally {
+      setLoadingState(false);
+    }
+  }
+
+  // Simulate API call (replace with actual implementation)
+  async function simulateApiCall(data: Record<string, string>): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // Simulate network delay
+      setTimeout(() => {
+        // For demo purposes, always succeed
+        // In production, this would be a fetch() call to your API
+        console.log('Form data submitted:', data);
+        resolve();
+      }, 1500);
+    });
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initForm);
+  } else {
+    initForm();
+  }
+</script>

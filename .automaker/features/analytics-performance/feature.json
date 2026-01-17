@@ -1,0 +1,39 @@
+{
+  "id": "analytics-performance",
+  "category": "Core",
+  "title": "Google Analytics 4 & Performance Optimization",
+  "description": "Implement Comprehensive Website Performance and Analytics Optimization\n\nIntegrate Google Analytics 4 with privacy-compliant configuration and implement full-stack performance optimizations to achieve Lighthouse scores of 95+ across all core metrics.\n\nRequirements:\n\nGoogle Analytics 4 Integration:\n- Install and configure GA4 with privacy-focused settings (IP anonymization, consent mode, data retention policies)\n- Implement cookie consent banner with granular user controls\n- Load GA4 script asynchronously to minimize performance impact\n- Configure essential event tracking (page views, user interactions, conversions)\n- Ensure GDPR/CCPA compliance with opt-out mechanisms\n- Test tracking functionality across different consent scenarios\n\nImage Optimization:\n- Convert all images to WebP format with fallback support for older browsers\n- Implement lazy loading for all below-the-fold images using native loading=\"lazy\" or intersection observer\n- Generate and implement responsive image sets using srcset and sizes attributes for multiple viewport sizes\n- Add proper width and height attributes to prevent layout shift (CLS)\n- Compress images without visible quality loss\n- Consider critical images for preloading in <head>\n\nCSS/JS Minification and Optimization:\n- Minify all CSS and JavaScript files for production\n- Remove unused CSS (PurgeCSS or similar)\n- Implement critical CSS inlining for above-the-fold content\n- Bundle and tree-shake JavaScript to eliminate dead code\n- Enable gzip/brotli compression on server\n- Use async/defer attributes appropriately for script loading\n\nLighthouse Performance Targets (95+ scores):\n- Performance: LCP < 2.5s, FID < 100ms, CLS < 0.1, FCP < 1.8s, TTI < 3.8s\n- SEO: Valid meta tags, semantic HTML, mobile-friendly viewport, proper heading hierarchy, descriptive alt text\n- Accessibility: ARIA labels, keyboard navigation, sufficient color contrast (4.5:1 minimum), focus indicators, screen reader compatibility\n- Best Practices: HTTPS, no console errors, modern image formats, proper cache headers\n\nTesting and Validation:\n- Run Lighthouse audits on multiple pages and device profiles\n- Verify analytics tracking in GA4 real-time reports\n- Test image loading across various network conditions (3G, 4G, fiber)\n- Validate privacy settings with browser dev tools and consent testing\n- Document baseline vs. optimized metrics",
+  "status": "verified",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "seo-head-component"
+  ],
+  "createdAt": "2026-01-16T22:50:41.449Z",
+  "updatedAt": "2026-01-16T23:52:53.302Z",
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "current",
+  "descriptionHistory": [
+    {
+      "description": "Integrate Google Analytics 4 tracking with privacy-focused configuration, implement image optimization (WebP, lazy loading, responsive images), minify CSS/JS, and optimize for Lighthouse scores 95+ across performance, SEO, and accessibility metrics.",
+      "timestamp": "2026-01-16T23:06:18.302Z",
+      "source": "initial"
+    },
+    {
+      "description": "Implement Comprehensive Website Performance and Analytics Optimization\n\nIntegrate Google Analytics 4 with privacy-compliant configuration and implement full-stack performance optimizations to achieve Lighthouse scores of 95+ across all core metrics.\n\nRequirements:\n\nGoogle Analytics 4 Integration:\n- Install and configure GA4 with privacy-focused settings (IP anonymization, consent mode, data retention policies)\n- Implement cookie consent banner with granular user controls\n- Load GA4 script asynchronously to minimize performance impact\n- Configure essential event tracking (page views, user interactions, conversions)\n- Ensure GDPR/CCPA compliance with opt-out mechanisms\n- Test tracking functionality across different consent scenarios\n\nImage Optimization:\n- Convert all images to WebP format with fallback support for older browsers\n- Implement lazy loading for all below-the-fold images using native loading=\"lazy\" or intersection observer\n- Generate and implement responsive image sets using srcset and sizes attributes for multiple viewport sizes\n- Add proper width and height attributes to prevent layout shift (CLS)\n- Compress images without visible quality loss\n- Consider critical images for preloading in <head>\n\nCSS/JS Minification and Optimization:\n- Minify all CSS and JavaScript files for production\n- Remove unused CSS (PurgeCSS or similar)\n- Implement critical CSS inlining for above-the-fold content\n- Bundle and tree-shake JavaScript to eliminate dead code\n- Enable gzip/brotli compression on server\n- Use async/defer attributes appropriately for script loading\n\nLighthouse Performance Targets (95+ scores):\n- Performance: LCP < 2.5s, FID < 100ms, CLS < 0.1, FCP < 1.8s, TTI < 3.8s\n- SEO: Valid meta tags, semantic HTML, mobile-friendly viewport, proper heading hierarchy, descriptive alt text\n- Accessibility: ARIA labels, keyboard navigation, sufficient color contrast (4.5:1 minimum), focus indicators, screen reader compatibility\n- Best Practices: HTTPS, no console errors, modern image formats, proper cache headers\n\nTesting and Validation:\n- Run Lighthouse audits on multiple pages and device profiles\n- Verify analytics tracking in GA4 real-time reports\n- Test image loading across various network conditions (3G, 4G, fiber)\n- Validate privacy settings with browser dev tools and consent testing\n- Document baseline vs. optimized metrics",
+      "timestamp": "2026-01-16T23:06:18.302Z",
+      "source": "enhance",
+      "enhancementMode": "improve"
+    }
+  ],
+  "branchName": "master",
+  "startedAt": "2026-01-16T23:42:26.645Z",
+  "justFinishedAt": "2026-01-16T23:52:53.302Z"
+}

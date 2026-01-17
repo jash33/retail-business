@@ -1,0 +1,39 @@
+{
+  "id": "contact-cta-section",
+  "category": "UI",
+  "title": "Homepage Contact CTA Section",
+  "description": "Implement Lead Capture Contact Section at Page Bottom\n\nCreate a high-converting contact section positioned at the bottom of the page to capture leads from users before they exit. This section should target west Houston businesses with persuasive copy and a clear call-to-action.\n\nRequirements:\n- Position the section at the bottom of the page, above the footer\n- Design a compelling headline that creates urgency or highlights value proposition\n- Include supporting text that specifically mentions serving west Houston businesses and addresses their pain points or needs\n- Add a prominent CTA button that links to the contact page\n- Ensure the section stands out visually from surrounding content (consider contrasting background color or border)\n- Make the CTA button action-oriented with specific copy (e.g., \"Get Your Free Quote\", \"Schedule a Consultation\" rather than generic \"Contact Us\")\n- Ensure the section is fully responsive across mobile, tablet, and desktop devices\n- Optimize for accessibility (proper heading hierarchy, ARIA labels, color contrast)\n- Consider adding trust signals (testimonial count, years in business, service area badge) to increase conversions\n- Track CTA button clicks for conversion analysis\n\nDesign Considerations:\n- Use visual hierarchy to guide eyes from headline → supporting text → CTA\n- Ensure sufficient padding/whitespace around the section\n- CTA button should be large enough for easy clicking on mobile devices\n- Consider subtle animation or styling to draw attention without being intrusive",
+  "status": "verified",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "cta-button-component"
+  ],
+  "createdAt": "2026-01-16T22:50:41.438Z",
+  "updatedAt": "2026-01-16T23:50:40.380Z",
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "current",
+  "descriptionHistory": [
+    {
+      "description": "Implement bottom-of-page contact section with compelling headline, supporting text about serving west Houston businesses, and CTA button linking to contact page. Designed to capture leads before they leave.",
+      "timestamp": "2026-01-16T23:06:34.850Z",
+      "source": "initial"
+    },
+    {
+      "description": "Implement Lead Capture Contact Section at Page Bottom\n\nCreate a high-converting contact section positioned at the bottom of the page to capture leads from users before they exit. This section should target west Houston businesses with persuasive copy and a clear call-to-action.\n\nRequirements:\n- Position the section at the bottom of the page, above the footer\n- Design a compelling headline that creates urgency or highlights value proposition\n- Include supporting text that specifically mentions serving west Houston businesses and addresses their pain points or needs\n- Add a prominent CTA button that links to the contact page\n- Ensure the section stands out visually from surrounding content (consider contrasting background color or border)\n- Make the CTA button action-oriented with specific copy (e.g., \"Get Your Free Quote\", \"Schedule a Consultation\" rather than generic \"Contact Us\")\n- Ensure the section is fully responsive across mobile, tablet, and desktop devices\n- Optimize for accessibility (proper heading hierarchy, ARIA labels, color contrast)\n- Consider adding trust signals (testimonial count, years in business, service area badge) to increase conversions\n- Track CTA button clicks for conversion analysis\n\nDesign Considerations:\n- Use visual hierarchy to guide eyes from headline → supporting text → CTA\n- Ensure sufficient padding/whitespace around the section\n- CTA button should be large enough for easy clicking on mobile devices\n- Consider subtle animation or styling to draw attention without being intrusive",
+      "timestamp": "2026-01-16T23:06:34.850Z",
+      "source": "enhance",
+      "enhancementMode": "improve"
+    }
+  ],
+  "branchName": "master",
+  "startedAt": "2026-01-16T23:45:56.649Z",
+  "justFinishedAt": "2026-01-16T23:50:40.380Z"
+}

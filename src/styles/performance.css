@@ -1,0 +1,354 @@
+/**
+ * =================================================================
+ * HOUSTON WEB SERVICES - PERFORMANCE STYLES
+ * =================================================================
+ *
+ * CSS utilities and optimizations for achieving high Lighthouse scores.
+ * Includes critical rendering path optimizations, CLS prevention,
+ * and accessibility enhancements.
+ *
+ * =================================================================
+ */
+
+/* =================================================================
+ * LAYOUT SHIFT PREVENTION (CLS)
+ * =================================================================
+ * Prevent Cumulative Layout Shift by reserving space for async content
+ */
+
+/* Image containers with aspect ratio */
+.aspect-ratio-box {
+  position: relative;
+  width: 100%;
+  height: 0;
+}
+
+.aspect-ratio-box > * {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Common aspect ratios */
+.aspect-16-9 { padding-bottom: 56.25%; }
+.aspect-4-3 { padding-bottom: 75%; }
+.aspect-1-1 { padding-bottom: 100%; }
+.aspect-21-9 { padding-bottom: 42.86%; }
+.aspect-3-2 { padding-bottom: 66.67%; }
+
+/* Modern aspect-ratio property with fallback */
+@supports (aspect-ratio: 1) {
+  .aspect-ratio-box {
+    height: auto;
+    padding-bottom: 0 !important;
+  }
+
+  .aspect-ratio-box > * {
+    position: static;
+  }
+
+  .aspect-16-9 { aspect-ratio: 16 / 9; }
+  .aspect-4-3 { aspect-ratio: 4 / 3; }
+  .aspect-1-1 { aspect-ratio: 1 / 1; }
+  .aspect-21-9 { aspect-ratio: 21 / 9; }
+  .aspect-3-2 { aspect-ratio: 3 / 2; }
+}
+
+/* Font loading optimization - prevent FOIT */
+.fonts-loading body {
+  /* Use system fonts while custom fonts load */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.fonts-loaded body {
+  font-family: var(--font-body);
+}
+
+.fonts-loading h1,
+.fonts-loading h2,
+.fonts-loading h3,
+.fonts-loading h4,
+.fonts-loading h5,
+.fonts-loading h6 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.fonts-loaded h1,
+.fonts-loaded h2,
+.fonts-loaded h3,
+.fonts-loaded h4,
+.fonts-loaded h5,
+.fonts-loaded h6 {
+  font-family: var(--font-heading);
+}
+
+/* =================================================================
+ * CONTENT VISIBILITY (RENDERING OPTIMIZATION)
+ * =================================================================
+ * Use content-visibility to defer rendering of off-screen content
+ */
+
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+/* Apply to sections that are likely below the fold */
+section:not(:first-of-type) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+/* =================================================================
+ * IMAGE OPTIMIZATION UTILITIES
+ * =================================================================
+ */
+
+/* Lazy load images */
+img[loading="lazy"] {
+  /* Placeholder background while loading */
+  background-color: var(--color-background-muted, #f3f4f6);
+  background-image: linear-gradient(
+    90deg,
+    var(--color-background-muted, #f3f4f6) 0%,
+    var(--color-background-subtle, #e5e7eb) 20%,
+    var(--color-background-muted, #f3f4f6) 40%
+  );
+  background-size: 200% 100%;
+}
+
+/* Responsive images should scale properly */
+.responsive-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* High priority images (LCP candidates) */
+.priority-image {
+  /* Ensure these images render immediately */
+  content-visibility: visible;
+}
+
+/* =================================================================
+ * ANIMATION PERFORMANCE
+ * =================================================================
+ * GPU-accelerated animations for smooth performance
+ */
+
+/* Use transform and opacity for animations (GPU accelerated) */
+.animate-fade-in {
+  animation: fadeIn var(--duration-300, 300ms) var(--ease-out, ease-out);
+}
+
+.animate-slide-up {
+  animation: slideUp var(--duration-300, 300ms) var(--ease-out, ease-out);
+}
+
+.animate-scale-in {
+  animation: scaleIn var(--duration-200, 200ms) var(--ease-out, ease-out);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Will-change for elements that will animate */
+.will-animate {
+  will-change: transform, opacity;
+}
+
+/* Remove will-change after animation completes */
+.animation-complete {
+  will-change: auto;
+}
+
+/* =================================================================
+ * RENDER BLOCKING PREVENTION
+ * =================================================================
+ */
+
+/* Critical above-the-fold content visibility */
+.above-fold {
+  content-visibility: visible !important;
+}
+
+/* Non-critical content can be lazily rendered */
+.below-fold {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
+}
+
+/* =================================================================
+ * ACCESSIBILITY PERFORMANCE
+ * =================================================================
+ * Maintain accessibility while optimizing performance
+ */
+
+/* Focus indicator optimization (prevents layout shift) */
+:focus-visible {
+  outline: 2px solid var(--color-primary, #365395);
+  outline-offset: 2px;
+  /* Use box-shadow instead of outline for rounded elements */
+}
+
+/* Focus within containers */
+.focus-within-ring:focus-within {
+  box-shadow: 0 0 0 2px var(--color-primary, #365395);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :focus-visible {
+    outline-width: 3px;
+  }
+
+  a, button {
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* =================================================================
+ * PRINT STYLES
+ * =================================================================
+ * Optimized print styles
+ */
+
+@media print {
+  /* Hide non-essential elements */
+  header,
+  footer,
+  nav,
+  .cookie-consent,
+  .cookie-settings-toggle,
+  .skip-link {
+    display: none !important;
+  }
+
+  /* Ensure readability */
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+    background: #fff;
+  }
+
+  /* Page breaks */
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  /* Links */
+  a[href^="http"]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+}
+
+/* =================================================================
+ * LOADING STATES
+ * =================================================================
+ * Optimized loading indicators
+ */
+
+/* Skeleton loading animation */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-background-muted, #f3f4f6) 25%,
+    var(--color-background-subtle, #e5e7eb) 50%,
+    var(--color-background-muted, #f3f4f6) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: var(--radius-base, 4px);
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Respect reduced motion for skeletons */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--color-background-muted, #f3f4f6);
+  }
+}
+
+/* Skeleton variants */
+.skeleton-text {
+  height: 1em;
+  margin-bottom: 0.5em;
+}
+
+.skeleton-text-sm {
+  height: 0.875em;
+  width: 80%;
+}
+
+.skeleton-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.skeleton-image {
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+
+.skeleton-button {
+  height: 44px;
+  width: 120px;
+  border-radius: var(--radius-md, 6px);
+}
+
+/* =================================================================
+ * CRITICAL CSS MARKERS
+ * =================================================================
+ * Classes to help identify critical vs non-critical CSS
+ */
+
+/* Mark elements that need critical CSS */
+.critical {
+  /* This class helps identify critical elements */
+}
+
+/* Mark elements that can use deferred CSS */
+.deferred {
+  /* This class helps identify non-critical elements */
+}

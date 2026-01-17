@@ -1,0 +1,688 @@
+---
+/**
+ * Contact CTA Section Component
+ * A high-converting contact section positioned at the bottom of pages to capture leads
+ * from users before they exit. Targets west Houston businesses with persuasive copy
+ * and a clear call-to-action.
+ *
+ * Features:
+ * - Mobile-first responsive design
+ * - Clear visual hierarchy: headline -> supporting text -> trust signals -> CTA
+ * - WCAG 2.1 AA compliant contrast and touch targets
+ * - Semantic HTML structure for accessibility and SEO
+ * - Trust signals for increased conversions
+ * - Click tracking for conversion analysis
+ * - Contrasting background to stand out from surrounding content
+ *
+ * @example Basic usage
+ * ```astro
+ * <ContactCTA
+ *   headline="Ready to Grow Your Business Online?"
+ *   supportingText="Join dozens of successful west Houston businesses who trust us..."
+ *   primaryCTA={{ text: "Get Your Free Quote", href: "/contact" }}
+ * />
+ * ```
+ */
+
+import type { ContactCTAProps } from '../types/contact-cta';
+import Button from './Button.astro';
+
+interface Props extends ContactCTAProps {}
+
+const {
+  headline,
+  supportingText,
+  primaryCTA,
+  secondaryCTA,
+  trustSignals = [],
+  id = 'contact-cta',
+  class: className = '',
+  ariaLabel = 'Contact us for a free consultation',
+  contrast = true,
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'contact-cta',
+  contrast && 'contact-cta--contrast',
+  className,
+].filter(Boolean).join(' ');
+
+// Default trust signals if none provided
+const defaultTrustSignals = [
+  {
+    value: '50+',
+    label: 'Projects Completed',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>`,
+  },
+  {
+    value: '10+',
+    label: 'Years Experience',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`,
+  },
+  {
+    value: 'West Houston',
+    label: 'Proudly Serving',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
+  },
+];
+
+const displayTrustSignals = trustSignals.length > 0 ? trustSignals : defaultTrustSignals;
+---
+
+<section
+  class={sectionClasses}
+  id={id}
+  aria-labelledby={`${id}-headline`}
+  aria-label={ariaLabel}
+  data-section="contact-cta"
+>
+  <div class="contact-cta__container">
+    <div class="contact-cta__content">
+      <!-- Main Headline -->
+      <h2 id={`${id}-headline`} class="contact-cta__headline">
+        {headline}
+      </h2>
+
+      <!-- Supporting Text -->
+      <p class="contact-cta__text">
+        {supportingText}
+      </p>
+
+      <!-- Trust Signals -->
+      {displayTrustSignals.length > 0 && (
+        <div class="contact-cta__trust-signals" role="list" aria-label="Why businesses trust us">
+          {displayTrustSignals.map((signal) => (
+            <div class="contact-cta__trust-signal" role="listitem">
+              {signal.icon && (
+                <span class="contact-cta__trust-icon" aria-hidden="true" set:html={signal.icon} />
+              )}
+              <span class="contact-cta__trust-value">{signal.value}</span>
+              <span class="contact-cta__trust-label">{signal.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <!-- CTA Buttons -->
+      <div class="contact-cta__buttons">
+        <Button
+          text={primaryCTA.text}
+          href={primaryCTA.href}
+          variant={primaryCTA.variant || 'primary'}
+          size="large"
+          class="contact-cta__btn contact-cta__btn--primary"
+          id="contact-cta-primary-btn"
+          ariaDescribedBy={`${id}-headline`}
+        />
+        {secondaryCTA && (
+          <Button
+            text={secondaryCTA.text}
+            href={secondaryCTA.href}
+            variant={secondaryCTA.variant || 'secondary'}
+            size="large"
+            class="contact-cta__btn contact-cta__btn--secondary"
+            id="contact-cta-secondary-btn"
+          />
+        )}
+      </div>
+    </div>
+  </div>
+
+  <!-- Decorative background element -->
+  <div class="contact-cta__background" aria-hidden="true"></div>
+</section>
+
+<style>
+  /* =================================================================
+   * CONTACT CTA SECTION COMPONENT STYLES
+   * =================================================================
+   * Mobile-first approach with responsive breakpoints
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .contact-cta {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-16) var(--spacing-4);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  /* Contrast variant - darker, more prominent */
+  .contact-cta--contrast {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-800) 0%,
+      var(--color-primary-900) 50%,
+      var(--color-primary-950) 100%
+    );
+  }
+
+  /* Decorative background for contrast variant */
+  .contact-cta--contrast .contact-cta__background {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(
+        ellipse 80% 50% at 20% 20%,
+        rgba(255, 255, 255, 0.05) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        ellipse 60% 40% at 80% 80%,
+        rgba(54, 83, 149, 0.2) 0%,
+        transparent 50%
+      );
+  }
+
+  .contact-cta__container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+  }
+
+  .contact-cta__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-6);
+  }
+
+  /* =================================================================
+   * TYPOGRAPHY - Mobile First
+   * =================================================================
+   */
+
+  /* Main Headline - H2 */
+  .contact-cta__headline {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--color-text-primary);
+    margin: 0;
+    max-width: 20ch;
+  }
+
+  .contact-cta--contrast .contact-cta__headline {
+    color: var(--color-text-inverse);
+  }
+
+  /* Supporting Text */
+  .contact-cta__text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 55ch;
+  }
+
+  .contact-cta--contrast .contact-cta__text {
+    color: var(--color-primary-100);
+    opacity: 0.95;
+  }
+
+  /* =================================================================
+   * TRUST SIGNALS
+   * =================================================================
+   */
+
+  .contact-cta__trust-signals {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-6) 0;
+    width: 100%;
+  }
+
+  .contact-cta__trust-signal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+    padding: var(--spacing-3) var(--spacing-4);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    min-width: 140px;
+  }
+
+  .contact-cta:not(.contact-cta--contrast) .contact-cta__trust-signal {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .contact-cta__trust-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary-300);
+    margin-bottom: var(--spacing-1);
+  }
+
+  .contact-cta:not(.contact-cta--contrast) .contact-cta__trust-icon {
+    color: var(--color-primary);
+  }
+
+  .contact-cta__trust-icon :global(svg) {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .contact-cta__trust-value {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-inverse);
+    line-height: var(--line-height-none);
+  }
+
+  .contact-cta:not(.contact-cta--contrast) .contact-cta__trust-value {
+    color: var(--color-primary);
+  }
+
+  .contact-cta__trust-label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary-200);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .contact-cta:not(.contact-cta--contrast) .contact-cta__trust-label {
+    color: var(--color-text-tertiary);
+  }
+
+  /* =================================================================
+   * CTA BUTTONS
+   * =================================================================
+   */
+
+  .contact-cta__buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-2);
+    width: 100%;
+  }
+
+  /* Full width CTAs on mobile */
+  .contact-cta__btn {
+    width: 100%;
+    max-width: 20rem;
+  }
+
+  /* Override button styles for contrast variant */
+  .contact-cta--contrast :global(.btn--primary) {
+    background-color: var(--color-background);
+    color: var(--color-primary-700);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .contact-cta--contrast :global(.btn--primary:hover:not(.btn--disabled)) {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-800);
+    box-shadow: var(--shadow-xl);
+    transform: translateY(-2px);
+  }
+
+  .contact-cta--contrast :global(.btn--primary:active:not(.btn--disabled)) {
+    background-color: var(--color-primary-100);
+    transform: translateY(0);
+  }
+
+  .contact-cta--contrast :global(.btn--primary:focus-visible) {
+    box-shadow:
+      0 0 0 var(--focus-ring-offset) var(--color-primary-800),
+      0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--color-background);
+  }
+
+  .contact-cta--contrast :global(.btn--secondary) {
+    background-color: transparent;
+    color: var(--color-text-inverse);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .contact-cta--contrast :global(.btn--secondary:hover:not(.btn--disabled)) {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.8);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Tablet (640px+)
+   * =================================================================
+   */
+
+  @media screen and (min-width: 640px) {
+    .contact-cta {
+      padding: var(--spacing-20) var(--spacing-6);
+    }
+
+    .contact-cta__content {
+      gap: var(--spacing-6);
+    }
+
+    .contact-cta__headline {
+      font-size: var(--font-size-3xl);
+      max-width: 22ch;
+    }
+
+    .contact-cta__text {
+      font-size: var(--font-size-md);
+    }
+
+    .contact-cta__trust-signals {
+      flex-direction: row;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: var(--spacing-6);
+    }
+
+    .contact-cta__trust-signal {
+      padding: var(--spacing-4) var(--spacing-6);
+      min-width: 160px;
+    }
+
+    .contact-cta__buttons {
+      flex-direction: row;
+      justify-content: center;
+      margin-top: var(--spacing-4);
+    }
+
+    .contact-cta__btn {
+      width: auto;
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Desktop (1024px+)
+   * =================================================================
+   */
+
+  @media screen and (min-width: 1024px) {
+    .contact-cta {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+
+    .contact-cta__content {
+      gap: var(--spacing-8);
+    }
+
+    .contact-cta__headline {
+      font-size: var(--font-size-4xl);
+      max-width: 25ch;
+    }
+
+    .contact-cta__text {
+      font-size: var(--font-size-lg);
+      max-width: 60ch;
+    }
+
+    .contact-cta__trust-signals {
+      gap: var(--spacing-8);
+      padding: var(--spacing-8) 0;
+    }
+
+    .contact-cta__trust-signal {
+      padding: var(--spacing-5) var(--spacing-8);
+    }
+
+    .contact-cta__trust-icon :global(svg) {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+
+    .contact-cta__trust-value {
+      font-size: var(--font-size-2xl);
+    }
+
+    .contact-cta__buttons {
+      gap: var(--spacing-6);
+      margin-top: var(--spacing-6);
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES - Large Desktop (1280px+)
+   * =================================================================
+   */
+
+  @media screen and (min-width: 1280px) {
+    .contact-cta__headline {
+      font-size: var(--font-size-5xl);
+    }
+
+    .contact-cta__text {
+      font-size: var(--font-size-xl);
+    }
+
+    .contact-cta__trust-value {
+      font-size: var(--font-size-3xl);
+    }
+
+    .contact-cta__trust-label {
+      font-size: var(--font-size-base);
+    }
+  }
+
+  /* =================================================================
+   * ANIMATIONS
+   * Subtle fade-in animation
+   * =================================================================
+   */
+
+  .contact-cta__headline {
+    animation: ctaFadeIn 0.6s ease-out 0.1s backwards;
+  }
+
+  .contact-cta__text {
+    animation: ctaFadeIn 0.6s ease-out 0.2s backwards;
+  }
+
+  .contact-cta__trust-signals {
+    animation: ctaFadeIn 0.6s ease-out 0.3s backwards;
+  }
+
+  .contact-cta__buttons {
+    animation: ctaFadeIn 0.6s ease-out 0.4s backwards;
+  }
+
+  @keyframes ctaFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * =================================================================
+   */
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact-cta__headline,
+    .contact-cta__text,
+    .contact-cta__trust-signals,
+    .contact-cta__buttons {
+      animation: none;
+    }
+
+    .contact-cta :global(.btn:hover:not(.btn--disabled)) {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * Ensure visibility in Windows High Contrast mode
+   * =================================================================
+   */
+
+  @media (forced-colors: active) {
+    .contact-cta {
+      background: Canvas;
+      border: 2px solid CanvasText;
+    }
+
+    .contact-cta__headline,
+    .contact-cta__text {
+      color: CanvasText;
+    }
+
+    .contact-cta__trust-signal {
+      border: 1px solid CanvasText;
+      background: transparent;
+    }
+
+    .contact-cta__trust-value,
+    .contact-cta__trust-label {
+      color: CanvasText;
+    }
+
+    .contact-cta__background {
+      display: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+
+  @media print {
+    .contact-cta {
+      padding: var(--spacing-8) 0;
+      background: transparent;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .contact-cta__headline,
+    .contact-cta__text {
+      color: var(--color-text-primary);
+      animation: none;
+    }
+
+    .contact-cta__trust-signals {
+      animation: none;
+    }
+
+    .contact-cta__trust-signal {
+      background: transparent;
+      border: 1px solid var(--color-border);
+    }
+
+    .contact-cta__trust-value,
+    .contact-cta__trust-label {
+      color: var(--color-text-primary);
+    }
+
+    .contact-cta__background {
+      display: none;
+    }
+
+    .contact-cta__buttons {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * CTA Button Click Tracking
+   * Tracks clicks on CTA buttons for conversion analysis.
+   * Uses the data layer pattern for compatibility with analytics tools.
+   */
+  document.addEventListener('DOMContentLoaded', () => {
+    const primaryBtn = document.getElementById('contact-cta-primary-btn');
+    const secondaryBtn = document.getElementById('contact-cta-secondary-btn');
+
+    // Track primary CTA clicks
+    if (primaryBtn) {
+      primaryBtn.addEventListener('click', () => {
+        // Push to dataLayer if available (Google Tag Manager)
+        if (typeof window !== 'undefined' && (window as any).dataLayer) {
+          (window as any).dataLayer.push({
+            event: 'cta_click',
+            cta_location: 'contact_cta_section',
+            cta_type: 'primary',
+            cta_text: primaryBtn.textContent?.trim(),
+            cta_destination: primaryBtn.getAttribute('href'),
+          });
+        }
+
+        // Custom event for other analytics integrations
+        window.dispatchEvent(new CustomEvent('contact-cta-click', {
+          detail: {
+            type: 'primary',
+            text: primaryBtn.textContent?.trim(),
+            destination: primaryBtn.getAttribute('href'),
+            timestamp: new Date().toISOString(),
+          }
+        }));
+
+        // Console log for development
+        if (import.meta.env.DEV) {
+          console.log('[ContactCTA] Primary CTA clicked:', {
+            text: primaryBtn.textContent?.trim(),
+            destination: primaryBtn.getAttribute('href'),
+          });
+        }
+      });
+    }
+
+    // Track secondary CTA clicks
+    if (secondaryBtn) {
+      secondaryBtn.addEventListener('click', () => {
+        // Push to dataLayer if available (Google Tag Manager)
+        if (typeof window !== 'undefined' && (window as any).dataLayer) {
+          (window as any).dataLayer.push({
+            event: 'cta_click',
+            cta_location: 'contact_cta_section',
+            cta_type: 'secondary',
+            cta_text: secondaryBtn.textContent?.trim(),
+            cta_destination: secondaryBtn.getAttribute('href'),
+          });
+        }
+
+        // Custom event for other analytics integrations
+        window.dispatchEvent(new CustomEvent('contact-cta-click', {
+          detail: {
+            type: 'secondary',
+            text: secondaryBtn.textContent?.trim(),
+            destination: secondaryBtn.getAttribute('href'),
+            timestamp: new Date().toISOString(),
+          }
+        }));
+
+        // Console log for development
+        if (import.meta.env.DEV) {
+          console.log('[ContactCTA] Secondary CTA clicked:', {
+            text: secondaryBtn.textContent?.trim(),
+            destination: secondaryBtn.getAttribute('href'),
+          });
+        }
+      });
+    }
+  });
+</script>

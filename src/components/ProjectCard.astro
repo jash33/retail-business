@@ -1,0 +1,571 @@
+---
+/**
+ * ProjectCard Component
+ * A card component for displaying a single portfolio project with image,
+ * title, description, technology tags, and optional call-to-action links.
+ *
+ * Features:
+ * - Optimized thumbnail image with WebP support and lazy loading
+ * - Hover effects with image zoom and overlay transitions
+ * - Technology stack badges
+ * - Call-to-action links (live site, GitHub, case study)
+ * - Accessible with proper heading hierarchy
+ * - Touch-friendly target sizes on mobile (44x44px minimum)
+ * - Loading state for images
+ * - Reduced motion support
+ *
+ * @example Basic usage
+ * ```astro
+ * <ProjectCard
+ *   id="project-1"
+ *   title="E-Commerce Platform"
+ *   description="Modern online store with seamless checkout."
+ *   thumbnail={{ src: '/portfolio/project1.jpg', alt: 'Project screenshot' }}
+ *   technologies={[{ name: 'React' }, { name: 'Node.js' }]}
+ *   category="ecommerce"
+ * />
+ * ```
+ *
+ * @example With links and featured flag
+ * ```astro
+ * <ProjectCard
+ *   id="project-2"
+ *   title="Business Website"
+ *   description="Professional site for local consulting firm."
+ *   thumbnail={{ src: '/portfolio/project2.jpg', alt: 'Website screenshot' }}
+ *   technologies={[{ name: 'Astro' }, { name: 'TypeScript' }]}
+ *   category="website"
+ *   featured={true}
+ *   links={[
+ *     { text: 'View Live Site', href: 'https://example.com', type: 'live-site', openInNewTab: true },
+ *     { text: 'GitHub', href: 'https://github.com/example', type: 'github', openInNewTab: true }
+ *   ]}
+ * />
+ * ```
+ */
+
+import type { ProjectCardProps } from '../types/portfolio';
+import Button from './Button.astro';
+
+interface Props extends ProjectCardProps {}
+
+const {
+  id,
+  title,
+  description,
+  thumbnail,
+  technologies = [],
+  category,
+  links = [],
+  featured = false,
+  class: className = '',
+  showLoadingState = true,
+} = Astro.props;
+
+// Build CSS classes
+const cardClasses = [
+  'project-card',
+  featured && 'project-card--featured',
+  className,
+].filter(Boolean).join(' ');
+
+// Get link icons based on type
+const getLinkIcon = (type?: string) => {
+  switch (type) {
+    case 'github':
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>`;
+    case 'case-study':
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`;
+    default: // live-site
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>`;
+  }
+};
+
+// Get primary link (first link or live-site type)
+const primaryLink = links.find(l => l.type === 'live-site') || links[0];
+const secondaryLinks = links.filter(l => l !== primaryLink);
+---
+
+<article class={cardClasses} id={`project-${id}`}>
+  <!-- Image Container with hover effects -->
+  <div class="project-card__image-container">
+    {showLoadingState && (
+      <div class="project-card__image-placeholder" aria-hidden="true">
+        <svg class="project-card__loading-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+          <path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    )}
+
+    <picture>
+      {thumbnail.srcWebP && (
+        <source srcset={thumbnail.srcWebP} type="image/webp" />
+      )}
+      <img
+        src={thumbnail.src}
+        alt={thumbnail.alt}
+        width={thumbnail.width || 600}
+        height={thumbnail.height || 400}
+        loading="lazy"
+        decoding="async"
+        class="project-card__image"
+        onload="this.parentElement.parentElement.classList.add('project-card__image-container--loaded')"
+      />
+    </picture>
+
+    <!-- Hover overlay -->
+    <div class="project-card__overlay" aria-hidden="true">
+      {primaryLink && (
+        <span class="project-card__overlay-text">View Project</span>
+      )}
+    </div>
+
+    <!-- Featured badge -->
+    {featured && (
+      <span class="project-card__badge" aria-label="Featured project">Featured</span>
+    )}
+  </div>
+
+  <!-- Content -->
+  <div class="project-card__content">
+    <h3 class="project-card__title">{title}</h3>
+    <p class="project-card__description">{description}</p>
+
+    <!-- Technology Tags -->
+    {technologies.length > 0 && (
+      <ul class="project-card__tags" aria-label="Technologies used">
+        {technologies.map((tech) => (
+          <li class="project-card__tag">{tech.name}</li>
+        ))}
+      </ul>
+    )}
+  </div>
+
+  <!-- Footer with CTAs -->
+  {links.length > 0 && (
+    <div class="project-card__footer">
+      {primaryLink && (
+        <Button
+          text={primaryLink.text}
+          href={primaryLink.href}
+          variant="primary"
+          size="small"
+          openInNewTab={primaryLink.openInNewTab}
+          class="project-card__cta"
+          ariaLabel={`${primaryLink.text} for ${title}`}
+        >
+          <Fragment slot="icon" set:html={getLinkIcon(primaryLink.type)} />
+        </Button>
+      )}
+
+      {secondaryLinks.map((link) => (
+        <a
+          href={link.href}
+          class="project-card__link"
+          target={link.openInNewTab ? '_blank' : undefined}
+          rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+          aria-label={`${link.text} for ${title}`}
+        >
+          <span class="project-card__link-icon" aria-hidden="true">
+            <Fragment set:html={getLinkIcon(link.type)} />
+          </span>
+          <span class="sr-only">{link.text}</span>
+        </a>
+      ))}
+    </div>
+  )}
+</article>
+
+<style>
+  /* =================================================================
+   * PROJECT CARD COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .project-card {
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    /* Visual */
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+
+    /* Animation */
+    transition:
+      box-shadow var(--duration-200) var(--ease-in-out),
+      transform var(--duration-200) var(--ease-in-out),
+      border-color var(--duration-200) var(--ease-in-out);
+  }
+
+  .project-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    border-color: var(--color-primary-200);
+  }
+
+  .project-card--featured {
+    border-color: var(--color-primary-300);
+  }
+
+  .project-card--featured:hover {
+    border-color: var(--color-primary-400);
+    box-shadow: var(--shadow-xl), var(--shadow-primary);
+  }
+
+  /* =================================================================
+   * IMAGE CONTAINER
+   * ================================================================= */
+  .project-card__image-container {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .project-card__image-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-background-muted);
+    transition: opacity var(--duration-300) var(--ease-out);
+    z-index: 1;
+  }
+
+  .project-card__image-container--loaded .project-card__image-placeholder {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .project-card__loading-icon {
+    width: var(--spacing-12);
+    height: var(--spacing-12);
+    color: var(--color-text-tertiary);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+  }
+
+  .project-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-300) var(--ease-out);
+  }
+
+  .project-card:hover .project-card__image {
+    transform: scale(1.05);
+  }
+
+  /* =================================================================
+   * HOVER OVERLAY
+   * ================================================================= */
+  .project-card__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-background-overlay);
+    opacity: 0;
+    transition: opacity var(--duration-200) var(--ease-in-out);
+    z-index: 2;
+  }
+
+  .project-card:hover .project-card__overlay {
+    opacity: 1;
+  }
+
+  .project-card__overlay-text {
+    color: var(--color-text-inverse);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+    padding: var(--spacing-2) var(--spacing-4);
+    border: 2px solid var(--color-text-inverse);
+    border-radius: var(--radius-md);
+    transform: translateY(10px);
+    transition: transform var(--duration-200) var(--ease-out);
+  }
+
+  .project-card:hover .project-card__overlay-text {
+    transform: translateY(0);
+  }
+
+  /* =================================================================
+   * FEATURED BADGE
+   * ================================================================= */
+  .project-card__badge {
+    position: absolute;
+    top: var(--spacing-3);
+    left: var(--spacing-3);
+    padding: var(--spacing-1) var(--spacing-2);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    border-radius: var(--radius-md);
+    z-index: 3;
+  }
+
+  /* =================================================================
+   * CONTENT AREA
+   * ================================================================= */
+  .project-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    padding: var(--spacing-5);
+    flex: 1;
+  }
+
+  .project-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+  }
+
+  .project-card__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+    /* Limit to 3 lines with ellipsis */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* =================================================================
+   * TECHNOLOGY TAGS
+   * ================================================================= */
+  .project-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .project-card__tag {
+    padding: var(--spacing-1) var(--spacing-2);
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-700);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-primary-100);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .project-card:hover .project-card__tag {
+    background-color: var(--color-primary-100);
+    border-color: var(--color-primary-200);
+  }
+
+  /* =================================================================
+   * FOOTER WITH CTAs
+   * ================================================================= */
+  .project-card__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4) var(--spacing-5);
+    border-top: 1px solid var(--color-border-light);
+    margin-top: auto;
+  }
+
+  .project-card__cta {
+    flex: 1;
+  }
+
+  .project-card__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-10);
+    height: var(--spacing-10);
+    color: var(--color-text-secondary);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+    transition:
+      color var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .project-card__link:hover {
+    color: var(--color-primary);
+    background-color: var(--color-primary-50);
+  }
+
+  .project-card__link:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .project-card__link-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .project-card__link-icon :global(svg) {
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+  }
+
+  /* Screen reader only text */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Ensure minimum touch target sizes on mobile */
+  @media screen and (max-width: 767px) {
+    .project-card__link {
+      width: var(--spacing-11);
+      height: var(--spacing-11);
+      min-width: 44px;
+      min-height: 44px;
+    }
+
+    .project-card__content {
+      padding: var(--spacing-4);
+    }
+
+    .project-card__footer {
+      padding: var(--spacing-3) var(--spacing-4);
+    }
+  }
+
+  /* Tablet and up (768px) */
+  @media screen and (min-width: 768px) {
+    .project-card__content {
+      padding: var(--spacing-6);
+    }
+
+    .project-card__title {
+      font-size: var(--font-size-xl);
+    }
+
+    .project-card__footer {
+      padding: var(--spacing-4) var(--spacing-6);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .project-card,
+    .project-card__image,
+    .project-card__overlay,
+    .project-card__overlay-text,
+    .project-card__tag,
+    .project-card__link {
+      transition: none;
+    }
+
+    .project-card:hover {
+      transform: none;
+    }
+
+    .project-card:hover .project-card__image {
+      transform: none;
+    }
+
+    .project-card__loading-icon {
+      animation: none;
+      opacity: 0.6;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .project-card {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .project-card:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .project-card__overlay {
+      display: none;
+    }
+
+    .project-card__footer {
+      display: none;
+    }
+
+    .project-card__image-placeholder {
+      display: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .project-card {
+      border: 2px solid currentColor;
+    }
+
+    .project-card__badge {
+      border: 1px solid currentColor;
+    }
+
+    .project-card__tag {
+      border: 1px solid currentColor;
+    }
+
+    .project-card__link {
+      border: 1px solid currentColor;
+    }
+  }
+</style>

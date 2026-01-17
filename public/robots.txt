@@ -1,0 +1,14 @@
+# robots.txt for houston-web-services.com
+# https://www.robotstxt.org/robotstxt.html
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin and private routes
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://houston-web-services.com/sitemap-index.xml

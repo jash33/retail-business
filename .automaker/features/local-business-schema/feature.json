@@ -1,0 +1,39 @@
+{
+  "id": "local-business-schema",
+  "category": "Core",
+  "title": "LocalBusiness JSON-LD Schema",
+  "description": "Implement LocalBusiness JSON-LD Structured Data for Enhanced Local SEO\n\nAdd comprehensive JSON-LD structured data markup to the website using schema.org's LocalBusiness vocabulary to improve visibility in Google local search results and rich snippets.\n\nRequirements:\n- Implement JSON-LD script tag with @type \"LocalBusiness\" or appropriate subtype (e.g., \"ProfessionalService\", \"Store\", etc.)\n- Include all core business identity properties:\n  - Business name (legal and DBA if applicable)\n  - Complete postal address for west Houston location\n  - Primary phone number and alternative contact methods if available\n  - Business URL and social media profiles\n- Define service area coverage:\n  - Primary service area: ZIP code 77077\n  - Extended service areas: surrounding ZIP codes in west Houston\n  - Use \"areaServed\" property with GeoCircle or list of postal codes\n- Specify detailed opening hours:\n  - Weekly schedule with dayOfWeek and hours\n  - Handle special cases (holidays, seasonal hours)\n  - Mark closed days explicitly\n- Add supporting properties for SEO value:\n  - Business description\n  - Price range indicator if applicable\n  - Accepted payment methods\n  - Business logo and image URLs\n  - Aggregate rating if reviews exist\n- Validate implementation:\n  - Test with Google Rich Results Test tool\n  - Verify no errors in Google Search Console\n  - Ensure JSON-LD is properly embedded in HTML head or body\n- Consider additional enhancements:\n  - GeoCoordinates for precise location\n  - Same-day service availability if offered\n  - Special COVID-19 announcements if relevant\n\nEdge Cases:\n- Handle businesses with multiple locations appropriately\n- Account for temporary hour changes or closures\n- Ensure address format matches Google My Business listing exactly",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "seo-head-component"
+  ],
+  "createdAt": "2026-01-16T22:50:41.430Z",
+  "updatedAt": "2026-01-16T23:39:07.034Z",
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "current",
+  "descriptionHistory": [
+    {
+      "description": "Implement JSON-LD structured data for LocalBusiness schema including business name, address (west Houston area), service area (77077 and surrounding), contact information, and opening hours. This enhances local SEO visibility in Google search results.",
+      "timestamp": "2026-01-16T23:02:44.952Z",
+      "source": "initial"
+    },
+    {
+      "description": "Implement LocalBusiness JSON-LD Structured Data for Enhanced Local SEO\n\nAdd comprehensive JSON-LD structured data markup to the website using schema.org's LocalBusiness vocabulary to improve visibility in Google local search results and rich snippets.\n\nRequirements:\n- Implement JSON-LD script tag with @type \"LocalBusiness\" or appropriate subtype (e.g., \"ProfessionalService\", \"Store\", etc.)\n- Include all core business identity properties:\n  - Business name (legal and DBA if applicable)\n  - Complete postal address for west Houston location\n  - Primary phone number and alternative contact methods if available\n  - Business URL and social media profiles\n- Define service area coverage:\n  - Primary service area: ZIP code 77077\n  - Extended service areas: surrounding ZIP codes in west Houston\n  - Use \"areaServed\" property with GeoCircle or list of postal codes\n- Specify detailed opening hours:\n  - Weekly schedule with dayOfWeek and hours\n  - Handle special cases (holidays, seasonal hours)\n  - Mark closed days explicitly\n- Add supporting properties for SEO value:\n  - Business description\n  - Price range indicator if applicable\n  - Accepted payment methods\n  - Business logo and image URLs\n  - Aggregate rating if reviews exist\n- Validate implementation:\n  - Test with Google Rich Results Test tool\n  - Verify no errors in Google Search Console\n  - Ensure JSON-LD is properly embedded in HTML head or body\n- Consider additional enhancements:\n  - GeoCoordinates for precise location\n  - Same-day service availability if offered\n  - Special COVID-19 announcements if relevant\n\nEdge Cases:\n- Handle businesses with multiple locations appropriately\n- Account for temporary hour changes or closures\n- Ensure address format matches Google My Business listing exactly",
+      "timestamp": "2026-01-16T23:02:44.952Z",
+      "source": "enhance",
+      "enhancementMode": "improve"
+    }
+  ],
+  "branchName": "master",
+  "startedAt": "2026-01-16T23:21:42.912Z",
+  "justFinishedAt": "2026-01-16T23:39:07.034Z"
+}

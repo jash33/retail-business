@@ -1,0 +1,88 @@
+---
+/**
+ * Google Analytics 4 Component
+ *
+ * Loads GA4 script asynchronously with privacy-compliant configuration.
+ * Works with the CookieConsent component for GDPR/CCPA compliance.
+ *
+ * @example
+ * ```astro
+ * ---
+ * import GoogleAnalytics from '../components/GoogleAnalytics.astro';
+ * ---
+ * <head>
+ *   <GoogleAnalytics />
+ * </head>
+ * ```
+ */
+
+import { GA4_MEASUREMENT_ID, ga4Config } from '../config/analytics.config';
+
+interface Props {
+  /** Override measurement ID */
+  measurementId?: string;
+  /** Enable debug mode */
+  debug?: boolean;
+}
+
+const {
+  measurementId = GA4_MEASUREMENT_ID,
+  debug = ga4Config.debug,
+} = Astro.props;
+
+// Don't render if no valid measurement ID
+const shouldRender = measurementId && measurementId !== 'G-XXXXXXXXXX';
+---
+
+{shouldRender && (
+  <>
+    <!-- Google Analytics 4 - Loaded conditionally based on consent -->
+    <script
+      is:inline
+      define:vars={{ measurementId, debug, anonymizeIp: ga4Config.anonymizeIp }}
+    >
+      // Initialize dataLayer and gtag
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        window.dataLayer.push(arguments);
+      }
+      window.gtag = gtag;
+
+      // Set default consent state (denied until user accepts)
+      gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        functionality_storage: 'denied',
+        personalization_storage: 'denied',
+        security_storage: 'granted',
+        wait_for_update: 500,
+      });
+
+      // Initialize timestamp
+      gtag('js', new Date());
+
+      // Configure GA4 with privacy settings
+      gtag('config', measurementId, {
+        anonymize_ip: anonymizeIp,
+        send_page_view: false, // Controlled by consent
+        debug_mode: debug,
+      });
+
+      if (debug) {
+        console.log('[GA4] Initialized with consent mode, waiting for user consent');
+      }
+    </script>
+
+    <!--
+      GA4 Script Loading Strategy:
+      - Script is NOT loaded until user gives consent
+      - The CookieConsent component handles loading via loadGA4Script()
+      - This prevents any tracking before consent is given
+    -->
+    <noscript>
+      <!-- GA4 requires JavaScript -->
+    </noscript>
+  </>
+)}

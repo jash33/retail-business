@@ -1,0 +1,37 @@
+{
+  "id": "sitemap-robots-generation",
+  "category": "Core",
+  "title": "Sitemap & Robots.txt Generation",
+  "description": "Configure Automated Sitemap and Robots.txt Generation for Astro Site\n\nSet up Astro to automatically generate sitemap.xml and robots.txt files during the build process to optimize search engine crawling and indexing.\n\nRequirements:\n- Install and configure @astrojs/sitemap integration\n- Generate sitemap.xml containing all discoverable pages in the site\n- Ensure sitemap includes proper URL formatting with full domain paths\n- Configure sitemap to respect canonical URLs and exclude pages marked as noindex\n- Create robots.txt file with appropriate directives (User-agent, Allow, Disallow, Sitemap reference)\n- Include sitemap.xml location in robots.txt\n- Exclude admin routes, private pages, and utility endpoints from sitemap if present\n- Configure site URL in Astro config to ensure correct absolute URLs in sitemap\n- Verify both files are generated in the build output at root level\n- Test sitemap XML structure validates against sitemap protocol standards\n- Ensure generated files are accessible at /sitemap.xml and /robots.txt in production",
+  "status": "verified",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-16T22:50:41.446Z",
+  "updatedAt": "2026-01-16T23:11:47.802Z",
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "lite",
+  "requirePlanApproval": false,
+  "workMode": "current",
+  "descriptionHistory": [
+    {
+      "description": "Configure Astro to automatically generate sitemap.xml with all pages and robots.txt with proper directives at build time. Ensures search engines can properly crawl and index the site.",
+      "timestamp": "2026-01-16T23:00:17.183Z",
+      "source": "initial"
+    },
+    {
+      "description": "Configure Automated Sitemap and Robots.txt Generation for Astro Site\n\nSet up Astro to automatically generate sitemap.xml and robots.txt files during the build process to optimize search engine crawling and indexing.\n\nRequirements:\n- Install and configure @astrojs/sitemap integration\n- Generate sitemap.xml containing all discoverable pages in the site\n- Ensure sitemap includes proper URL formatting with full domain paths\n- Configure sitemap to respect canonical URLs and exclude pages marked as noindex\n- Create robots.txt file with appropriate directives (User-agent, Allow, Disallow, Sitemap reference)\n- Include sitemap.xml location in robots.txt\n- Exclude admin routes, private pages, and utility endpoints from sitemap if present\n- Configure site URL in Astro config to ensure correct absolute URLs in sitemap\n- Verify both files are generated in the build output at root level\n- Test sitemap XML structure validates against sitemap protocol standards\n- Ensure generated files are accessible at /sitemap.xml and /robots.txt in production",
+      "timestamp": "2026-01-16T23:00:17.183Z",
+      "source": "enhance",
+      "enhancementMode": "improve"
+    }
+  ],
+  "branchName": "master",
+  "startedAt": "2026-01-16T23:09:36.809Z",
+  "justFinishedAt": "2026-01-16T23:11:47.802Z"
+}

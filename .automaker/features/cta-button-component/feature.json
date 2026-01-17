@@ -1,0 +1,39 @@
+{
+  "id": "cta-button-component",
+  "category": "UI",
+  "title": "CTA Button Component",
+  "description": "Build Reusable Call-to-Action Button Component\n\nCreate a flexible, accessible button component with multiple variants for use across the site to drive user conversions and actions.\n\nRequirements:\n- Implement primary and secondary visual variants with distinct styling\n- Add interactive states: default, hover, active, focus, and disabled\n- Include accessible focus indicators meeting WCAG 2.1 AA standards (visible focus ring, sufficient contrast)\n- Support keyboard navigation (Enter/Space activation, Tab navigation)\n- Provide props for customization:\n  - text: Button label content\n  - href or onClick: Navigation link or click handler\n  - variant: 'primary' or 'secondary'\n  - size: Optional sizing variants (small, medium, large)\n  - disabled: Boolean to disable interaction\n  - icon: Optional icon support (leading or trailing)\n  - fullWidth: Optional prop for full-width buttons\n- Add proper ARIA attributes (role, aria-label, aria-disabled)\n- Support both link and button HTML elements based on use case (href renders as <a>, onClick as <button>)\n- Ensure consistent spacing, typography, and visual hierarchy across variants\n- Make responsive (touch-friendly sizing on mobile)\n- Include loading state for async actions\n- Document component API and usage examples\n- Test across major browsers and screen readers",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "css-variables-typography"
+  ],
+  "createdAt": "2026-01-16T22:50:41.432Z",
+  "updatedAt": "2026-01-16T23:22:15.654Z",
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "current",
+  "descriptionHistory": [
+    {
+      "description": "Build reusable call-to-action button component with primary and secondary variants, hover states, accessible focus indicators, and props for text, link, and style customization. Used throughout the site for conversions.",
+      "timestamp": "2026-01-16T23:01:24.313Z",
+      "source": "initial"
+    },
+    {
+      "description": "Build Reusable Call-to-Action Button Component\n\nCreate a flexible, accessible button component with multiple variants for use across the site to drive user conversions and actions.\n\nRequirements:\n- Implement primary and secondary visual variants with distinct styling\n- Add interactive states: default, hover, active, focus, and disabled\n- Include accessible focus indicators meeting WCAG 2.1 AA standards (visible focus ring, sufficient contrast)\n- Support keyboard navigation (Enter/Space activation, Tab navigation)\n- Provide props for customization:\n  - text: Button label content\n  - href or onClick: Navigation link or click handler\n  - variant: 'primary' or 'secondary'\n  - size: Optional sizing variants (small, medium, large)\n  - disabled: Boolean to disable interaction\n  - icon: Optional icon support (leading or trailing)\n  - fullWidth: Optional prop for full-width buttons\n- Add proper ARIA attributes (role, aria-label, aria-disabled)\n- Support both link and button HTML elements based on use case (href renders as <a>, onClick as <button>)\n- Ensure consistent spacing, typography, and visual hierarchy across variants\n- Make responsive (touch-friendly sizing on mobile)\n- Include loading state for async actions\n- Document component API and usage examples\n- Test across major browsers and screen readers",
+      "timestamp": "2026-01-16T23:01:24.313Z",
+      "source": "enhance",
+      "enhancementMode": "improve"
+    }
+  ],
+  "branchName": "master",
+  "startedAt": "2026-01-16T23:18:03.322Z",
+  "justFinishedAt": "2026-01-16T23:22:15.654Z"
+}

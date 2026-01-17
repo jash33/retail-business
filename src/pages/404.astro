@@ -1,0 +1,864 @@
+---
+/**
+ * Custom 404 Error Page
+ * User-friendly error page for broken or non-existent URLs.
+ *
+ * Features:
+ * - Consistent site branding (logo, colors, typography, header/footer)
+ * - Clear, friendly messaging without technical jargon
+ * - Prominent navigation links to key pages
+ * - Working search bar to help users find content
+ * - SEO-friendly elements (proper meta tags, heading structure)
+ * - Helpful suggestions and popular pages
+ * - Responsive design (mobile, tablet, desktop)
+ * - Analytics tracking for 404 errors
+ * - Contextual help based on attempted URL patterns
+ */
+
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/Button.astro';
+import { trackEvent } from '../utils/analytics';
+
+// Get the current URL path for analytics and contextual suggestions
+const currentPath = Astro.url.pathname;
+const searchParams = Astro.url.searchParams;
+// Note: referrer is tracked client-side since this is a statically generated page
+
+// Navigation links for quick access
+const quickLinks = [
+  { href: '/', label: 'Homepage', description: 'Return to our main page' },
+  { href: '/services', label: 'Services', description: 'Explore our web solutions' },
+  { href: '/portfolio', label: 'Portfolio', description: 'View our recent projects' },
+  { href: '/contact', label: 'Contact Us', description: 'Get in touch with our team' },
+  { href: '/about', label: 'About Us', description: 'Learn more about our company' },
+];
+
+// Popular/suggested pages
+const popularPages = [
+  { href: '/services', label: 'Web Design Services' },
+  { href: '/services', label: 'SEO Optimization' },
+  { href: '/portfolio', label: 'Our Work' },
+  { href: '/contact', label: 'Request a Quote' },
+];
+
+// Helper function to get contextual suggestions based on URL pattern
+function getContextualSuggestion(path: string): { message: string; suggestedLink?: { href: string; label: string } } | null {
+  const pathLower = path.toLowerCase();
+
+  // Check for common URL patterns and provide helpful suggestions
+  if (pathLower.includes('service') || pathLower.includes('pricing') || pathLower.includes('plan')) {
+    return {
+      message: 'Looking for our services?',
+      suggestedLink: { href: '/services', label: 'View Our Services' }
+    };
+  }
+
+  if (pathLower.includes('portfolio') || pathLower.includes('project') || pathLower.includes('work') || pathLower.includes('case')) {
+    return {
+      message: 'Want to see our work?',
+      suggestedLink: { href: '/portfolio', label: 'View Our Portfolio' }
+    };
+  }
+
+  if (pathLower.includes('contact') || pathLower.includes('quote') || pathLower.includes('inquiry') || pathLower.includes('email')) {
+    return {
+      message: 'Need to get in touch?',
+      suggestedLink: { href: '/contact', label: 'Contact Us' }
+    };
+  }
+
+  if (pathLower.includes('about') || pathLower.includes('team') || pathLower.includes('company') || pathLower.includes('who')) {
+    return {
+      message: 'Want to learn more about us?',
+      suggestedLink: { href: '/about', label: 'About Our Company' }
+    };
+  }
+
+  if (pathLower.includes('blog') || pathLower.includes('article') || pathLower.includes('news') || pathLower.includes('post')) {
+    return {
+      message: 'Looking for articles or news?',
+      suggestedLink: { href: '/', label: 'Visit Our Homepage' }
+    };
+  }
+
+  return null;
+}
+
+const contextualSuggestion = getContextualSuggestion(currentPath);
+
+// Decode URL for display (handle special characters)
+let displayPath = currentPath;
+try {
+  displayPath = decodeURIComponent(currentPath);
+} catch {
+  // Keep original if decoding fails (malformed URL)
+  displayPath = currentPath;
+}
+
+// SVG Icons
+const icons = {
+  search: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true"><path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clip-rule="evenodd" /></svg>`,
+  home: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true"><path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" /><path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" /></svg>`,
+  arrowRight: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M12.97 3.97a.75.75 0 011.06 0l7.5 7.5a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 11-1.06-1.06l6.22-6.22H3a.75.75 0 010-1.5h16.19l-6.22-6.22a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>`,
+};
+---
+
+<Layout
+  title="Page Not Found"
+  description="The page you're looking for doesn't exist or has been moved. Find your way back with our helpful navigation options."
+  robots="noindex, nofollow"
+>
+  <main class="error-page" id="error-content">
+    <div class="error-page__container">
+      <!-- Error Code Visual -->
+      <div class="error-page__visual" aria-hidden="true">
+        <span class="error-page__code">404</span>
+        <div class="error-page__decoration">
+          <div class="error-page__circle error-page__circle--1"></div>
+          <div class="error-page__circle error-page__circle--2"></div>
+          <div class="error-page__circle error-page__circle--3"></div>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div class="error-page__content">
+        <h1 class="error-page__heading">Page Not Found</h1>
+        <p class="error-page__message">
+          Sorry, we couldn't find the page you were looking for. It may have been moved, renamed, or doesn't exist.
+        </p>
+
+        <!-- Display the attempted URL (sanitized) -->
+        {displayPath && displayPath !== '/' && (
+          <p class="error-page__url">
+            <span class="error-page__url-label">Requested URL:</span>
+            <code class="error-page__url-path">{displayPath}</code>
+          </p>
+        )}
+
+        <!-- Contextual Suggestion (if available) -->
+        {contextualSuggestion && (
+          <div class="error-page__suggestion">
+            <p class="error-page__suggestion-text">{contextualSuggestion.message}</p>
+            {contextualSuggestion.suggestedLink && (
+              <a href={contextualSuggestion.suggestedLink.href} class="error-page__suggestion-link">
+                {contextualSuggestion.suggestedLink.label}
+                <Fragment set:html={icons.arrowRight} />
+              </a>
+            )}
+          </div>
+        )}
+
+        <!-- Primary CTAs -->
+        <div class="error-page__actions">
+          <Button
+            text="Go to Homepage"
+            href="/"
+            variant="primary"
+            size="large"
+          >
+            <Fragment slot="icon" set:html={icons.home} />
+          </Button>
+          <Button
+            text="Contact Support"
+            href="/contact"
+            variant="secondary"
+            size="large"
+          />
+        </div>
+      </div>
+
+      <!-- Search Section -->
+      <section class="error-page__search-section" aria-labelledby="search-heading">
+        <h2 id="search-heading" class="error-page__section-heading">Search Our Site</h2>
+        <form
+          class="error-page__search-form"
+          action="https://www.google.com/search"
+          method="get"
+          target="_blank"
+          rel="noopener noreferrer"
+          role="search"
+          aria-label="Search Houston Web Services"
+        >
+          <!-- Hidden field to restrict search to this site -->
+          <input type="hidden" name="sitesearch" value="houstonwebservices.com" />
+          <input type="hidden" name="as_sitesearch" value="houstonwebservices.com" />
+
+          <div class="error-page__search-wrapper">
+            <label for="search-input" class="sr-only">Search</label>
+            <input
+              type="search"
+              id="search-input"
+              name="q"
+              class="error-page__search-input"
+              placeholder="Search for pages, services..."
+              autocomplete="off"
+              aria-describedby="search-hint"
+            />
+            <button type="submit" class="error-page__search-button" aria-label="Submit search">
+              <Fragment set:html={icons.search} />
+            </button>
+          </div>
+          <p id="search-hint" class="error-page__search-hint">
+            Search opens in a new tab using Google site search
+          </p>
+        </form>
+      </section>
+
+      <!-- Quick Links Section -->
+      <section class="error-page__links-section" aria-labelledby="links-heading">
+        <h2 id="links-heading" class="error-page__section-heading">Quick Links</h2>
+        <nav class="error-page__links-nav" aria-label="Quick navigation links">
+          <ul class="error-page__links-list" role="list">
+            {quickLinks.map((link) => (
+              <li class="error-page__links-item">
+                <a href={link.href} class="error-page__link">
+                  <span class="error-page__link-label">{link.label}</span>
+                  <span class="error-page__link-description">{link.description}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </section>
+
+      <!-- Popular Pages Section -->
+      <section class="error-page__popular-section" aria-labelledby="popular-heading">
+        <h2 id="popular-heading" class="error-page__section-heading">Popular Pages</h2>
+        <ul class="error-page__popular-list" role="list">
+          {popularPages.map((page) => (
+            <li class="error-page__popular-item">
+              <a href={page.href} class="error-page__popular-link">
+                <Fragment set:html={icons.arrowRight} />
+                {page.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <!-- Help Text -->
+      <div class="error-page__help">
+        <p class="error-page__help-text">
+          Still can't find what you're looking for?
+          <a href="/contact" class="error-page__help-link">Contact us</a> and we'll help you find it.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Analytics tracking script -->
+  <script>
+    // Track 404 error when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if gtag is available
+      if (typeof window.gtag === 'function') {
+        // Track 404 error event with client-side values
+        window.gtag('event', 'page_not_found', {
+          page_path: window.location.pathname,
+          page_referrer: document.referrer || '',
+          page_title: document.title,
+          page_location: window.location.href
+        });
+      }
+
+      // Also log to console in development for debugging
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.log('[404 Tracking] Page not found:', {
+          path: window.location.pathname,
+          referrer: document.referrer,
+          url: window.location.href
+        });
+      }
+    });
+  </script>
+</Layout>
+
+<style>
+  /* =================================================================
+   * 404 ERROR PAGE STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention
+   */
+
+  .error-page {
+    background-color: var(--color-background-subtle);
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-8) var(--spacing-4);
+  }
+
+  .error-page__container {
+    max-width: var(--container-3xl);
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  /* -----------------------------------------------------------------
+   * Error Visual Section
+   * ----------------------------------------------------------------- */
+
+  .error-page__visual {
+    position: relative;
+    margin-bottom: var(--spacing-8);
+  }
+
+  .error-page__code {
+    font-family: var(--font-heading);
+    font-size: clamp(6rem, 20vw, 12rem);
+    font-weight: var(--font-weight-extrabold);
+    color: var(--color-primary-100);
+    line-height: 1;
+    letter-spacing: var(--letter-spacing-tight);
+    display: block;
+    user-select: none;
+  }
+
+  .error-page__decoration {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .error-page__circle {
+    position: absolute;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--color-primary-200);
+    opacity: 0.5;
+  }
+
+  .error-page__circle--1 {
+    width: 60%;
+    height: 100%;
+  }
+
+  .error-page__circle--2 {
+    width: 80%;
+    height: 130%;
+    border-style: dashed;
+  }
+
+  .error-page__circle--3 {
+    width: 100%;
+    height: 160%;
+    border-style: dotted;
+    opacity: 0.3;
+  }
+
+  /* -----------------------------------------------------------------
+   * Content Section
+   * ----------------------------------------------------------------- */
+
+  .error-page__content {
+    margin-bottom: var(--spacing-12);
+  }
+
+  .error-page__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .error-page__message {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-4);
+    max-width: 36rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .error-page__url {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    margin: 0 0 var(--spacing-6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+
+  .error-page__url-label {
+    font-weight: var(--font-weight-medium);
+  }
+
+  .error-page__url-path {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    background-color: var(--color-background-muted);
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    word-break: break-all;
+    max-width: 100%;
+    display: inline-block;
+  }
+
+  /* -----------------------------------------------------------------
+   * Contextual Suggestion
+   * ----------------------------------------------------------------- */
+
+  .error-page__suggestion {
+    background-color: var(--color-primary-50);
+    border: 1px solid var(--color-primary-100);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-4) var(--spacing-6);
+    margin: 0 auto var(--spacing-6);
+    max-width: 24rem;
+  }
+
+  .error-page__suggestion-text {
+    font-size: var(--font-size-base);
+    color: var(--color-primary-700);
+    font-weight: var(--font-weight-medium);
+    margin: 0 0 var(--spacing-2);
+  }
+
+  .error-page__suggestion-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .error-page__suggestion-link:hover {
+    color: var(--color-primary-hover);
+    text-decoration: underline;
+  }
+
+  .error-page__suggestion-link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-sm);
+  }
+
+  .error-page__suggestion-link :global(svg) {
+    transition: transform var(--duration-150) var(--ease-in-out);
+  }
+
+  .error-page__suggestion-link:hover :global(svg) {
+    transform: translateX(4px);
+  }
+
+  /* -----------------------------------------------------------------
+   * Action Buttons
+   * ----------------------------------------------------------------- */
+
+  .error-page__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    align-items: center;
+    margin-top: var(--spacing-6);
+  }
+
+  /* -----------------------------------------------------------------
+   * Search Section
+   * ----------------------------------------------------------------- */
+
+  .error-page__search-section {
+    background-color: var(--color-background);
+    border-radius: var(--radius-2xl);
+    padding: var(--spacing-6);
+    margin-bottom: var(--spacing-8);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .error-page__section-heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+  }
+
+  .error-page__search-form {
+    max-width: 28rem;
+    margin: 0 auto;
+  }
+
+  .error-page__search-wrapper {
+    display: flex;
+    gap: var(--spacing-2);
+    position: relative;
+  }
+
+  .error-page__search-input {
+    flex: 1;
+    padding: var(--spacing-3) var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--duration-150) var(--ease-in-out),
+                box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .error-page__search-input::placeholder {
+    color: var(--color-text-placeholder);
+  }
+
+  .error-page__search-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-50);
+  }
+
+  .error-page__search-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: background-color var(--duration-150) var(--ease-in-out),
+                transform var(--duration-150) var(--ease-in-out);
+  }
+
+  .error-page__search-button:hover {
+    background-color: var(--color-primary-hover);
+  }
+
+  .error-page__search-button:active {
+    transform: scale(0.95);
+  }
+
+  .error-page__search-button:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .error-page__search-hint {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin: var(--spacing-2) 0 0;
+  }
+
+  /* -----------------------------------------------------------------
+   * Quick Links Section
+   * ----------------------------------------------------------------- */
+
+  .error-page__links-section {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .error-page__links-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-3);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+  }
+
+  .error-page__link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    padding: var(--spacing-4);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    text-decoration: none;
+    transition: border-color var(--duration-150) var(--ease-in-out),
+                box-shadow var(--duration-150) var(--ease-in-out),
+                transform var(--duration-150) var(--ease-in-out);
+  }
+
+  .error-page__link:hover {
+    border-color: var(--color-primary-200);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .error-page__link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .error-page__link-label {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+  }
+
+  .error-page__link-description {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  /* -----------------------------------------------------------------
+   * Popular Pages Section
+   * ----------------------------------------------------------------- */
+
+  .error-page__popular-section {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .error-page__popular-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-3);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .error-page__popular-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    background-color: var(--color-primary-50);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    transition: background-color var(--duration-150) var(--ease-in-out),
+                color var(--duration-150) var(--ease-in-out);
+  }
+
+  .error-page__popular-link:hover {
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-700);
+  }
+
+  .error-page__popular-link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .error-page__popular-link :global(svg) {
+    opacity: 0.7;
+    transition: transform var(--duration-150) var(--ease-in-out);
+  }
+
+  .error-page__popular-link:hover :global(svg) {
+    transform: translateX(2px);
+  }
+
+  /* -----------------------------------------------------------------
+   * Help Section
+   * ----------------------------------------------------------------- */
+
+  .error-page__help {
+    background-color: var(--color-background);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-4) var(--spacing-6);
+    border: 1px dashed var(--color-border-dark);
+  }
+
+  .error-page__help-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .error-page__help-link {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+  }
+
+  .error-page__help-link:hover {
+    text-decoration: underline;
+  }
+
+  .error-page__help-link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-sm);
+  }
+
+  /* -----------------------------------------------------------------
+   * Screen Reader Only (Utility)
+   * ----------------------------------------------------------------- */
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * =================================================================
+   */
+
+  /* Tablet (640px and up) */
+  @media screen and (min-width: 640px) {
+    .error-page {
+      padding: var(--spacing-12) var(--spacing-6);
+    }
+
+    .error-page__actions {
+      flex-direction: row;
+      justify-content: center;
+    }
+
+    .error-page__links-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .error-page__url {
+      flex-direction: row;
+      gap: var(--spacing-2);
+    }
+  }
+
+  /* Desktop (768px and up) */
+  @media screen and (min-width: 768px) {
+    .error-page {
+      padding: var(--spacing-16) var(--spacing-8);
+    }
+
+    .error-page__heading {
+      font-size: var(--font-size-5xl);
+    }
+
+    .error-page__message {
+      font-size: var(--font-size-xl);
+    }
+
+    .error-page__search-section {
+      padding: var(--spacing-8);
+    }
+  }
+
+  /* Large Desktop (1024px and up) */
+  @media screen and (min-width: 1024px) {
+    .error-page__links-list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .error-page__links-item:last-child {
+      grid-column: span 1;
+    }
+
+    /* Center the last two items if there are 5 */
+    .error-page__links-list {
+      justify-content: center;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * =================================================================
+   */
+
+  @media (prefers-reduced-motion: reduce) {
+    .error-page__link,
+    .error-page__popular-link,
+    .error-page__suggestion-link :global(svg),
+    .error-page__popular-link :global(svg),
+    .error-page__search-button {
+      transition: none;
+    }
+
+    .error-page__link:hover,
+    .error-page__search-button:active {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+
+  @media print {
+    .error-page {
+      background-color: transparent;
+      padding: var(--spacing-8) 0;
+    }
+
+    .error-page__visual,
+    .error-page__search-section,
+    .error-page__actions {
+      display: none;
+    }
+
+    .error-page__container {
+      text-align: left;
+    }
+
+    .error-page__link,
+    .error-page__popular-link,
+    .error-page__help {
+      border: none;
+      background: none;
+      padding: 0;
+    }
+
+    .error-page__links-list {
+      display: block;
+    }
+
+    .error-page__link::after {
+      content: ' (' attr(href) ')';
+      font-size: var(--font-size-sm);
+      color: var(--color-text-tertiary);
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * =================================================================
+   */
+
+  @media (forced-colors: active) {
+    .error-page__code {
+      color: CanvasText;
+    }
+
+    .error-page__circle {
+      border-color: CanvasText;
+    }
+
+    .error-page__link,
+    .error-page__search-input,
+    .error-page__search-button,
+    .error-page__help {
+      border: 2px solid CanvasText;
+    }
+
+    .error-page__search-button {
+      background-color: Highlight;
+      color: HighlightText;
+    }
+
+    .error-page__suggestion {
+      border: 2px solid Highlight;
+    }
+  }
+</style>

@@ -1,0 +1,493 @@
+---
+/**
+ * CTA Button Component
+ * A flexible, accessible button component with multiple variants for use across
+ * the site to drive user conversions and actions.
+ *
+ * Features:
+ * - Primary and secondary visual variants
+ * - Three size options (small, medium, large)
+ * - Interactive states: default, hover, active, focus, disabled, loading
+ * - WCAG 2.1 AA compliant focus indicators
+ * - Full keyboard navigation support
+ * - Renders as <a> for href or <button> for onClick
+ * - Optional icon support (leading or trailing)
+ * - Loading state for async actions
+ * - Responsive and touch-friendly
+ *
+ * @example Basic usage
+ * ```astro
+ * <Button text="Get Started" href="/contact" />
+ * ```
+ *
+ * @example With variant and size
+ * ```astro
+ * <Button
+ *   text="Learn More"
+ *   href="/about"
+ *   variant="secondary"
+ *   size="large"
+ * />
+ * ```
+ *
+ * @example Button with icon
+ * ```astro
+ * <Button text="Download" variant="primary" iconPosition="trailing">
+ *   <svg slot="icon" ...></svg>
+ * </Button>
+ * ```
+ *
+ * @example Loading state
+ * ```astro
+ * <Button
+ *   text="Submitting..."
+ *   variant="primary"
+ *   isLoading={true}
+ * />
+ * ```
+ */
+
+import type { ButtonProps } from '../types/button';
+
+interface Props extends ButtonProps {}
+
+const {
+  // Required
+  text,
+
+  // Navigation/Action
+  href,
+  onClick,
+
+  // Appearance
+  variant = 'primary',
+  size = 'medium',
+  fullWidth = false,
+
+  // State
+  disabled = false,
+  isLoading = false,
+
+  // Icon
+  iconPosition = 'leading',
+
+  // Accessibility
+  ariaLabel,
+  ariaDescribedBy,
+
+  // Link behavior
+  openInNewTab = false,
+
+  // Additional attributes
+  class: className = '',
+  type = 'button',
+  id,
+  name,
+  value,
+  form,
+} = Astro.props;
+
+// Determine if button should be disabled (either explicitly or due to loading)
+const isDisabled = disabled || isLoading;
+
+// Check if there's icon content in the slot
+const hasIcon = Astro.slots.has('icon');
+
+// Build CSS classes
+const buttonClasses = [
+  'btn',
+  `btn--${variant}`,
+  `btn--${size}`,
+  fullWidth && 'btn--full-width',
+  isDisabled && 'btn--disabled',
+  isLoading && 'btn--loading',
+  hasIcon && `btn--has-icon`,
+  hasIcon && `btn--icon-${iconPosition}`,
+  className,
+].filter(Boolean).join(' ');
+
+// Determine element type: anchor for href, button otherwise
+const isLink = !!href && !isDisabled;
+
+// Common attributes for both button and anchor
+const commonAttrs = {
+  id,
+  class: buttonClasses,
+  'aria-label': ariaLabel,
+  'aria-describedby': ariaDescribedBy,
+};
+
+// Link-specific attributes
+const linkAttrs = isLink ? {
+  href,
+  target: openInNewTab ? '_blank' : undefined,
+  rel: openInNewTab ? 'noopener noreferrer' : undefined,
+  role: 'button', // For consistency in screen readers
+} : {};
+
+// Button-specific attributes
+const buttonAttrs = !isLink ? {
+  type,
+  disabled: isDisabled,
+  'aria-disabled': isDisabled,
+  name,
+  value,
+  form,
+  onclick: onClick,
+} : {};
+---
+
+{isLink ? (
+  <a {...commonAttrs} {...linkAttrs}>
+    {isLoading && (
+      <span class="btn__spinner" aria-hidden="true">
+        <svg class="btn__spinner-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="31.4 31.4" />
+        </svg>
+      </span>
+    )}
+    {hasIcon && iconPosition === 'leading' && (
+      <span class="btn__icon btn__icon--leading" aria-hidden="true">
+        <slot name="icon" />
+      </span>
+    )}
+    <span class="btn__text">{text}</span>
+    {hasIcon && iconPosition === 'trailing' && (
+      <span class="btn__icon btn__icon--trailing" aria-hidden="true">
+        <slot name="icon" />
+      </span>
+    )}
+  </a>
+) : (
+  <button {...commonAttrs} {...buttonAttrs}>
+    {isLoading && (
+      <span class="btn__spinner" aria-hidden="true">
+        <svg class="btn__spinner-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="31.4 31.4" />
+        </svg>
+      </span>
+    )}
+    {hasIcon && iconPosition === 'leading' && (
+      <span class="btn__icon btn__icon--leading" aria-hidden="true">
+        <slot name="icon" />
+      </span>
+    )}
+    <span class="btn__text">{text}</span>
+    {hasIcon && iconPosition === 'trailing' && (
+      <span class="btn__icon btn__icon--trailing" aria-hidden="true">
+        <slot name="icon" />
+      </span>
+    )}
+  </button>
+)}
+
+<style>
+  /* =================================================================
+   * BASE BUTTON STYLES
+   * ================================================================= */
+  .btn {
+    /* Reset */
+    appearance: none;
+    border: none;
+    background: none;
+    text-decoration: none;
+
+    /* Layout */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+
+    /* Typography */
+    font-family: var(--font-body);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-none);
+    text-align: center;
+    white-space: nowrap;
+
+    /* Interaction */
+    cursor: pointer;
+    user-select: none;
+
+    /* Visual */
+    border-radius: var(--radius-lg);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-in-out),
+      opacity var(--duration-150) var(--ease-in-out);
+
+    /* Ensure button is above background elements */
+    position: relative;
+    z-index: 1;
+  }
+
+  /* =================================================================
+   * SIZE VARIANTS
+   * ================================================================= */
+
+  /* Small - 32px height, compact for dense UIs */
+  .btn--small {
+    padding: var(--spacing-1-5) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    min-height: 2rem; /* 32px */
+  }
+
+  /* Medium - 40px height, default size */
+  .btn--medium {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-base);
+    min-height: 2.5rem; /* 40px */
+  }
+
+  /* Large - 48px height, prominent for hero sections */
+  .btn--large {
+    padding: var(--spacing-3) var(--spacing-6);
+    font-size: var(--font-size-md);
+    min-height: 3rem; /* 48px */
+  }
+
+  /* =================================================================
+   * PRIMARY VARIANT
+   * High-emphasis button for main actions
+   * ================================================================= */
+  .btn--primary {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    border: var(--border-width-2) solid transparent;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn--primary:hover:not(.btn--disabled) {
+    background-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+
+  .btn--primary:active:not(.btn--disabled) {
+    background-color: var(--color-primary-active);
+    box-shadow: var(--shadow-xs);
+    transform: translateY(0);
+  }
+
+  /* =================================================================
+   * SECONDARY VARIANT
+   * Medium-emphasis button for secondary actions (outlined)
+   * ================================================================= */
+  .btn--secondary {
+    background-color: transparent;
+    color: var(--color-primary);
+    border: var(--border-width-2) solid var(--color-primary);
+  }
+
+  .btn--secondary:hover:not(.btn--disabled) {
+    background-color: var(--color-primary-50);
+    border-color: var(--color-primary-hover);
+    color: var(--color-primary-hover);
+  }
+
+  .btn--secondary:active:not(.btn--disabled) {
+    background-color: var(--color-primary-100);
+    border-color: var(--color-primary-active);
+    color: var(--color-primary-active);
+  }
+
+  /* =================================================================
+   * FOCUS STYLES - WCAG 2.1 AA Compliant
+   * Visible focus ring with sufficient contrast
+   * ================================================================= */
+  .btn:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 var(--focus-ring-offset) var(--color-background),
+      0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--focus-ring-color);
+  }
+
+  /* Primary focus - ensure ring is visible on colored background */
+  .btn--primary:focus-visible {
+    box-shadow:
+      0 0 0 var(--focus-ring-offset) var(--color-background),
+      0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--color-primary-900);
+  }
+
+  /* Remove outline for mouse users */
+  .btn:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn--secondary:focus:not(:focus-visible) {
+    box-shadow: none;
+  }
+
+  /* =================================================================
+   * DISABLED STATE
+   * ================================================================= */
+  .btn--disabled {
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .btn--primary.btn--disabled {
+    background-color: var(--color-primary-disabled);
+    box-shadow: none;
+  }
+
+  .btn--secondary.btn--disabled {
+    border-color: var(--color-border-dark);
+    color: var(--color-text-disabled);
+  }
+
+  /* =================================================================
+   * LOADING STATE
+   * ================================================================= */
+  .btn--loading {
+    cursor: wait;
+    pointer-events: none;
+  }
+
+  .btn--loading .btn__text {
+    opacity: 0.7;
+  }
+
+  .btn__spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn__spinner-icon {
+    width: 1em;
+    height: 1em;
+    animation: btn-spin 1s linear infinite;
+  }
+
+  @keyframes btn-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* =================================================================
+   * FULL WIDTH VARIANT
+   * ================================================================= */
+  .btn--full-width {
+    width: 100%;
+  }
+
+  /* =================================================================
+   * ICON STYLES
+   * ================================================================= */
+  .btn__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .btn__icon :global(svg) {
+    width: 1.25em;
+    height: 1.25em;
+  }
+
+  /* Smaller icons for small buttons */
+  .btn--small .btn__icon :global(svg) {
+    width: 1em;
+    height: 1em;
+  }
+
+  /* Larger icons for large buttons */
+  .btn--large .btn__icon :global(svg) {
+    width: 1.5em;
+    height: 1.5em;
+  }
+
+  /* =================================================================
+   * TEXT STYLES
+   * ================================================================= */
+  .btn__text {
+    display: inline-block;
+    transition: opacity var(--duration-150) var(--ease-in-out);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * Touch-friendly sizing on mobile
+   * ================================================================= */
+  @media (max-width: 768px) {
+    /* Increase touch target size on mobile */
+    .btn--small {
+      min-height: 2.5rem; /* 40px minimum touch target */
+      padding: var(--spacing-2) var(--spacing-4);
+    }
+
+    .btn--medium {
+      min-height: 2.75rem; /* 44px touch target */
+      padding: var(--spacing-2-5) var(--spacing-5);
+    }
+
+    .btn--large {
+      min-height: 3rem; /* 48px touch target */
+      padding: var(--spacing-3) var(--spacing-6);
+    }
+
+    /* Slightly larger tap area */
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      bottom: -4px;
+      left: -4px;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .btn {
+      transition: none;
+    }
+
+    .btn:hover:not(.btn--disabled) {
+      transform: none;
+    }
+
+    .btn__spinner-icon {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * Ensure visibility in Windows High Contrast mode
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .btn {
+      border: 2px solid currentColor;
+    }
+
+    .btn--primary {
+      background-color: Highlight;
+      color: HighlightText;
+    }
+
+    .btn--secondary {
+      background-color: Canvas;
+      color: CanvasText;
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid Highlight;
+      outline-offset: 2px;
+    }
+  }
+</style>

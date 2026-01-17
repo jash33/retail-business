@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "remove the <div> tags with the class \"process-step_connector\" on the /services/website-design page.",
+  "title": "Remove process step connector divs from website design page",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "haiku",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "waiting_approval",
+  "id": "feature-1768611897752-49viqot9n",
+  "descriptionHistory": [
+    {
+      "description": "remove the <div> tags with the class \"process-step_connector\" on the /services/website-design page.",
+      "timestamp": "2026-01-17T01:04:57.873Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-17T01:04:57.944Z",
+  "updatedAt": "2026-01-17T01:05:31.585Z",
+  "justFinishedAt": "2026-01-17T01:05:31.585Z"
+}
