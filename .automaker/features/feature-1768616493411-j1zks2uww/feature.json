@@ -1,0 +1,27 @@
+{
+  "category": "Uncategorized",
+  "description": "Make dark mode work, and toggleable. there should be some existing setup for this already.",
+  "title": "",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "backlog",
+  "id": "feature-1768616493411-j1zks2uww",
+  "descriptionHistory": [
+    {
+      "description": "Make dark mode work, and toggleable. there should be some existing setup for this already.",
+      "timestamp": "2026-01-17T02:21:33.545Z",
+      "source": "initial"
+    }
+  ]
+}

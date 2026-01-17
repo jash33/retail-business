@@ -1,0 +1,27 @@
+{
+  "category": "Uncategorized",
+  "description": "Try to implement as many of these suggestions as possible:\n\nWhat I’d improve next (high ROI only)\n\n1. H1 is good, but a bit long and passive\n“Grow Your Houston Area Small Business Online” reads fine, but it’s abstract and wordy.\n\nYou can tighten without losing clarity:\n\n“Grow Your Houston Small Business Online”\n\nor more active: “Websites That Grow Houston Service Businesses”\n\nShorter = more punch, especially on mobile.\n\n2. You’re repeating yourself (slightly)\nThese two lines overlap conceptually:\n\n“No-nonsense websites… bring in leads”\n\n“high-performing websites that turn local traffic into leads”\n\nPick one to be the primary value prop. The other should evolve.\n\nFor example, make the lower line about how:\n\nFast, SEO-ready, conversion-focused builds—no fluff, no bloat.\n\nThat adds substance instead of reinforcement.\n\n3. Missing a credibility micro-signal\nStill no proof above the fold. You don’t need testimonials yet, just evidence of competence.\n\nLightweight options that won’t clutter:\n\n“Built by a senior web developer, not an agency”\n\n“Modern React + SEO-first builds”\n\n“Designed, built, and optimized in Houston”\n\nThis differentiates you from Wix/agency mills instantly.\n\n4. Buttons are fine, but the secondary CTA is weak\n“View Our Services” is low intent and boring.\n\nBetter secondary CTA options:\n\n“See Recent Work”\n\n“How It Works”\n\n“See Pricing”\n\nThese answer real buyer questions earlier.\n\n5. Design needs one ‘hook’ element\nRight now: gradient + centered text + buttons. Clean, but lifeless.\n\nEasy ways to liven it up without overdesign:\n\nAdd a single UI mockup (browser frame with a real site) offset to one side\n\nSubtle animated gradient movement (very slow, barely perceptible)\n\nA thin divider line or accent shape tied to your brand color\n\nSlight staggered entrance animation (headline → sub → CTA)\n\nOne visual anchor is enough.\n\n6. Houston cue could be more emotional\nYou say “Houston,” but you don’t feel Houston.\n\nVery subtle ideas:\n\nHouston skyline line art at 5–10% opacity\n\nLat/long coordinates under the logo\n\n“Serving the Greater Houston area” as a small footer line in the hero\n\nDon’t overdo it—just one.",
+  "title": "Update Hero Section with Stronger Value Proposition",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "backlog",
+  "id": "feature-1768620829146-24ykw6nu1",
+  "descriptionHistory": [
+    {
+      "description": "Try to implement as many of these suggestions as possible:\n\nWhat I’d improve next (high ROI only)\n\n1. H1 is good, but a bit long and passive\n“Grow Your Houston Area Small Business Online” reads fine, but it’s abstract and wordy.\n\nYou can tighten without losing clarity:\n\n“Grow Your Houston Small Business Online”\n\nor more active: “Websites That Grow Houston Service Businesses”\n\nShorter = more punch, especially on mobile.\n\n2. You’re repeating yourself (slightly)\nThese two lines overlap conceptually:\n\n“No-nonsense websites… bring in leads”\n\n“high-performing websites that turn local traffic into leads”\n\nPick one to be the primary value prop. The other should evolve.\n\nFor example, make the lower line about how:\n\nFast, SEO-ready, conversion-focused builds—no fluff, no bloat.\n\nThat adds substance instead of reinforcement.\n\n3. Missing a credibility micro-signal\nStill no proof above the fold. You don’t need testimonials yet, just evidence of competence.\n\nLightweight options that won’t clutter:\n\n“Built by a senior web developer, not an agency”\n\n“Modern React + SEO-first builds”\n\n“Designed, built, and optimized in Houston”\n\nThis differentiates you from Wix/agency mills instantly.\n\n4. Buttons are fine, but the secondary CTA is weak\n“View Our Services” is low intent and boring.\n\nBetter secondary CTA options:\n\n“See Recent Work”\n\n“How It Works”\n\n“See Pricing”\n\nThese answer real buyer questions earlier.\n\n5. Design needs one ‘hook’ element\nRight now: gradient + centered text + buttons. Clean, but lifeless.\n\nEasy ways to liven it up without overdesign:\n\nAdd a single UI mockup (browser frame with a real site) offset to one side\n\nSubtle animated gradient movement (very slow, barely perceptible)\n\nA thin divider line or accent shape tied to your brand color\n\nSlight staggered entrance animation (headline → sub → CTA)\n\nOne visual anchor is enough.\n\n6. Houston cue could be more emotional\nYou say “Houston,” but you don’t feel Houston.\n\nVery subtle ideas:\n\nHouston skyline line art at 5–10% opacity\n\nLat/long coordinates under the logo\n\n“Serving the Greater Houston area” as a small footer line in the hero\n\nDon’t overdo it—just one.",
+      "timestamp": "2026-01-17T03:33:49.275Z",
+      "source": "initial"
+    }
+  ]
+}
