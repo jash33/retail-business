@@ -23,11 +23,11 @@ export type ProjectType =
  */
 export type BudgetRange =
   | ''
-  | 'under-2500'
+  | 'under-500'
+  | '500-1000'
+  | '1000-2500'
   | '2500-5000'
-  | '5000-10000'
-  | '10000-25000'
-  | '25000-plus'
+  | '5000-plus'
   | 'not-sure';
 
 /**
@@ -168,11 +168,11 @@ export const PROJECT_TYPE_OPTIONS: ProjectTypeOption[] = [
  */
 export const BUDGET_RANGE_OPTIONS: BudgetRangeOption[] = [
   { value: '', label: 'Select your budget range' },
-  { value: 'under-1500', label: 'Under $1,500' },
-  { value: '1500-3000', label: '$1,500 - $3,000' },
-  { value: '3000-6000', label: '$3,000 - $6,000' },
-  { value: '6000-15000', label: '$6,000 - $15,000' },
-  { value: '15000-plus', label: '$15,000+' },
+  { value: 'under-500', label: 'Under $500' },
+  { value: '500-1000', label: '$500 - $1,000' },
+  { value: '1000-2500', label: '$1,000 - $2,500' },
+  { value: '2500-5000', label: '$2,500 - $5,000' },
+  { value: '5000-plus', label: '$5,000+' },
   { value: 'not-sure', label: "Not sure yet" },
 ];
 

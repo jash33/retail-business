@@ -15,7 +15,7 @@
   "dependencies": [],
   "workMode": "current",
   "titleGenerating": false,
-  "status": "backlog",
+  "status": "verified",
   "id": "feature-1768613060209-m1gtjzyin",
   "descriptionHistory": [
     {
@@ -25,6 +25,7 @@
     }
   ],
   "branchName": "master",
-  "startedAt": "2026-01-17T01:25:50.823Z",
-  "updatedAt": "2026-01-17T01:25:53.805Z"
+  "startedAt": "2026-01-17T03:35:25.425Z",
+  "updatedAt": "2026-01-17T03:38:51.127Z",
+  "justFinishedAt": "2026-01-17T03:38:51.127Z"
 }

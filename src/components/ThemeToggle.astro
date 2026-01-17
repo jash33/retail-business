@@ -1,0 +1,244 @@
+---
+/**
+ * Theme Toggle Component
+ * A button to switch between light and dark themes.
+ *
+ * Features:
+ * - Persists theme preference in localStorage
+ * - Respects system preference (prefers-color-scheme) as default
+ * - Smooth transition between themes
+ * - Accessible with proper ARIA labels
+ * - No flash of incorrect theme on page load
+ *
+ * @example
+ * ```astro
+ * <ThemeToggle />
+ * ```
+ */
+
+interface Props {
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<button
+  type="button"
+  class:list={['theme-toggle', className]}
+  data-theme-toggle
+  aria-label="Toggle dark mode"
+  title="Toggle dark mode"
+>
+  <!-- Sun icon (shown in dark mode, clicking switches to light) -->
+  <svg
+    class="theme-toggle__icon theme-toggle__icon--sun"
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="5"></circle>
+    <line x1="12" y1="1" x2="12" y2="3"></line>
+    <line x1="12" y1="21" x2="12" y2="23"></line>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+    <line x1="1" y1="12" x2="3" y2="12"></line>
+    <line x1="21" y1="12" x2="23" y2="12"></line>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+  </svg>
+
+  <!-- Moon icon (shown in light mode, clicking switches to dark) -->
+  <svg
+    class="theme-toggle__icon theme-toggle__icon--moon"
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+  </svg>
+</button>
+
+<style>
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: var(--spacing-2);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    transition: background-color var(--duration-150) var(--ease-in-out),
+                color var(--duration-150) var(--ease-in-out);
+  }
+
+  .theme-toggle:hover {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary);
+  }
+
+  .theme-toggle:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Dark mode hover state */
+  :global(html[data-theme="dark"]) .theme-toggle:hover {
+    background-color: var(--color-background-muted);
+    color: var(--color-primary-300);
+  }
+
+  .theme-toggle__icon {
+    width: 20px;
+    height: 20px;
+    transition: opacity var(--duration-150) var(--ease-in-out),
+                transform var(--duration-300) var(--ease-in-out);
+  }
+
+  /* By default (light mode): show moon, hide sun */
+  .theme-toggle__icon--sun {
+    display: none;
+    opacity: 0;
+  }
+
+  .theme-toggle__icon--moon {
+    display: block;
+    opacity: 1;
+  }
+
+  /* In dark mode: show sun, hide moon */
+  :global(html[data-theme="dark"]) .theme-toggle__icon--sun {
+    display: block;
+    opacity: 1;
+  }
+
+  :global(html[data-theme="dark"]) .theme-toggle__icon--moon {
+    display: none;
+    opacity: 0;
+  }
+
+  /* Animation on theme change */
+  .theme-toggle__icon--sun {
+    transform: rotate(-90deg);
+  }
+
+  :global(html[data-theme="dark"]) .theme-toggle__icon--sun {
+    transform: rotate(0deg);
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .theme-toggle__icon {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Theme Toggle Functionality
+   * Handles theme switching with localStorage persistence and system preference detection.
+   * Supports multiple toggle buttons on the same page (e.g., desktop and mobile).
+   */
+  function initThemeToggle() {
+    const THEME_KEY = 'houston-theme';
+    const DARK = 'dark';
+    const LIGHT = 'light';
+
+    const toggles = document.querySelectorAll('[data-theme-toggle]');
+    if (toggles.length === 0) return;
+
+    /**
+     * Get the current theme from localStorage or system preference
+     */
+    function getPreferredTheme(): string {
+      const stored = localStorage.getItem(THEME_KEY);
+      if (stored) return stored;
+
+      // Check system preference
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return DARK;
+      }
+      return LIGHT;
+    }
+
+    /**
+     * Update ARIA labels on all toggle buttons
+     */
+    function updateToggleLabels(isDark: boolean) {
+      const label = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+      toggles.forEach((toggle) => {
+        toggle.setAttribute('aria-label', label);
+        toggle.setAttribute('title', label);
+      });
+    }
+
+    /**
+     * Apply the theme to the document
+     */
+    function applyTheme(theme: string) {
+      const html = document.documentElement;
+      const isDark = theme === DARK;
+
+      if (isDark) {
+        html.setAttribute('data-theme', DARK);
+      } else {
+        html.removeAttribute('data-theme');
+      }
+
+      updateToggleLabels(isDark);
+    }
+
+    /**
+     * Toggle between light and dark themes
+     */
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === DARK ? LIGHT : DARK;
+
+      localStorage.setItem(THEME_KEY, newTheme);
+      applyTheme(newTheme);
+    }
+
+    // Apply the initial theme
+    applyTheme(getPreferredTheme());
+
+    // Listen for toggle clicks on all toggle buttons
+    toggles.forEach((toggle) => {
+      toggle.addEventListener('click', toggleTheme);
+    });
+
+    // Listen for system preference changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      // Only update if user hasn't set a preference
+      if (!localStorage.getItem(THEME_KEY)) {
+        applyTheme(e.matches ? DARK : LIGHT);
+      }
+    });
+  }
+
+  // Initialize on DOM ready
+  document.addEventListener('DOMContentLoaded', initThemeToggle);
+
+  // Re-initialize on Astro page transitions (View Transitions API)
+  document.addEventListener('astro:page-load', initThemeToggle);
+</script>

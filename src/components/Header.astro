@@ -9,12 +9,15 @@
  * - Full accessibility support (ARIA labels, keyboard navigation)
  * - Smooth transitions for mobile menu animation
  * - Touch-friendly tap targets (minimum 44x44px)
+ * - Dark mode toggle integration
  *
  * @example
  * ```astro
  * <Header currentPath="/" />
  * ```
  */
+
+import ThemeToggle from './ThemeToggle.astro';
 
 interface Props {
   /** Current page path for active link styling (e.g., "/", "/about") */
@@ -57,6 +60,11 @@ const navLinks = [
       </ul>
     </nav>
 
+    <!-- Theme Toggle (Desktop) -->
+    <div class="header__actions">
+      <ThemeToggle class="header__theme-toggle" />
+    </div>
+
     <!-- Mobile Menu Button -->
     <button
       type="button"
@@ -94,6 +102,14 @@ const navLinks = [
           </li>
         ))}
       </ul>
+
+      <!-- Mobile Theme Toggle Section -->
+      <div class="header__mobile-actions" style={`--item-index: ${navLinks.length}`}>
+        <div class="header__mobile-theme-toggle">
+          <span class="header__mobile-theme-label">Theme</span>
+          <ThemeToggle class="header__theme-toggle--mobile" />
+        </div>
+      </div>
     </nav>
   </div>
 </header>
@@ -371,6 +387,47 @@ const navLinks = [
   }
 
   /* -----------------------------------------------------------------
+   * Header Actions (Theme Toggle, etc.)
+   * ----------------------------------------------------------------- */
+
+  .header__actions {
+    display: none;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  /* Mobile Actions Section */
+  .header__mobile-actions {
+    margin-top: var(--spacing-6);
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-border);
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity var(--duration-300) var(--ease-out),
+                transform var(--duration-300) var(--ease-out);
+    transition-delay: calc(var(--item-index) * 50ms);
+  }
+
+  .header__mobile-nav[aria-hidden="false"] .header__mobile-actions {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .header__mobile-theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-2) var(--spacing-4);
+  }
+
+  .header__mobile-theme-label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+  }
+
+  /* -----------------------------------------------------------------
    * Responsive Styles
    * ----------------------------------------------------------------- */
 
@@ -378,6 +435,10 @@ const navLinks = [
   @media screen and (min-width: 769px) {
     .header__nav {
       display: block;
+    }
+
+    .header__actions {
+      display: flex;
     }
 
     .header__menu-toggle {
@@ -396,7 +457,8 @@ const navLinks = [
   @media (prefers-reduced-motion: reduce) {
     .header__menu-bar,
     .header__mobile-nav,
-    .header__mobile-nav-item {
+    .header__mobile-nav-item,
+    .header__mobile-actions {
       transition: none;
     }
   }
