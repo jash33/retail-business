@@ -3,7 +3,13 @@
   "description": "can we replace the animated moving spheres on the home page with something a little more aligned with our goals for small businesses?\n\nSome potential ideas:\nCross-hatch grid animation: implies advanced technology\nConnecting grid nodes like a neural network: implies connection and outreach\n\nConsider the best idea, may be create new ones, and implement it.",
   "title": "Replace animated spheres with business network animation",
   "images": [],
-  "imagePaths": [],
+  "imagePaths": [
+    {
+      "path": "C:\\Users\\James\\Repos\\houston-web-services\\.automaker\\features\\feature-1768698035657-nhkt8wpnh\\images\\pasted-image-2026-01-18T01-17-06-455Z-1768699026474.png",
+      "filename": "pasted-image-2026-01-18T01-17-06-455Z-1768699026474.png",
+      "mimeType": "image/png"
+    }
+  ],
   "textFilePaths": [],
   "skipTests": true,
   "model": "opus",
@@ -15,7 +21,7 @@
   "dependencies": [],
   "workMode": "current",
   "titleGenerating": false,
-  "status": "in_progress",
+  "status": "verified",
   "id": "feature-1768698035657-nhkt8wpnh",
   "descriptionHistory": [
     {
@@ -24,6 +30,76 @@
       "source": "initial"
     }
   ],
-  "startedAt": "2026-01-18T01:00:40.303Z",
-  "updatedAt": "2026-01-18T01:00:40.468Z"
+  "startedAt": "2026-01-18T01:36:08.111Z",
+  "updatedAt": "2026-01-18T01:40:14.938Z",
+  "planSpec": {
+    "status": "approved",
+    "version": 1,
+    "reviewedByUser": false,
+    "content": "🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/*.{tsx,jsx,ts,js}\"\n}\n\n🔧 Tool: Grep\nInput: {\n  \"pattern\": \"sphere|animation|animated|canvas|three\",\n  \"-i\": true\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/home*\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"src/**/*.{astro,tsx,jsx,ts,js}\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\houston-web-services\\\\src\\\\components\\\\HeroSection.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\houston-web-services\\\\src\\\\pages\\\\index.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\houston-web-services\\\\src\\\\styles\\\\variables.css\"\n}\n# Feature Specification: Replace Hero Animated Spheres with Neural Network Grid Animation\n\n## 1. Problem Statement\n\nThe current homepage hero section uses floating sphere/particle animations that don't effectively communicate the company's mission of helping small businesses connect and grow online. Users visiting the site need visual elements that immediately convey technology, connection, and outreach - core themes that resonate with small business owners seeking web services.\n\n## 2. User Story\n\nAs a **small business owner visiting the Houston Web Services website**, I want **to see a modern, tech-forward background animation that implies connection and advanced technology**, so that **I immediately understand this company can help my business grow its online presence and reach more customers**.\n\n## 3. Acceptance Criteria\n\n### Happy Path\n- **GIVEN** a user visits the homepage, **WHEN** the page loads, **THEN** they see an animated neural network grid visualization with nodes and connecting lines\n- **GIVEN** the animation is running, **WHEN** nodes are displayed, **THEN** they pulse subtly and connecting lines animate to show data/energy flow between nodes\n- **GIVEN** a desktop viewport (1024px+), **WHEN** the animation displays, **THEN** it shows more nodes and connections for a richer visual experience\n- **GIVEN** a mobile viewport (<640px), **WHEN** the animation displays, **THEN** it shows fewer nodes/connections for optimal performance\n\n### Edge Cases\n- **GIVEN** a user has `prefers-reduced-motion` enabled, **WHEN** the page loads, **THEN** the animation is static or hidden entirely\n- **GIVEN** a user is on a low-powered device, **WHEN** viewing the animation, **THEN** performance remains smooth due to CSS-only implementation (no heavy JavaScript)\n- **GIVEN** print mode is active, **WHEN** the page is printed, **THEN** the animation is hidden\n\n### Error Handling\n- **GIVEN** CSS custom properties are not supported (very old browsers), **WHEN** the page loads, **THEN** the hero section gracefully degrades to show just the gradient background\n- **GIVEN** forced-colors mode (high contrast), **WHEN** viewing the hero, **THEN** decorative animations are hidden per accessibility requirements\n\n## 4. Technical Context\n\n| Aspect | Value |\n|--------|-------|\n| Affected Files | `src/components/HeroSection.astro` |\n| Dependencies | None (CSS-only implementation) |\n| Constraints | Must be CSS-only for performance, no JavaScript animation libraries |\n| Patterns to Follow | Existing particle animation pattern, BEM naming convention, design system variables from `variables.css` |\n\n## 5. Non-Goals\n\n- **NOT** implementing 3D WebGL/Three.js animations (performance concern)\n- **NOT** adding interactive elements that respond to mouse movement (complexity)\n- **NOT** changing the hero section content, layout, or CTA buttons\n- **NOT** modifying the Houston skyline silhouette or browser mockup elements\n- **NOT** creating a separate component file (will modify existing HeroSection.astro)\n\n## 6. Implementation Tasks\n\n```tasks\n## Phase 1: Remove Existing Particle System\n- [ ] T001: Remove existing particle HTML elements from hero section | File: src/components/HeroSection.astro\n- [ ] T002: Remove existing particle CSS styles and keyframe animations | File: src/components/HeroSection.astro\n\n## Phase 2: Create Neural Network Grid Animation\n- [ ] T003: Add neural network grid HTML structure with nodes and connection lines | File: src/components/HeroSection.astro\n- [ ] T004: Add base CSS styles for grid container, nodes, and connections | File: src/components/HeroSection.astro\n- [ ] T005: Add keyframe animations for node pulse and connection flow effects | File: src/components/HeroSection.astro\n- [ ] T006: Add responsive styles for tablet (640px+) and desktop (1024px+) viewports | File: src/components/HeroSection.astro\n\n## Phase 3: Accessibility & Polish\n- [ ] T007: Add reduced motion, high contrast, and print media query overrides | File: src/components/HeroSection.astro\n- [ ] T008: Update component documentation comments to reflect new animation | File: src/components/HeroSection.astro\n```\n\n## 7. Success Metrics\n\n| Metric | Target |\n|--------|--------|\n| Animation displays correctly | Visible neural network grid on all modern browsers |\n| Performance | No perceptible jank, maintains 60fps on mid-range devices |\n| Accessibility | Properly hidden for `prefers-reduced-motion`, high contrast mode, and print |\n| Visual alignment | Animation conveys \"connection\" and \"advanced technology\" themes |\n| Code quality | Follows existing BEM naming and CSS variable patterns |\n\n## 8. Risks & Mitigations\n\n| Risk | Mitigation |\n|------|------------|\n| Complex CSS animations may cause performance issues on low-end devices | Use CSS transforms and opacity only (GPU-accelerated), limit number of animated elements |\n| Animation may distract from hero content | Keep opacity subtle (0.2-0.4), use slow animation speeds, position behind content |\n| Different screen sizes may look unbalanced | Responsive CSS adjusts node count and spacing per breakpoint |\n| Animation may not convey intended \"connection\" theme | Design nodes as circular points with connecting SVG lines that pulse with \"data flow\" effect |\n\n---",
+    "generatedAt": "2026-01-18T01:01:28.749Z",
+    "tasks": [
+      {
+        "id": "T001",
+        "description": "Remove existing particle HTML elements from hero section",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 1: Remove Existing Particle System",
+        "status": "pending"
+      },
+      {
+        "id": "T002",
+        "description": "Remove existing particle CSS styles and keyframe animations",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 1: Remove Existing Particle System",
+        "status": "pending"
+      },
+      {
+        "id": "T003",
+        "description": "Add neural network grid HTML structure with nodes and connection lines",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 2: Create Neural Network Grid Animation",
+        "status": "pending"
+      },
+      {
+        "id": "T004",
+        "description": "Add base CSS styles for grid container, nodes, and connections",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 2: Create Neural Network Grid Animation",
+        "status": "pending"
+      },
+      {
+        "id": "T005",
+        "description": "Add keyframe animations for node pulse and connection flow effects",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 2: Create Neural Network Grid Animation",
+        "status": "pending"
+      },
+      {
+        "id": "T006",
+        "description": "Add responsive styles for tablet (640px+) and desktop (1024px+) viewports",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 2: Create Neural Network Grid Animation",
+        "status": "pending"
+      },
+      {
+        "id": "T007",
+        "description": "Add reduced motion, high contrast, and print media query overrides",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 3: Accessibility & Polish",
+        "status": "pending"
+      },
+      {
+        "id": "T008",
+        "description": "Update component documentation comments to reflect new animation",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 3: Accessibility & Polish",
+        "status": "pending"
+      }
+    ],
+    "tasksTotal": 8,
+    "tasksCompleted": 8,
+    "approvedAt": "2026-01-18T01:01:28.750Z",
+    "currentTaskId": "T008"
+  },
+  "justFinishedAt": "2026-01-18T01:40:14.938Z"
 }
