@@ -59,23 +59,6 @@ const services: ServiceData[] = [
     ctaHref: '/contact?service=website-design',
   },
   {
-    id: 'seo',
-    name: 'SEO Optimization',
-    slug: 'seo',
-    shortDescription: 'Boost your online visibility with proven SEO strategies tailored for local businesses in Houston. Get found by more qualified leads.',
-    benefits: [
-      'Local SEO to dominate Houston search results',
-      'Keyword research and on-page optimization',
-      'Google Business Profile management',
-      'Monthly reporting and analytics',
-    ],
-    startingPrice: '$179',
-    priceNote: '/month',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`,
-    ctaText: 'Improve Rankings',
-    ctaHref: '/contact?service=seo',
-  },
-  {
     id: 'maintenance',
     name: 'Website Maintenance',
     slug: 'maintenance',
@@ -108,6 +91,40 @@ const services: ServiceData[] = [
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3z"/></svg>`,
     ctaText: 'Get Hosting',
     ctaHref: '/contact?service=hosting',
+  },
+  {
+    id: 'existing-website-support',
+    name: 'Existing Website Support',
+    slug: 'existing-website-support',
+    shortDescription: 'Already have a website built by someone else? We can help. Whether it\'s WordPress, Wix, Squarespace, Shopify, or any other platform, we\'ll keep your site running smoothly and looking great.',
+    benefits: [
+      'Support for WordPress, Wix, Squarespace, Shopify & more',
+      'Bug fixes and troubleshooting',
+      'Content updates and design tweaks',
+      'Plugin and security updates',
+    ],
+    startingPrice: '$75',
+    priceNote: '/hour',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>`,
+    ctaText: 'Get Support',
+    ctaHref: '/contact?service=existing-website-support',
+  },
+  {
+    id: 'business-process-automation',
+    name: 'Business Process Automation',
+    slug: 'business-process-automation',
+    shortDescription: 'Save time and reduce errors by automating repetitive tasks in your business. From email workflows to inventory management, we help Houston small businesses work smarter, not harder.',
+    benefits: [
+      'Automate repetitive tasks and workflows',
+      'Integrate your favorite business tools',
+      'Reduce manual data entry and human error',
+      'Free up your team to focus on growth',
+    ],
+    startingPrice: '$299',
+    priceNote: 'Starting at',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm3-7h-2V8c0-.55-.45-1-1-1s-1 .45-1 1v3c0 .55.45 1 1 1h3c.55 0 1-.45 1-1s-.45-1-1-1z"/></svg>`,
+    ctaText: 'Automate Your Business',
+    ctaHref: '/contact?service=business-process-automation',
   },
 ];
 
@@ -286,7 +303,7 @@ const processPhases: ProcessPhase[] = [
 
 <Layout
   title="Services & Pricing"
-  description="Professional web design and development services for small businesses in  Houston. Choose from our Starter, Professional, or Premium packages. Transparent pricing with no hidden costs."
+  description="Affordable web design, hosting, and maintenance services for Houston small businesses. Custom websites starting at $499 with transparent pricing. Get a professional online presence that grows with your business."
   openGraph={{
     type: 'website',
   }}
@@ -303,11 +320,11 @@ const processPhases: ProcessPhase[] = [
             <span>Transparent Pricing • No Hidden Costs</span>
           </div>
           <h1 id="services-hero-heading" class="services-hero__title">
-            Web Solutions That<br/>
-            <span class="services-hero__title-highlight">Grow With Your Business</span>
+            Professional Websites<br/>
+            <span class="services-hero__title-highlight">Built for Houston Businesses</span>
           </h1>
           <p class="services-hero__description">
-            From simple single-page sites to full-featured e-commerce platforms, we offer flexible packages designed for Houston small businesses at every stage of growth.
+            Get a stunning, mobile-friendly website that attracts customers and grows your business. From starter sites to full e-commerce solutions, we deliver quality web services at prices small businesses can afford.
           </p>
           <div class="services-hero__cta-group">
             <Button
@@ -346,6 +363,7 @@ const processPhases: ProcessPhase[] = [
               <div class="services-hero__preview-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
                   <path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h16v9H4V6zm0 11h16v1H4v-1z"/>
+                  <path d="M6 8h3v3H6V8zm5 0h7v1h-7V8zm0 2h5v1h-5v-1z"/>
                 </svg>
               </div>
               <span class="services-hero__preview-label">Website Design</span>
@@ -354,20 +372,29 @@ const processPhases: ProcessPhase[] = [
             <div class="services-hero__preview-card services-hero__preview-card--2">
               <div class="services-hero__preview-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                  <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                </svg>
-              </div>
-              <span class="services-hero__preview-label">SEO Optimization</span>
-              <span class="services-hero__preview-price">From $179/mo</span>
-            </div>
-            <div class="services-hero__preview-card services-hero__preview-card--3">
-              <div class="services-hero__preview-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
                   <path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
                 </svg>
               </div>
               <span class="services-hero__preview-label">Maintenance</span>
               <span class="services-hero__preview-price">From $49/mo</span>
+            </div>
+            <div class="services-hero__preview-card services-hero__preview-card--3">
+              <div class="services-hero__preview-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm3-7h-2V8c0-.55-.45-1-1-1s-1 .45-1 1v3c0 .55.45 1 1 1h3c.55 0 1-.45 1-1s-.45-1-1-1z"/>
+                </svg>
+              </div>
+              <span class="services-hero__preview-label">Automation</span>
+              <span class="services-hero__preview-price">From $299</span>
+            </div>
+            <div class="services-hero__preview-card services-hero__preview-card--4">
+              <div class="services-hero__preview-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                  <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
+                </svg>
+              </div>
+              <span class="services-hero__preview-label">Site Support</span>
+              <span class="services-hero__preview-price">From $75/hr</span>
             </div>
           </div>
         </div>
@@ -444,12 +471,12 @@ const processPhases: ProcessPhase[] = [
       </div>
     </section>
 
-    <!-- SEO Optimization Detail Section -->
-    <section id="seo" class="service-detail" aria-labelledby="seo-heading">
+    <!-- Website Maintenance Detail Section -->
+    <section id="maintenance" class="service-detail" aria-labelledby="maintenance-heading">
       <div class="service-detail__container">
         <div class="service-detail__content">
           <div class="service-detail__icon" aria-hidden="true" set:html={services[1].icon} />
-          <h2 id="seo-heading" class="service-detail__heading">
+          <h2 id="maintenance-heading" class="service-detail__heading">
             {services[1].name}
           </h2>
           <p class="service-detail__description">
@@ -481,12 +508,12 @@ const processPhases: ProcessPhase[] = [
       </div>
     </section>
 
-    <!-- Website Maintenance Detail Section -->
-    <section id="maintenance" class="service-detail" aria-labelledby="maintenance-heading">
+    <!-- Web Hosting Detail Section -->
+    <section id="hosting" class="service-detail" aria-labelledby="hosting-heading">
       <div class="service-detail__container">
         <div class="service-detail__content">
           <div class="service-detail__icon" aria-hidden="true" set:html={services[2].icon} />
-          <h2 id="maintenance-heading" class="service-detail__heading">
+          <h2 id="hosting-heading" class="service-detail__heading">
             {services[2].name}
           </h2>
           <p class="service-detail__description">
@@ -518,12 +545,12 @@ const processPhases: ProcessPhase[] = [
       </div>
     </section>
 
-    <!-- Web Hosting Detail Section -->
-    <section id="hosting" class="service-detail" aria-labelledby="hosting-heading">
+    <!-- Existing Website Support Detail Section -->
+    <section id="existing-website-support" class="service-detail" aria-labelledby="existing-website-support-heading">
       <div class="service-detail__container">
         <div class="service-detail__content">
           <div class="service-detail__icon" aria-hidden="true" set:html={services[3].icon} />
-          <h2 id="hosting-heading" class="service-detail__heading">
+          <h2 id="existing-website-support-heading" class="service-detail__heading">
             {services[3].name}
           </h2>
           <p class="service-detail__description">
@@ -547,6 +574,43 @@ const processPhases: ProcessPhase[] = [
             <Button
               text={services[3].ctaText}
               href={services[3].ctaHref}
+              variant="primary"
+              size="large"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Business Process Automation Detail Section -->
+    <section id="business-process-automation" class="service-detail" aria-labelledby="business-process-automation-heading">
+      <div class="service-detail__container">
+        <div class="service-detail__content">
+          <div class="service-detail__icon" aria-hidden="true" set:html={services[4].icon} />
+          <h2 id="business-process-automation-heading" class="service-detail__heading">
+            {services[4].name}
+          </h2>
+          <p class="service-detail__description">
+            {services[4].shortDescription}
+          </p>
+          <ul class="service-detail__benefits">
+            {services[4].benefits.map((benefit) => (
+              <li class="service-detail__benefit">
+                <svg class="service-detail__check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                </svg>
+                {benefit}
+              </li>
+            ))}
+          </ul>
+          <div class="service-detail__pricing">
+            <span class="service-detail__price">{services[4].startingPrice}</span>
+            <span class="service-detail__price-note">{services[4].priceNote}</span>
+          </div>
+          <div class="service-detail__cta">
+            <Button
+              text={services[4].ctaText}
+              href={services[4].ctaHref}
               variant="primary"
               size="large"
             />
@@ -873,11 +937,15 @@ const processPhases: ProcessPhase[] = [
   }
 
   .services-hero__preview-card--2 {
-    animation: previewCardFloat 6s ease-in-out infinite 1s;
+    animation: previewCardFloat 6s ease-in-out infinite 0.75s;
   }
 
   .services-hero__preview-card--3 {
-    animation: previewCardFloat 6s ease-in-out infinite 2s;
+    animation: previewCardFloat 6s ease-in-out infinite 1.5s;
+  }
+
+  .services-hero__preview-card--4 {
+    animation: previewCardFloat 6s ease-in-out infinite 2.25s;
   }
 
   @keyframes previewCardFloat {
@@ -902,6 +970,11 @@ const processPhases: ProcessPhase[] = [
   .services-hero__preview-card--3 .services-hero__preview-icon {
     background-color: var(--color-warning-100);
     color: var(--color-warning-600);
+  }
+
+  .services-hero__preview-card--4 .services-hero__preview-icon {
+    background-color: var(--color-accent-subtle);
+    color: var(--color-accent-dark);
   }
 
   .services-hero__preview-icon {
@@ -1088,6 +1161,10 @@ const processPhases: ProcessPhase[] = [
 
   .services-overview__cards :global(.service-card:nth-child(4)) {
     animation-delay: 0.4s;
+  }
+
+  .services-overview__cards :global(.service-card:nth-child(5)) {
+    animation-delay: 0.5s;
   }
 
   @keyframes serviceCardReveal {
@@ -1705,7 +1782,7 @@ const processPhases: ProcessPhase[] = [
     }
 
     .services-overview__cards {
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
     }
 
     /* Service Detail Sections - Desktop */

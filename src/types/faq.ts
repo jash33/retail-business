@@ -79,7 +79,7 @@ export const DEFAULT_FAQ_ITEMS: FAQItem[] = [
   {
     id: 'faq-services-offered',
     question: 'What services do you offer beyond web design?',
-    answer: `In addition to custom website design, we offer everything you need to succeed online: help getting your business found on Google, ongoing website care and security updates, reliable website hosting with 99.9% uptime, training so you can easily update your own content, logo and brand design, and Google Business Profile setup to attract local Houston customers.`,
+    answer: `In addition to custom website design, we offer everything you need to succeed online: ongoing website care and security updates, reliable website hosting with 99.9% uptime, training so you can easily update your own content, logo and brand design, and Google Business Profile setup to attract local Houston customers. Plus, SEO best practices are included with every website we build—so you get help being found on Google without paying for a separate service.`,
     category: 'services',
   },
   {
@@ -111,5 +111,17 @@ export const DEFAULT_FAQ_ITEMS: FAQItem[] = [
     question: 'Do you only work with Houston-area businesses?',
     answer: `While we specialize in serving small businesses in Houston, we work with clients throughout Texas and beyond. Our local focus means we understand the Houston market deeply, but we can work with you remotely just as effectively. We're happy to meet in person locally or connect via video call.`,
     category: 'general',
+  },
+  {
+    id: 'faq-existing-website',
+    question: 'Can you help with my existing website?',
+    answer: `Absolutely! We work with existing websites all the time, even if we didn't build them originally. We can help with <strong>website redesigns</strong> to give your site a fresh, modern look, <strong>updates and improvements</strong> to add new features or fix issues, <strong>ongoing maintenance</strong> to keep your site secure and running smoothly, and <strong>performance optimization</strong> to make your site faster. During a free consultation, we'll review your current site and recommend the best path forward—whether that's a full redesign, targeted improvements, or simply better maintenance.`,
+    category: 'services',
+  },
+  {
+    id: 'faq-business-automation',
+    question: 'Can you help automate my business processes?',
+    answer: `Yes! We specialize in helping small businesses save time and reduce errors through smart automation. Common solutions we implement include <strong>automated appointment scheduling</strong> that syncs with your calendar and sends reminders, <strong>contact form integrations</strong> that automatically add leads to your CRM or email list, <strong>invoice and payment automation</strong> to streamline billing, and <strong>custom workflow solutions</strong> that connect your favorite tools. During our consultation, we'll identify repetitive tasks in your business and show you how automation can free up your time to focus on what matters most—growing your business.`,
+    category: 'services',
   },
 ];

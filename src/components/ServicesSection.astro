@@ -50,7 +50,11 @@ const {
 } = Astro.props;
 
 // Determine grid column class based on column count
-const gridClass = columns === 4 ? 'services-section__grid--four-cols' : 'services-section__grid--three-cols';
+const gridClass = columns === 5
+  ? 'services-section__grid--five-cols'
+  : columns === 4
+    ? 'services-section__grid--four-cols'
+    : 'services-section__grid--three-cols';
 
 // Build CSS classes
 const sectionClasses = [
@@ -160,6 +164,11 @@ const hasServices = services && services.length > 0;
     /* Mobile: 1 column (default above) */
   }
 
+  /* 5-Column Grid */
+  .services-section__grid--five-cols {
+    /* Mobile: 1 column (default above) */
+  }
+
   /* Empty State */
   .services-section__empty {
     display: flex;
@@ -211,11 +220,15 @@ const hasServices = services && services.length > 0;
     }
 
     .services-section__grid--four-cols {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .services-section__grid--five-cols {
+      grid-template-columns: repeat(5, 1fr);
     }
   }
 
-  /* Large Desktop (1280px) - 3 or 4 columns depending on config */
+  /* Large Desktop (1280px) - 3, 4, or 5 columns depending on config */
   @media screen and (min-width: 1280px) {
     .services-section {
       padding: var(--spacing-24) var(--spacing-8);
@@ -223,6 +236,10 @@ const hasServices = services && services.length > 0;
 
     .services-section__grid--four-cols {
       grid-template-columns: repeat(4, 1fr);
+    }
+
+    .services-section__grid--five-cols {
+      grid-template-columns: repeat(5, 1fr);
     }
   }
 
@@ -248,6 +265,10 @@ const hasServices = services && services.length > 0;
 
   .services-section__grid > :global(*:nth-child(4)) {
     animation-delay: 0.4s;
+  }
+
+  .services-section__grid > :global(*:nth-child(5)) {
+    animation-delay: 0.5s;
   }
 
   @keyframes fadeSlideUp {

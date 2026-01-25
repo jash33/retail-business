@@ -11,6 +11,28 @@
       "dismissed": true,
       "featureId": "feature-1769060644704-gzttgd8ez",
       "projectPath": "C:\\Users\\James\\Repos\\houston-web-services"
+    },
+    {
+      "id": "ad14c226-760c-41bb-9b91-190def8803d4",
+      "type": "feature_waiting_approval",
+      "title": "Feature Ready for Review",
+      "message": "\"feature-1769103718659-iox58na9s\" is ready for your review and approval.",
+      "createdAt": "2026-01-22T18:05:03.299Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769103718659-iox58na9s",
+      "projectPath": "C:\\Users\\James\\Repos\\houston-web-services"
+    },
+    {
+      "id": "9184b09e-5e79-4482-b0da-d156a0085722",
+      "type": "feature_waiting_approval",
+      "title": "Feature Ready for Review",
+      "message": "\"feature-1769103718659-iox58na9s\" is ready for your review and approval.",
+      "createdAt": "2026-01-22T19:10:14.661Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769103718659-iox58na9s",
+      "projectPath": "C:\\Users\\James\\Repos\\houston-web-services"
     }
   ]
 }

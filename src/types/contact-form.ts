@@ -13,7 +13,8 @@ export type ProjectType =
   | 'website-redesign'
   | 'e-commerce'
   | 'web-application'
-  | 'seo-optimization'
+  | 'business-automation'
+  | 'existing-website-support'
   | 'maintenance'
   | 'consultation'
   | 'other';
@@ -157,7 +158,8 @@ export const PROJECT_TYPE_OPTIONS: ProjectTypeOption[] = [
   { value: 'website-redesign', label: 'Website Redesign' },
   { value: 'e-commerce', label: 'E-Commerce Store' },
   { value: 'web-application', label: 'Web Application' },
-  { value: 'seo-optimization', label: 'SEO Optimization' },
+  { value: 'business-automation', label: 'Business Automation' },
+  { value: 'existing-website-support', label: 'Existing Website Support' },
   { value: 'maintenance', label: 'Website Maintenance' },
   { value: 'consultation', label: 'Consultation' },
   { value: 'other', label: 'Other' },

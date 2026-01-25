@@ -1,0 +1,176 @@
+{
+  "category": "Uncategorized",
+  "description": "Remove SEO Service and Add New Service Offerings\n\nUpdate the website's services section to accurately reflect current offerings by removing SEO as a standalone monthly service, adding support for existing websites, and introducing business process automation services.\n\nRequirements:\n\n1. Remove SEO as Monthly Service\n- Remove all references to SEO as a paid monthly/recurring service offering\n- Retain mentions of SEO only in the context of standard web development (e.g., \"websites built with SEO best practices\" or \"search-optimized sites included\")\n- Update navigation, service cards, pricing tables, and any call-to-action buttons that reference SEO services\n- Check for and update any testimonials or case studies that prominently feature SEO services\n\n2. Add Existing Website Support Service\n- Create new service offering for maintaining and updating websites not originally built by you\n- List common platforms that business owners will recognize: WordPress, Wix, Squarespace, Shopify, Weebly, GoDaddy Website Builder\n- Include typical support activities: bug fixes, content updates, plugin/theme updates, security patches, design tweaks, feature additions\n- Clarify that you work with sites regardless of original developer\n- Add appropriate call-to-action and contact options for this service\n\n3. Add Business Process Automation Service\n- Create service offering for automating manual business processes and general technical assistance\n- Frame as practical efficiency solutions for small business owners\n- Include examples: automated invoicing/billing, data entry automation, workflow streamlining, integration between tools (email, CRM, spreadsheets), report generation, appointment scheduling automation\n- Use accessible, non-technical language that emphasizes time savings and reduced errors\n- Position as \"done-for-you\" technical solutions rather than consulting\n\n4. Consistency Across Site\n- Update homepage overview of services\n- Revise services page with new structure\n- Update any pricing or package information\n- Modify contact forms if they reference specific services\n- Review footer and any other navigation elements\n- Ensure consistent messaging throughout all pages",
+  "title": "Update service offerings: remove SEO, add automation",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "master",
+  "priority": 2,
+  "planningMode": "full",
+  "requirePlanApproval": true,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769103718659-iox58na9s",
+  "descriptionHistory": [
+    {
+      "description": "Remove SEO Service and Add New Service Offerings\n\nUpdate the website's services section to accurately reflect current offerings by removing SEO as a standalone monthly service, adding support for existing websites, and introducing business process automation services.\n\nRequirements:\n\n1. Remove SEO as Monthly Service\n- Remove all references to SEO as a paid monthly/recurring service offering\n- Retain mentions of SEO only in the context of standard web development (e.g., \"websites built with SEO best practices\" or \"search-optimized sites included\")\n- Update navigation, service cards, pricing tables, and any call-to-action buttons that reference SEO services\n- Check for and update any testimonials or case studies that prominently feature SEO services\n\n2. Add Existing Website Support Service\n- Create new service offering for maintaining and updating websites not originally built by you\n- List common platforms that business owners will recognize: WordPress, Wix, Squarespace, Shopify, Weebly, GoDaddy Website Builder\n- Include typical support activities: bug fixes, content updates, plugin/theme updates, security patches, design tweaks, feature additions\n- Clarify that you work with sites regardless of original developer\n- Add appropriate call-to-action and contact options for this service\n\n3. Add Business Process Automation Service\n- Create service offering for automating manual business processes and general technical assistance\n- Frame as practical efficiency solutions for small business owners\n- Include examples: automated invoicing/billing, data entry automation, workflow streamlining, integration between tools (email, CRM, spreadsheets), report generation, appointment scheduling automation\n- Use accessible, non-technical language that emphasizes time savings and reduced errors\n- Position as \"done-for-you\" technical solutions rather than consulting\n\n4. Consistency Across Site\n- Update homepage overview of services\n- Revise services page with new structure\n- Update any pricing or package information\n- Modify contact forms if they reference specific services\n- Review footer and any other navigation elements\n- Ensure consistent messaging throughout all pages",
+      "timestamp": "2026-01-22T17:41:58.782Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-22T19:08:35.341Z",
+  "updatedAt": "2026-01-22T18:05:03.292Z",
+  "planSpec": {
+    "status": "approved",
+    "version": 1,
+    "reviewedByUser": true,
+    "generatedAt": "2026-01-22T17:43:15.971Z",
+    "tasks": [
+      {
+        "id": "T001",
+        "description": "Remove SEO service card from homepage services array",
+        "filePath": "src/pages/index.astro",
+        "phase": "Phase 1: Remove SEO as Standalone Service",
+        "status": "pending"
+      },
+      {
+        "id": "T002",
+        "description": "Remove SEO service from services page service data and detail sections",
+        "filePath": "src/pages/services.astro",
+        "phase": "Phase 1: Remove SEO as Standalone Service",
+        "status": "pending"
+      },
+      {
+        "id": "T003",
+        "description": "Update SEO redirect page comment to clarify it redirects to general services",
+        "filePath": "src/pages/services/seo.astro",
+        "phase": "Phase 1: Remove SEO as Standalone Service",
+        "status": "pending"
+      },
+      {
+        "id": "T004",
+        "description": "Remove 'seo-optimization' from PROJECT_TYPE_OPTIONS in contact form types",
+        "filePath": "src/types/contact-form.ts",
+        "phase": "Phase 1: Remove SEO as Standalone Service",
+        "status": "pending"
+      },
+      {
+        "id": "T005",
+        "description": "Update FAQ items that reference SEO as a paid service to mention it as included feature",
+        "filePath": "src/types/faq.ts",
+        "phase": "Phase 1: Remove SEO as Standalone Service",
+        "status": "pending"
+      },
+      {
+        "id": "T006",
+        "description": "Update makesOffer and knowsAbout in SEO config to adjust SEO references",
+        "filePath": "src/config/seo.config.ts",
+        "phase": "Phase 1: Remove SEO as Standalone Service",
+        "status": "pending"
+      },
+      {
+        "id": "T007",
+        "description": "Add Existing Website Support service to homepage services array with icon, description, and CTA",
+        "filePath": "src/pages/index.astro",
+        "phase": "Phase 2: Add Existing Website Support Service",
+        "status": "pending"
+      },
+      {
+        "id": "T008",
+        "description": "Add Existing Website Support to services page data with full details, benefits, and pricing",
+        "filePath": "src/pages/services.astro",
+        "phase": "Phase 2: Add Existing Website Support Service",
+        "status": "pending"
+      },
+      {
+        "id": "T009",
+        "description": "Add Existing Website Support detail section on services page",
+        "filePath": "src/pages/services.astro",
+        "phase": "Phase 2: Add Existing Website Support Service",
+        "status": "pending"
+      },
+      {
+        "id": "T010",
+        "description": "Add 'existing-website-support' option to PROJECT_TYPE_OPTIONS",
+        "filePath": "src/types/contact-form.ts",
+        "phase": "Phase 2: Add Existing Website Support Service",
+        "status": "pending"
+      },
+      {
+        "id": "T011",
+        "description": "Add Business Process Automation service to homepage services array with icon, description, and CTA",
+        "filePath": "src/pages/index.astro",
+        "phase": "Phase 3: Add Business Process Automation Service",
+        "status": "pending"
+      },
+      {
+        "id": "T012",
+        "description": "Add Business Process Automation to services page data with full details, benefits, and pricing",
+        "filePath": "src/pages/services.astro",
+        "phase": "Phase 3: Add Business Process Automation Service",
+        "status": "pending"
+      },
+      {
+        "id": "T013",
+        "description": "Add Business Process Automation detail section on services page",
+        "filePath": "src/pages/services.astro",
+        "phase": "Phase 3: Add Business Process Automation Service",
+        "status": "pending"
+      },
+      {
+        "id": "T014",
+        "description": "Add 'business-automation' option to PROJECT_TYPE_OPTIONS",
+        "filePath": "src/types/contact-form.ts",
+        "phase": "Phase 3: Add Business Process Automation Service",
+        "status": "pending"
+      },
+      {
+        "id": "T015",
+        "description": "Update homepage meta description to reflect new service offerings",
+        "filePath": "src/pages/index.astro",
+        "phase": "Phase 4: Update Supporting Content and Consistency",
+        "status": "pending"
+      },
+      {
+        "id": "T016",
+        "description": "Update services page meta description and hero content",
+        "filePath": "src/pages/services.astro",
+        "phase": "Phase 4: Update Supporting Content and Consistency",
+        "status": "pending"
+      },
+      {
+        "id": "T017",
+        "description": "Add FAQ item about existing website support",
+        "filePath": "src/types/faq.ts",
+        "phase": "Phase 4: Update Supporting Content and Consistency",
+        "status": "pending"
+      },
+      {
+        "id": "T018",
+        "description": "Add FAQ item about business process automation",
+        "filePath": "src/types/faq.ts",
+        "phase": "Phase 4: Update Supporting Content and Consistency",
+        "status": "pending"
+      },
+      {
+        "id": "T019",
+        "description": "Update services page hero visual preview cards to show updated services",
+        "filePath": "src/pages/services.astro",
+        "phase": "Phase 4: Update Supporting Content and Consistency",
+        "status": "pending"
+      }
+    ],
+    "tasksTotal": 19,
+    "tasksCompleted": 19,
+    "approvedAt": "2026-01-22T17:43:34.022Z",
+    "currentTaskId": "T019"
+  },
+  "justFinishedAt": "2026-01-22T18:05:03.292Z"
+}

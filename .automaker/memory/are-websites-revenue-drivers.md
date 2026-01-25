@@ -1,3 +1,14 @@
+---
+tags: []
+summary: "relevantTo: []"
+relevantTo: []
+importance: 0.5
+relatedFiles: []
+usageStats:
+  loaded: 2
+  referenced: 1
+  successfulFeatures: 1
+---
 Website Presence & Revenue Growth
 
 Small businesses with a robust web presence tend to see significantly stronger sales growth. For example, Deloitte found that “digitally advanced” small firms (i.e. with professional, e-commerce–enabled sites, social media, etc.) earned roughly 2× more revenue per employee and ~4× the annual sales growth of less-digital peers. Industry surveys echo this: one report noted ~70% of small businesses saw revenue rise after launching a professional website. In practical terms, this means adding even a simple website can boost top-line results. Conversely, not having a website can cost sales: one study found 31% of U.S. shoppers would skip a small business lacking a website. (About 73% of U.S. small firms now have sites, and those without often cite cost or irrelevance – despite 81% of buyers researching businesses online first.)

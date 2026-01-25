@@ -2,6 +2,26 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769109014675-5de74d8f",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-22T19:10:14.675Z",
+      "featureName": "Update service offerings: remove SEO, add automation",
+      "featureId": "feature-1769103718659-iox58na9s"
+    },
+    {
+      "id": "evt-1769105103339-b4e76e92",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-22T18:05:03.339Z",
+      "featureName": "",
+      "featureId": "feature-1769103718659-iox58na9s"
+    },
+    {
+      "id": "evt-1769103718786-2372e819",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-22T17:41:58.786Z",
+      "featureId": "feature-1769103718659-iox58na9s"
+    },
+    {
       "id": "evt-1769060762297-421abf63",
       "trigger": "feature_success",
       "timestamp": "2026-01-22T05:46:02.297Z",

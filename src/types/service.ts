@@ -50,7 +50,7 @@ export interface ServicesSectionProps {
   /** Array of services to display */
   services: Service[];
   /** Number of columns to display (3 or 4) */
-  columns?: 3 | 4;
+  columns?: 3 | 4 | 5;
   /** Optional section ID for anchor links */
   id?: string;
   /** Additional CSS class names */
