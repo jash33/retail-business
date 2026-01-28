@@ -1,0 +1,536 @@
+---
+/**
+ * Product Grid Demo Page
+ * Showcases the flexible ProductGrid component with various configurations.
+ *
+ * Demonstrates:
+ * - 2, 3, and 4 column layouts
+ * - Featured-first layout with first item spanning 2 columns
+ * - Featured-left asymmetric layout
+ * - Featured-right asymmetric layout
+ * - Masonry-style editorial layout
+ * - Different gap sizes
+ * - Responsive behavior
+ *
+ * @route /demo/product-grid
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import ProductGrid from '../../components/ProductGrid.astro';
+import type { ProductCardProps } from '../../types/product';
+
+// Demo products data
+const demoProducts: ProductCardProps[] = [
+  {
+    id: 'product-1',
+    name: 'Premium Wireless Headphones',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Premium Wireless Headphones'
+    },
+    price: { amount: 299.99 },
+    shopUrl: 'https://shop.example.com/headphones',
+    category: 'Electronics',
+    isNew: true,
+    description: 'High-fidelity audio with active noise cancellation'
+  },
+  {
+    id: 'product-2',
+    name: 'Leather Weekend Bag',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Leather Weekend Bag'
+    },
+    price: { amount: 249.99, originalAmount: 349.99 },
+    shopUrl: 'https://shop.example.com/bag',
+    category: 'Accessories',
+    onSale: true,
+    description: 'Handcrafted genuine leather with brass hardware'
+  },
+  {
+    id: 'product-3',
+    name: 'Minimalist Watch',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Minimalist Watch'
+    },
+    price: { amount: 189.99 },
+    shopUrl: 'https://shop.example.com/watch',
+    category: 'Accessories',
+    description: 'Swiss movement with sapphire crystal'
+  },
+  {
+    id: 'product-4',
+    name: 'Ceramic Plant Pot Set',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Ceramic Plant Pot Set'
+    },
+    price: { amount: 79.99 },
+    shopUrl: 'https://shop.example.com/planters',
+    category: 'Home',
+    featured: true,
+    description: 'Set of 3 modern ceramic planters'
+  },
+  {
+    id: 'product-5',
+    name: 'Organic Cotton T-Shirt',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Organic Cotton T-Shirt'
+    },
+    price: { amount: 45.00 },
+    shopUrl: 'https://shop.example.com/tshirt',
+    category: 'Apparel',
+    description: '100% organic cotton, ethically sourced'
+  },
+  {
+    id: 'product-6',
+    name: 'Smart Home Hub',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Smart Home Hub'
+    },
+    price: { amount: 149.99 },
+    shopUrl: 'https://shop.example.com/smarthub',
+    category: 'Electronics',
+    isNew: true,
+    description: 'Control your entire home from one device'
+  },
+  {
+    id: 'product-7',
+    name: 'Artisan Coffee Beans',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Artisan Coffee Beans'
+    },
+    price: { amount: 24.99 },
+    shopUrl: 'https://shop.example.com/coffee',
+    category: 'Food & Drink',
+    description: 'Single-origin, small batch roasted'
+  },
+  {
+    id: 'product-8',
+    name: 'Yoga Mat Premium',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Yoga Mat Premium'
+    },
+    price: { amount: 89.99, originalAmount: 119.99 },
+    shopUrl: 'https://shop.example.com/yogamat',
+    category: 'Fitness',
+    onSale: true,
+    description: 'Extra thick, non-slip surface'
+  },
+];
+
+// Different product sets for various demos
+const products4 = demoProducts.slice(0, 4);
+const products6 = demoProducts.slice(0, 6);
+const products8 = demoProducts;
+---
+
+<Layout
+  title="Product Grid Demo"
+  description="Demo page showcasing the flexible ProductGrid component with various layout options."
+>
+  <main class="demo-page">
+    <div class="demo-page__container">
+      <!-- Page Header -->
+      <header class="demo-page__header">
+        <h1 class="demo-page__title">Product Grid Component</h1>
+        <p class="demo-page__description">
+          A flexible product grid system supporting 2, 3, or 4 columns with optional
+          asymmetric featured product placements and masonry-style layouts.
+        </p>
+      </header>
+
+      <!-- Demo Sections -->
+      <div class="demo-page__sections">
+
+        <!-- Standard 4-Column Grid -->
+        <section class="demo-section" data-testid="grid-4-columns">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">4-Column Standard Grid</h2>
+            <p class="demo-section__description">Default even grid with 4 columns on desktop</p>
+            <code class="demo-section__code">columns={4} layout="standard"</code>
+          </div>
+          <ProductGrid
+            products={products8}
+            columns={4}
+            layout="standard"
+            gap="medium"
+            enableAnimation={false}
+            id="grid-4-col"
+          />
+        </section>
+
+        <!-- Standard 3-Column Grid -->
+        <section class="demo-section" data-testid="grid-3-columns">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">3-Column Standard Grid</h2>
+            <p class="demo-section__description">Standard 3-column grid layout</p>
+            <code class="demo-section__code">columns={3} layout="standard"</code>
+          </div>
+          <ProductGrid
+            products={products6}
+            columns={3}
+            layout="standard"
+            gap="medium"
+            enableAnimation={false}
+            id="grid-3-col"
+          />
+        </section>
+
+        <!-- Standard 2-Column Grid -->
+        <section class="demo-section" data-testid="grid-2-columns">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">2-Column Standard Grid</h2>
+            <p class="demo-section__description">Simple 2-column grid layout</p>
+            <code class="demo-section__code">columns={2} layout="standard"</code>
+          </div>
+          <ProductGrid
+            products={products4}
+            columns={2}
+            layout="standard"
+            gap="medium"
+            enableAnimation={false}
+            id="grid-2-col"
+          />
+        </section>
+
+        <!-- Featured First Layout -->
+        <section class="demo-section" data-testid="grid-featured-first">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Featured First Layout</h2>
+            <p class="demo-section__description">First product spans 2 columns for emphasis</p>
+            <code class="demo-section__code">columns={3} layout="featured-first"</code>
+          </div>
+          <ProductGrid
+            products={products6}
+            columns={3}
+            layout="featured-first"
+            heading="Featured Collection"
+            subheading="Our most popular items this season"
+            gap="medium"
+            enableAnimation={false}
+            id="grid-featured-first"
+          />
+        </section>
+
+        <!-- Featured Left Layout -->
+        <section class="demo-section" data-testid="grid-featured-left">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Featured Left (Asymmetric)</h2>
+            <p class="demo-section__description">Large featured product on the left spanning 2 columns and 2 rows</p>
+            <code class="demo-section__code">columns={3} layout="featured-left"</code>
+          </div>
+          <ProductGrid
+            products={products6}
+            columns={3}
+            layout="featured-left"
+            heading="Editor's Picks"
+            gap="medium"
+            enableAnimation={false}
+            id="grid-featured-left"
+          />
+        </section>
+
+        <!-- Featured Right Layout -->
+        <section class="demo-section" data-testid="grid-featured-right">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Featured Right (Asymmetric)</h2>
+            <p class="demo-section__description">Large featured product on the right</p>
+            <code class="demo-section__code">columns={3} layout="featured-right"</code>
+          </div>
+          <ProductGrid
+            products={products6}
+            columns={3}
+            layout="featured-right"
+            heading="Trending Now"
+            gap="medium"
+            enableAnimation={false}
+            id="grid-featured-right"
+          />
+        </section>
+
+        <!-- Masonry Layout -->
+        <section class="demo-section" data-testid="grid-masonry">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Masonry Layout</h2>
+            <p class="demo-section__description">Pinterest-style staggered grid for editorial content</p>
+            <code class="demo-section__code">columns={3} layout="masonry"</code>
+          </div>
+          <ProductGrid
+            products={products6}
+            columns={3}
+            layout="masonry"
+            heading="Editorial Selection"
+            subheading="Curated picks with varied visual rhythm"
+            gap="medium"
+            enableAnimation={false}
+            id="grid-masonry"
+          />
+        </section>
+
+        <!-- Custom Featured Placements -->
+        <section class="demo-section" data-testid="grid-custom-placements">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Custom Featured Placements</h2>
+            <p class="demo-section__description">Multiple featured items with custom span configurations</p>
+            <code class="demo-section__code">featuredPlacements=[&#123;index: 0, colSpan: 2&#125;, &#123;index: 3, colSpan: 2&#125;]</code>
+          </div>
+          <ProductGrid
+            products={products8}
+            columns={4}
+            layout="standard"
+            featuredPlacements={[
+              { index: 0, colSpan: 2 },
+              { index: 5, colSpan: 2 }
+            ]}
+            heading="Mix & Match"
+            gap="medium"
+            enableAnimation={false}
+            id="grid-custom-placements"
+          />
+        </section>
+
+        <!-- Different Gap Sizes -->
+        <section class="demo-section" data-testid="grid-gap-sizes">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Gap Size Variations</h2>
+            <p class="demo-section__description">Small, medium, and large gap options</p>
+          </div>
+
+          <div class="demo-subsection">
+            <h3 class="demo-subsection__title">Small Gap</h3>
+            <code class="demo-section__code">gap="small"</code>
+            <ProductGrid
+              products={products4}
+              columns={4}
+              gap="small"
+              enableAnimation={false}
+              id="grid-gap-small"
+            />
+          </div>
+
+          <div class="demo-subsection">
+            <h3 class="demo-subsection__title">Medium Gap (Default)</h3>
+            <code class="demo-section__code">gap="medium"</code>
+            <ProductGrid
+              products={products4}
+              columns={4}
+              gap="medium"
+              enableAnimation={false}
+              id="grid-gap-medium"
+            />
+          </div>
+
+          <div class="demo-subsection">
+            <h3 class="demo-subsection__title">Large Gap</h3>
+            <code class="demo-section__code">gap="large"</code>
+            <ProductGrid
+              products={products4}
+              columns={4}
+              gap="large"
+              enableAnimation={false}
+              id="grid-gap-large"
+            />
+          </div>
+        </section>
+
+        <!-- With Animation -->
+        <section class="demo-section" data-testid="grid-animated">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Animated Grid (Scroll)</h2>
+            <p class="demo-section__description">Stagger animation on scroll with Intersection Observer</p>
+            <code class="demo-section__code">enableAnimation={true} maxStaggerItems={8}</code>
+          </div>
+          <ProductGrid
+            products={products8}
+            columns={4}
+            layout="standard"
+            heading="Scroll to Reveal"
+            subheading="Products animate in as you scroll"
+            gap="medium"
+            enableAnimation={true}
+            maxStaggerItems={8}
+            id="grid-animated"
+          />
+        </section>
+
+        <!-- Responsive Custom Columns -->
+        <section class="demo-section" data-testid="grid-responsive-custom">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Custom Responsive Breakpoints</h2>
+            <p class="demo-section__description">Override default responsive column counts</p>
+            <code class="demo-section__code">responsiveColumns=&#123;mobile: 2, tablet: 3, desktop: 4&#125;</code>
+          </div>
+          <ProductGrid
+            products={products8}
+            columns={4}
+            layout="standard"
+            gap="medium"
+            enableAnimation={false}
+            responsiveColumns={{
+              mobile: 2,
+              tablet: 3,
+              desktop: 4
+            }}
+            id="grid-responsive-custom"
+          />
+        </section>
+
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * DEMO PAGE STYLES
+   * ================================================================= */
+
+  .demo-page {
+    padding: var(--spacing-8) 0 var(--spacing-16);
+    background-color: var(--color-background);
+  }
+
+  .demo-page__container {
+    width: 100%;
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  /* =================================================================
+   * HEADER
+   * ================================================================= */
+  .demo-page__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+    padding-bottom: var(--spacing-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .demo-page__title {
+    margin: 0 0 var(--spacing-4);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+  }
+
+  .demo-page__description {
+    margin: 0 auto;
+    max-width: 600px;
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * DEMO SECTIONS
+   * ================================================================= */
+  .demo-page__sections {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-16);
+  }
+
+  .demo-section {
+    padding: var(--spacing-8) 0;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .demo-section:last-child {
+    border-bottom: none;
+  }
+
+  .demo-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+  }
+
+  .demo-section__title {
+    margin: 0 0 var(--spacing-2);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .demo-section__description {
+    margin: 0 0 var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+  }
+
+  .demo-section__code {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-3);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    color: var(--color-primary);
+  }
+
+  /* =================================================================
+   * DEMO SUBSECTIONS
+   * ================================================================= */
+  .demo-subsection {
+    margin-top: var(--spacing-8);
+    padding-top: var(--spacing-6);
+    border-top: 1px dashed var(--color-border-light);
+  }
+
+  .demo-subsection:first-of-type {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+  }
+
+  .demo-subsection__title {
+    margin: 0 0 var(--spacing-2);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    text-align: center;
+  }
+
+  .demo-subsection .demo-section__code {
+    display: block;
+    text-align: center;
+    margin-bottom: var(--spacing-4);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .demo-page {
+      padding: var(--spacing-4) 0 var(--spacing-12);
+    }
+
+    .demo-page__title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .demo-page__description {
+      font-size: var(--font-size-base);
+    }
+
+    .demo-section__title {
+      font-size: var(--font-size-xl);
+    }
+
+    .demo-page__sections {
+      gap: var(--spacing-10);
+    }
+  }
+</style>

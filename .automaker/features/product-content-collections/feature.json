@@ -1,0 +1,12 @@
+{
+  "id": "product-content-collections",
+  "category": "Core",
+  "title": "Product Content Collections System",
+  "description": "Set up Astro Content Collections for products with TypeScript schemas including name, price, description, images, category, external shop URL, and metadata. Includes validation and type safety.",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:49:59.716Z",
+  "updatedAt": "2026-01-26T03:34:34.302Z"
+}

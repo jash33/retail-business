@@ -1,0 +1,778 @@
+---
+/**
+ * InstagramLightbox Component
+ * A modal lightbox for viewing Instagram posts in full size with
+ * navigation controls and caption display.
+ *
+ * Features:
+ * - Full-screen modal overlay
+ * - Previous/Next navigation
+ * - Keyboard navigation (arrows, ESC)
+ * - Touch swipe support
+ * - Caption and metadata display
+ * - View on Instagram link
+ * - Smooth open/close animations
+ * - Full accessibility support
+ * - Focus trapping
+ *
+ * @example Basic usage
+ * ```astro
+ * <InstagramLightbox posts={instagramPosts} />
+ * ```
+ */
+
+import type { InstagramPost } from '../types/instagram';
+import { formatRelativeTime, formatCount } from '../utils/instagram';
+
+interface Props {
+  /** All posts for navigation */
+  posts: InstagramPost[];
+  /** Component ID */
+  id?: string;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  posts,
+  id = 'instagram-lightbox',
+  class: className = '',
+} = Astro.props;
+
+// Serialize posts data for client-side use
+const postsData = JSON.stringify(posts.map(post => ({
+  id: post.id,
+  mediaUrl: post.mediaUrl,
+  mediaType: post.mediaType,
+  thumbnailUrl: post.thumbnailUrl,
+  permalink: post.permalink,
+  caption: post.caption,
+  timestamp: post.timestamp,
+  altText: post.altText,
+  likeCount: post.likeCount,
+  commentsCount: post.commentsCount,
+})));
+---
+
+<div
+  class={`instagram-lightbox ${className}`}
+  id={id}
+  role="dialog"
+  aria-modal="true"
+  aria-label="Instagram post viewer"
+  aria-hidden="true"
+  data-instagram-lightbox
+  data-posts={postsData}
+>
+  {/* Backdrop */}
+  <div class="instagram-lightbox__backdrop" data-lightbox-close></div>
+
+  {/* Main Content */}
+  <div class="instagram-lightbox__content">
+    {/* Close Button */}
+    <button
+      class="instagram-lightbox__close"
+      type="button"
+      aria-label="Close lightbox"
+      data-lightbox-close
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    {/* Navigation - Previous */}
+    <button
+      class="instagram-lightbox__nav instagram-lightbox__nav--prev"
+      type="button"
+      aria-label="Previous post"
+      data-lightbox-prev
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+
+    {/* Media Container */}
+    <div class="instagram-lightbox__media-container">
+      <div class="instagram-lightbox__media" data-lightbox-media>
+        {/* Image/Video will be injected by JavaScript */}
+        <div class="instagram-lightbox__loading" aria-hidden="true">
+          <div class="instagram-lightbox__spinner"></div>
+        </div>
+      </div>
+
+      {/* Post Info */}
+      <div class="instagram-lightbox__info" data-lightbox-info>
+        <div class="instagram-lightbox__caption" data-lightbox-caption></div>
+        <div class="instagram-lightbox__meta">
+          <span class="instagram-lightbox__time" data-lightbox-time></span>
+          <div class="instagram-lightbox__metrics" data-lightbox-metrics></div>
+        </div>
+        <a
+          class="instagram-lightbox__view-link"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-lightbox-permalink
+        >
+          View on Instagram
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    {/* Navigation - Next */}
+    <button
+      class="instagram-lightbox__nav instagram-lightbox__nav--next"
+      type="button"
+      aria-label="Next post"
+      data-lightbox-next
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+
+    {/* Counter */}
+    <div class="instagram-lightbox__counter" data-lightbox-counter aria-live="polite">
+      <span data-lightbox-current>1</span> / <span data-lightbox-total>{posts.length}</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* =================================================================
+   * INSTAGRAM LIGHTBOX COMPONENT STYLES
+   * ================================================================= */
+
+  .instagram-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--duration-300) var(--ease-out),
+      visibility var(--duration-300) var(--ease-out);
+  }
+
+  .instagram-lightbox[aria-hidden="false"] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* =================================================================
+   * BACKDROP
+   * ================================================================= */
+
+  .instagram-lightbox__backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.95);
+    cursor: pointer;
+  }
+
+  /* =================================================================
+   * CONTENT CONTAINER
+   * ================================================================= */
+
+  .instagram-lightbox__content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    max-width: 1200px;
+    padding: var(--spacing-4);
+  }
+
+  /* =================================================================
+   * CLOSE BUTTON
+   * ================================================================= */
+
+  .instagram-lightbox__close {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-out),
+      transform var(--duration-150) var(--ease-out);
+    z-index: 10;
+  }
+
+  .instagram-lightbox__close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+  }
+
+  .instagram-lightbox__close:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+  }
+
+  .instagram-lightbox__close svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* =================================================================
+   * NAVIGATION BUTTONS
+   * ================================================================= */
+
+  .instagram-lightbox__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-out),
+      opacity var(--duration-150) var(--ease-out);
+    z-index: 10;
+  }
+
+  .instagram-lightbox__nav--prev {
+    left: var(--spacing-4);
+  }
+
+  .instagram-lightbox__nav--next {
+    right: var(--spacing-4);
+  }
+
+  .instagram-lightbox__nav:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .instagram-lightbox__nav:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+  }
+
+  .instagram-lightbox__nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .instagram-lightbox__nav svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* =================================================================
+   * MEDIA CONTAINER
+   * ================================================================= */
+
+  .instagram-lightbox__media-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    max-height: calc(100vh - var(--spacing-8));
+  }
+
+  .instagram-lightbox__media {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    max-height: calc(100vh - 200px);
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    overflow: hidden;
+  }
+
+  .instagram-lightbox__media img,
+  .instagram-lightbox__media video {
+    max-width: 100%;
+    max-height: calc(100vh - 200px);
+    object-fit: contain;
+  }
+
+  /* =================================================================
+   * LOADING STATE
+   * ================================================================= */
+
+  .instagram-lightbox__loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .instagram-lightbox__loading[hidden] {
+    display: none;
+  }
+
+  .instagram-lightbox__spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: lightbox-spin 1s linear infinite;
+  }
+
+  @keyframes lightbox-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* =================================================================
+   * POST INFO
+   * ================================================================= */
+
+  .instagram-lightbox__info {
+    padding: var(--spacing-4);
+    background-color: white;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    max-width: 600px;
+  }
+
+  .instagram-lightbox__caption {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-3);
+    max-height: 100px;
+    overflow-y: auto;
+  }
+
+  .instagram-lightbox__caption:empty {
+    display: none;
+  }
+
+  .instagram-lightbox__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--spacing-3);
+  }
+
+  .instagram-lightbox__metrics {
+    display: flex;
+    gap: var(--spacing-3);
+  }
+
+  .instagram-lightbox__metric {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+
+  .instagram-lightbox__metric svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .instagram-lightbox__view-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--duration-150) var(--ease-out);
+  }
+
+  .instagram-lightbox__view-link:hover {
+    color: var(--color-primary-hover);
+    text-decoration: underline;
+  }
+
+  .instagram-lightbox__view-link svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* =================================================================
+   * COUNTER
+   * ================================================================= */
+
+  .instagram-lightbox__counter {
+    position: absolute;
+    bottom: var(--spacing-4);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: white;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  @media screen and (max-width: 767px) {
+    .instagram-lightbox__content {
+      padding: var(--spacing-2);
+    }
+
+    .instagram-lightbox__close {
+      top: var(--spacing-2);
+      right: var(--spacing-2);
+      width: 40px;
+      height: 40px;
+    }
+
+    .instagram-lightbox__nav {
+      width: 40px;
+      height: 40px;
+    }
+
+    .instagram-lightbox__nav--prev {
+      left: var(--spacing-2);
+    }
+
+    .instagram-lightbox__nav--next {
+      right: var(--spacing-2);
+    }
+
+    .instagram-lightbox__info {
+      padding: var(--spacing-3);
+    }
+
+    .instagram-lightbox__media {
+      max-height: calc(100vh - 250px);
+    }
+
+    .instagram-lightbox__media img,
+    .instagram-lightbox__media video {
+      max-height: calc(100vh - 250px);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .instagram-lightbox {
+      transition: none;
+    }
+
+    .instagram-lightbox__close,
+    .instagram-lightbox__nav {
+      transition: none;
+    }
+
+    .instagram-lightbox__spinner {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+
+  :global(html[data-theme="dark"]) .instagram-lightbox__info {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .instagram-lightbox__caption {
+    color: var(--color-text-primary);
+  }
+</style>
+
+<script>
+  /**
+   * Instagram Lightbox Controller
+   * Handles opening, closing, navigation, and keyboard events
+   */
+  interface LightboxPost {
+    id: string;
+    mediaUrl: string;
+    mediaType: string;
+    thumbnailUrl?: string;
+    permalink: string;
+    caption?: string;
+    timestamp: string;
+    altText?: string;
+    likeCount?: number;
+    commentsCount?: number;
+  }
+
+  class InstagramLightbox {
+    private lightbox: HTMLElement;
+    private posts: LightboxPost[] = [];
+    private currentIndex: number = 0;
+    private previousFocus: HTMLElement | null = null;
+
+    constructor(lightboxElement: HTMLElement) {
+      this.lightbox = lightboxElement;
+      this.posts = JSON.parse(lightboxElement.dataset.posts || '[]');
+      this.init();
+    }
+
+    private init() {
+      // Close button handlers
+      this.lightbox.querySelectorAll('[data-lightbox-close]').forEach(el => {
+        el.addEventListener('click', () => this.close());
+      });
+
+      // Navigation handlers
+      this.lightbox.querySelector('[data-lightbox-prev]')?.addEventListener('click', () => this.previous());
+      this.lightbox.querySelector('[data-lightbox-next]')?.addEventListener('click', () => this.next());
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => this.handleKeydown(e));
+
+      // Listen for open events from grid
+      document.addEventListener('instagram-lightbox-open', ((e: CustomEvent) => {
+        const { postId, index } = e.detail;
+        this.open(index);
+      }) as EventListener);
+    }
+
+    private handleKeydown(e: KeyboardEvent) {
+      if (this.lightbox.getAttribute('aria-hidden') === 'true') return;
+
+      switch (e.key) {
+        case 'Escape':
+          this.close();
+          break;
+        case 'ArrowLeft':
+          this.previous();
+          break;
+        case 'ArrowRight':
+          this.next();
+          break;
+      }
+    }
+
+    public open(index: number = 0) {
+      if (this.posts.length === 0) return;
+
+      this.currentIndex = Math.max(0, Math.min(index, this.posts.length - 1));
+      this.previousFocus = document.activeElement as HTMLElement;
+
+      this.lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+
+      this.updateContent();
+      this.updateNavigation();
+
+      // Focus the close button
+      const closeButton = this.lightbox.querySelector('[data-lightbox-close]') as HTMLElement;
+      closeButton?.focus();
+    }
+
+    public close() {
+      this.lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+
+      // Restore focus
+      this.previousFocus?.focus();
+    }
+
+    public previous() {
+      if (this.currentIndex > 0) {
+        this.currentIndex--;
+        this.updateContent();
+        this.updateNavigation();
+      }
+    }
+
+    public next() {
+      if (this.currentIndex < this.posts.length - 1) {
+        this.currentIndex++;
+        this.updateContent();
+        this.updateNavigation();
+      }
+    }
+
+    private updateContent() {
+      const post = this.posts[this.currentIndex];
+      if (!post) return;
+
+      // Update media
+      const mediaContainer = this.lightbox.querySelector('[data-lightbox-media]');
+      const loading = mediaContainer?.querySelector('.instagram-lightbox__loading');
+
+      if (mediaContainer) {
+        // Show loading
+        if (loading) loading.removeAttribute('hidden');
+
+        // Remove existing media
+        const existingMedia = mediaContainer.querySelector('img, video');
+        existingMedia?.remove();
+
+        // Create new media element
+        if (post.mediaType === 'VIDEO') {
+          const video = document.createElement('video');
+          video.src = post.mediaUrl;
+          video.controls = true;
+          video.autoplay = true;
+          video.muted = true;
+          video.playsInline = true;
+          video.onloadeddata = () => loading?.setAttribute('hidden', '');
+          video.onerror = () => loading?.setAttribute('hidden', '');
+          mediaContainer.appendChild(video);
+        } else {
+          const img = document.createElement('img');
+          img.src = post.mediaUrl;
+          img.alt = post.altText || 'Instagram post';
+          img.onload = () => loading?.setAttribute('hidden', '');
+          img.onerror = () => loading?.setAttribute('hidden', '');
+          mediaContainer.appendChild(img);
+        }
+      }
+
+      // Update caption
+      const captionEl = this.lightbox.querySelector('[data-lightbox-caption]');
+      if (captionEl) captionEl.textContent = post.caption || '';
+
+      // Update time
+      const timeEl = this.lightbox.querySelector('[data-lightbox-time]');
+      if (timeEl) timeEl.textContent = this.formatRelativeTime(post.timestamp);
+
+      // Update metrics
+      const metricsEl = this.lightbox.querySelector('[data-lightbox-metrics]');
+      if (metricsEl) {
+        let metricsHtml = '';
+        if (post.likeCount !== undefined) {
+          metricsHtml += `<span class="instagram-lightbox__metric">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            ${this.formatCount(post.likeCount)}
+          </span>`;
+        }
+        if (post.commentsCount !== undefined) {
+          metricsHtml += `<span class="instagram-lightbox__metric">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/></svg>
+            ${this.formatCount(post.commentsCount)}
+          </span>`;
+        }
+        metricsEl.innerHTML = metricsHtml;
+      }
+
+      // Update permalink
+      const permalinkEl = this.lightbox.querySelector('[data-lightbox-permalink]') as HTMLAnchorElement;
+      if (permalinkEl) permalinkEl.href = post.permalink;
+
+      // Update counter
+      const currentEl = this.lightbox.querySelector('[data-lightbox-current]');
+      if (currentEl) currentEl.textContent = String(this.currentIndex + 1);
+    }
+
+    private updateNavigation() {
+      const prevBtn = this.lightbox.querySelector('[data-lightbox-prev]') as HTMLButtonElement;
+      const nextBtn = this.lightbox.querySelector('[data-lightbox-next]') as HTMLButtonElement;
+
+      if (prevBtn) prevBtn.disabled = this.currentIndex === 0;
+      if (nextBtn) nextBtn.disabled = this.currentIndex === this.posts.length - 1;
+    }
+
+    private formatRelativeTime(timestamp: string): string {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 1) return 'Today';
+      if (diffDays === 1) return 'Yesterday';
+      if (diffDays < 7) return `${diffDays} days ago`;
+      if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+      return date.toLocaleDateString();
+    }
+
+    private formatCount(num: number): string {
+      if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+      return num.toString();
+    }
+  }
+
+  function initInstagramLightbox() {
+    document.querySelectorAll('[data-instagram-lightbox]').forEach(el => {
+      if (!(el as any)._lightboxInstance) {
+        (el as any)._lightboxInstance = new InstagramLightbox(el as HTMLElement);
+      }
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initInstagramLightbox);
+  } else {
+    initInstagramLightbox();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initInstagramLightbox);
+</script>

@@ -1,0 +1,293 @@
+---
+/**
+ * RelatedProducts Component
+ * Displays a grid of related product cards with a section heading.
+ * Uses the ProductCard component for consistent styling.
+ *
+ * Features:
+ * - Grid layout with responsive columns
+ * - Reuses ProductCard component
+ * - Configurable heading and description
+ * - Empty state handling
+ * - Staggered animation entrance
+ * - Dark mode support
+ *
+ * @example Basic usage
+ * ```astro
+ * <RelatedProducts
+ *   products={relatedProducts}
+ *   heading="You May Also Like"
+ * />
+ * ```
+ */
+
+import ProductCard from './ProductCard.astro';
+import type { ProductCardProps } from '../types/product';
+
+interface Props {
+  /** Array of product card props to display */
+  products: ProductCardProps[];
+  /** Section heading */
+  heading?: string;
+  /** Section description */
+  description?: string;
+  /** Number of columns (2-4) */
+  columns?: 2 | 3 | 4;
+  /** Section ID for anchor links */
+  id?: string;
+  /** Additional CSS classes */
+  class?: string;
+  /** Show empty state when no products */
+  showEmptyState?: boolean;
+}
+
+const {
+  products,
+  heading = 'Related Products',
+  description,
+  columns = 4,
+  id,
+  class: className = '',
+  showEmptyState = false,
+} = Astro.props;
+
+// If no products and no empty state, don't render
+if (products.length === 0 && !showEmptyState) {
+  return null;
+}
+
+// Limit products to reasonable number
+const displayProducts = products.slice(0, columns * 2); // Max 2 rows
+---
+
+<section
+  class:list={['related-products', `related-products--cols-${columns}`, className]}
+  id={id}
+  aria-labelledby={id ? `${id}-heading` : 'related-products-heading'}
+>
+  <div class="related-products__header">
+    <h2
+      class="related-products__heading"
+      id={id ? `${id}-heading` : 'related-products-heading'}
+    >
+      {heading}
+    </h2>
+    {description && (
+      <p class="related-products__description">{description}</p>
+    )}
+  </div>
+
+  {displayProducts.length > 0 ? (
+    <div class="related-products__grid">
+      {displayProducts.map((product, index) => (
+        <div
+          class="related-products__item reveal"
+          style={`--stagger-delay: ${index * 100}ms;`}
+        >
+          <ProductCard
+            {...product}
+            utmParams={{
+              ...product.utmParams,
+              content: product.utmParams?.content || `related_product_${product.id}`,
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  ) : showEmptyState ? (
+    <div class="related-products__empty">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <rect x="2" y="2" width="20" height="20" rx="2" />
+        <path d="M7 7h.01M7 12h.01M7 17h.01M12 7h5M12 12h5M12 17h5" />
+      </svg>
+      <p>No related products found</p>
+    </div>
+  ) : null}
+</section>
+
+<style>
+  /* =================================================================
+   * RELATED PRODUCTS COMPONENT STYLES
+   * =================================================================
+   */
+
+  .related-products {
+    padding: var(--spacing-12) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  /* =================================================================
+   * HEADER
+   * ================================================================= */
+  .related-products__header {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+  }
+
+  .related-products__heading {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+  }
+
+  .related-products__description {
+    margin: var(--spacing-2) 0 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* =================================================================
+   * GRID LAYOUT
+   * ================================================================= */
+  .related-products__grid {
+    display: grid;
+    gap: var(--spacing-6);
+  }
+
+  /* Column variants */
+  .related-products--cols-2 .related-products__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .related-products--cols-3 .related-products__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .related-products--cols-4 .related-products__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* =================================================================
+   * GRID ITEMS
+   * ================================================================= */
+  .related-products__item {
+    /* Stagger animation */
+    transition-delay: var(--stagger-delay, 0ms);
+  }
+
+  /* Reveal animation */
+  .related-products__item.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity var(--animation-duration-slow) var(--ease-enter),
+      transform var(--animation-duration-slow) var(--ease-enter-emphasized);
+  }
+
+  .related-products__item.reveal--visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+  .related-products__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-12);
+    text-align: center;
+    color: var(--color-text-tertiary);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+  }
+
+  .related-products__empty svg {
+    width: 48px;
+    height: 48px;
+    opacity: 0.5;
+  }
+
+  .related-products__empty p {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 1023px) {
+    .related-products--cols-4 .related-products__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .related-products {
+      padding: var(--spacing-8) 0;
+    }
+
+    .related-products__heading {
+      font-size: var(--font-size-xl);
+    }
+
+    .related-products--cols-4 .related-products__grid,
+    .related-products--cols-3 .related-products__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .related-products__grid {
+      gap: var(--spacing-4);
+    }
+  }
+
+  @media screen and (max-width: 479px) {
+    .related-products--cols-2 .related-products__grid,
+    .related-products--cols-3 .related-products__grid,
+    .related-products--cols-4 .related-products__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .related-products__item.reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .related-products__empty {
+    background-color: var(--color-background-subtle);
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .related-products {
+      border-top: 1px solid #ccc;
+      page-break-inside: avoid;
+    }
+
+    .related-products__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

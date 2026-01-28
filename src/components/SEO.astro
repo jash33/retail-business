@@ -42,6 +42,9 @@ import type {
   ArticleSchema,
   OrganizationSchema,
   ProductSchema,
+  ProductOffer,
+  ProductReview,
+  ProductAggregateRating,
   BreadcrumbSchema,
   WebPageSchema,
   CustomMetaTag,
@@ -251,12 +254,84 @@ function generateOrganizationSchema(schema: OrganizationSchema): object {
   };
 }
 
+/**
+ * Generates a single offer object for Product schema
+ */
+function generateOfferSchema(offer: ProductOffer, defaultUrl: string): object {
+  return {
+    '@type': 'Offer',
+    price: offer.price,
+    priceCurrency: offer.priceCurrency,
+    availability: offer.availability
+      ? `https://schema.org/${offer.availability}`
+      : undefined,
+    url: offer.url || defaultUrl,
+    validFrom: offer.validFrom,
+    priceValidUntil: offer.priceValidUntil,
+    itemCondition: offer.itemCondition
+      ? `https://schema.org/${offer.itemCondition}`
+      : undefined,
+    seller: offer.seller
+      ? {
+          '@type': 'Organization',
+          name: offer.seller.name,
+          url: offer.seller.url,
+        }
+      : undefined,
+  };
+}
+
+/**
+ * Generates a single review object for Product schema
+ */
+function generateReviewSchema(review: ProductReview): object {
+  return {
+    '@type': 'Review',
+    author: {
+      '@type': 'Person',
+      name: review.author,
+    },
+    datePublished: review.datePublished,
+    reviewBody: review.reviewBody,
+    reviewRating: {
+      '@type': 'Rating',
+      ratingValue: review.reviewRating.ratingValue,
+      bestRating: review.reviewRating.bestRating || 5,
+      worstRating: review.reviewRating.worstRating || 1,
+    },
+  };
+}
+
+/**
+ * Generates comprehensive Product schema JSON-LD for Google Rich Results
+ * @see https://developers.google.com/search/docs/appearance/structured-data/product
+ */
 function generateProductSchema(schema: ProductSchema): object {
   const images = schema.image
     ? Array.isArray(schema.image)
       ? schema.image.map((img) => toAbsoluteUrl(img, siteUrl))
       : [toAbsoluteUrl(schema.image, siteUrl)]
     : undefined;
+
+  // Handle single offer or array of offers
+  let offers: object | object[] | undefined;
+  if (schema.offers) {
+    if (Array.isArray(schema.offers)) {
+      offers = schema.offers.map((offer) => generateOfferSchema(offer, computedCanonicalUrl));
+    } else {
+      offers = generateOfferSchema(schema.offers, computedCanonicalUrl);
+    }
+  }
+
+  // Handle single review or array of reviews
+  let reviews: object | object[] | undefined;
+  if (schema.review) {
+    if (Array.isArray(schema.review)) {
+      reviews = schema.review.map(generateReviewSchema);
+    } else {
+      reviews = generateReviewSchema(schema.review);
+    }
+  }
 
   return {
     '@context': 'https://schema.org',
@@ -271,26 +346,33 @@ function generateProductSchema(schema: ProductSchema): object {
         }
       : undefined,
     sku: schema.sku,
-    offers: schema.offers
-      ? {
-          '@type': 'Offer',
-          price: schema.offers.price,
-          priceCurrency: schema.offers.priceCurrency,
-          availability: schema.offers.availability
-            ? `https://schema.org/${schema.offers.availability}`
-            : undefined,
-          url: schema.offers.url || computedCanonicalUrl,
-          validFrom: schema.offers.validFrom,
-          priceValidUntil: schema.offers.priceValidUntil,
-        }
+    gtin: schema.gtin,
+    gtin8: schema.gtin8,
+    gtin12: schema.gtin12,
+    gtin13: schema.gtin13,
+    gtin14: schema.gtin14,
+    mpn: schema.mpn,
+    model: schema.model,
+    color: schema.color,
+    material: schema.material,
+    size: schema.size,
+    category: schema.category,
+    url: schema.url || computedCanonicalUrl,
+    itemCondition: schema.itemCondition
+      ? `https://schema.org/${schema.itemCondition}`
       : undefined,
+    offers: offers,
     aggregateRating: schema.aggregateRating
       ? {
           '@type': 'AggregateRating',
           ratingValue: schema.aggregateRating.ratingValue,
+          bestRating: schema.aggregateRating.bestRating || 5,
+          worstRating: schema.aggregateRating.worstRating || 1,
+          ratingCount: schema.aggregateRating.ratingCount,
           reviewCount: schema.aggregateRating.reviewCount,
         }
       : undefined,
+    review: reviews,
   };
 }
 

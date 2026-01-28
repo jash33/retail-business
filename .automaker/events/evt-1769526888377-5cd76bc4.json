@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769526888377-5cd76bc4",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-27T15:14:48.377Z",
+  "projectPath": "C:\\Users\\James\\Repos\\retail-business",
+  "projectName": "retail-business",
+  "featureId": "email-capture-popup",
+  "featureName": "Exit-Intent Email Capture Modal",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

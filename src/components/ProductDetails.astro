@@ -1,0 +1,857 @@
+---
+/**
+ * ProductDetails Component
+ * Displays comprehensive product information including name, price,
+ * description, variants, availability, and external shop CTA.
+ *
+ * Features:
+ * - Product name and category breadcrumb
+ * - Price display with sale formatting
+ * - Full product description
+ * - Product attributes (colors, sizes, materials)
+ * - Availability indicator
+ * - External shop CTA button with UTM tracking
+ * - Responsive layout
+ * - Dark mode support
+ *
+ * @example Basic usage
+ * ```astro
+ * <ProductDetails
+ *   name="Product Name"
+ *   description="Product description"
+ *   price={{ amount: 49.99 }}
+ *   shopUrl="https://shop.example.com/product"
+ *   category="Bags"
+ * />
+ * ```
+ */
+
+import type { ProductPrice, ProductImage } from '../types/product';
+import { formatPrice, calculateDiscount } from '../types/product';
+import {
+  appendUTMParams,
+  mergeUTMParams,
+  getShopLinkAttributes,
+  getShopLinkAriaLabel
+} from '../utils/shop-tracking';
+import { shopConfig } from '../config/shop.config';
+import type { UTMParams } from '../types/shop';
+import AvailabilityBadge from './AvailabilityBadge.astro';
+import type { AvailabilityStatus } from './AvailabilityBadge.astro';
+
+interface Props {
+  /** Product name */
+  name: string;
+  /** Short product description */
+  description: string;
+  /** Extended editorial description */
+  editorialDescription?: string;
+  /** Product price configuration */
+  price: ProductPrice;
+  /** Direct URL to product in external shop */
+  shopUrl: string;
+  /** Product category */
+  category?: string;
+  /** Product tagline */
+  tagline?: string;
+  /** Whether the product is new */
+  isNew?: boolean;
+  /** Whether the product is on sale */
+  onSale?: boolean;
+  /** Whether the product is sold out */
+  soldOut?: boolean;
+  /** Whether the product is available for pre-order */
+  preOrder?: boolean;
+  /** Available colors */
+  colors?: string[];
+  /** Available sizes */
+  sizes?: string[];
+  /** Available materials */
+  materials?: string[];
+  /** Show size guide link */
+  showSizeGuide?: boolean;
+  /** Size guide category for the modal */
+  sizeGuideCategory?: 'clothing' | 'jewelry';
+  /** Stock quantity for low stock warning */
+  stockQuantity?: number;
+  /** Low stock threshold */
+  lowStockThreshold?: number;
+  /** Product SKU */
+  sku?: string;
+  /** Brand name */
+  brand?: string;
+  /** CTA button text */
+  ctaText?: string;
+  /** Whether to open shop link in new tab */
+  openInNewTab?: boolean;
+  /** UTM parameters for tracking */
+  utmParams?: UTMParams;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  name,
+  description,
+  editorialDescription,
+  price,
+  shopUrl,
+  category,
+  tagline,
+  isNew = false,
+  onSale = false,
+  soldOut = false,
+  preOrder = false,
+  colors,
+  sizes,
+  materials,
+  showSizeGuide = false,
+  sizeGuideCategory = 'clothing',
+  stockQuantity,
+  lowStockThreshold = 5,
+  sku,
+  brand,
+  ctaText = 'Shop Now',
+  openInNewTab,
+  utmParams,
+  class: className = '',
+} = Astro.props;
+
+// Build tracked shop URL
+const mergedParams = mergeUTMParams({
+  ...utmParams,
+  content: utmParams?.content || 'product_detail_cta',
+});
+const trackedShopUrl = shopConfig.trackingEnabled
+  ? appendUTMParams(shopUrl, mergedParams)
+  : shopUrl;
+
+// Get link attributes
+const linkAttrs = getShopLinkAttributes(openInNewTab);
+const ariaLabel = getShopLinkAriaLabel(name);
+
+// Format prices
+const currentPrice = formatPrice(price);
+const originalPrice = price.originalAmount
+  ? formatPrice({ ...price, amount: price.originalAmount })
+  : null;
+
+// Calculate discount
+const discountPercent = calculateDiscount(price);
+
+// Determine availability status
+const isLowStock = stockQuantity !== undefined &&
+  stockQuantity > 0 &&
+  stockQuantity <= lowStockThreshold;
+
+// Get availability status for the badge
+function getAvailabilityStatus(): AvailabilityStatus {
+  if (soldOut) return 'sold-out';
+  if (preOrder) return 'pre-order';
+  if (isLowStock) return 'low-stock';
+  return 'in-stock';
+}
+
+const availabilityStatus = getAvailabilityStatus();
+
+// Check if any variants exist
+const hasColors = colors && colors.length > 0;
+const hasSizes = sizes && sizes.length > 0;
+const hasMaterials = materials && materials.length > 0;
+const hasVariants = hasColors || hasSizes || hasMaterials;
+---
+
+<div class:list={['product-details', className]}>
+  {/* Breadcrumb / Category */}
+  {category && (
+    <nav class="product-details__breadcrumb" aria-label="Breadcrumb">
+      <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/" itemprop="item">
+            <span itemprop="name">Home</span>
+          </a>
+          <meta itemprop="position" content="1" />
+        </li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/products" itemprop="item">
+            <span itemprop="name">Products</span>
+          </a>
+          <meta itemprop="position" content="2" />
+        </li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" aria-current="page">
+          <span itemprop="name">{category}</span>
+          <meta itemprop="position" content="3" />
+        </li>
+      </ol>
+    </nav>
+  )}
+
+  {/* Badges */}
+  <div class="product-details__badges">
+    {isNew && !soldOut && (
+      <span class="product-details__badge product-details__badge--new">New Arrival</span>
+    )}
+    {onSale && discountPercent && !soldOut && (
+      <span class="product-details__badge product-details__badge--sale">{discountPercent}% Off</span>
+    )}
+  </div>
+
+  {/* Tagline */}
+  {tagline && (
+    <p class="product-details__tagline">{tagline}</p>
+  )}
+
+  {/* Product Name */}
+  <h1 class="product-details__name">{name}</h1>
+
+  {/* Brand */}
+  {brand && (
+    <p class="product-details__brand">
+      By <span>{brand}</span>
+    </p>
+  )}
+
+  {/* Price */}
+  <div class="product-details__price-container">
+    {soldOut ? (
+      <span class="product-details__price product-details__price--sold-out">Sold Out</span>
+    ) : (
+      <>
+        <span class:list={[
+          'product-details__price',
+          onSale && 'product-details__price--sale'
+        ]}>
+          {currentPrice}
+        </span>
+        {originalPrice && onSale && (
+          <span class="product-details__price product-details__price--original">
+            <span class="sr-only">Originally </span>
+            {originalPrice}
+          </span>
+        )}
+      </>
+    )}
+  </div>
+
+  {/* Availability Status */}
+  <div class="product-details__availability">
+    <AvailabilityBadge
+      status={availabilityStatus}
+      stockQuantity={isLowStock ? stockQuantity : undefined}
+      size="medium"
+      variant="inline"
+      showIcon={true}
+    />
+  </div>
+
+  {/* Description */}
+  <div class="product-details__description">
+    <p>{editorialDescription || description}</p>
+  </div>
+
+  {/* Variants */}
+  {hasVariants && (
+    <div class="product-details__variants">
+      {hasColors && (
+        <div class="product-details__variant-group">
+          <h3 class="product-details__variant-label">Colors</h3>
+          <ul class="product-details__variant-list">
+            {colors!.map((color) => (
+              <li class="product-details__variant-item">{color}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {hasSizes && (
+        <div class="product-details__variant-group">
+          <h3 class="product-details__variant-label">Sizes</h3>
+          <ul class="product-details__variant-list">
+            {sizes!.map((size) => (
+              <li class="product-details__variant-item">{size}</li>
+            ))}
+          </ul>
+          {showSizeGuide && (
+            <button
+              type="button"
+              class="product-details__size-guide-link"
+              data-size-guide-trigger
+              data-size-guide-category={sizeGuideCategory}
+              aria-label="Open size guide"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
+              <span>Size Guide</span>
+            </button>
+          )}
+        </div>
+      )}
+
+      {hasMaterials && (
+        <div class="product-details__variant-group">
+          <h3 class="product-details__variant-label">Materials</h3>
+          <ul class="product-details__variant-list">
+            {materials!.map((material) => (
+              <li class="product-details__variant-item">{material}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )}
+
+  {/* Shop CTA */}
+  <div class="product-details__cta">
+    <a
+      href={trackedShopUrl}
+      class:list={[
+        'product-details__button',
+        soldOut && 'product-details__button--disabled'
+      ]}
+      aria-label={ariaLabel}
+      data-product-cta
+      {...(soldOut ? { 'aria-disabled': 'true', tabindex: '-1' } : linkAttrs)}
+    >
+      {soldOut ? (
+        <>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+          <span>Sold Out</span>
+        </>
+      ) : (
+        <>
+          <span>{ctaText}</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </>
+      )}
+    </a>
+
+    {/* Shop platform indicator */}
+    {!soldOut && shopConfig.platform && shopConfig.platform !== 'custom' && (
+      <p class="product-details__shop-info">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="16" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12.01" y2="8"/>
+        </svg>
+        <span>
+          {openInNewTab !== false && shopConfig.openInNewTab !== false
+            ? `Opens in ${shopConfig.storeName || 'our shop'}`
+            : `Continue to ${shopConfig.storeName || 'our shop'}`
+          }
+        </span>
+      </p>
+    )}
+  </div>
+
+  {/* SKU */}
+  {sku && (
+    <p class="product-details__sku">
+      SKU: <span>{sku}</span>
+    </p>
+  )}
+</div>
+
+<style>
+  /* =================================================================
+   * PRODUCT DETAILS COMPONENT STYLES
+   * =================================================================
+   */
+
+  .product-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  /* =================================================================
+   * BREADCRUMB
+   * ================================================================= */
+  .product-details__breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .product-details__breadcrumb li {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .product-details__breadcrumb li:not(:last-child)::after {
+    content: '/';
+    color: var(--color-border-dark);
+  }
+
+  .product-details__breadcrumb a {
+    color: var(--color-text-tertiary);
+    text-decoration: none;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .product-details__breadcrumb a:hover {
+    color: var(--color-primary);
+  }
+
+  .product-details__breadcrumb a:focus-visible {
+    outline: none;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* =================================================================
+   * BADGES
+   * ================================================================= */
+  .product-details__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+  }
+
+  .product-details__badge {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    border-radius: var(--radius-full);
+  }
+
+  .product-details__badge--new {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .product-details__badge--sale {
+    background-color: var(--color-error);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * TAGLINE
+   * ================================================================= */
+  .product-details__tagline {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+  }
+
+  /* =================================================================
+   * PRODUCT NAME
+   * ================================================================= */
+  .product-details__name {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+  }
+
+  /* =================================================================
+   * BRAND
+   * ================================================================= */
+  .product-details__brand {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+  }
+
+  .product-details__brand span {
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* =================================================================
+   * PRICE
+   * ================================================================= */
+  .product-details__price-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--spacing-3);
+  }
+
+  .product-details__price {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .product-details__price--sale {
+    color: var(--color-error);
+  }
+
+  .product-details__price--original {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-tertiary);
+    text-decoration: line-through;
+  }
+
+  .product-details__price--sold-out {
+    color: var(--color-text-tertiary);
+    font-style: italic;
+  }
+
+  /* =================================================================
+   * AVAILABILITY
+   * ================================================================= */
+  .product-details__availability {
+    margin-top: var(--spacing-1);
+  }
+
+  /* =================================================================
+   * DESCRIPTION
+   * ================================================================= */
+  .product-details__description {
+    margin-top: var(--spacing-2);
+  }
+
+  .product-details__description p {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-secondary);
+  }
+
+  /* =================================================================
+   * VARIANTS
+   * ================================================================= */
+  .product-details__variants {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .product-details__variant-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .product-details__variant-label {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .product-details__variant-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .product-details__variant-item {
+    padding: var(--spacing-1-5) var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    background-color: var(--color-background-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  /* =================================================================
+   * SIZE GUIDE LINK
+   * ================================================================= */
+  .product-details__size-guide-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin-top: var(--spacing-2);
+    padding: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-primary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .product-details__size-guide-link:hover {
+    color: var(--color-primary-hover);
+  }
+
+  .product-details__size-guide-link:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-radius: var(--radius-sm);
+  }
+
+  .product-details__size-guide-link svg {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+  }
+
+  /* =================================================================
+   * CTA BUTTON
+   * ================================================================= */
+  .product-details__cta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-4);
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .product-details__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4) var(--spacing-8);
+
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    border: none;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-out);
+  }
+
+  .product-details__button:hover {
+    background-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+
+  .product-details__button:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-md), var(--focus-ring);
+  }
+
+  .product-details__button:active {
+    transform: translateY(0);
+  }
+
+  .product-details__button svg {
+    width: 1.25em;
+    height: 1.25em;
+    flex-shrink: 0;
+  }
+
+  .product-details__button--disabled {
+    background-color: var(--color-background-muted);
+    color: var(--color-text-disabled);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .product-details__button--disabled:hover {
+    background-color: var(--color-background-muted);
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* =================================================================
+   * SHOP INFO
+   * ================================================================= */
+  .product-details__shop-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .product-details__shop-info svg {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+  }
+
+  /* =================================================================
+   * SKU
+   * ================================================================= */
+  .product-details__sku {
+    margin: 0;
+    margin-top: var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .product-details__sku span {
+    font-family: var(--font-mono);
+  }
+
+  /* =================================================================
+   * UTILITY CLASSES
+   * ================================================================= */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .product-details__name {
+      font-size: var(--font-size-2xl);
+    }
+
+    .product-details__price {
+      font-size: var(--font-size-xl);
+    }
+
+    .product-details__button {
+      width: 100%;
+      padding: var(--spacing-4) var(--spacing-6);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .product-details__button,
+    .product-details__breadcrumb a {
+      transition: none;
+    }
+
+    .product-details__button:hover {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .product-details__variant-item {
+    background-color: var(--color-background-subtle);
+    border-color: var(--color-border);
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .product-details__button {
+      display: none;
+    }
+
+    .product-details__shop-info {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * ProductDetails Interactive Features
+   * - Track CTA clicks for analytics
+   * - Size guide modal trigger
+   */
+  function initProductDetails() {
+    const ctaButtons = document.querySelectorAll('[data-product-cta]');
+
+    ctaButtons.forEach((button) => {
+      button.addEventListener('click', (e) => {
+        const anchor = button as HTMLAnchorElement;
+
+        // Don't track if disabled
+        if (anchor.getAttribute('aria-disabled') === 'true') {
+          e.preventDefault();
+          return;
+        }
+
+        // Track via gtag if available
+        if (typeof window !== 'undefined' && window.gtag) {
+          const productName = document.querySelector('.product-details__name')?.textContent?.trim();
+
+          window.gtag('event', 'product_cta_click', {
+            product_name: productName,
+            destination_url: anchor.href,
+            click_location: 'product_detail_page',
+          });
+        }
+      });
+    });
+
+    // Size guide trigger buttons
+    const sizeGuideTriggers = document.querySelectorAll('[data-size-guide-trigger]');
+
+    sizeGuideTriggers.forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const category = (trigger as HTMLElement).dataset.sizeGuideCategory || 'clothing';
+
+        // Dispatch custom event to open size guide modal
+        document.dispatchEvent(new CustomEvent('sizeguide:open', {
+          detail: { category }
+        }));
+      });
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProductDetails);
+  } else {
+    initProductDetails();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initProductDetails);
+</script>

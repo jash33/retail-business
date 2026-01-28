@@ -1,0 +1,12 @@
+{
+  "id": "instagram-feed-integration",
+  "category": "Integration",
+  "title": "Instagram Feed Integration Component",
+  "description": "Integrate Instagram feed using Behold or native embed with grid layout, lightbox support, and configurable post count. Includes error handling and loading states.",
+  "status": "in_progress",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:49:59.709Z",
+  "updatedAt": "2026-01-26T14:15:42.368Z"
+}

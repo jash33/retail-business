@@ -1,0 +1,331 @@
+---
+/**
+ * AvailabilityBadge Component
+ * A reusable badge component that displays product availability status
+ * with appropriate visual styling for each status type.
+ *
+ * Features:
+ * - Four availability statuses: In Stock, Low Stock, Sold Out, Pre-Order
+ * - Visual styling with semantic colors (success, warning, error, info)
+ * - Optional icon display
+ * - Configurable sizes (small, medium)
+ * - Accessible ARIA labels
+ * - Dark mode support
+ * - Reduced motion support
+ *
+ * @example Basic usage
+ * ```astro
+ * <AvailabilityBadge status="in-stock" />
+ * ```
+ *
+ * @example With stock quantity for low stock
+ * ```astro
+ * <AvailabilityBadge status="low-stock" stockQuantity={3} />
+ * ```
+ *
+ * @example Pre-order status
+ * ```astro
+ * <AvailabilityBadge status="pre-order" />
+ * ```
+ */
+
+export type AvailabilityStatus = 'in-stock' | 'low-stock' | 'sold-out' | 'pre-order';
+
+interface Props {
+  /** The availability status to display */
+  status: AvailabilityStatus;
+  /** Optional stock quantity to display for low-stock status */
+  stockQuantity?: number;
+  /** Size variant: 'small' for card badges, 'medium' for detail pages */
+  size?: 'small' | 'medium';
+  /** Whether to show the status icon */
+  showIcon?: boolean;
+  /** Whether to show as a pill/badge style (true) or inline text (false) */
+  variant?: 'badge' | 'inline';
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  status,
+  stockQuantity,
+  size = 'small',
+  showIcon = true,
+  variant = 'badge',
+  class: className = '',
+} = Astro.props;
+
+// Status configuration
+const statusConfig: Record<AvailabilityStatus, {
+  label: string;
+  ariaLabel: string;
+  icon: string;
+}> = {
+  'in-stock': {
+    label: 'In Stock',
+    ariaLabel: 'Product is in stock',
+    icon: 'check-circle',
+  },
+  'low-stock': {
+    label: stockQuantity ? `Only ${stockQuantity} left` : 'Low Stock',
+    ariaLabel: stockQuantity
+      ? `Low stock - only ${stockQuantity} remaining`
+      : 'Product has low stock',
+    icon: 'alert-triangle',
+  },
+  'sold-out': {
+    label: 'Sold Out',
+    ariaLabel: 'Product is sold out',
+    icon: 'x-circle',
+  },
+  'pre-order': {
+    label: 'Pre-Order',
+    ariaLabel: 'Product available for pre-order',
+    icon: 'clock',
+  },
+};
+
+const config = statusConfig[status];
+
+// Build CSS classes
+const badgeClasses = [
+  'availability-badge',
+  `availability-badge--${status}`,
+  `availability-badge--${size}`,
+  `availability-badge--${variant}`,
+  className,
+].filter(Boolean).join(' ');
+---
+
+<span
+  class={badgeClasses}
+  role="status"
+  aria-label={config.ariaLabel}
+>
+  {showIcon && (
+    <span class="availability-badge__icon" aria-hidden="true">
+      {status === 'in-stock' && (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+      )}
+      {status === 'low-stock' && (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      )}
+      {status === 'sold-out' && (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="15" y1="9" x2="9" y2="15" />
+          <line x1="9" y1="9" x2="15" y2="15" />
+        </svg>
+      )}
+      {status === 'pre-order' && (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+      )}
+    </span>
+  )}
+  <span class="availability-badge__text">{config.label}</span>
+</span>
+
+<style>
+  /* =================================================================
+   * AVAILABILITY BADGE COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .availability-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    font-family: var(--font-body);
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /* =================================================================
+   * SIZE VARIANTS
+   * ================================================================= */
+  .availability-badge--small {
+    font-size: var(--font-size-xs);
+  }
+
+  .availability-badge--medium {
+    font-size: var(--font-size-sm);
+    gap: var(--spacing-2);
+  }
+
+  /* =================================================================
+   * STYLE VARIANTS
+   * ================================================================= */
+
+  /* Badge style - pill-shaped with background */
+  .availability-badge--badge {
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-full);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .availability-badge--badge.availability-badge--small {
+    padding: var(--spacing-0-5) var(--spacing-1-5);
+  }
+
+  .availability-badge--badge.availability-badge--medium {
+    padding: var(--spacing-1-5) var(--spacing-3);
+  }
+
+  /* Inline style - text only with subtle background */
+  .availability-badge--inline {
+    padding: 0;
+    background: transparent;
+  }
+
+  /* =================================================================
+   * STATUS COLOR VARIANTS
+   * ================================================================= */
+
+  /* In Stock - Success green */
+  .availability-badge--in-stock.availability-badge--badge {
+    background-color: var(--color-success-light);
+    color: var(--color-success-dark);
+  }
+
+  .availability-badge--in-stock.availability-badge--inline {
+    color: var(--color-success-dark);
+  }
+
+  /* Low Stock - Warning amber */
+  .availability-badge--low-stock.availability-badge--badge {
+    background-color: var(--color-warning-light);
+    color: var(--color-warning-dark);
+  }
+
+  .availability-badge--low-stock.availability-badge--inline {
+    color: var(--color-warning-dark);
+  }
+
+  /* Sold Out - Error red */
+  .availability-badge--sold-out.availability-badge--badge {
+    background-color: var(--color-error-light);
+    color: var(--color-error-dark);
+  }
+
+  .availability-badge--sold-out.availability-badge--inline {
+    color: var(--color-error);
+  }
+
+  /* Pre-Order - Info blue */
+  .availability-badge--pre-order.availability-badge--badge {
+    background-color: var(--color-info-light);
+    color: var(--color-info-dark);
+  }
+
+  .availability-badge--pre-order.availability-badge--inline {
+    color: var(--color-info-dark);
+  }
+
+  /* =================================================================
+   * ICON STYLES
+   * ================================================================= */
+  .availability-badge__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .availability-badge__icon svg {
+    width: 1em;
+    height: 1em;
+  }
+
+  .availability-badge--medium .availability-badge__icon svg {
+    width: 1.125em;
+    height: 1.125em;
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .availability-badge--in-stock.availability-badge--badge {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: var(--color-success);
+  }
+
+  :global(html[data-theme="dark"]) .availability-badge--in-stock.availability-badge--inline {
+    color: var(--color-success);
+  }
+
+  :global(html[data-theme="dark"]) .availability-badge--low-stock.availability-badge--badge {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: var(--color-warning);
+  }
+
+  :global(html[data-theme="dark"]) .availability-badge--low-stock.availability-badge--inline {
+    color: var(--color-warning);
+  }
+
+  :global(html[data-theme="dark"]) .availability-badge--sold-out.availability-badge--badge {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: var(--color-error);
+  }
+
+  :global(html[data-theme="dark"]) .availability-badge--sold-out.availability-badge--inline {
+    color: var(--color-error);
+  }
+
+  :global(html[data-theme="dark"]) .availability-badge--pre-order.availability-badge--badge {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: var(--color-info);
+  }
+
+  :global(html[data-theme="dark"]) .availability-badge--pre-order.availability-badge--inline {
+    color: var(--color-info);
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .availability-badge--badge {
+      border: 1px solid currentColor;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .availability-badge--badge {
+      background-color: transparent;
+      border: 1px solid currentColor;
+    }
+
+    .availability-badge--in-stock {
+      color: #000;
+    }
+
+    .availability-badge--low-stock {
+      color: #666;
+    }
+
+    .availability-badge--sold-out {
+      color: #999;
+    }
+
+    .availability-badge--pre-order {
+      color: #333;
+    }
+  }
+</style>

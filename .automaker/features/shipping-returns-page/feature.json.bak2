@@ -1,0 +1,23 @@
+{
+  "id": "shipping-returns-page",
+  "category": "Core",
+  "title": "Shipping and Returns Information Page",
+  "description": "Build dedicated page for shipping policies, return procedures, international shipping details, and packaging information. Includes FAQ format and clear timelines.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "createdAt": "2026-01-26T01:49:59.741Z",
+  "updatedAt": "2026-01-26T01:49:59.741Z",
+  "descriptionHistory": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "current",
+  "dependencies": []
+}

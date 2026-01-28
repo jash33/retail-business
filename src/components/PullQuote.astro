@@ -1,0 +1,333 @@
+---
+/**
+ * PullQuote Component
+ * A magazine-style pull quote for editorial content with decorative
+ * styling, attribution support, and multiple positioning variants.
+ *
+ * Features:
+ * - Large, impactful typography using Cormorant Garamond
+ * - Decorative quotation mark accent
+ * - Optional attribution line
+ * - Asymmetric positioning variants for magazine layouts
+ * - Scroll-reveal animation support
+ * - WCAG 2.1 AA accessible
+ * - Reduced motion support
+ *
+ * @example Basic usage
+ * ```astro
+ * <PullQuote
+ *   quote="Every great business starts with a story worth telling."
+ * />
+ * ```
+ *
+ * @example With attribution
+ * ```astro
+ * <PullQuote
+ *   quote="We believe in craftsmanship, not just commerce."
+ *   attribution="Sarah Chen, Founder"
+ * />
+ * ```
+ *
+ * @example Offset positioning
+ * ```astro
+ * <PullQuote
+ *   quote="Design is not just what it looks like. Design is how it works."
+ *   position="offset-right"
+ * />
+ * ```
+ */
+
+interface Props {
+  /** The quote text to display */
+  quote: string;
+  /** Optional attribution (author/source) */
+  attribution?: string;
+  /** Position variant: 'center' | 'offset-left' | 'offset-right' | 'inline' */
+  position?: 'center' | 'offset-left' | 'offset-right' | 'inline';
+  /** Optional additional CSS classes */
+  class?: string;
+  /** Whether to animate on scroll */
+  animate?: boolean;
+}
+
+const {
+  quote,
+  attribution,
+  position = 'center',
+  class: className = '',
+  animate = true,
+} = Astro.props;
+
+// Build CSS classes
+const quoteClasses = [
+  'pull-quote',
+  `pull-quote--${position}`,
+  animate ? 'reveal reveal--up' : '',
+  className,
+].filter(Boolean).join(' ');
+---
+
+<aside class={quoteClasses} role="complementary" aria-label="Featured quote">
+  <blockquote class="pull-quote__content">
+    <p class="pull-quote__text">{quote}</p>
+    {attribution && (
+      <footer class="pull-quote__attribution">
+        <cite>— {attribution}</cite>
+      </footer>
+    )}
+  </blockquote>
+</aside>
+
+<style>
+  /* =================================================================
+   * PULL QUOTE COMPONENT STYLES
+   * =================================================================
+   * Magazine-style pull quote with elegant typography
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention
+   */
+
+  .pull-quote {
+    position: relative;
+    margin: var(--spacing-12) 0;
+    padding: var(--spacing-8) var(--spacing-6);
+  }
+
+  /* Decorative quotation mark */
+  .pull-quote::before {
+    content: '\201C';
+    font-family: var(--font-editorial-heading);
+    font-size: 6rem;
+    font-style: normal;
+    font-weight: var(--font-weight-editorial-light);
+    color: var(--color-primary-100);
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(-30%);
+    line-height: 1;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .pull-quote__content {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  .pull-quote__text {
+    font-family: var(--font-editorial-heading);
+    font-size: var(--font-size-editorial-2xl);
+    font-style: italic;
+    font-weight: var(--font-weight-editorial-light);
+    line-height: var(--line-height-editorial-snug);
+    text-align: center;
+    color: var(--color-text-primary);
+    margin: 0;
+    max-width: var(--measure-wide);
+    margin-inline: auto;
+  }
+
+  .pull-quote__attribution {
+    display: block;
+    font-family: var(--font-editorial-body);
+    font-size: var(--font-size-editorial-sm);
+    font-style: normal;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+    text-align: center;
+    margin-top: var(--spacing-4);
+    letter-spacing: var(--letter-spacing-editorial-wide);
+  }
+
+  .pull-quote__attribution cite {
+    font-style: normal;
+  }
+
+  /* =================================================================
+   * POSITION VARIANTS
+   * =================================================================
+   */
+
+  /* Center (default) - full width centered */
+  .pull-quote--center {
+    text-align: center;
+    max-width: var(--container-4xl);
+    margin-inline: auto;
+  }
+
+  /* Offset Left - asymmetric left positioning */
+  .pull-quote--offset-left {
+    max-width: 80%;
+    margin-left: 0;
+    margin-right: auto;
+    padding-left: var(--spacing-8);
+    border-left: 4px solid var(--color-primary-200);
+  }
+
+  .pull-quote--offset-left::before {
+    left: var(--spacing-4);
+    transform: translateY(-30%);
+  }
+
+  .pull-quote--offset-left .pull-quote__text,
+  .pull-quote--offset-left .pull-quote__attribution {
+    text-align: left;
+    margin-inline: 0;
+  }
+
+  /* Offset Right - asymmetric right positioning */
+  .pull-quote--offset-right {
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: 0;
+    padding-right: var(--spacing-8);
+    border-right: 4px solid var(--color-primary-200);
+  }
+
+  .pull-quote--offset-right::before {
+    left: auto;
+    right: var(--spacing-4);
+    transform: translateY(-30%);
+  }
+
+  .pull-quote--offset-right .pull-quote__text,
+  .pull-quote--offset-right .pull-quote__attribution {
+    text-align: right;
+    margin-inline: 0;
+  }
+
+  /* Inline - compact inline variant */
+  .pull-quote--inline {
+    margin: var(--spacing-8) 0;
+    padding: var(--spacing-6) var(--spacing-6);
+    background-color: var(--color-primary-50);
+    border-radius: var(--radius-xl);
+  }
+
+  .pull-quote--inline::before {
+    font-size: 4rem;
+    color: var(--color-primary-200);
+  }
+
+  .pull-quote--inline .pull-quote__text {
+    font-size: var(--font-size-editorial-lg);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * =================================================================
+   */
+
+  @media (max-width: 767px) {
+    .pull-quote {
+      margin: var(--spacing-8) 0;
+      padding: var(--spacing-6) var(--spacing-4);
+    }
+
+    .pull-quote::before {
+      font-size: 4rem;
+    }
+
+    .pull-quote__text {
+      font-size: var(--font-size-editorial-lg);
+    }
+
+    .pull-quote--offset-left,
+    .pull-quote--offset-right {
+      max-width: 100%;
+      margin-inline: 0;
+      padding-left: var(--spacing-4);
+      padding-right: var(--spacing-4);
+      border-left: 3px solid var(--color-primary-200);
+      border-right: none;
+    }
+
+    .pull-quote--offset-left .pull-quote__text,
+    .pull-quote--offset-left .pull-quote__attribution,
+    .pull-quote--offset-right .pull-quote__text,
+    .pull-quote--offset-right .pull-quote__attribution {
+      text-align: left;
+    }
+
+    .pull-quote--offset-right::before {
+      left: var(--spacing-2);
+      right: auto;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .pull-quote--offset-left,
+    .pull-quote--offset-right {
+      max-width: 60%;
+    }
+
+    .pull-quote__text {
+      font-size: var(--font-size-editorial-3xl);
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * =================================================================
+   */
+
+  html[data-theme="dark"] .pull-quote::before {
+    color: var(--color-primary-700);
+  }
+
+  html[data-theme="dark"] .pull-quote--offset-left,
+  html[data-theme="dark"] .pull-quote--offset-right {
+    border-color: var(--color-primary-600);
+  }
+
+  html[data-theme="dark"] .pull-quote--inline {
+    background-color: var(--color-primary-900);
+  }
+
+  html[data-theme="dark"] .pull-quote--inline::before {
+    color: var(--color-primary-600);
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * =================================================================
+   */
+
+  @media (prefers-reduced-motion: reduce) {
+    .pull-quote.reveal {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+
+  @media print {
+    .pull-quote {
+      margin: 2em 0;
+      padding: 1em;
+      page-break-inside: avoid;
+    }
+
+    .pull-quote::before {
+      color: #ccc;
+    }
+
+    .pull-quote__text {
+      font-size: 14pt;
+      color: #000;
+    }
+
+    .pull-quote--offset-left,
+    .pull-quote--offset-right {
+      border-color: #000;
+    }
+  }
+</style>

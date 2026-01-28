@@ -1,0 +1,762 @@
+---
+/**
+ * CollectionCard Component
+ * A card component for displaying product collections with hero images,
+ * overlay titles, item counts, and links to filtered shop views.
+ *
+ * Features:
+ * - Hero image with gradient overlay for text readability
+ * - Overlay title with item count badge
+ * - Smooth hover effects (image zoom, gradient intensity)
+ * - Support for multiple aspect ratios
+ * - Flexible overlay positioning
+ * - UTM tracking for shop links
+ * - Full accessibility with ARIA labels
+ * - Reduced motion support
+ * - Dark mode support
+ *
+ * @example Basic usage
+ * ```astro
+ * <CollectionCard
+ *   id="summer-collection"
+ *   name="Summer Collection"
+ *   image={{ src: '/collections/summer.jpg', alt: 'Summer clothing collection' }}
+ *   itemCount={24}
+ *   href="/shop/collections/summer"
+ * />
+ * ```
+ *
+ * @example With custom positioning and featured badge
+ * ```astro
+ * <CollectionCard
+ *   id="new-arrivals"
+ *   name="New Arrivals"
+ *   image={{ src: '/collections/new.jpg', alt: 'New arrivals' }}
+ *   itemCount={12}
+ *   href="/shop/collections/new"
+ *   featured={true}
+ *   isNew={true}
+ *   overlayPosition="center"
+ *   aspectRatio="4:3"
+ * />
+ * ```
+ */
+
+import type { CollectionCardProps } from '../types/collection';
+import { getCollectionAspectRatioCss, formatItemCount } from '../types/collection';
+import {
+  appendUTMParams,
+  mergeUTMParams,
+  getShopLinkAttributes,
+} from '../utils/shop-tracking';
+import { shopConfig } from '../config/shop.config';
+
+interface Props extends CollectionCardProps {}
+
+const {
+  id,
+  name,
+  image,
+  itemCount,
+  description,
+  href,
+  featured = false,
+  isNew = false,
+  aspectRatio = '16:9',
+  overlayPosition = 'bottom-left',
+  utmParams,
+  class: className = '',
+  showLoadingState = true,
+  ctaText = 'Shop Now',
+  openInNewTab,
+} = Astro.props;
+
+// Build tracked URL
+const mergedParams = mergeUTMParams({
+  ...utmParams,
+  content: utmParams?.content || `collection_card_${id}`,
+});
+const trackedHref = shopConfig.trackingEnabled
+  ? appendUTMParams(href, mergedParams)
+  : href;
+
+// Get link attributes
+const linkAttrs = getShopLinkAttributes(openInNewTab);
+
+// Build CSS classes
+const cardClasses = [
+  'collection-card',
+  featured && 'collection-card--featured',
+  `collection-card--overlay-${overlayPosition}`,
+  className,
+].filter(Boolean).join(' ');
+
+// Aspect ratio CSS value
+const aspectRatioCss = getCollectionAspectRatioCss(aspectRatio);
+
+// Format item count for display
+const itemCountText = itemCount !== undefined ? formatItemCount(itemCount) : null;
+
+// Function to get WebP version of an image
+function getWebPSrc(imageSrc: string): string {
+  if (imageSrc.endsWith('.svg')) return imageSrc;
+  const lastDot = imageSrc.lastIndexOf('.');
+  if (lastDot === -1) return imageSrc;
+  return imageSrc.substring(0, lastDot) + '.webp';
+}
+---
+
+<article
+  class={cardClasses}
+  id={`collection-${id}`}
+  data-collection-id={id}
+  style={`--aspect-ratio: ${aspectRatioCss};`}
+>
+  <a
+    href={trackedHref}
+    class="collection-card__link"
+    aria-label={`View ${name} collection${itemCountText ? ` - ${itemCountText}` : ''}`}
+    data-collection-link
+    {...linkAttrs}
+  >
+    {/* Image Container */}
+    <div class="collection-card__image-container">
+      {/* Loading placeholder */}
+      {showLoadingState && (
+        <div class="collection-card__image-placeholder" aria-hidden="true">
+          <div class="collection-card__shimmer"></div>
+        </div>
+      )}
+
+      {/* Hero Image */}
+      <div class="collection-card__image-wrapper">
+        <picture>
+          {image.srcWebP && (
+            <source srcset={image.srcWebP} type="image/webp" />
+          )}
+          {!image.srcWebP && !image.src.endsWith('.svg') && (
+            <source srcset={getWebPSrc(image.src)} type="image/webp" />
+          )}
+          <img
+            src={image.src}
+            alt={image.alt}
+            width={image.width || 800}
+            height={image.height || 450}
+            loading="lazy"
+            decoding="async"
+            class="collection-card__image"
+            onload="this.closest('.collection-card__image-container').classList.add('collection-card__image-container--loaded')"
+          />
+        </picture>
+      </div>
+
+      {/* Gradient Overlay */}
+      <div class="collection-card__gradient" aria-hidden="true"></div>
+
+      {/* Badges */}
+      <div class="collection-card__badges">
+        {isNew && (
+          <span class="collection-card__badge collection-card__badge--new">New</span>
+        )}
+        {featured && !isNew && (
+          <span class="collection-card__badge collection-card__badge--featured">Featured</span>
+        )}
+      </div>
+
+      {/* Content Overlay */}
+      <div class="collection-card__content">
+        <div class="collection-card__text-wrapper">
+          {/* Item Count */}
+          {itemCountText && (
+            <span class="collection-card__item-count">{itemCountText}</span>
+          )}
+
+          {/* Collection Name */}
+          <h3 class="collection-card__name">{name}</h3>
+
+          {/* Description */}
+          {description && (
+            <p class="collection-card__description">{description}</p>
+          )}
+
+          {/* CTA Button */}
+          <span class="collection-card__cta">
+            <span class="collection-card__cta-text">{ctaText}</span>
+            <svg
+              class="collection-card__cta-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </span>
+        </div>
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  /* =================================================================
+   * COLLECTION CARD COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .collection-card {
+    /* Layout */
+    display: block;
+    width: 100%;
+
+    /* Positioning */
+    position: relative;
+
+    /* Visual */
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+
+    /* Animation */
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out);
+  }
+
+  .collection-card:hover {
+    box-shadow: var(--shadow-xl);
+    transform: translateY(-4px);
+  }
+
+  .collection-card--featured {
+    box-shadow: var(--shadow-md), var(--glow-primary-sm);
+  }
+
+  /* =================================================================
+   * LINK WRAPPER
+   * ================================================================= */
+  .collection-card__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .collection-card__link:focus-visible {
+    outline: none;
+  }
+
+  .collection-card__link:focus-visible .collection-card__image-container {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: 2px;
+  }
+
+  /* =================================================================
+   * IMAGE CONTAINER
+   * ================================================================= */
+  .collection-card__image-container {
+    position: relative;
+    aspect-ratio: var(--aspect-ratio, 16 / 9);
+    overflow: hidden;
+  }
+
+  /* Loading placeholder */
+  .collection-card__image-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    transition: opacity var(--duration-300) var(--ease-out);
+  }
+
+  .collection-card__image-container--loaded .collection-card__image-placeholder {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .collection-card__shimmer {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      var(--color-background-muted) 0%,
+      var(--color-background-subtle) 50%,
+      var(--color-background-muted) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* =================================================================
+   * IMAGE WRAPPER & HOVER EFFECT
+   * ================================================================= */
+  .collection-card__image-wrapper {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+  }
+
+  .collection-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform var(--duration-500) var(--ease-out);
+  }
+
+  /* Image zoom on hover */
+  .collection-card:hover .collection-card__image {
+    transform: scale(1.08);
+  }
+
+  /* =================================================================
+   * GRADIENT OVERLAY
+   * ================================================================= */
+  .collection-card__gradient {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    transition: opacity var(--duration-300) var(--ease-out);
+  }
+
+  /* Default gradient (bottom-positioned content) */
+  .collection-card__gradient {
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.75) 0%,
+      rgba(0, 0, 0, 0.4) 40%,
+      rgba(0, 0, 0, 0.1) 70%,
+      transparent 100%
+    );
+  }
+
+  /* Intensify gradient on hover */
+  .collection-card:hover .collection-card__gradient {
+    opacity: 1.15;
+  }
+
+  /* Top-positioned content gradient */
+  .collection-card--overlay-top-left .collection-card__gradient,
+  .collection-card--overlay-top-center .collection-card__gradient,
+  .collection-card--overlay-top-right .collection-card__gradient {
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.75) 0%,
+      rgba(0, 0, 0, 0.4) 40%,
+      rgba(0, 0, 0, 0.1) 70%,
+      transparent 100%
+    );
+  }
+
+  /* Center-positioned content gradient */
+  .collection-card--overlay-center .collection-card__gradient {
+    background: radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0.6) 0%,
+      rgba(0, 0, 0, 0.4) 50%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
+  }
+
+  /* =================================================================
+   * BADGES
+   * ================================================================= */
+  .collection-card__badges {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    z-index: 5;
+  }
+
+  .collection-card__badge {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+    border-radius: var(--radius-full);
+  }
+
+  .collection-card__badge--new {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .collection-card__badge--featured {
+    background-color: var(--color-accent);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * CONTENT OVERLAY
+   * ================================================================= */
+  .collection-card__content {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: flex;
+    padding: var(--spacing-5);
+  }
+
+  /* Overlay position variants */
+  .collection-card--overlay-bottom-left .collection-card__content {
+    align-items: flex-end;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .collection-card--overlay-bottom-center .collection-card__content {
+    align-items: flex-end;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .collection-card--overlay-bottom-right .collection-card__content {
+    align-items: flex-end;
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  .collection-card--overlay-center .collection-card__content {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .collection-card--overlay-top-left .collection-card__content {
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .collection-card--overlay-top-center .collection-card__content {
+    align-items: flex-start;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .collection-card--overlay-top-right .collection-card__content {
+    align-items: flex-start;
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  .collection-card__text-wrapper {
+    max-width: 80%;
+  }
+
+  .collection-card--overlay-center .collection-card__text-wrapper {
+    max-width: 90%;
+  }
+
+  /* =================================================================
+   * ITEM COUNT
+   * ================================================================= */
+  .collection-card__item-count {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-2-5);
+    margin-bottom: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(4px);
+    border-radius: var(--radius-full);
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  /* =================================================================
+   * COLLECTION NAME
+   * ================================================================= */
+  .collection-card__name {
+    margin: 0 0 var(--spacing-1) 0;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: #ffffff;
+    line-height: var(--line-height-tight);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: transform var(--duration-200) var(--ease-out);
+  }
+
+  .collection-card:hover .collection-card__name {
+    transform: translateY(-2px);
+  }
+
+  /* =================================================================
+   * DESCRIPTION
+   * ================================================================= */
+  .collection-card__description {
+    margin: 0 0 var(--spacing-3) 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: rgba(255, 255, 255, 0.85);
+    line-height: var(--line-height-relaxed);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+
+    /* Limit to 2 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* =================================================================
+   * CTA BUTTON
+   * ================================================================= */
+  .collection-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: #ffffff;
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+
+    /* Initial state */
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-spring-soft);
+  }
+
+  .collection-card:hover .collection-card__cta {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .collection-card__cta-icon {
+    width: 1.25em;
+    height: 1.25em;
+    transition: transform var(--duration-200) var(--ease-out);
+  }
+
+  .collection-card:hover .collection-card__cta-icon {
+    transform: translateX(4px);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .collection-card__content {
+      padding: var(--spacing-4);
+    }
+
+    .collection-card__name {
+      font-size: var(--font-size-xl);
+    }
+
+    .collection-card__text-wrapper {
+      max-width: 90%;
+    }
+
+    /* Show CTA on mobile for touch interaction */
+    @media (hover: none) {
+      .collection-card__cta {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  }
+
+  @media screen and (min-width: 768px) {
+    .collection-card__content {
+      padding: var(--spacing-6);
+    }
+
+    .collection-card__name {
+      font-size: var(--font-size-3xl);
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .collection-card__content {
+      padding: var(--spacing-8);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .collection-card,
+    .collection-card__image,
+    .collection-card__gradient,
+    .collection-card__name,
+    .collection-card__cta,
+    .collection-card__cta-icon {
+      transition: none;
+    }
+
+    .collection-card:hover {
+      transform: none;
+    }
+
+    .collection-card:hover .collection-card__image {
+      transform: none;
+    }
+
+    .collection-card:hover .collection-card__name {
+      transform: none;
+    }
+
+    .collection-card:hover .collection-card__cta-icon {
+      transform: none;
+    }
+
+    /* Always show CTA when motion is reduced */
+    .collection-card__cta {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .collection-card__shimmer {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .collection-card {
+    background-color: var(--color-background-muted);
+  }
+
+  :global(html[data-theme="dark"]) .collection-card__item-count {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .collection-card {
+      border: 2px solid currentColor;
+    }
+
+    .collection-card__badge {
+      border: 1px solid currentColor;
+    }
+
+    .collection-card__gradient {
+      display: none;
+    }
+
+    .collection-card__name,
+    .collection-card__description,
+    .collection-card__item-count,
+    .collection-card__cta {
+      color: CanvasText;
+      text-shadow: none;
+      background: Canvas;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .collection-card {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .collection-card:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .collection-card__gradient {
+      display: none;
+    }
+
+    .collection-card__image-placeholder {
+      display: none;
+    }
+
+    .collection-card__cta {
+      display: none;
+    }
+
+    .collection-card__name,
+    .collection-card__description,
+    .collection-card__item-count {
+      color: #000000;
+      text-shadow: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * CollectionCard Interactive Features
+   * - Analytics tracking for collection clicks
+   */
+  function initCollectionCards() {
+    const collectionCards = document.querySelectorAll('.collection-card');
+
+    collectionCards.forEach((card) => {
+      const collectionId = card.getAttribute('data-collection-id');
+      const collectionLink = card.querySelector('[data-collection-link]');
+
+      // Track collection link clicks
+      if (collectionLink) {
+        collectionLink.addEventListener('click', () => {
+          // Track via gtag if available
+          if (typeof window !== 'undefined' && window.gtag) {
+            const linkElement = collectionLink as HTMLAnchorElement;
+            const collectionName = card.querySelector('.collection-card__name')?.textContent?.trim();
+
+            window.gtag('event', 'collection_click', {
+              collection_id: collectionId,
+              collection_name: collectionName,
+              destination_url: linkElement.href,
+              click_location: 'collection_card',
+            });
+          }
+        });
+      }
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollectionCards);
+  } else {
+    initCollectionCards();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initCollectionCards);
+</script>

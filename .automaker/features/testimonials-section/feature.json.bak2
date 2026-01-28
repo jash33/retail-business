@@ -1,0 +1,12 @@
+{
+  "id": "testimonials-section",
+  "category": "UI",
+  "title": "Customer Testimonials Carousel",
+  "description": "Build testimonials section with customer quotes, photos, and star ratings. Includes carousel navigation and Review schema markup for SEO.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:49:59.759Z",
+  "updatedAt": "2026-01-26T01:49:59.759Z"
+}

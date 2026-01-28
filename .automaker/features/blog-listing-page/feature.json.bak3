@@ -1,0 +1,14 @@
+{
+  "id": "blog-listing-page",
+  "category": "Core",
+  "title": "Blog Listing Page with Filtering",
+  "description": "Create blog archive page with article cards, category filters, pagination, and featured post highlighting. Includes magazine-style layout options.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "blog-content-system"
+  ],
+  "createdAt": "2026-01-26T01:49:59.756Z",
+  "updatedAt": "2026-01-26T01:49:59.756Z"
+}

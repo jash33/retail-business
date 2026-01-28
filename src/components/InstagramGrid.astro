@@ -1,0 +1,547 @@
+---
+/**
+ * InstagramGrid Component
+ * A responsive grid layout for displaying Instagram posts with
+ * loading states, error handling, and animation support.
+ *
+ * Features:
+ * - Configurable columns (2, 3, or 4)
+ * - Multiple gap sizes
+ * - Loading skeleton state
+ * - Error state with retry option
+ * - Empty state messaging
+ * - Stagger animation support
+ * - Responsive layout
+ * - Full accessibility support
+ * - Dark mode support
+ *
+ * @example Basic usage
+ * ```astro
+ * <InstagramGrid posts={instagramPosts} />
+ * ```
+ *
+ * @example With loading state
+ * ```astro
+ * <InstagramGrid posts={[]} isLoading={true} />
+ * ```
+ *
+ * @example With custom columns
+ * ```astro
+ * <InstagramGrid posts={instagramPosts} columns={4} gap="small" />
+ * ```
+ */
+
+import type { InstagramGridProps } from '../types/instagram';
+import InstagramCard from './InstagramCard.astro';
+
+interface Props extends InstagramGridProps {
+  /** ID for accessibility */
+  id?: string;
+}
+
+const {
+  posts,
+  columns = 3,
+  gap = 'medium',
+  enableLightbox = true,
+  enableAnimation = true,
+  isLoading = false,
+  error,
+  id = 'instagram-grid',
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const gridClasses = [
+  'instagram-grid',
+  `instagram-grid--cols-${columns}`,
+  `instagram-grid--gap-${gap}`,
+  enableAnimation && 'instagram-grid--animated',
+  isLoading && 'instagram-grid--loading',
+  error && 'instagram-grid--error',
+  className,
+].filter(Boolean).join(' ');
+
+// Generate placeholder items for loading state
+const placeholderCount = columns * 2;
+const placeholders = Array.from({ length: placeholderCount }, (_, i) => i);
+---
+
+<div
+  class={gridClasses}
+  id={id}
+  role="region"
+  aria-label="Instagram feed"
+  data-instagram-grid
+  data-lightbox-enabled={enableLightbox}
+>
+  {/* Loading State */}
+  {isLoading && (
+    <div class="instagram-grid__posts" role="list" aria-busy="true" aria-label="Loading Instagram posts">
+      {placeholders.map((index) => (
+        <div
+          class="instagram-grid__item instagram-grid__item--skeleton"
+          role="listitem"
+          style={`--stagger-delay: ${index * 50}ms`}
+          aria-hidden="true"
+        >
+          <div class="instagram-grid__skeleton">
+            <div class="instagram-grid__skeleton-image"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+
+  {/* Error State */}
+  {!isLoading && error && (
+    <div class="instagram-grid__error" role="alert">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="instagram-grid__error-icon"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <p class="instagram-grid__error-text">{error}</p>
+      <button
+        class="instagram-grid__retry-button"
+        type="button"
+        data-retry-button
+      >
+        Try Again
+      </button>
+    </div>
+  )}
+
+  {/* Posts Grid */}
+  {!isLoading && !error && posts.length > 0 && (
+    <div class="instagram-grid__posts" role="list" aria-label="Instagram posts">
+      {posts.map((post, index) => (
+        <div
+          class={`instagram-grid__item ${enableAnimation ? 'instagram-grid__item--animated' : ''}`}
+          role="listitem"
+          style={`--stagger-delay: ${Math.min(index, 8) * 100}ms`}
+          data-index={index}
+        >
+          <InstagramCard
+            post={post}
+            showCaption={true}
+            showMetrics={false}
+          />
+        </div>
+      ))}
+    </div>
+  )}
+
+  {/* Empty State */}
+  {!isLoading && !error && posts.length === 0 && (
+    <div class="instagram-grid__empty" role="status">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="instagram-grid__empty-icon"
+        aria-hidden="true"
+      >
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <polyline points="21 15 16 10 5 21"></polyline>
+      </svg>
+      <p class="instagram-grid__empty-text">No Instagram posts to display</p>
+    </div>
+  )}
+</div>
+
+<style>
+  /* =================================================================
+   * INSTAGRAM GRID COMPONENT STYLES
+   * ================================================================= */
+
+  .instagram-grid {
+    width: 100%;
+  }
+
+  /* =================================================================
+   * POSTS GRID
+   * ================================================================= */
+
+  .instagram-grid__posts {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols, 3), 1fr);
+    gap: var(--grid-gap, var(--spacing-4));
+  }
+
+  .instagram-grid__item {
+    min-width: 0;
+  }
+
+  /* =================================================================
+   * COLUMN VARIANTS
+   * ================================================================= */
+
+  .instagram-grid--cols-2 {
+    --grid-cols: 2;
+  }
+
+  .instagram-grid--cols-3 {
+    --grid-cols: 3;
+  }
+
+  .instagram-grid--cols-4 {
+    --grid-cols: 4;
+  }
+
+  /* =================================================================
+   * GAP VARIANTS
+   * ================================================================= */
+
+  .instagram-grid--gap-small {
+    --grid-gap: var(--spacing-2);
+  }
+
+  .instagram-grid--gap-medium {
+    --grid-gap: var(--spacing-4);
+  }
+
+  .instagram-grid--gap-large {
+    --grid-gap: var(--spacing-6);
+  }
+
+  /* =================================================================
+   * ANIMATION STYLES
+   * ================================================================= */
+
+  .instagram-grid__item--animated {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity var(--duration-500) var(--ease-out),
+      transform var(--duration-500) var(--ease-out);
+    transition-delay: var(--stagger-delay, 0ms);
+  }
+
+  .instagram-grid--animated .instagram-grid__item--animated.instagram-grid__item--visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Immediate visibility for non-animated grids */
+  .instagram-grid:not(.instagram-grid--animated) .instagram-grid__item--animated {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  /* =================================================================
+   * LOADING SKELETON
+   * ================================================================= */
+
+  .instagram-grid__skeleton {
+    aspect-ratio: 1 / 1;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .instagram-grid__skeleton-image {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      var(--color-background-muted) 0%,
+      var(--color-background-elevated) 50%,
+      var(--color-background-muted) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+    animation-delay: var(--stagger-delay, 0ms);
+  }
+
+  @keyframes skeleton-pulse {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* =================================================================
+   * ERROR STATE
+   * ================================================================= */
+
+  .instagram-grid__error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-12) var(--spacing-8);
+    text-align: center;
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+  }
+
+  .instagram-grid__error-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--color-error, #ef4444);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .instagram-grid__error-text {
+    margin: 0 0 var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    max-width: 300px;
+  }
+
+  .instagram-grid__retry-button {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    background-color: transparent;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-out),
+      color var(--duration-150) var(--ease-out);
+  }
+
+  .instagram-grid__retry-button:hover {
+    background-color: var(--color-primary);
+    color: white;
+  }
+
+  .instagram-grid__retry-button:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+
+  .instagram-grid__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-16) var(--spacing-8);
+    text-align: center;
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-lg);
+  }
+
+  .instagram-grid__empty-icon {
+    width: 64px;
+    height: 64px;
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--spacing-4);
+    opacity: 0.5;
+  }
+
+  .instagram-grid__empty-text {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Tablet */
+  @media screen and (max-width: 1024px) {
+    .instagram-grid--cols-4 {
+      --grid-cols: 3;
+    }
+  }
+
+  /* Large Mobile */
+  @media screen and (max-width: 767px) {
+    .instagram-grid--cols-3,
+    .instagram-grid--cols-4 {
+      --grid-cols: 2;
+    }
+
+    .instagram-grid--gap-large {
+      --grid-gap: var(--spacing-4);
+    }
+  }
+
+  /* Small Mobile */
+  @media screen and (max-width: 480px) {
+    .instagram-grid--cols-2,
+    .instagram-grid--cols-3,
+    .instagram-grid--cols-4 {
+      --grid-cols: 2;
+    }
+
+    .instagram-grid--gap-medium,
+    .instagram-grid--gap-large {
+      --grid-gap: var(--spacing-2);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .instagram-grid__item--animated {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .instagram-grid__skeleton-image {
+      animation: none;
+      background: var(--color-background-muted);
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+
+  :global(html[data-theme="dark"]) .instagram-grid__error,
+  :global(html[data-theme="dark"]) .instagram-grid__empty {
+    background-color: var(--color-background-elevated);
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+
+  @media print {
+    .instagram-grid__posts {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-2);
+    }
+
+    .instagram-grid__item {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .instagram-grid__item--animated {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * InstagramGrid Interactive Features
+   * - Intersection Observer for stagger animation reveal
+   * - Retry button handler
+   * - Lightbox trigger handling
+   */
+  function initInstagramGrid() {
+    const grids = document.querySelectorAll('[data-instagram-grid]');
+
+    grids.forEach((grid) => {
+      // Animation handling
+      if (grid.classList.contains('instagram-grid--animated')) {
+        const items = grid.querySelectorAll('.instagram-grid__item--animated');
+
+        if ('IntersectionObserver' in window) {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('instagram-grid__item--visible');
+                  observer.unobserve(entry.target);
+                }
+              });
+            },
+            {
+              root: null,
+              rootMargin: '0px 0px -50px 0px',
+              threshold: 0.1,
+            }
+          );
+
+          items.forEach((item) => {
+            observer.observe(item);
+          });
+        } else {
+          // Fallback: show all items immediately
+          items.forEach((item) => {
+            item.classList.add('instagram-grid__item--visible');
+          });
+        }
+      }
+
+      // Retry button handler
+      const retryButton = grid.querySelector('[data-retry-button]');
+      if (retryButton) {
+        retryButton.addEventListener('click', () => {
+          // Dispatch custom event for parent component to handle
+          grid.dispatchEvent(new CustomEvent('instagram-retry', {
+            bubbles: true,
+            detail: { gridId: grid.id }
+          }));
+        });
+      }
+
+      // Lightbox trigger handling (if enabled)
+      const lightboxEnabled = grid.getAttribute('data-lightbox-enabled') === 'true';
+      if (lightboxEnabled) {
+        const cards = grid.querySelectorAll('[data-instagram-card]');
+
+        cards.forEach((card, index) => {
+          const link = card.querySelector('[data-lightbox-trigger]');
+          if (link) {
+            link.addEventListener('click', (e) => {
+              e.preventDefault();
+
+              const postId = card.getAttribute('data-post-id');
+              const permalink = card.getAttribute('data-permalink');
+
+              // Dispatch custom event to open lightbox
+              grid.dispatchEvent(new CustomEvent('instagram-lightbox-open', {
+                bubbles: true,
+                detail: {
+                  postId,
+                  permalink,
+                  index,
+                  gridId: grid.id
+                }
+              }));
+            });
+          }
+        });
+      }
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initInstagramGrid);
+  } else {
+    initInstagramGrid();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initInstagramGrid);
+</script>

@@ -1,0 +1,1216 @@
+---
+/**
+ * TestimonialsSection Component
+ * A carousel/slider section for displaying customer testimonials with quotes,
+ * photos, and star ratings. Includes Review schema markup for SEO.
+ *
+ * Features:
+ * - Carousel with navigation arrows and indicators
+ * - Touch/swipe support for mobile users
+ * - Keyboard navigation (arrow keys, Home, End)
+ * - ARIA live regions for screen reader announcements
+ * - Responsive column configuration
+ * - Auto-scroll with pause on hover/focus
+ * - Review schema markup for SEO
+ * - Aggregate rating display
+ *
+ * @example Basic usage
+ * ```astro
+ * <TestimonialsSection
+ *   heading="What Our Clients Say"
+ *   testimonials={testimonials}
+ * />
+ * ```
+ *
+ * @example With configuration
+ * ```astro
+ * <TestimonialsSection
+ *   heading="Customer Reviews"
+ *   subheading="Real feedback from real customers"
+ *   testimonials={testimonials}
+ *   showIndicators={true}
+ *   autoScroll={{ enabled: true, interval: 6000 }}
+ * />
+ * ```
+ */
+
+import type { TestimonialsSectionProps } from '../types/testimonial';
+import { sortByPriority, calculateAverageRating, filterWithRatings } from '../types/testimonial';
+import TestimonialCard from './TestimonialCard.astro';
+
+interface Props extends TestimonialsSectionProps {}
+
+const {
+  heading = 'What Our Clients Say',
+  subheading = 'Real feedback from real customers.',
+  testimonials = [],
+  id = 'testimonials',
+  class: className = '',
+  maxTestimonials = 6,
+  showRatings = true,
+  showVerified = true,
+  columns = {
+    mobile: 1,
+    small: 1,
+    tablet: 2,
+    desktop: 3,
+  },
+  gap = 'medium',
+  navigationPosition = 'outside',
+  showIndicators = true,
+  autoScroll = {
+    enabled: true,
+    interval: 6000,
+    pauseOnHover: true,
+    pauseOnFocus: true,
+  },
+  infinite = true,
+  enableSwipe = true,
+  enableKeyboard = true,
+  scrollAmount = 1,
+  animationDuration = 300,
+  businessName = 'Houston Web Services',
+} = Astro.props;
+
+// Sort testimonials by priority and limit count
+const sortedTestimonials = sortByPriority(testimonials).slice(0, maxTestimonials);
+
+// Check if we have testimonials to display
+const hasTestimonials = sortedTestimonials.length > 0;
+
+// Calculate aggregate rating for schema markup
+const testimonialsWithRatings = filterWithRatings(sortedTestimonials);
+const averageRating = calculateAverageRating(sortedTestimonials);
+const ratingCount = testimonialsWithRatings.length;
+
+// Calculate gap CSS value
+const gapValue = gap === 'small' ? 'var(--spacing-4)' : gap === 'large' ? 'var(--spacing-8)' : 'var(--spacing-6)';
+
+// Build CSS classes
+const sectionClasses = [
+  'testimonials-section',
+  `testimonials-section--nav-${navigationPosition}`,
+  showIndicators && 'testimonials-section--has-indicators',
+  className,
+].filter(Boolean).join(' ');
+
+// Arrow icon SVG for navigation buttons
+const arrowLeftIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>`;
+const arrowRightIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
+
+// Star icon for aggregate rating display
+const starIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
+
+// Unique IDs for ARIA labeling
+const carouselId = `${id}-carousel`;
+const headingId = `${id}-heading`;
+const liveRegionId = `${id}-live`;
+
+// Generate Review Schema markup (JSON-LD)
+const reviewSchemaItems = sortedTestimonials
+  .filter(t => t.rating)
+  .map(testimonial => ({
+    "@type": "Review",
+    "reviewRating": {
+      "@type": "Rating",
+      "ratingValue": testimonial.rating,
+      "bestRating": 5,
+      "worstRating": 1
+    },
+    "author": {
+      "@type": "Person",
+      "name": testimonial.author
+    },
+    "reviewBody": testimonial.content,
+    ...(testimonial.date && { "datePublished": testimonial.date }),
+  }));
+
+const aggregateRatingSchema = averageRating !== null ? {
+  "@type": "AggregateRating",
+  "ratingValue": averageRating,
+  "reviewCount": ratingCount,
+  "bestRating": 5,
+  "worstRating": 1
+} : null;
+
+const schemaMarkup = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": businessName,
+  ...(aggregateRatingSchema && { "aggregateRating": aggregateRatingSchema }),
+  "review": reviewSchemaItems
+};
+---
+
+<section
+  class={sectionClasses}
+  id={id}
+  aria-labelledby={headingId}
+  data-testimonials-carousel
+  data-auto-scroll={autoScroll.enabled ? 'true' : 'false'}
+  data-auto-scroll-interval={autoScroll.interval}
+  data-pause-on-hover={autoScroll.pauseOnHover ? 'true' : 'false'}
+  data-pause-on-focus={autoScroll.pauseOnFocus ? 'true' : 'false'}
+  data-infinite={infinite ? 'true' : 'false'}
+  data-enable-swipe={enableSwipe ? 'true' : 'false'}
+  data-enable-keyboard={enableKeyboard ? 'true' : 'false'}
+  data-scroll-amount={scrollAmount}
+  data-animation-duration={animationDuration}
+  data-columns-mobile={columns.mobile || 1}
+  data-columns-small={columns.small || 1}
+  data-columns-tablet={columns.tablet || 2}
+  data-columns-desktop={columns.desktop || 3}
+  style={`--carousel-gap: ${gapValue}; --carousel-animation-duration: ${animationDuration}ms;`}
+>
+  <!-- Review Schema Markup for SEO -->
+  {hasTestimonials && reviewSchemaItems.length > 0 && (
+    <script type="application/ld+json" set:html={JSON.stringify(schemaMarkup)} />
+  )}
+
+  <div class="testimonials-section__container">
+    <!-- Section Header -->
+    <header class="testimonials-section__header section-heading--decorated">
+      <h2 id={headingId} class="testimonials-section__heading">{heading}</h2>
+      {subheading && (
+        <p class="testimonials-section__subheading">{subheading}</p>
+      )}
+
+      <!-- Aggregate Rating Display -->
+      {averageRating !== null && ratingCount > 0 && (
+        <div class="testimonials-section__aggregate-rating" aria-label={`Average rating: ${averageRating} out of 5 stars based on ${ratingCount} reviews`}>
+          <div class="testimonials-section__stars" aria-hidden="true">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                class={`testimonials-section__star ${star <= Math.round(averageRating) ? 'testimonials-section__star--filled' : 'testimonials-section__star--empty'}`}
+                set:html={starIcon}
+              />
+            ))}
+          </div>
+          <span class="testimonials-section__rating-text">
+            <strong>{averageRating.toFixed(1)}</strong> average from <strong>{ratingCount}</strong> reviews
+          </span>
+        </div>
+      )}
+    </header>
+
+    <!-- Carousel Wrapper -->
+    {hasTestimonials ? (
+      <div class="testimonials-section__wrapper">
+        <!-- Navigation Buttons (Previous) -->
+        <button
+          type="button"
+          class="testimonials-section__nav testimonials-section__nav--prev"
+          aria-label="Previous testimonials"
+          data-carousel-prev
+          disabled
+        >
+          <span class="testimonials-section__nav-icon" set:html={arrowLeftIcon} />
+        </button>
+
+        <!-- Carousel Track -->
+        <div
+          class="testimonials-section__viewport"
+          role="region"
+          aria-label="Testimonials carousel"
+          tabindex="0"
+          data-carousel-viewport
+        >
+          <div
+            class="testimonials-section__track"
+            role="list"
+            aria-label="Customer testimonials"
+            data-carousel-track
+          >
+            {sortedTestimonials.map((testimonial, index) => (
+              <div
+                class="testimonials-section__slide"
+                role="listitem"
+                aria-setsize={sortedTestimonials.length}
+                aria-posinset={index + 1}
+                data-carousel-slide
+                data-index={index}
+              >
+                <TestimonialCard
+                  id={testimonial.id}
+                  content={testimonial.content}
+                  author={testimonial.author}
+                  role={testimonial.role}
+                  company={testimonial.company}
+                  image={testimonial.image}
+                  rating={testimonial.rating}
+                  verified={testimonial.verified}
+                  date={testimonial.date}
+                  location={testimonial.location}
+                  showRating={showRatings}
+                  showVerified={showVerified}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Navigation Buttons (Next) -->
+        <button
+          type="button"
+          class="testimonials-section__nav testimonials-section__nav--next"
+          aria-label="Next testimonials"
+          data-carousel-next
+        >
+          <span class="testimonials-section__nav-icon" set:html={arrowRightIcon} />
+        </button>
+
+        <!-- Live Region for Screen Readers -->
+        <div
+          id={liveRegionId}
+          class="sr-only"
+          aria-live="polite"
+          aria-atomic="true"
+          data-carousel-live
+        ></div>
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="testimonials-section__empty" role="status" aria-live="polite">
+        <p class="testimonials-section__empty-text">No testimonials available yet.</p>
+      </div>
+    )}
+
+    <!-- Pagination Indicators -->
+    {hasTestimonials && showIndicators && (
+      <div
+        class="testimonials-section__indicators"
+        role="tablist"
+        aria-label="Carousel pagination"
+        data-carousel-indicators
+      >
+        <!-- Indicators will be generated dynamically by JavaScript -->
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * TESTIMONIALS SECTION COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .testimonials-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+    overflow: hidden;
+  }
+
+  .testimonials-section__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * SECTION HEADER
+   * ================================================================= */
+  .testimonials-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .testimonials-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3);
+    line-height: var(--line-height-tight);
+  }
+
+  .testimonials-section__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-4);
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * AGGREGATE RATING
+   * ================================================================= */
+  .testimonials-section__aggregate-rating {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-3);
+    flex-wrap: wrap;
+  }
+
+  .testimonials-section__stars {
+    display: flex;
+    gap: var(--spacing-1);
+  }
+
+  .testimonials-section__star {
+    display: inline-flex;
+    width: var(--spacing-6);
+    height: var(--spacing-6);
+  }
+
+  .testimonials-section__star :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .testimonials-section__star--filled {
+    color: var(--color-warning, #F59E0B);
+  }
+
+  .testimonials-section__star--empty {
+    color: var(--color-border-dark);
+  }
+
+  .testimonials-section__rating-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+  }
+
+  .testimonials-section__rating-text strong {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  /* =================================================================
+   * CAROUSEL WRAPPER
+   * ================================================================= */
+  .testimonials-section__wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+  }
+
+  /* =================================================================
+   * CAROUSEL VIEWPORT & TRACK
+   * ================================================================= */
+  .testimonials-section__viewport {
+    flex: 1;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
+
+  .testimonials-section__viewport:focus {
+    outline: none;
+  }
+
+  .testimonials-section__viewport:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+    border-radius: var(--radius-lg);
+  }
+
+  .testimonials-section__track {
+    display: flex;
+    gap: var(--carousel-gap, var(--spacing-6));
+    transition: transform var(--carousel-animation-duration, 300ms) var(--ease-out);
+    touch-action: pan-y pinch-zoom;
+    will-change: transform;
+  }
+
+  /* Disable smooth scrolling during drag */
+  .testimonials-section__track.is-dragging {
+    transition: none;
+    cursor: grabbing;
+  }
+
+  .testimonials-section__track:not(.is-dragging) {
+    cursor: grab;
+  }
+
+  /* =================================================================
+   * CAROUSEL SLIDES
+   * ================================================================= */
+  .testimonials-section__slide {
+    flex: 0 0 calc(100% - var(--carousel-gap, var(--spacing-6)));
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  /* Responsive slide widths */
+  @media screen and (min-width: 480px) {
+    .testimonials-section__slide {
+      flex: 0 0 calc(100% - var(--carousel-gap, var(--spacing-6)));
+    }
+  }
+
+  @media screen and (min-width: 768px) {
+    .testimonials-section__slide {
+      flex: 0 0 calc(50% - var(--carousel-gap, var(--spacing-6)) / 2);
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .testimonials-section__slide {
+      flex: 0 0 calc(33.333% - var(--carousel-gap, var(--spacing-6)) * 2 / 3);
+    }
+  }
+
+  /* =================================================================
+   * NAVIGATION BUTTONS
+   * ================================================================= */
+  .testimonials-section__nav {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-md);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out),
+      opacity var(--duration-150) var(--ease-in-out);
+  }
+
+  .testimonials-section__nav:hover:not(:disabled) {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .testimonials-section__nav:hover:not(:disabled) .testimonials-section__nav-icon {
+    color: var(--color-text-inverse);
+  }
+
+  .testimonials-section__nav:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-md), var(--focus-ring);
+  }
+
+  .testimonials-section__nav:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .testimonials-section__nav-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--color-text-primary);
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .testimonials-section__nav-icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Navigation inside variant (overlay on carousel) */
+  .testimonials-section--nav-inside .testimonials-section__wrapper {
+    gap: 0;
+  }
+
+  .testimonials-section--nav-inside .testimonials-section__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .testimonials-section--nav-inside .testimonials-section__nav--prev {
+    left: var(--spacing-2);
+  }
+
+  .testimonials-section--nav-inside .testimonials-section__nav--next {
+    right: var(--spacing-2);
+  }
+
+  .testimonials-section--nav-inside .testimonials-section__nav:hover:not(:disabled) {
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  /* Navigation bottom variant */
+  .testimonials-section--nav-bottom .testimonials-section__wrapper {
+    flex-direction: column;
+    gap: var(--spacing-6);
+  }
+
+  .testimonials-section--nav-bottom .testimonials-section__nav {
+    position: static;
+  }
+
+  /* =================================================================
+   * PAGINATION INDICATORS
+   * ================================================================= */
+  .testimonials-section__indicators {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-6);
+  }
+
+  .testimonials-section__indicators :global(button) {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-full);
+    background-color: var(--color-border-dark);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      width var(--duration-200) var(--ease-out);
+  }
+
+  .testimonials-section__indicators :global(button:hover) {
+    background-color: var(--color-primary-light);
+  }
+
+  .testimonials-section__indicators :global(button[aria-selected="true"]) {
+    width: 24px;
+    background-color: var(--color-primary);
+  }
+
+  .testimonials-section__indicators :global(button:focus-visible) {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+  .testimonials-section__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-16) var(--spacing-8);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .testimonials-section__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* =================================================================
+   * SCREEN READER ONLY TEXT
+   * ================================================================= */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Mobile - Hide nav buttons, rely on swipe */
+  @media screen and (max-width: 767px) {
+    .testimonials-section {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .testimonials-section__header {
+      margin-bottom: var(--spacing-8);
+    }
+
+    .testimonials-section__heading {
+      font-size: var(--font-size-2xl);
+    }
+
+    .testimonials-section__subheading {
+      font-size: var(--font-size-base);
+    }
+
+    .testimonials-section__nav {
+      display: none;
+    }
+
+    .testimonials-section__viewport {
+      /* Enable native scroll snapping on mobile */
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .testimonials-section__viewport::-webkit-scrollbar {
+      display: none;
+    }
+
+    .testimonials-section__track {
+      transition: none;
+    }
+  }
+
+  /* Tablet */
+  @media screen and (min-width: 768px) {
+    .testimonials-section {
+      padding: var(--spacing-20) var(--spacing-8);
+    }
+
+    .testimonials-section__header {
+      margin-bottom: var(--spacing-12);
+    }
+
+    .testimonials-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+  }
+
+  /* Large Desktop */
+  @media screen and (min-width: 1280px) {
+    .testimonials-section {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+
+    .testimonials-section__nav {
+      width: 56px;
+      height: 56px;
+    }
+
+    .testimonials-section__nav-icon {
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .testimonials-section__track {
+      transition: none;
+    }
+
+    .testimonials-section__nav {
+      transition: none;
+    }
+
+    .testimonials-section__nav:hover:not(:disabled) {
+      transform: translateY(-50%);
+    }
+
+    .testimonials-section--nav-inside .testimonials-section__nav:hover:not(:disabled) {
+      transform: translateY(-50%);
+    }
+
+    .testimonials-section__indicators :global(button) {
+      transition: none;
+    }
+
+    .testimonials-section__viewport {
+      scroll-behavior: auto;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .testimonials-section {
+    background-color: var(--color-background);
+  }
+
+  :global(html[data-theme="dark"]) .testimonials-section__nav {
+    background-color: var(--color-background-elevated);
+    border-color: var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .testimonials-section__nav:hover:not(:disabled) {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  :global(html[data-theme="dark"]) .testimonials-section__empty {
+    background-color: var(--color-background-subtle);
+    border-color: var(--color-border);
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .testimonials-section__nav {
+      border: 2px solid currentColor;
+    }
+
+    .testimonials-section__indicators :global(button) {
+      border: 1px solid currentColor;
+    }
+
+    .testimonials-section__indicators :global(button[aria-selected="true"]) {
+      background-color: currentColor;
+    }
+
+    .testimonials-section__star--filled {
+      color: Highlight;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .testimonials-section {
+      padding: var(--spacing-8) 0;
+      background-color: transparent;
+    }
+
+    .testimonials-section__nav {
+      display: none;
+    }
+
+    .testimonials-section__indicators {
+      display: none;
+    }
+
+    .testimonials-section__viewport {
+      overflow: visible;
+    }
+
+    .testimonials-section__track {
+      flex-wrap: wrap;
+      gap: var(--spacing-4);
+    }
+
+    .testimonials-section__slide {
+      flex: 0 0 calc(50% - var(--spacing-4));
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * TestimonialsSection Carousel Interactive Features
+   * - Navigation button click handlers
+   * - Touch/swipe support
+   * - Keyboard navigation
+   * - Auto-scroll functionality
+   * - ARIA live region updates
+   * - Responsive column detection
+   */
+
+  interface CarouselState {
+    currentIndex: number;
+    totalSlides: number;
+    visibleSlides: number;
+    isAtStart: boolean;
+    isAtEnd: boolean;
+    isDragging: boolean;
+    isPaused: boolean;
+    autoScrollTimer: ReturnType<typeof setInterval> | null;
+  }
+
+  function initTestimonialsCarousels() {
+    const carousels = document.querySelectorAll('[data-testimonials-carousel]');
+
+    carousels.forEach((carousel) => {
+      const viewport = carousel.querySelector('[data-carousel-viewport]') as HTMLElement | null;
+      const track = carousel.querySelector('[data-carousel-track]') as HTMLElement | null;
+      const slides = carousel.querySelectorAll('[data-carousel-slide]');
+      const prevBtn = carousel.querySelector('[data-carousel-prev]') as HTMLButtonElement | null;
+      const nextBtn = carousel.querySelector('[data-carousel-next]') as HTMLButtonElement | null;
+      const liveRegion = carousel.querySelector('[data-carousel-live]') as HTMLElement | null;
+      const indicatorsContainer = carousel.querySelector('[data-carousel-indicators]') as HTMLElement | null;
+
+      if (!viewport || !track || slides.length === 0) return;
+
+      // Get configuration from data attributes
+      const config = {
+        autoScroll: carousel.getAttribute('data-auto-scroll') === 'true',
+        autoScrollInterval: parseInt(carousel.getAttribute('data-auto-scroll-interval') || '6000', 10),
+        pauseOnHover: carousel.getAttribute('data-pause-on-hover') === 'true',
+        pauseOnFocus: carousel.getAttribute('data-pause-on-focus') === 'true',
+        infinite: carousel.getAttribute('data-infinite') === 'true',
+        enableSwipe: carousel.getAttribute('data-enable-swipe') === 'true',
+        enableKeyboard: carousel.getAttribute('data-enable-keyboard') === 'true',
+        scrollAmount: parseInt(carousel.getAttribute('data-scroll-amount') || '1', 10),
+        animationDuration: parseInt(carousel.getAttribute('data-animation-duration') || '300', 10),
+        columnsMobile: parseInt(carousel.getAttribute('data-columns-mobile') || '1', 10),
+        columnsSmall: parseInt(carousel.getAttribute('data-columns-small') || '1', 10),
+        columnsTablet: parseInt(carousel.getAttribute('data-columns-tablet') || '2', 10),
+        columnsDesktop: parseInt(carousel.getAttribute('data-columns-desktop') || '3', 10),
+      };
+
+      // Initialize state
+      const state: CarouselState = {
+        currentIndex: 0,
+        totalSlides: slides.length,
+        visibleSlides: getVisibleSlides(),
+        isAtStart: true,
+        isAtEnd: false,
+        isDragging: false,
+        isPaused: false,
+        autoScrollTimer: null,
+      };
+
+      // Calculate visible slides based on viewport width
+      function getVisibleSlides(): number {
+        const width = window.innerWidth;
+        if (width < 480) return config.columnsMobile;
+        if (width < 768) return config.columnsSmall;
+        if (width < 1024) return config.columnsTablet;
+        return config.columnsDesktop;
+      }
+
+      // Update navigation button states
+      function updateNavigation() {
+        state.visibleSlides = getVisibleSlides();
+        const maxIndex = Math.max(0, state.totalSlides - state.visibleSlides);
+
+        state.isAtStart = state.currentIndex <= 0;
+        state.isAtEnd = state.currentIndex >= maxIndex;
+
+        if (prevBtn) {
+          prevBtn.disabled = state.isAtStart && !config.infinite;
+        }
+        if (nextBtn) {
+          nextBtn.disabled = state.isAtEnd && !config.infinite;
+        }
+
+        // Update indicators
+        updateIndicators();
+      }
+
+      // Scroll to specific index
+      function scrollToIndex(index: number, announce = true) {
+        const maxIndex = Math.max(0, state.totalSlides - state.visibleSlides);
+
+        // Handle infinite scroll
+        if (config.infinite) {
+          if (index < 0) {
+            index = maxIndex;
+          } else if (index > maxIndex) {
+            index = 0;
+          }
+        } else {
+          index = Math.max(0, Math.min(index, maxIndex));
+        }
+
+        state.currentIndex = index;
+
+        // Calculate transform
+        const slideElement = slides[0] as HTMLElement;
+        const slideWidth = slideElement.offsetWidth;
+        const gap = parseInt(getComputedStyle(track).gap) || 0;
+        const offset = index * (slideWidth + gap);
+
+        track.style.transform = `translateX(-${offset}px)`;
+
+        updateNavigation();
+
+        // Announce to screen readers
+        if (announce && liveRegion) {
+          const visibleRange = `Showing testimonials ${index + 1} to ${Math.min(index + state.visibleSlides, state.totalSlides)} of ${state.totalSlides}`;
+          liveRegion.textContent = visibleRange;
+        }
+      }
+
+      // Navigate previous
+      function goToPrev() {
+        scrollToIndex(state.currentIndex - config.scrollAmount);
+      }
+
+      // Navigate next
+      function goToNext() {
+        scrollToIndex(state.currentIndex + config.scrollAmount);
+      }
+
+      // Create pagination indicators
+      function createIndicators() {
+        if (!indicatorsContainer) return;
+
+        const pageCount = Math.ceil((state.totalSlides - state.visibleSlides + 1) / config.scrollAmount);
+
+        for (let i = 0; i < pageCount; i++) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.setAttribute('role', 'tab');
+          button.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+          button.setAttribute('aria-label', `Go to testimonial group ${i + 1}`);
+          button.setAttribute('data-index', i.toString());
+
+          button.addEventListener('click', () => {
+            scrollToIndex(i * config.scrollAmount);
+          });
+
+          indicatorsContainer.appendChild(button);
+        }
+      }
+
+      // Update indicators
+      function updateIndicators() {
+        if (!indicatorsContainer) return;
+
+        const buttons = indicatorsContainer.querySelectorAll('button');
+        const currentPage = Math.floor(state.currentIndex / config.scrollAmount);
+
+        buttons.forEach((btn, index) => {
+          btn.setAttribute('aria-selected', index === currentPage ? 'true' : 'false');
+        });
+      }
+
+      // Touch/Swipe handling
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchCurrentX = 0;
+      let initialTransform = 0;
+
+      function handleTouchStart(e: TouchEvent) {
+        if (!config.enableSwipe) return;
+
+        state.isDragging = true;
+        track.classList.add('is-dragging');
+
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchCurrentX = touchStartX;
+
+        // Get current transform
+        const transform = track.style.transform;
+        const match = transform.match(/translateX\((-?\d+\.?\d*)px\)/);
+        initialTransform = match ? parseFloat(match[1]) : 0;
+
+        pauseAutoScroll();
+      }
+
+      function handleTouchMove(e: TouchEvent) {
+        if (!state.isDragging || !config.enableSwipe) return;
+
+        touchCurrentX = e.touches[0].clientX;
+        const touchCurrentY = e.touches[0].clientY;
+
+        // Calculate movement
+        const deltaX = touchCurrentX - touchStartX;
+        const deltaY = touchCurrentY - touchStartY;
+
+        // If vertical scroll is dominant, don't interfere
+        if (Math.abs(deltaY) > Math.abs(deltaX)) {
+          return;
+        }
+
+        // Prevent default scroll
+        e.preventDefault();
+
+        // Apply transform
+        const newTransform = initialTransform + deltaX;
+        track.style.transform = `translateX(${newTransform}px)`;
+      }
+
+      function handleTouchEnd() {
+        if (!state.isDragging || !config.enableSwipe) return;
+
+        state.isDragging = false;
+        track.classList.remove('is-dragging');
+
+        // Calculate swipe distance and direction
+        const deltaX = touchCurrentX - touchStartX;
+        const threshold = 50; // Minimum swipe distance
+
+        if (deltaX < -threshold) {
+          // Swipe left - go next
+          goToNext();
+        } else if (deltaX > threshold) {
+          // Swipe right - go prev
+          goToPrev();
+        } else {
+          // Snap back to current position
+          scrollToIndex(state.currentIndex, false);
+        }
+
+        resumeAutoScroll();
+      }
+
+      // Mouse drag handling (desktop)
+      let mouseStartX = 0;
+
+      function handleMouseDown(e: MouseEvent) {
+        if (!config.enableSwipe || e.button !== 0) return;
+
+        state.isDragging = true;
+        track.classList.add('is-dragging');
+
+        mouseStartX = e.clientX;
+
+        const transform = track.style.transform;
+        const match = transform.match(/translateX\((-?\d+\.?\d*)px\)/);
+        initialTransform = match ? parseFloat(match[1]) : 0;
+
+        pauseAutoScroll();
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+      }
+
+      function handleMouseMove(e: MouseEvent) {
+        if (!state.isDragging) return;
+
+        const deltaX = e.clientX - mouseStartX;
+        const newTransform = initialTransform + deltaX;
+        track.style.transform = `translateX(${newTransform}px)`;
+      }
+
+      function handleMouseUp(e: MouseEvent) {
+        if (!state.isDragging) return;
+
+        state.isDragging = false;
+        track.classList.remove('is-dragging');
+
+        const deltaX = e.clientX - mouseStartX;
+        const threshold = 50;
+
+        if (deltaX < -threshold) {
+          goToNext();
+        } else if (deltaX > threshold) {
+          goToPrev();
+        } else {
+          scrollToIndex(state.currentIndex, false);
+        }
+
+        resumeAutoScroll();
+
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      }
+
+      // Keyboard navigation
+      function handleKeydown(e: KeyboardEvent) {
+        if (!config.enableKeyboard) return;
+
+        switch (e.key) {
+          case 'ArrowLeft':
+            e.preventDefault();
+            goToPrev();
+            break;
+          case 'ArrowRight':
+            e.preventDefault();
+            goToNext();
+            break;
+          case 'Home':
+            e.preventDefault();
+            scrollToIndex(0);
+            break;
+          case 'End':
+            e.preventDefault();
+            scrollToIndex(state.totalSlides - state.visibleSlides);
+            break;
+        }
+      }
+
+      // Auto-scroll
+      function startAutoScroll() {
+        if (!config.autoScroll || state.autoScrollTimer) return;
+
+        state.autoScrollTimer = setInterval(() => {
+          if (!state.isPaused) {
+            goToNext();
+          }
+        }, config.autoScrollInterval);
+      }
+
+      function pauseAutoScroll() {
+        state.isPaused = true;
+      }
+
+      function resumeAutoScroll() {
+        state.isPaused = false;
+      }
+
+      function stopAutoScroll() {
+        if (state.autoScrollTimer) {
+          clearInterval(state.autoScrollTimer);
+          state.autoScrollTimer = null;
+        }
+      }
+
+      // Event listeners
+      if (prevBtn) {
+        prevBtn.addEventListener('click', goToPrev);
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', goToNext);
+      }
+
+      // Touch events
+      viewport.addEventListener('touchstart', handleTouchStart, { passive: true });
+      viewport.addEventListener('touchmove', handleTouchMove, { passive: false });
+      viewport.addEventListener('touchend', handleTouchEnd);
+      viewport.addEventListener('touchcancel', handleTouchEnd);
+
+      // Mouse drag events
+      viewport.addEventListener('mousedown', handleMouseDown);
+
+      // Keyboard events
+      viewport.addEventListener('keydown', handleKeydown);
+
+      // Auto-scroll pause on hover/focus
+      if (config.pauseOnHover) {
+        carousel.addEventListener('mouseenter', pauseAutoScroll);
+        carousel.addEventListener('mouseleave', resumeAutoScroll);
+      }
+
+      if (config.pauseOnFocus) {
+        carousel.addEventListener('focusin', pauseAutoScroll);
+        carousel.addEventListener('focusout', resumeAutoScroll);
+      }
+
+      // Resize handler
+      let resizeTimeout: ReturnType<typeof setTimeout>;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          updateNavigation();
+          scrollToIndex(state.currentIndex, false);
+        }, 100);
+      });
+
+      // Initialize
+      createIndicators();
+      updateNavigation();
+      startAutoScroll();
+
+      // Cleanup on navigation away
+      window.addEventListener('beforeunload', stopAutoScroll);
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTestimonialsCarousels);
+  } else {
+    initTestimonialsCarousels();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initTestimonialsCarousels);
+</script>

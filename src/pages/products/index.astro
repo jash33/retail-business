@@ -1,0 +1,1436 @@
+---
+/**
+ * Products Index Page (Shop Page)
+ * Primary shop page with product grid, category filtering, sort options,
+ * view toggle (grid/list), and SEO optimization with product schema markup.
+ *
+ * Features:
+ * - Grid/List view toggle with smooth transitions
+ * - Category filtering with URL parameter support
+ * - Sort options (newest, price low/high, popular/featured)
+ * - Product count display
+ * - CollectionPage schema for SEO
+ * - ItemList schema with product structured data
+ * - Responsive layout
+ * - Full accessibility support
+ *
+ * @route /products
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import ProductSearch from '../../components/ProductSearch.astro';
+import QuickViewModal from '../../components/QuickViewModal.astro';
+import {
+  getAllProducts,
+  getAllCategories,
+  sortProducts,
+  toProductCardProps,
+} from '../../utils/products';
+import type { WebPageSchema, BreadcrumbSchema, ProductSchema } from '../../types/seo';
+import { seoConfig } from '../../config/seo.config';
+
+// Get all published products
+const allProducts = await getAllProducts({ publishedOnly: true });
+const sortedProducts = sortProducts(allProducts, 'priority');
+const products = sortedProducts.map(toProductCardProps);
+
+// Get all categories for filtering with product counts
+const categories = await getAllCategories();
+
+// Calculate product count per category
+const categoryCounts: Record<string, number> = {};
+products.forEach(product => {
+  if (product.category) {
+    categoryCounts[product.category] = (categoryCounts[product.category] || 0) + 1;
+  }
+});
+
+// SEO schemas
+const pageSchema: WebPageSchema = {
+  type: 'CollectionPage',
+  name: 'Shop Our Products',
+  description: 'Browse our curated collection of quality products. Find unique items for your home, lifestyle, and more.',
+  url: Astro.url.href,
+};
+
+// Build Breadcrumb items for visual navigation
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Shop' },
+];
+
+// Build Breadcrumb schema for SEO (passed to Layout)
+const breadcrumbSchema: BreadcrumbSchema = {
+  type: 'BreadcrumbList',
+  items: breadcrumbItems,
+};
+
+// Generate ItemList schema for products (helps with SEO)
+const itemListSchema = {
+  '@type': 'ItemList',
+  itemListElement: allProducts.slice(0, 20).map((product, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    item: {
+      '@type': 'Product',
+      name: product.data.name,
+      description: product.data.description,
+      image: product.data.image.src.startsWith('http')
+        ? product.data.image.src
+        : `${seoConfig.siteUrl}${product.data.image.src}`,
+      url: product.data.shopUrl,
+      offers: {
+        '@type': 'Offer',
+        price: product.data.price.amount,
+        priceCurrency: product.data.price.currency || 'USD',
+        availability: product.data.soldOut
+          ? 'https://schema.org/OutOfStock'
+          : 'https://schema.org/InStock',
+      },
+      ...(product.data.metadata?.brand && { brand: { '@type': 'Brand', name: product.data.metadata.brand } }),
+      ...(product.data.metadata?.sku && { sku: product.data.metadata.sku }),
+    },
+  })),
+};
+
+// Full JSON-LD for structured data
+const structuredData = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage',
+      name: 'Shop Our Products',
+      description: 'Browse our curated collection of quality products.',
+      url: Astro.url.href,
+      mainEntity: itemListSchema,
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: seoConfig.siteUrl },
+        { '@type': 'ListItem', position: 2, name: 'Shop', item: Astro.url.href },
+      ],
+    },
+  ],
+});
+---
+
+<Layout
+  title="Shop"
+  description="Browse our curated collection of quality products. Find unique items for your home, lifestyle, and more."
+  jsonLd={[pageSchema, breadcrumbSchema]}
+>
+  <!-- Enhanced Structured Data -->
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={structuredData} />
+  </Fragment>
+
+  <main class="shop-page">
+    <div class="shop-page__container">
+      <!-- Breadcrumb Navigation -->
+      <Breadcrumb
+        items={breadcrumbItems}
+        includeSchema={false}
+        class="shop-page__breadcrumb"
+      />
+
+      <!-- Page Header -->
+      <header class="shop-page__header">
+        <h1 class="shop-page__title">Shop</h1>
+        <p class="shop-page__description">
+          Discover our carefully curated collection of quality products.
+          Each item is selected for its craftsmanship, design, and value.
+        </p>
+      </header>
+
+      <!-- Toolbar: Search, Filters, Sort, View Toggle -->
+      <div class="shop-page__toolbar">
+        <!-- Search Bar -->
+        <div class="shop-page__search-container">
+          <ProductSearch
+            products={allProducts}
+            placeholder="Search products by name, category..."
+            maxSuggestions={6}
+            showCategories={true}
+            id="shop-search"
+          />
+        </div>
+
+        <!-- Category Filter -->
+        {categories.length > 0 && (
+          <nav id="shop-filters" class="shop-page__filters" aria-label="Product categories">
+            <ul class="shop-page__filter-list" role="tablist">
+              <li role="presentation">
+                <button
+                  type="button"
+                  class="shop-page__filter-btn shop-page__filter-btn--active"
+                  data-filter="all"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="products-grid"
+                >
+                  <span class="shop-page__filter-text">All</span>
+                  <span class="shop-page__filter-count" data-count={products.length}>
+                    {products.length}
+                  </span>
+                </button>
+              </li>
+              {categories.map((category) => (
+                <li role="presentation">
+                  <button
+                    type="button"
+                    class="shop-page__filter-btn"
+                    data-filter={category}
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="products-grid"
+                  >
+                    <span class="shop-page__filter-text">{category}</span>
+                    <span class="shop-page__filter-count" data-count={categoryCounts[category] || 0}>
+                      {categoryCounts[category] || 0}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+
+        <!-- Sort and View Controls -->
+        <div class="shop-page__controls">
+          <!-- Results Count -->
+          <div class="shop-page__results-count" role="status" aria-live="polite" id="results-count">
+            <span data-count>{products.length}</span> products
+          </div>
+
+          <!-- Sort Dropdown -->
+          <div class="shop-page__sort">
+            <label for="sort-select" class="shop-page__sort-label">Sort by:</label>
+            <div class="shop-page__sort-wrapper">
+              <select id="sort-select" class="shop-page__sort-select" aria-label="Sort products">
+                <option value="featured">Featured</option>
+                <option value="newest">Newest</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="name">Name: A to Z</option>
+              </select>
+              <svg class="shop-page__sort-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- View Toggle -->
+          <div class="shop-page__view-toggle" role="group" aria-label="View options">
+            <button
+              type="button"
+              class="shop-page__view-btn shop-page__view-btn--active"
+              data-view="grid"
+              aria-label="Grid view"
+              aria-pressed="true"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="shop-page__view-btn"
+              data-view="list"
+              aria-label="List view"
+              aria-pressed="false"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active filter indicator (hidden, announced to screen readers) -->
+      <div class="sr-only" role="status" aria-live="polite" id="filter-status"></div>
+
+      <!-- Products Grid -->
+      {products.length > 0 ? (
+        <div
+          class="shop-page__grid"
+          id="products-grid"
+          role="tabpanel"
+          aria-label="Products grid"
+          data-view="grid"
+        >
+          {products.map((product, index) => (
+            <article
+              class="shop-page__item"
+              style={`--stagger-delay: ${Math.min(index, 11) * 50}ms;`}
+              data-category={product.category}
+              data-price={product.price.amount}
+              data-name={product.name}
+              data-description={product.description || ''}
+              data-featured={product.featured ? '1' : '0'}
+              data-new={product.isNew ? '1' : '0'}
+              data-date={index}
+            >
+              <ProductCard
+                {...product}
+                showQuickView={true}
+                utmParams={{
+                  ...product.utmParams,
+                  content: `shop_page_${product.id}`,
+                }}
+              />
+
+              <!-- List View Details (hidden in grid view) -->
+              <div class="shop-page__item-details">
+                <p class="shop-page__item-description">{product.description}</p>
+                {product.category && (
+                  <span class="shop-page__item-category">{product.category}</span>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="shop-page__empty">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M16 16s-1.5-2-4-2-4 2-4 2" />
+            <line x1="9" y1="9" x2="9.01" y2="9" />
+            <line x1="15" y1="9" x2="15.01" y2="9" />
+          </svg>
+          <p>No products available at the moment.</p>
+          <p>Check back soon for new arrivals!</p>
+        </div>
+      )}
+
+      <!-- No Results Message (hidden by default) -->
+      <div class="shop-page__no-results" id="no-results" hidden>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <p id="no-results-text">No products found matching your criteria.</p>
+        <button type="button" class="shop-page__clear-filters">Clear all filters</button>
+      </div>
+    </div>
+
+    <!-- Quick View Modal -->
+    <QuickViewModal id="shop-quick-view-modal" />
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * SHOP PAGE STYLES
+   * =================================================================
+   */
+
+  .shop-page {
+    padding: var(--spacing-4) 0 var(--spacing-16);
+  }
+
+  .shop-page__breadcrumb {
+    margin-bottom: var(--spacing-4);
+  }
+
+  .shop-page__container {
+    width: 100%;
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  /* =================================================================
+   * HEADER
+   * ================================================================= */
+  .shop-page__header {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+  }
+
+  .shop-page__title {
+    margin: 0 0 var(--spacing-4);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+  }
+
+  .shop-page__description {
+    margin: 0 auto;
+    max-width: 600px;
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * TOOLBAR (Search, Filters + Controls)
+   * ================================================================= */
+  .shop-page__toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* =================================================================
+   * SEARCH CONTAINER
+   * ================================================================= */
+  .shop-page__search-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .shop-page__search-container :global(.product-search) {
+    max-width: 500px;
+    width: 100%;
+  }
+
+  /* =================================================================
+   * FILTERS
+   * ================================================================= */
+  .shop-page__filters {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .shop-page__filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .shop-page__filter-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Filter Button Styles */
+  .shop-page__filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    background-color: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      color var(--duration-200) var(--ease-in-out),
+      background-color var(--duration-200) var(--ease-in-out),
+      border-color var(--duration-200) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-out),
+      box-shadow var(--duration-200) var(--ease-in-out);
+  }
+
+  .shop-page__filter-btn:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary-light);
+    background-color: var(--color-primary-50);
+    transform: translateY(-1px);
+  }
+
+  .shop-page__filter-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .shop-page__filter-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Active Filter Button */
+  .shop-page__filter-btn--active {
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .shop-page__filter-btn--active:hover {
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Filter Text */
+  .shop-page__filter-text {
+    display: inline-block;
+  }
+
+  /* Filter Count Badge */
+  .shop-page__filter-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    height: 1.25rem;
+    padding: 0 var(--spacing-1-5);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1;
+    color: var(--color-text-tertiary);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-full);
+    transition:
+      color var(--duration-200) var(--ease-in-out),
+      background-color var(--duration-200) var(--ease-in-out);
+  }
+
+  .shop-page__filter-btn:hover .shop-page__filter-count {
+    color: var(--color-primary);
+    background-color: var(--color-primary-100);
+  }
+
+  .shop-page__filter-btn--active .shop-page__filter-count {
+    color: var(--color-primary);
+    background-color: var(--color-text-inverse);
+  }
+
+  .shop-page__filter-btn--active:hover .shop-page__filter-count {
+    color: var(--color-primary-hover);
+    background-color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * CONTROLS (Sort + View Toggle)
+   * ================================================================= */
+  .shop-page__controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+    flex-wrap: wrap;
+  }
+
+  /* Results Count */
+  .shop-page__results-count {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .shop-page__results-count [data-count] {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  /* Sort Dropdown */
+  .shop-page__sort {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  .shop-page__sort-label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .shop-page__sort-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .shop-page__sort-select {
+    appearance: none;
+    padding: var(--spacing-2) var(--spacing-8) var(--spacing-2) var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition:
+      border-color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .shop-page__sort-select:hover {
+    border-color: var(--color-primary-light);
+  }
+
+  .shop-page__sort-select:focus-visible {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: var(--focus-ring);
+  }
+
+  .shop-page__sort-icon {
+    position: absolute;
+    right: var(--spacing-2);
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-text-tertiary);
+    pointer-events: none;
+  }
+
+  /* View Toggle */
+  .shop-page__view-toggle {
+    display: flex;
+    gap: var(--spacing-1);
+    padding: var(--spacing-1);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-md);
+  }
+
+  .shop-page__view-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    color: var(--color-text-tertiary);
+    background-color: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition:
+      color var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .shop-page__view-btn:hover {
+    color: var(--color-text-primary);
+    background-color: var(--color-background-subtle);
+  }
+
+  .shop-page__view-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .shop-page__view-btn--active {
+    color: var(--color-primary);
+    background-color: var(--color-background);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .shop-page__view-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  /* =================================================================
+   * PRODUCTS GRID
+   * ================================================================= */
+  .shop-page__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-6);
+  }
+
+  /* Product Item - Grid View */
+  .shop-page__item {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: shopItemEnter var(--duration-400) var(--ease-out) forwards;
+    animation-delay: var(--stagger-delay, 0ms);
+  }
+
+  @keyframes shopItemEnter {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* List View Details (hidden by default in grid view) */
+  .shop-page__item-details {
+    display: none;
+  }
+
+  .shop-page__item-description {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .shop-page__item-category {
+    display: inline-block;
+    margin-top: var(--spacing-2);
+    padding: var(--spacing-1) var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-sm);
+  }
+
+  /* =================================================================
+   * LIST VIEW
+   * ================================================================= */
+  .shop-page__grid[data-view="list"] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  .shop-page__grid[data-view="list"] .shop-page__item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--spacing-6);
+    padding: var(--spacing-4);
+    background-color: var(--color-background-elevated);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--duration-200) var(--ease-out);
+  }
+
+  .shop-page__grid[data-view="list"] .shop-page__item:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .shop-page__grid[data-view="list"] .shop-page__item-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--spacing-2);
+  }
+
+  /* Adjust ProductCard in list view */
+  .shop-page__grid[data-view="list"] :global(.product-card) {
+    height: 100%;
+  }
+
+  .shop-page__grid[data-view="list"] :global(.product-card__image-container) {
+    aspect-ratio: 1 / 1;
+  }
+
+  .shop-page__grid[data-view="list"] :global(.product-card__content) {
+    display: none;
+  }
+
+  /* Hidden state for filtered items */
+  .shop-page__item[data-filter-hidden="true"] {
+    display: none !important;
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+  .shop-page__empty,
+  .shop-page__no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-16);
+    text-align: center;
+    color: var(--color-text-tertiary);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+  }
+
+  .shop-page__empty svg,
+  .shop-page__no-results svg {
+    width: 64px;
+    height: 64px;
+    opacity: 0.5;
+  }
+
+  .shop-page__empty p,
+  .shop-page__no-results p {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+  }
+
+  .shop-page__clear-filters {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    background-color: transparent;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition:
+      color var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .shop-page__clear-filters:hover {
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+  }
+
+  .shop-page__clear-filters:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  /* Screen reader only text */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 1023px) {
+    .shop-page__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .shop-page__grid[data-view="list"] .shop-page__item {
+      grid-template-columns: 160px 1fr;
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .shop-page {
+      padding: var(--spacing-4) 0 var(--spacing-12);
+    }
+
+    .shop-page__title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .shop-page__description {
+      font-size: var(--font-size-base);
+    }
+
+    .shop-page__toolbar {
+      gap: var(--spacing-3);
+    }
+
+    .shop-page__search-container {
+      padding: 0 var(--spacing-2);
+    }
+
+    .shop-page__search-container :global(.product-search) {
+      max-width: 100%;
+    }
+
+    .shop-page__controls {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--spacing-3);
+    }
+
+    .shop-page__results-count {
+      order: -1;
+      text-align: center;
+    }
+
+    .shop-page__sort {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .shop-page__sort-wrapper {
+      flex: 1;
+      max-width: 200px;
+    }
+
+    .shop-page__sort-select {
+      width: 100%;
+    }
+
+    .shop-page__view-toggle {
+      align-self: center;
+    }
+
+    .shop-page__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-4);
+    }
+
+    .shop-page__grid[data-view="list"] .shop-page__item {
+      grid-template-columns: 120px 1fr;
+      gap: var(--spacing-3);
+      padding: var(--spacing-3);
+    }
+  }
+
+  @media screen and (max-width: 479px) {
+    .shop-page__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .shop-page__filter-list {
+      justify-content: flex-start;
+      flex-wrap: nowrap;
+      gap: var(--spacing-1);
+      padding-bottom: var(--spacing-2);
+    }
+
+    .shop-page__filter-btn {
+      padding: var(--spacing-1-5) var(--spacing-3);
+      font-size: var(--font-size-xs);
+      gap: var(--spacing-1);
+    }
+
+    .shop-page__filter-count {
+      min-width: 1.25rem;
+      height: 1rem;
+      font-size: 0.625rem;
+      padding: 0 var(--spacing-1);
+    }
+
+    .shop-page__sort-label {
+      display: none;
+    }
+
+    .shop-page__grid[data-view="list"] .shop-page__item {
+      grid-template-columns: 100px 1fr;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .shop-page__item {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+
+    .shop-page__filter-btn,
+    .shop-page__sort-select,
+    .shop-page__view-btn,
+    .shop-page__clear-filters {
+      transition: none;
+    }
+
+    .shop-page__filter-btn:hover,
+    .shop-page__filter-btn--active:hover {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .shop-page__sort-select {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .shop-page__view-toggle {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .shop-page__view-btn--active {
+    background-color: var(--color-background);
+  }
+
+  :global(html[data-theme="dark"]) .shop-page__grid[data-view="list"] .shop-page__item {
+    background-color: var(--color-background-elevated);
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .shop-page__toolbar {
+      display: none;
+    }
+
+    .shop-page__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Shop Page Client-Side Interactivity
+   *
+   * Features:
+   * - Category filtering with URL parameter support
+   * - Sort functionality (featured, newest, price, name)
+   * - View toggle (grid/list)
+   * - Results count updates
+   * - Screen reader announcements
+   * - Keyboard accessibility
+   */
+
+  interface ShopState {
+    currentCategory: string | null;
+    currentSort: string;
+    currentView: 'grid' | 'list';
+    currentSearch: string;
+    searchResults: Set<string> | null;
+    isAnimating: boolean;
+  }
+
+  const state: ShopState = {
+    currentCategory: null,
+    currentSort: 'featured',
+    currentView: 'grid',
+    currentSearch: '',
+    searchResults: null, // null means no search active, Set contains matched product IDs
+    isAnimating: false,
+  };
+
+  /**
+   * Initialize the shop page
+   */
+  function initShopPage() {
+    const filterButtons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+    const productItems = document.querySelectorAll<HTMLElement>('.shop-page__item');
+    const sortSelect = document.getElementById('sort-select') as HTMLSelectElement | null;
+    const viewButtons = document.querySelectorAll<HTMLButtonElement>('button.shop-page__view-btn[data-view]');
+    const productsGrid = document.getElementById('products-grid');
+    const filterStatus = document.getElementById('filter-status');
+    const resultsCount = document.getElementById('results-count');
+    const noResults = document.getElementById('no-results');
+    const clearFiltersBtn = document.querySelector<HTMLButtonElement>('.shop-page__clear-filters');
+    const searchContainer = document.getElementById('shop-search');
+    const searchInput = document.getElementById('shop-search-input') as HTMLInputElement | null;
+
+    if (!filterButtons.length || !productItems.length || !productsGrid) return;
+
+    // Get initial state from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialCategory = urlParams.get('category');
+    const initialSort = urlParams.get('sort') || 'featured';
+    const initialView = urlParams.get('view') as 'grid' | 'list' || 'grid';
+    const initialSearch = urlParams.get('search') || '';
+
+    state.currentCategory = initialCategory;
+    state.currentSort = initialSort;
+    state.currentView = initialView;
+    state.currentSearch = initialSearch;
+
+    // Apply initial state
+    if (sortSelect) sortSelect.value = initialSort;
+    if (searchInput && initialSearch) {
+      searchInput.value = initialSearch;
+      // Trigger search filtering
+      performLocalSearch(initialSearch, productItems);
+    }
+    applyView(initialView, viewButtons, productsGrid);
+    applyFilter(initialCategory, filterButtons, productItems, filterStatus);
+    applySorting(initialSort, productsGrid, productItems);
+    updateResultsCount(productItems, resultsCount, noResults, productsGrid);
+
+    // Category filter click handlers
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (state.isAnimating) return;
+
+        const filter = button.getAttribute('data-filter');
+        const newCategory = filter === 'all' ? null : filter;
+
+        if (newCategory === state.currentCategory) return;
+
+        state.currentCategory = newCategory;
+        updateURL();
+        applyFilter(newCategory, filterButtons, productItems, filterStatus);
+        updateResultsCount(productItems, resultsCount, noResults, productsGrid);
+      });
+    });
+
+    // Sort select handler
+    if (sortSelect) {
+      sortSelect.addEventListener('change', () => {
+        const newSort = sortSelect.value;
+        if (newSort === state.currentSort) return;
+
+        state.currentSort = newSort;
+        updateURL();
+        applySorting(newSort, productsGrid, productItems);
+      });
+    }
+
+    // View toggle handlers
+    viewButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const newView = button.getAttribute('data-view') as 'grid' | 'list';
+        if (newView === state.currentView) return;
+
+        state.currentView = newView;
+        updateURL();
+        applyView(newView, viewButtons, productsGrid);
+      });
+    });
+
+    // Clear filters button
+    if (clearFiltersBtn) {
+      clearFiltersBtn.addEventListener('click', () => {
+        state.currentCategory = null;
+        state.currentSort = 'featured';
+        state.currentSearch = '';
+        state.searchResults = null;
+        if (sortSelect) sortSelect.value = 'featured';
+        if (searchInput) searchInput.value = '';
+
+        updateURL();
+        applyFilter(null, filterButtons, productItems, filterStatus);
+        applySorting('featured', productsGrid, productItems);
+        updateResultsCount(productItems, resultsCount, noResults, productsGrid);
+      });
+    }
+
+    // Search event listeners
+    if (searchContainer) {
+      // Handle search input for filtering the grid
+      const searchInputEl = searchContainer.querySelector<HTMLInputElement>('#shop-search-input');
+
+      if (searchInputEl) {
+        // Debounce search input
+        let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+
+        searchInputEl.addEventListener('input', () => {
+          if (searchTimeout) clearTimeout(searchTimeout);
+
+          searchTimeout = setTimeout(() => {
+            const query = searchInputEl.value.trim();
+            state.currentSearch = query;
+
+            if (query.length >= 2) {
+              performLocalSearch(query, productItems);
+            } else {
+              // Clear search filter
+              state.searchResults = null;
+            }
+
+            applyFilter(state.currentCategory, filterButtons, productItems, filterStatus);
+            updateResultsCount(productItems, resultsCount, noResults, productsGrid);
+            updateURL();
+          }, 200);
+        });
+      }
+
+      // Handle clear search event
+      searchContainer.addEventListener('search-clear', () => {
+        state.currentSearch = '';
+        state.searchResults = null;
+        applyFilter(state.currentCategory, filterButtons, productItems, filterStatus);
+        updateResultsCount(productItems, resultsCount, noResults, productsGrid);
+        updateURL();
+      });
+    }
+
+    /**
+     * Perform local search using simple string matching
+     * (Fuse.js is used in the autocomplete dropdown, this is for grid filtering)
+     */
+    function performLocalSearch(query: string, items: NodeListOf<HTMLElement>) {
+      const lowerQuery = query.toLowerCase();
+      const matchedIds = new Set<string>();
+
+      items.forEach((item) => {
+        const name = (item.dataset.name || '').toLowerCase();
+        const category = (item.dataset.category || '').toLowerCase();
+        const description = (item.dataset.description || '').toLowerCase();
+
+        // Check if any field contains the query
+        if (
+          name.includes(lowerQuery) ||
+          category.includes(lowerQuery) ||
+          description.includes(lowerQuery)
+        ) {
+          const productId = item.querySelector('[data-product-id]')?.getAttribute('data-product-id');
+          if (productId) {
+            matchedIds.add(productId);
+          } else {
+            // Use name as fallback identifier
+            matchedIds.add(name);
+          }
+        }
+      });
+
+      state.searchResults = matchedIds;
+    }
+
+    // Listen for browser back/forward navigation
+    window.addEventListener('popstate', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const category = urlParams.get('category');
+      const sort = urlParams.get('sort') || 'featured';
+      const view = urlParams.get('view') as 'grid' | 'list' || 'grid';
+      const search = urlParams.get('search') || '';
+
+      state.currentCategory = category;
+      state.currentSort = sort;
+      state.currentView = view;
+      state.currentSearch = search;
+
+      if (sortSelect) sortSelect.value = sort;
+      if (searchInput) {
+        searchInput.value = search;
+        if (search.length >= 2) {
+          performLocalSearch(search, productItems);
+        } else {
+          state.searchResults = null;
+        }
+      }
+      applyView(view, viewButtons, productsGrid);
+      applyFilter(category, filterButtons, productItems, filterStatus);
+      applySorting(sort, productsGrid, productItems);
+      updateResultsCount(productItems, resultsCount, noResults, productsGrid);
+    });
+  }
+
+  /**
+   * Apply category and search filters
+   */
+  function applyFilter(
+    category: string | null,
+    filterButtons: NodeListOf<HTMLButtonElement>,
+    productItems: NodeListOf<HTMLElement>,
+    filterStatus: HTMLElement | null
+  ) {
+    // Update button active states
+    filterButtons.forEach((button) => {
+      const filter = button.getAttribute('data-filter');
+      const isActive = (!category && filter === 'all') || category === filter;
+
+      button.classList.toggle('shop-page__filter-btn--active', isActive);
+      button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    // Filter product items (combining category and search)
+    let visibleCount = 0;
+
+    productItems.forEach((item) => {
+      const itemCategory = item.getAttribute('data-category');
+      const itemName = (item.dataset.name || '').toLowerCase();
+      const productId = item.querySelector('[data-product-id]')?.getAttribute('data-product-id') || itemName;
+
+      // Check category filter
+      const passesCategory = !category || itemCategory === category;
+
+      // Check search filter
+      const passesSearch = !state.searchResults || state.searchResults.has(productId) || state.searchResults.has(itemName);
+
+      const shouldShow = passesCategory && passesSearch;
+
+      if (shouldShow) {
+        item.removeAttribute('data-filter-hidden');
+        visibleCount++;
+      } else {
+        item.setAttribute('data-filter-hidden', 'true');
+      }
+    });
+
+    // Update screen reader status
+    if (filterStatus) {
+      let statusText = '';
+      if (state.currentSearch && category) {
+        statusText = `Showing ${visibleCount} ${visibleCount === 1 ? 'product' : 'products'} matching "${state.currentSearch}" in ${category} category`;
+      } else if (state.currentSearch) {
+        statusText = `Showing ${visibleCount} ${visibleCount === 1 ? 'product' : 'products'} matching "${state.currentSearch}"`;
+      } else if (category) {
+        statusText = `Showing ${visibleCount} ${visibleCount === 1 ? 'product' : 'products'} in ${category} category`;
+      } else {
+        statusText = `Showing all ${visibleCount} ${visibleCount === 1 ? 'product' : 'products'}`;
+      }
+      filterStatus.textContent = statusText;
+    }
+  }
+
+  /**
+   * Apply sorting to products
+   */
+  function applySorting(
+    sortBy: string,
+    productsGrid: HTMLElement,
+    productItems: NodeListOf<HTMLElement>
+  ) {
+    const items = Array.from(productItems);
+
+    items.sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          const aNew = a.getAttribute('data-new') === '1' ? 1 : 0;
+          const bNew = b.getAttribute('data-new') === '1' ? 1 : 0;
+          if (bNew !== aNew) return bNew - aNew;
+          return parseInt(a.getAttribute('data-date') || '0') - parseInt(b.getAttribute('data-date') || '0');
+
+        case 'price-asc':
+          return parseFloat(a.getAttribute('data-price') || '0') - parseFloat(b.getAttribute('data-price') || '0');
+
+        case 'price-desc':
+          return parseFloat(b.getAttribute('data-price') || '0') - parseFloat(a.getAttribute('data-price') || '0');
+
+        case 'name':
+          return (a.getAttribute('data-name') || '').localeCompare(b.getAttribute('data-name') || '');
+
+        case 'featured':
+        default:
+          const aFeatured = a.getAttribute('data-featured') === '1' ? 0 : 1;
+          const bFeatured = b.getAttribute('data-featured') === '1' ? 0 : 1;
+          if (aFeatured !== bFeatured) return aFeatured - bFeatured;
+          return parseInt(a.getAttribute('data-date') || '0') - parseInt(b.getAttribute('data-date') || '0');
+      }
+    });
+
+    // Re-append items in sorted order
+    items.forEach((item, index) => {
+      item.style.setProperty('--stagger-delay', `${Math.min(index, 11) * 50}ms`);
+      productsGrid.appendChild(item);
+    });
+  }
+
+  /**
+   * Apply view mode
+   */
+  function applyView(
+    view: 'grid' | 'list',
+    viewButtons: NodeListOf<HTMLButtonElement>,
+    productsGrid: HTMLElement
+  ) {
+    // Update button states
+    viewButtons.forEach((button) => {
+      const buttonView = button.getAttribute('data-view');
+      const isActive = buttonView === view;
+
+      button.classList.toggle('shop-page__view-btn--active', isActive);
+      button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+
+    // Update grid view
+    productsGrid.setAttribute('data-view', view);
+  }
+
+  /**
+   * Update results count
+   */
+  function updateResultsCount(
+    productItems: NodeListOf<HTMLElement>,
+    resultsCount: HTMLElement | null,
+    noResults: HTMLElement | null,
+    productsGrid: HTMLElement
+  ) {
+    const visibleCount = Array.from(productItems).filter(
+      (item) => !item.hasAttribute('data-filter-hidden')
+    ).length;
+
+    if (resultsCount) {
+      const countSpan = resultsCount.querySelector('[data-count]');
+      if (countSpan) {
+        countSpan.textContent = visibleCount.toString();
+      }
+    }
+
+    // Show/hide no results message
+    if (noResults) {
+      noResults.hidden = visibleCount > 0;
+
+      // Update no results message text based on current filters
+      const noResultsText = noResults.querySelector('#no-results-text');
+      if (noResultsText) {
+        if (state.currentSearch && state.currentCategory) {
+          noResultsText.textContent = `No products found matching "${state.currentSearch}" in ${state.currentCategory}.`;
+        } else if (state.currentSearch) {
+          noResultsText.textContent = `No products found matching "${state.currentSearch}".`;
+        } else if (state.currentCategory) {
+          noResultsText.textContent = `No products found in ${state.currentCategory}.`;
+        } else {
+          noResultsText.textContent = 'No products found matching your criteria.';
+        }
+      }
+    }
+
+    if (productsGrid) {
+      productsGrid.hidden = visibleCount === 0;
+    }
+  }
+
+  /**
+   * Update URL with current state
+   */
+  function updateURL() {
+    const url = new URL(window.location.href);
+
+    if (state.currentCategory) {
+      url.searchParams.set('category', state.currentCategory);
+    } else {
+      url.searchParams.delete('category');
+    }
+
+    if (state.currentSort !== 'featured') {
+      url.searchParams.set('sort', state.currentSort);
+    } else {
+      url.searchParams.delete('sort');
+    }
+
+    if (state.currentView !== 'grid') {
+      url.searchParams.set('view', state.currentView);
+    } else {
+      url.searchParams.delete('view');
+    }
+
+    if (state.currentSearch && state.currentSearch.length >= 2) {
+      url.searchParams.set('search', state.currentSearch);
+    } else {
+      url.searchParams.delete('search');
+    }
+
+    window.history.pushState({}, '', url.toString());
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initShopPage);
+  } else {
+    initShopPage();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initShopPage);
+</script>

@@ -1,0 +1,12 @@
+{
+  "id": "blog-content-system",
+  "category": "Core",
+  "title": "Editorial Blog/Journal System",
+  "description": "Set up blog content collection with article template, category filtering, featured images, and SEO optimization. Supports brand storytelling and lifestyle content.",
+  "status": "in_progress",
+  "priority": 2,
+  "complexity": "complex",
+  "createdAt": "2026-01-26T01:49:59.754Z",
+  "updatedAt": "2026-01-26T08:59:52.436Z",
+  "descriptionHistory": []
+}

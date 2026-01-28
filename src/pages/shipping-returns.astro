@@ -1,0 +1,1383 @@
+---
+/**
+ * Shipping & Returns Page
+ * A comprehensive page for shipping policies, return procedures,
+ * international shipping details, and packaging information.
+ *
+ * Features:
+ * - Clear shipping timelines and costs
+ * - Return policy with step-by-step procedures
+ * - International shipping information
+ * - Packaging and sustainability details
+ * - FAQ accordion for common questions
+ * - Full accessibility support
+ * - SEO optimized with FAQPage schema
+ */
+
+import Layout from '../layouts/Layout.astro';
+import FAQAccordion from '../components/FAQAccordion.astro';
+import ContactCTA from '../components/ContactCTA.astro';
+import Button from '../components/Button.astro';
+
+// Shipping options data
+const shippingOptions = [
+  {
+    name: 'Standard Shipping',
+    deliveryTime: '5-7 Business Days',
+    cost: 'Free on orders $75+',
+    costDetail: '$5.99 for orders under $75',
+    icon: 'truck',
+    description: 'Reliable delivery for non-urgent orders.',
+  },
+  {
+    name: 'Express Shipping',
+    deliveryTime: '2-3 Business Days',
+    cost: '$12.99',
+    costDetail: 'Free on orders $150+',
+    icon: 'rocket',
+    description: 'Fast delivery when you need it sooner.',
+  },
+  {
+    name: 'Next Day Delivery',
+    deliveryTime: '1 Business Day',
+    cost: '$24.99',
+    costDetail: 'Order by 2pm EST',
+    icon: 'lightning',
+    description: 'Get your order the very next business day.',
+  },
+];
+
+// International shipping zones
+const internationalZones = [
+  {
+    zone: 'Canada',
+    deliveryTime: '7-14 Business Days',
+    cost: 'Starting at $15.99',
+    notes: 'Customs fees may apply',
+  },
+  {
+    zone: 'Europe (UK, EU)',
+    deliveryTime: '10-21 Business Days',
+    cost: 'Starting at $24.99',
+    notes: 'VAT and duties may apply',
+  },
+  {
+    zone: 'Australia & New Zealand',
+    deliveryTime: '14-28 Business Days',
+    cost: 'Starting at $29.99',
+    notes: 'GST may apply at delivery',
+  },
+  {
+    zone: 'Rest of World',
+    deliveryTime: '14-35 Business Days',
+    cost: 'Calculated at checkout',
+    notes: 'Contact us for specific destinations',
+  },
+];
+
+// Return timeline steps
+const returnSteps = [
+  {
+    step: 1,
+    title: 'Initiate Return',
+    description: 'Log into your account or contact us within 30 days of delivery to start your return.',
+    icon: 'clipboard',
+  },
+  {
+    step: 2,
+    title: 'Pack Your Items',
+    description: 'Place items in original packaging. Include all tags and accessories.',
+    icon: 'box',
+  },
+  {
+    step: 3,
+    title: 'Ship It Back',
+    description: 'Use the prepaid label we provide or your preferred carrier.',
+    icon: 'send',
+  },
+  {
+    step: 4,
+    title: 'Get Refunded',
+    description: 'Refund processed within 5-7 business days of receiving your return.',
+    icon: 'check-circle',
+  },
+];
+
+// Shipping FAQ items
+const shippingFaqItems = [
+  {
+    question: 'How long does shipping take?',
+    answer: `<p>Shipping times vary based on your selected method:</p>
+      <ul>
+        <li><strong>Standard Shipping:</strong> 5-7 business days</li>
+        <li><strong>Express Shipping:</strong> 2-3 business days</li>
+        <li><strong>Next Day Delivery:</strong> 1 business day (order by 2pm EST)</li>
+      </ul>
+      <p>Please note that processing time (1-2 business days) is additional to shipping time. Orders placed on weekends or holidays will be processed the next business day.</p>`,
+  },
+  {
+    question: 'Do you offer free shipping?',
+    answer: `<p>Yes! We offer <strong>free standard shipping on all orders over $75</strong> within the continental United States. Express shipping is free on orders over $150.</p>
+      <p>For orders under $75, standard shipping is a flat rate of $5.99.</p>`,
+  },
+  {
+    question: 'Can I track my order?',
+    answer: `<p>Absolutely! Once your order ships, you'll receive a confirmation email with your tracking number. You can also track your order by:</p>
+      <ul>
+        <li>Logging into your account and viewing order status</li>
+        <li>Clicking the tracking link in your shipping confirmation email</li>
+        <li>Contacting our customer service team with your order number</li>
+      </ul>`,
+  },
+  {
+    question: 'Do you ship internationally?',
+    answer: `<p>Yes, we ship to many countries worldwide! International shipping rates and delivery times vary by destination:</p>
+      <ul>
+        <li><strong>Canada:</strong> 7-14 business days, starting at $15.99</li>
+        <li><strong>Europe:</strong> 10-21 business days, starting at $24.99</li>
+        <li><strong>Australia/NZ:</strong> 14-28 business days, starting at $29.99</li>
+      </ul>
+      <p>Please note that international orders may be subject to customs duties and taxes, which are the responsibility of the recipient.</p>`,
+  },
+  {
+    question: 'What happens if my package is lost or damaged?',
+    answer: `<p>We've got you covered! If your package is lost, damaged, or arrives with incorrect items:</p>
+      <ol>
+        <li>Contact us within 48 hours of delivery (or expected delivery date)</li>
+        <li>Provide your order number and photos of any damage</li>
+        <li>We'll either reship your items or issue a full refund</li>
+      </ol>
+      <p>All shipments are insured, so you're protected from the moment your order leaves our warehouse.</p>`,
+  },
+];
+
+// Returns FAQ items
+const returnsFaqItems = [
+  {
+    question: 'What is your return policy?',
+    answer: `<p>We offer a <strong>30-day hassle-free return policy</strong> on most items. To be eligible for a return:</p>
+      <ul>
+        <li>Items must be unused and in original condition</li>
+        <li>All tags must be attached</li>
+        <li>Original packaging should be included when possible</li>
+        <li>Return must be initiated within 30 days of delivery</li>
+      </ul>
+      <p>Some exclusions apply to final sale items, personalized products, and intimate apparel.</p>`,
+  },
+  {
+    question: 'How do I start a return?',
+    answer: `<p>Starting a return is easy:</p>
+      <ol>
+        <li><strong>Online:</strong> Log into your account, find your order, and click "Start Return"</li>
+        <li><strong>Email:</strong> Send us your order number and reason for return</li>
+        <li><strong>Phone:</strong> Call our customer service team at (555) 123-4567</li>
+      </ol>
+      <p>We'll provide you with a prepaid return label and instructions within 24 hours.</p>`,
+  },
+  {
+    question: 'Do I have to pay for return shipping?',
+    answer: `<p>For returns due to our error (wrong item, defective product), return shipping is <strong>completely free</strong>.</p>
+      <p>For standard returns (changed your mind, sizing issues), we offer two options:</p>
+      <ul>
+        <li><strong>Free:</strong> Store credit for the full amount</li>
+        <li><strong>$5.99 deduction:</strong> Refund to original payment method</li>
+      </ul>
+      <p>We believe in making returns as painless as possible!</p>`,
+  },
+  {
+    question: 'How long does it take to get my refund?',
+    answer: `<p>Once we receive your return, here's the timeline:</p>
+      <ul>
+        <li><strong>Inspection:</strong> 1-2 business days</li>
+        <li><strong>Refund processing:</strong> 3-5 business days</li>
+        <li><strong>Bank processing:</strong> Up to 10 additional business days (varies by bank)</li>
+      </ul>
+      <p>Store credit refunds are typically available within 24 hours of return approval. You'll receive an email confirmation at each step.</p>`,
+  },
+  {
+    question: 'Can I exchange an item instead of returning it?',
+    answer: `<p>Yes! We offer <strong>free exchanges</strong> for different sizes or colors of the same item. Here's how:</p>
+      <ol>
+        <li>Start a return and select "Exchange" as your reason</li>
+        <li>Choose the new size or color you'd like</li>
+        <li>We'll ship your new item as soon as we receive your return</li>
+      </ol>
+      <p>For faster service, you can also place a new order and return the original item for a refund.</p>`,
+  },
+  {
+    question: 'What items cannot be returned?',
+    answer: `<p>For hygiene and safety reasons, the following items are <strong>final sale</strong> and cannot be returned:</p>
+      <ul>
+        <li>Intimate apparel and swimwear (if hygiene seal is broken)</li>
+        <li>Personalized or custom-made items</li>
+        <li>Items marked as "Final Sale" at time of purchase</li>
+        <li>Gift cards</li>
+        <li>Items damaged due to misuse or normal wear</li>
+      </ul>
+      <p>If you receive a defective item from any category, please contact us and we'll make it right.</p>`,
+  },
+];
+
+// Build WebPage schema for SEO (FAQPage content is in the FAQAccordion component)
+const pageSchema = {
+  type: 'WebPage' as const,
+  name: 'Shipping & Returns',
+  description: 'Learn about our shipping options, delivery times, and hassle-free 30-day return policy.',
+};
+---
+
+<Layout
+  title="Shipping & Returns"
+  description="Learn about our shipping options, delivery times, and hassle-free 30-day return policy. Free shipping on orders over $75. International shipping available."
+  openGraph={{
+    type: 'website',
+  }}
+  jsonLd={pageSchema}
+>
+  <main>
+    <!-- Hero Section -->
+    <section class="shipping-hero" aria-labelledby="shipping-hero-heading">
+      <div class="shipping-hero__container">
+        <span class="shipping-hero__eyebrow reveal reveal--up">Customer Support</span>
+        <h1 id="shipping-hero-heading" class="shipping-hero__title reveal reveal--up reveal--delay-1">
+          Shipping & Returns
+        </h1>
+        <p class="shipping-hero__subtitle reveal reveal--up reveal--delay-2">
+          We make shopping easy with fast shipping, free returns, and a 30-day satisfaction guarantee.
+          Everything you need to know is right here.
+        </p>
+        <div class="shipping-hero__cta reveal reveal--up reveal--delay-3">
+          <Button
+            text="Track My Order"
+            href="/contact"
+            variant="primary"
+            size="large"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Stats Bar -->
+    <section class="shipping-stats" aria-label="Shipping highlights">
+      <div class="shipping-stats__container">
+        <div class="shipping-stats__grid">
+          <div class="shipping-stats__item">
+            <div class="shipping-stats__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="3" width="15" height="13" rx="2"/>
+                <path d="M16 8h4l3 3v5a2 2 0 0 1-2 2h-1"/>
+                <circle cx="5.5" cy="18.5" r="2.5"/>
+                <circle cx="18.5" cy="18.5" r="2.5"/>
+              </svg>
+            </div>
+            <div class="shipping-stats__content">
+              <span class="shipping-stats__value">Free</span>
+              <span class="shipping-stats__label">Shipping on $75+</span>
+            </div>
+          </div>
+
+          <div class="shipping-stats__item">
+            <div class="shipping-stats__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"/>
+                <polyline points="1 20 1 14 7 14"/>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+              </svg>
+            </div>
+            <div class="shipping-stats__content">
+              <span class="shipping-stats__value">30 Days</span>
+              <span class="shipping-stats__label">Easy Returns</span>
+            </div>
+          </div>
+
+          <div class="shipping-stats__item">
+            <div class="shipping-stats__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div class="shipping-stats__content">
+              <span class="shipping-stats__value">1-7 Days</span>
+              <span class="shipping-stats__label">Delivery Options</span>
+            </div>
+          </div>
+
+          <div class="shipping-stats__item">
+            <div class="shipping-stats__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <polyline points="9 12 11 14 15 10"/>
+              </svg>
+            </div>
+            <div class="shipping-stats__content">
+              <span class="shipping-stats__value">100%</span>
+              <span class="shipping-stats__label">Secure & Insured</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Shipping Options Section -->
+    <section class="shipping-options" aria-labelledby="shipping-options-heading">
+      <div class="shipping-options__container">
+        <div class="shipping-options__header reveal reveal--up">
+          <h2 id="shipping-options-heading" class="shipping-options__title">
+            Domestic Shipping Options
+          </h2>
+          <p class="shipping-options__subtitle">
+            Choose the shipping speed that works best for you. All orders are processed within 1-2 business days.
+          </p>
+        </div>
+
+        <div class="shipping-options__grid">
+          {shippingOptions.map((option, index) => (
+            <article class={`shipping-options__card reveal reveal--up reveal--delay-${index + 1}`}>
+              <div class="shipping-options__card-icon" aria-hidden="true">
+                {option.icon === 'truck' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="3" width="15" height="13" rx="2"/>
+                    <path d="M16 8h4l3 3v5a2 2 0 0 1-2 2h-1"/>
+                    <circle cx="5.5" cy="18.5" r="2.5"/>
+                    <circle cx="18.5" cy="18.5" r="2.5"/>
+                  </svg>
+                )}
+                {option.icon === 'rocket' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                    <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                    <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+                    <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+                  </svg>
+                )}
+                {option.icon === 'lightning' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                )}
+              </div>
+              <div class="shipping-options__card-content">
+                <h3 class="shipping-options__card-title">{option.name}</h3>
+                <p class="shipping-options__card-description">{option.description}</p>
+                <div class="shipping-options__card-details">
+                  <div class="shipping-options__card-time">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span>{option.deliveryTime}</span>
+                  </div>
+                  <div class="shipping-options__card-cost">
+                    <span class="shipping-options__card-price">{option.cost}</span>
+                    <span class="shipping-options__card-note">{option.costDetail}</span>
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- International Shipping Section -->
+    <section class="shipping-international" aria-labelledby="shipping-international-heading">
+      <div class="shipping-international__container">
+        <div class="shipping-international__content">
+          <div class="shipping-international__info reveal reveal--left">
+            <h2 id="shipping-international-heading" class="shipping-international__title">
+              International Shipping
+            </h2>
+            <p class="shipping-international__subtitle">
+              We ship to over 100 countries worldwide. International shipping rates are calculated
+              at checkout based on destination and package weight.
+            </p>
+
+            <div class="shipping-international__note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              <p><strong>Important:</strong> International orders may be subject to customs duties, taxes,
+              and import fees. These charges are the responsibility of the recipient and are not included
+              in the shipping cost.</p>
+            </div>
+          </div>
+
+          <div class="shipping-international__zones reveal reveal--right">
+            <div class="shipping-international__table" role="table" aria-label="International shipping rates">
+              <div class="shipping-international__table-header" role="row">
+                <span role="columnheader">Destination</span>
+                <span role="columnheader">Delivery Time</span>
+                <span role="columnheader">Starting Price</span>
+              </div>
+              {internationalZones.map((zone) => (
+                <div class="shipping-international__table-row" role="row">
+                  <span class="shipping-international__zone" role="cell">
+                    {zone.zone}
+                    {zone.notes && <small>{zone.notes}</small>}
+                  </span>
+                  <span class="shipping-international__time" role="cell">{zone.deliveryTime}</span>
+                  <span class="shipping-international__cost" role="cell">{zone.cost}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Returns Section -->
+    <section class="shipping-returns" aria-labelledby="shipping-returns-heading">
+      <div class="shipping-returns__container">
+        <div class="shipping-returns__header reveal reveal--up">
+          <h2 id="shipping-returns-heading" class="shipping-returns__title">
+            Easy Returns Process
+          </h2>
+          <p class="shipping-returns__subtitle">
+            Changed your mind? No problem. We offer a 30-day return policy on most items,
+            because we want you to love what you buy.
+          </p>
+        </div>
+
+        <div class="shipping-returns__timeline">
+          {returnSteps.map((step, index) => (
+            <div class={`shipping-returns__step reveal reveal--up reveal--delay-${index + 1}`}>
+              <div class="shipping-returns__step-number" aria-hidden="true">{step.step}</div>
+              <div class="shipping-returns__step-icon" aria-hidden="true">
+                {step.icon === 'clipboard' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                  </svg>
+                )}
+                {step.icon === 'box' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                  </svg>
+                )}
+                {step.icon === 'send' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                  </svg>
+                )}
+                {step.icon === 'check-circle' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                )}
+              </div>
+              <div class="shipping-returns__step-content">
+                <h3 class="shipping-returns__step-title">{step.title}</h3>
+                <p class="shipping-returns__step-description">{step.description}</p>
+              </div>
+              {index < returnSteps.length - 1 && (
+                <div class="shipping-returns__step-connector" aria-hidden="true"></div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div class="shipping-returns__cta reveal reveal--up">
+          <Button
+            text="Start a Return"
+            href="/contact"
+            variant="secondary"
+            size="large"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Packaging Section -->
+    <section class="shipping-packaging" aria-labelledby="shipping-packaging-heading">
+      <div class="shipping-packaging__container">
+        <div class="shipping-packaging__grid">
+          <div class="shipping-packaging__content reveal reveal--left">
+            <h2 id="shipping-packaging-heading" class="shipping-packaging__title">
+              Thoughtful Packaging
+            </h2>
+            <p class="shipping-packaging__subtitle">
+              We believe great products deserve great packaging. Every order is carefully
+              packed to ensure your items arrive safely.
+            </p>
+
+            <ul class="shipping-packaging__list" role="list">
+              <li class="shipping-packaging__list-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span><strong>Eco-friendly materials:</strong> 100% recyclable boxes and paper</span>
+              </li>
+              <li class="shipping-packaging__list-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span><strong>Protective padding:</strong> Items secured to prevent damage</span>
+              </li>
+              <li class="shipping-packaging__list-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span><strong>Discreet shipping:</strong> No product details on exterior</span>
+              </li>
+              <li class="shipping-packaging__list-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span><strong>Gift-ready option:</strong> Add a gift message at checkout</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="shipping-packaging__image reveal reveal--right">
+            <div class="shipping-packaging__illustration" aria-hidden="true">
+              <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="30" y="60" width="140" height="100" rx="8" stroke="currentColor" stroke-width="3" fill="none"/>
+                <path d="M30 90 L100 130 L170 90" stroke="currentColor" stroke-width="3" fill="none"/>
+                <path d="M100 130 L100 160" stroke="currentColor" stroke-width="3"/>
+                <path d="M60 40 L100 20 L140 40 L140 60 L100 80 L60 60 Z" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5"/>
+                <circle cx="100" cy="100" r="15" stroke="currentColor" stroke-width="2" fill="none"/>
+                <polyline points="93,100 98,105 107,96" stroke="currentColor" stroke-width="2" fill="none"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Shipping FAQ Section -->
+    <FAQAccordion
+      items={shippingFaqItems}
+      heading="Shipping Questions"
+      subheading="Find answers to common questions about delivery times, costs, and tracking."
+      id="shipping-faq"
+    />
+
+    <!-- Returns FAQ Section -->
+    <FAQAccordion
+      items={returnsFaqItems}
+      heading="Return Questions"
+      subheading="Everything you need to know about our return and exchange policies."
+      id="returns-faq"
+    />
+
+    <!-- Contact CTA Section -->
+    <ContactCTA
+      headline="Still Have Questions?"
+      supportingText="Our customer service team is here to help. Reach out and we'll get back to you within 24 hours."
+      primaryCTA={{
+        text: "Contact Us",
+        href: "/contact",
+      }}
+      secondaryCTA={{
+        text: "Call Us",
+        href: "tel:+15551234567",
+      }}
+      trustSignals={[
+        {
+          value: '24hr',
+          label: 'Response Time',
+          icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path fill="#fff" d="M12 6v6l4 2"/></svg>`,
+        },
+        {
+          value: '4.9★',
+          label: 'Customer Rating',
+          icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+        },
+        {
+          value: '98%',
+          label: 'Satisfaction Rate',
+          icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,
+        },
+      ]}
+    />
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * HERO SECTION
+   * ================================================================= */
+  .shipping-hero {
+    padding: var(--spacing-20) var(--spacing-4) var(--spacing-12);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-50) 0%,
+      var(--color-background) 100%
+    );
+    text-align: center;
+  }
+
+  .shipping-hero__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .shipping-hero__eyebrow {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .shipping-hero__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-tight);
+  }
+
+  .shipping-hero__subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    max-width: 40rem;
+    margin: 0 auto var(--spacing-8);
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * QUICK STATS BAR
+   * ================================================================= */
+  .shipping-stats {
+    background-color: var(--color-primary);
+    padding: var(--spacing-6) var(--spacing-4);
+  }
+
+  .shipping-stats__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+  }
+
+  .shipping-stats__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+  }
+
+  @media (min-width: 768px) {
+    .shipping-stats__grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--spacing-8);
+    }
+  }
+
+  .shipping-stats__item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+  }
+
+  .shipping-stats__icon {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    color: var(--color-primary-100);
+  }
+
+  .shipping-stats__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .shipping-stats__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .shipping-stats__value {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-inverse);
+    line-height: var(--line-height-tight);
+  }
+
+  .shipping-stats__label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-primary-200);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  /* =================================================================
+   * SHIPPING OPTIONS SECTION
+   * ================================================================= */
+  .shipping-options {
+    padding: var(--spacing-20) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .shipping-options__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+  }
+
+  .shipping-options__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .shipping-options__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .shipping-options__subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    max-width: 36rem;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .shipping-options__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  @media (min-width: 768px) {
+    .shipping-options__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .shipping-options__card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-6);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border-light);
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out),
+      border-color var(--duration-300) var(--ease-out);
+  }
+
+  .shipping-options__card:hover {
+    box-shadow: var(--shadow-lg), var(--glow-primary-sm);
+    transform: translateY(-4px);
+    border-color: var(--color-primary-200);
+  }
+
+  .shipping-options__card-icon {
+    width: 3rem;
+    height: 3rem;
+    padding: var(--spacing-2);
+    background-color: var(--color-primary-50);
+    border-radius: var(--radius-lg);
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .shipping-options__card-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .shipping-options__card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .shipping-options__card-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2);
+  }
+
+  .shipping-options__card-description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .shipping-options__card-details {
+    margin-top: auto;
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  .shipping-options__card-time {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .shipping-options__card-time svg {
+    width: 1rem;
+    height: 1rem;
+    color: var(--color-primary);
+  }
+
+  .shipping-options__card-cost {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .shipping-options__card-price {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+  }
+
+  .shipping-options__card-note {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  /* =================================================================
+   * INTERNATIONAL SHIPPING SECTION
+   * ================================================================= */
+  .shipping-international {
+    padding: var(--spacing-20) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .shipping-international__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+  }
+
+  .shipping-international__content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-12);
+    align-items: start;
+  }
+
+  @media (min-width: 1024px) {
+    .shipping-international__content {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-16);
+    }
+  }
+
+  .shipping-international__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .shipping-international__subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-6);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .shipping-international__note {
+    display: flex;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4);
+    background-color: var(--color-warning-50);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--color-warning);
+  }
+
+  .shipping-international__note svg {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-warning-600);
+    margin-top: var(--spacing-1);
+  }
+
+  .shipping-international__note p {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .shipping-international__note strong {
+    color: var(--color-text-primary);
+  }
+
+  .shipping-international__table {
+    background-color: var(--color-background);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .shipping-international__table-header {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: var(--spacing-4);
+    padding: var(--spacing-4) var(--spacing-5);
+    background-color: var(--color-primary-50);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary-700);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .shipping-international__table-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: var(--spacing-4);
+    padding: var(--spacing-4) var(--spacing-5);
+    border-bottom: 1px solid var(--color-border-light);
+    transition: background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .shipping-international__table-row:last-child {
+    border-bottom: none;
+  }
+
+  .shipping-international__table-row:hover {
+    background-color: var(--color-background-subtle);
+  }
+
+  .shipping-international__zone {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  .shipping-international__zone small {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-tertiary);
+  }
+
+  .shipping-international__time {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .shipping-international__cost {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+  }
+
+  /* =================================================================
+   * RETURNS SECTION
+   * ================================================================= */
+  .shipping-returns {
+    padding: var(--spacing-20) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .shipping-returns__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+  }
+
+  .shipping-returns__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .shipping-returns__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .shipping-returns__subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    max-width: 36rem;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .shipping-returns__timeline {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+    max-width: var(--container-4xl);
+    margin: 0 auto var(--spacing-12);
+  }
+
+  @media (min-width: 768px) {
+    .shipping-returns__timeline {
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--spacing-4);
+    }
+  }
+
+  .shipping-returns__step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--spacing-6);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-xl);
+  }
+
+  .shipping-returns__step-number {
+    position: absolute;
+    top: var(--spacing-2);
+    right: var(--spacing-2);
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    border-radius: var(--radius-full);
+  }
+
+  .shipping-returns__step-icon {
+    width: 3rem;
+    height: 3rem;
+    padding: var(--spacing-2);
+    background-color: var(--color-primary-50);
+    border-radius: var(--radius-full);
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .shipping-returns__step-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .shipping-returns__step-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2);
+  }
+
+  .shipping-returns__step-description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .shipping-returns__step-connector {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .shipping-returns__step-connector {
+      display: block;
+      position: absolute;
+      top: 50%;
+      right: -2rem;
+      width: 4rem;
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        var(--color-primary-200) 0%,
+        var(--color-primary-100) 100%
+      );
+      transform: translateY(-50%);
+    }
+  }
+
+  .shipping-returns__cta {
+    text-align: center;
+  }
+
+  /* =================================================================
+   * PACKAGING SECTION
+   * ================================================================= */
+  .shipping-packaging {
+    padding: var(--spacing-20) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .shipping-packaging__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+  }
+
+  .shipping-packaging__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-12);
+    align-items: center;
+  }
+
+  @media (min-width: 1024px) {
+    .shipping-packaging__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-16);
+    }
+  }
+
+  .shipping-packaging__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .shipping-packaging__subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-8);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .shipping-packaging__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  .shipping-packaging__list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .shipping-packaging__list-item svg {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-success);
+    margin-top: var(--spacing-1);
+  }
+
+  .shipping-packaging__list-item strong {
+    color: var(--color-text-primary);
+  }
+
+  .shipping-packaging__image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .shipping-packaging__illustration {
+    width: 100%;
+    max-width: 300px;
+    aspect-ratio: 1;
+    padding: var(--spacing-8);
+    background-color: var(--color-background);
+    border-radius: var(--radius-2xl);
+    color: var(--color-primary);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .shipping-packaging__illustration svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* =================================================================
+   * RESPONSIVE ADJUSTMENTS
+   * ================================================================= */
+  @media (max-width: 767px) {
+    .shipping-hero {
+      padding: var(--spacing-12) var(--spacing-4) var(--spacing-8);
+    }
+
+    .shipping-hero__title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .shipping-hero__subtitle {
+      font-size: var(--font-size-base);
+    }
+
+    .shipping-stats {
+      padding: var(--spacing-4);
+    }
+
+    .shipping-stats__value {
+      font-size: var(--font-size-base);
+    }
+
+    .shipping-options,
+    .shipping-international,
+    .shipping-returns,
+    .shipping-packaging {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .shipping-options__title,
+    .shipping-international__title,
+    .shipping-returns__title,
+    .shipping-packaging__title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .shipping-international__table-header,
+    .shipping-international__table-row {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-2);
+    }
+
+    .shipping-international__table-header {
+      display: none;
+    }
+
+    .shipping-international__zone,
+    .shipping-international__time,
+    .shipping-international__cost {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--spacing-1) 0;
+    }
+
+    .shipping-international__zone::before {
+      content: 'Destination:';
+      font-weight: var(--font-weight-normal);
+      color: var(--color-text-tertiary);
+    }
+
+    .shipping-international__time::before {
+      content: 'Delivery:';
+      font-weight: var(--font-weight-normal);
+      color: var(--color-text-tertiary);
+    }
+
+    .shipping-international__cost::before {
+      content: 'Starting at:';
+      font-weight: var(--font-weight-normal);
+      color: var(--color-text-tertiary);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .shipping-options__card,
+    .shipping-international__table-row {
+      transition: none;
+    }
+
+    .shipping-options__card:hover {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .shipping-stats {
+      background: Canvas;
+      border: 2px solid CanvasText;
+    }
+
+    .shipping-stats__value,
+    .shipping-stats__label,
+    .shipping-stats__icon {
+      color: CanvasText;
+    }
+
+    .shipping-options__card,
+    .shipping-returns__step,
+    .shipping-international__table {
+      border: 1px solid CanvasText;
+    }
+
+    .shipping-options__card-icon,
+    .shipping-returns__step-icon,
+    .shipping-returns__step-number {
+      background: transparent;
+      border: 1px solid CanvasText;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .shipping-hero {
+      background: none;
+      padding: var(--spacing-8) 0;
+    }
+
+    .shipping-stats {
+      background: none;
+      border: 1px solid var(--color-border);
+    }
+
+    .shipping-stats__value,
+    .shipping-stats__label,
+    .shipping-stats__icon {
+      color: var(--color-text-primary);
+    }
+
+    .shipping-options__card:hover,
+    .shipping-returns__step:hover {
+      box-shadow: none;
+      transform: none;
+    }
+
+    .shipping-hero__cta,
+    .shipping-returns__cta {
+      display: none;
+    }
+  }
+</style>

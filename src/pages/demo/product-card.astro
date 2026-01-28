@@ -1,0 +1,361 @@
+---
+/**
+ * Demo Page - ProductCard Component
+ * Showcases the gallery-style product card with different configurations
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+---
+
+<Layout title="Product Card Demo | Houston Web Services">
+  <main class="demo-page">
+    <section class="demo-header">
+      <div class="demo-container">
+        <h1>ProductCard Component Demo</h1>
+        <p>Gallery-style product cards with hover effects, quick shop functionality, and optimized image loading.</p>
+      </div>
+    </section>
+
+    <!-- Demo 1: Basic Product Grid (4:5 aspect ratio) -->
+    <section class="demo-section">
+      <div class="demo-container">
+        <h2>Basic Products (4:5 Aspect Ratio)</h2>
+        <p>Standard product cards with 4:5 portrait aspect ratio, ideal for fashion and apparel.</p>
+
+        <div class="product-grid product-grid--4">
+          <ProductCard
+            id="product-1"
+            name="Classic Cotton T-Shirt"
+            image={{
+              src: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop",
+              alt: "White classic cotton t-shirt front view"
+            }}
+            hoverImage={{
+              src: "https://images.unsplash.com/photo-1622445275576-721325763afe?w=400&h=500&fit=crop",
+              alt: "White classic cotton t-shirt back view"
+            }}
+            price={{ amount: 29.99 }}
+            shopUrl="https://example.com/products/classic-tshirt"
+            category="Tops"
+          />
+
+          <ProductCard
+            id="product-2"
+            name="Premium Hoodie"
+            image={{
+              src: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=500&fit=crop",
+              alt: "Black premium hoodie front view"
+            }}
+            hoverImage={{
+              src: "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=400&h=500&fit=crop",
+              alt: "Black premium hoodie detail view"
+            }}
+            price={{ amount: 59.99, originalAmount: 79.99 }}
+            shopUrl="https://example.com/products/premium-hoodie"
+            category="Hoodies"
+            onSale={true}
+          />
+
+          <ProductCard
+            id="product-3"
+            name="Slim Fit Jeans"
+            image={{
+              src: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=500&fit=crop",
+              alt: "Blue slim fit jeans front view"
+            }}
+            price={{ amount: 89.99 }}
+            shopUrl="https://example.com/products/slim-jeans"
+            category="Pants"
+            isNew={true}
+          />
+
+          <ProductCard
+            id="product-4"
+            name="Leather Sneakers"
+            image={{
+              src: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=500&fit=crop",
+              alt: "White leather sneakers"
+            }}
+            hoverImage={{
+              src: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&h=500&fit=crop",
+              alt: "White leather sneakers side view"
+            }}
+            price={{ amount: 149.99 }}
+            shopUrl="https://example.com/products/leather-sneakers"
+            category="Footwear"
+            featured={true}
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 2: Square Aspect Ratio (1:1) -->
+    <section class="demo-section demo-section--alt">
+      <div class="demo-container">
+        <h2>Square Products (1:1 Aspect Ratio)</h2>
+        <p>Product cards with 1:1 square aspect ratio, perfect for accessories and small items.</p>
+
+        <div class="product-grid product-grid--3">
+          <ProductCard
+            id="product-5"
+            name="Minimalist Watch"
+            image={{
+              src: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400&h=400&fit=crop",
+              alt: "Minimalist watch with leather strap"
+            }}
+            hoverImage={{
+              src: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=400&fit=crop",
+              alt: "Minimalist watch on wrist"
+            }}
+            price={{ amount: 199.99 }}
+            shopUrl="https://example.com/products/minimalist-watch"
+            category="Accessories"
+            aspectRatio="1:1"
+          />
+
+          <ProductCard
+            id="product-6"
+            name="Wireless Earbuds"
+            image={{
+              src: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&h=400&fit=crop",
+              alt: "Wireless earbuds in charging case"
+            }}
+            price={{ amount: 79.99, originalAmount: 129.99 }}
+            shopUrl="https://example.com/products/wireless-earbuds"
+            category="Electronics"
+            aspectRatio="1:1"
+            onSale={true}
+          />
+
+          <ProductCard
+            id="product-7"
+            name="Canvas Backpack"
+            image={{
+              src: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+              alt: "Brown canvas backpack"
+            }}
+            hoverImage={{
+              src: "https://images.unsplash.com/photo-1581605405669-fcdf81165afa?w=400&h=400&fit=crop",
+              alt: "Canvas backpack open view"
+            }}
+            price={{ amount: 79.99 }}
+            shopUrl="https://example.com/products/canvas-backpack"
+            category="Bags"
+            aspectRatio="1:1"
+            isNew={true}
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 3: Special States -->
+    <section class="demo-section">
+      <div class="demo-container">
+        <h2>Special Product States</h2>
+        <p>Demonstrating sold out, featured, new, and on-sale states.</p>
+
+        <div class="product-grid product-grid--4">
+          <ProductCard
+            id="product-8"
+            name="Limited Edition Jacket"
+            image={{
+              src: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=500&fit=crop",
+              alt: "Limited edition jacket"
+            }}
+            price={{ amount: 299.99 }}
+            shopUrl="https://example.com/products/limited-jacket"
+            category="Outerwear"
+            soldOut={true}
+          />
+
+          <ProductCard
+            id="product-9"
+            name="Designer Sunglasses"
+            image={{
+              src: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=500&fit=crop",
+              alt: "Designer sunglasses"
+            }}
+            hoverImage={{
+              src: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400&h=500&fit=crop",
+              alt: "Designer sunglasses on model"
+            }}
+            price={{ amount: 189.99 }}
+            shopUrl="https://example.com/products/designer-sunglasses"
+            category="Eyewear"
+            featured={true}
+          />
+
+          <ProductCard
+            id="product-10"
+            name="Organic Cotton Polo"
+            image={{
+              src: "https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=400&h=500&fit=crop",
+              alt: "Organic cotton polo shirt"
+            }}
+            price={{ amount: 45.99 }}
+            shopUrl="https://example.com/products/organic-polo"
+            category="Tops"
+            isNew={true}
+            description="Made from 100% organic cotton. Soft, breathable, and sustainable."
+          />
+
+          <ProductCard
+            id="product-11"
+            name="Running Shoes"
+            image={{
+              src: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=500&fit=crop",
+              alt: "Running shoes"
+            }}
+            hoverImage={{
+              src: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=500&fit=crop",
+              alt: "Running shoes side view"
+            }}
+            price={{ amount: 99.99, originalAmount: 149.99 }}
+            shopUrl="https://example.com/products/running-shoes"
+            category="Footwear"
+            onSale={true}
+            quickShopText="Shop Now"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Features List -->
+    <section class="demo-section demo-section--alt">
+      <div class="demo-container">
+        <h2>Component Features</h2>
+        <ul class="feature-list">
+          <li><strong>Gallery-style display:</strong> 4:5 or 1:1 aspect ratios</li>
+          <li><strong>Second-image hover reveal:</strong> Smooth crossfade transition on hover</li>
+          <li><strong>Quick Shop button:</strong> Animated overlay with external shop linking</li>
+          <li><strong>Price display:</strong> Current price, original price, and discount percentage</li>
+          <li><strong>Product badges:</strong> New, Sale, Sold Out, and Featured indicators</li>
+          <li><strong>Optimized images:</strong> WebP support, lazy loading, and loading placeholders</li>
+          <li><strong>Accessibility:</strong> ARIA labels, keyboard navigation, focus indicators</li>
+          <li><strong>UTM tracking:</strong> Automatic campaign tracking for shop links</li>
+          <li><strong>Reduced motion:</strong> Respects user motion preferences</li>
+          <li><strong>Dark mode:</strong> Full dark mode support</li>
+          <li><strong>Touch-friendly:</strong> 44px minimum touch targets on mobile</li>
+          <li><strong>Analytics:</strong> GA4 event tracking for product clicks</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .demo-page {
+    min-height: 100vh;
+  }
+
+  .demo-header {
+    padding: var(--spacing-16) var(--spacing-4) var(--spacing-12);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-700) 100%
+    );
+    text-align: center;
+  }
+
+  .demo-header h1 {
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .demo-header p {
+    color: var(--color-primary-100);
+    font-size: var(--font-size-lg);
+    max-width: 40rem;
+    margin: 0 auto;
+  }
+
+  .demo-container {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  .demo-section {
+    padding: var(--spacing-12) 0;
+  }
+
+  .demo-section--alt {
+    background-color: var(--color-background-subtle);
+  }
+
+  .demo-section h2 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .demo-section > .demo-container > p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-8);
+  }
+
+  /* Product Grid */
+  .product-grid {
+    display: grid;
+    gap: var(--spacing-6);
+  }
+
+  .product-grid--3 {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .product-grid--4 {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  @media (min-width: 640px) {
+    .product-grid--3 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .product-grid--4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .product-grid--3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .product-grid--4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* Feature List */
+  .feature-list {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: var(--spacing-4);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .feature-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .feature-list li {
+    padding: var(--spacing-3) var(--spacing-4);
+    background-color: var(--color-background);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+  }
+
+  .feature-list strong {
+    color: var(--color-text-primary);
+  }
+</style>

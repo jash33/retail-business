@@ -1,0 +1,12 @@
+{
+  "id": "retail-color-palettes",
+  "category": "UI",
+  "title": "Three Retail Color Palette Themes",
+  "description": "Create three distinct color palette options: Light/Airy (whites, creams, soft grays), Bold/Editorial (high-contrast blacks with accent colors), and Earthy/Organic (terracotta, sage, warm neutrals). Each palette is switchable via configuration.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "createdAt": "2026-01-26T01:49:59.694Z",
+  "updatedAt": "2026-01-26T01:49:59.694Z",
+  "descriptionHistory": []
+}

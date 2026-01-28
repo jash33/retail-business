@@ -1,0 +1,1393 @@
+---
+/**
+ * RelatedProductsCarousel Component
+ * A versatile related products section with multiple display variants:
+ * - Grid layout (traditional responsive grid)
+ * - Carousel layout (horizontal scroll with navigation)
+ * - Complete the Look (styled curated section)
+ *
+ * Features:
+ * - Multiple layout variants for different use cases
+ * - Horizontal scroll with touch/swipe support
+ * - Navigation arrows for desktop users
+ * - Keyboard navigation (arrow keys, Home, End)
+ * - Pagination indicators
+ * - 'Complete the Look' styling option
+ * - Responsive column configuration
+ * - Smooth animations with reduced motion support
+ * - Dark mode support
+ * - Full accessibility features
+ *
+ * @example Grid variant (default)
+ * ```astro
+ * <RelatedProductsCarousel
+ *   products={relatedProducts}
+ *   variant="grid"
+ *   heading="Related Products"
+ * />
+ * ```
+ *
+ * @example Carousel variant
+ * ```astro
+ * <RelatedProductsCarousel
+ *   products={relatedProducts}
+ *   variant="carousel"
+ *   heading="You May Also Like"
+ *   showIndicators={true}
+ * />
+ * ```
+ *
+ * @example Complete the Look variant
+ * ```astro
+ * <RelatedProductsCarousel
+ *   products={curatedProducts}
+ *   variant="complete-the-look"
+ *   heading="Complete the Look"
+ *   badgeText="Styling Pick"
+ * />
+ * ```
+ */
+
+import type { RelatedProductsCarouselProps } from '../types/related-products';
+import type { ProductCardProps } from '../types/product';
+import ProductCard from './ProductCard.astro';
+
+interface Props extends RelatedProductsCarouselProps {}
+
+const {
+  products,
+  variant = 'grid',
+  heading = 'Related Products',
+  description,
+  id = 'related-products',
+  class: className = '',
+  // Grid options
+  columns = 4,
+  // Carousel options
+  carouselColumns = {
+    mobile: 1,
+    small: 2,
+    tablet: 3,
+    desktop: 4,
+  },
+  navigationPosition = 'outside',
+  showIndicators = false,
+  enableSwipe = true,
+  enableKeyboard = true,
+  scrollAmount = 1,
+  animationDuration = 300,
+  infinite = false,
+  // Shared options
+  maxProducts = 12,
+  gap = 'medium',
+  aspectRatio = '4:5',
+  showEmptyState = false,
+  enableAnimation = true,
+  // Complete the Look options
+  badgeText = 'Styling Pick',
+  showViewAll = false,
+  viewAllUrl = '/products',
+  viewAllText = 'View All',
+  featuredIndex,
+} = Astro.props;
+
+// If no products and no empty state, don't render
+if (products.length === 0 && !showEmptyState) {
+  return null;
+}
+
+// Limit products to max
+const displayProducts = products.slice(0, maxProducts);
+const hasProducts = displayProducts.length > 0;
+
+// Calculate gap CSS value
+const gapValue = gap === 'small' ? 'var(--spacing-4)' : gap === 'large' ? 'var(--spacing-8)' : 'var(--spacing-6)';
+
+// Determine if we're using carousel or grid
+const isCarousel = variant === 'carousel' || variant === 'complete-the-look';
+const isCompleteTheLook = variant === 'complete-the-look';
+
+// Build section classes
+const sectionClasses = [
+  'related-products-carousel',
+  `related-products-carousel--${variant}`,
+  `related-products-carousel--cols-${columns}`,
+  isCarousel && `related-products-carousel--nav-${navigationPosition}`,
+  isCarousel && showIndicators && 'related-products-carousel--has-indicators',
+  enableAnimation && 'related-products-carousel--animated',
+  className,
+].filter(Boolean).join(' ');
+
+// Navigation icons
+const arrowLeftIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>`;
+const arrowRightIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
+const viewAllArrowIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/></svg>`;
+
+// Unique IDs for ARIA
+const carouselId = `${id}-carousel`;
+const headingId = `${id}-heading`;
+const liveRegionId = `${id}-live`;
+---
+
+<section
+  class={sectionClasses}
+  id={id}
+  aria-labelledby={headingId}
+  data-carousel={isCarousel ? 'true' : undefined}
+  data-infinite={infinite ? 'true' : 'false'}
+  data-enable-swipe={enableSwipe ? 'true' : 'false'}
+  data-enable-keyboard={enableKeyboard ? 'true' : 'false'}
+  data-scroll-amount={scrollAmount}
+  data-animation-duration={animationDuration}
+  data-columns-mobile={carouselColumns.mobile || 1}
+  data-columns-small={carouselColumns.small || 2}
+  data-columns-tablet={carouselColumns.tablet || 3}
+  data-columns-desktop={carouselColumns.desktop || 4}
+  style={`--carousel-gap: ${gapValue}; --carousel-animation-duration: ${animationDuration}ms;`}
+>
+  <div class="related-products-carousel__container">
+    <!-- Section Header -->
+    <header class="related-products-carousel__header">
+      {isCompleteTheLook && (
+        <span class="related-products-carousel__badge">{badgeText}</span>
+      )}
+      <h2 id={headingId} class="related-products-carousel__heading">
+        {heading}
+      </h2>
+      {description && (
+        <p class="related-products-carousel__description">{description}</p>
+      )}
+    </header>
+
+    {hasProducts ? (
+      isCarousel ? (
+        <!-- Carousel Layout -->
+        <div class="related-products-carousel__wrapper">
+          {/* Previous Navigation */}
+          {navigationPosition !== 'none' && navigationPosition !== 'bottom' && (
+            <button
+              type="button"
+              class="related-products-carousel__nav related-products-carousel__nav--prev"
+              aria-label="Previous products"
+              data-carousel-prev
+              disabled
+            >
+              <span class="related-products-carousel__nav-icon" set:html={arrowLeftIcon} />
+            </button>
+          )}
+
+          <!-- Carousel Viewport -->
+          <div
+            class="related-products-carousel__viewport"
+            role="region"
+            aria-label="Product carousel"
+            tabindex="0"
+            data-carousel-viewport
+          >
+            <div
+              class="related-products-carousel__track"
+              role="list"
+              aria-label={isCompleteTheLook ? 'Complete the look products' : 'Related products'}
+              data-carousel-track
+            >
+              {displayProducts.map((product, index) => (
+                <div
+                  class:list={[
+                    'related-products-carousel__slide',
+                    enableAnimation && 'reveal',
+                    featuredIndex === index && 'related-products-carousel__slide--featured',
+                  ]}
+                  role="listitem"
+                  aria-setsize={displayProducts.length}
+                  aria-posinset={index + 1}
+                  data-carousel-slide
+                  data-index={index}
+                  style={enableAnimation ? `--stagger-delay: ${index * 100}ms;` : undefined}
+                >
+                  <ProductCard
+                    id={product.id}
+                    name={product.name}
+                    image={product.image}
+                    hoverImage={product.hoverImage}
+                    price={product.price}
+                    shopUrl={product.shopUrl}
+                    description={product.description}
+                    category={product.category}
+                    isNew={product.isNew}
+                    onSale={product.onSale}
+                    soldOut={product.soldOut}
+                    aspectRatio={aspectRatio}
+                    utmParams={{
+                      ...product.utmParams,
+                      content: product.utmParams?.content || `${variant}_product_${product.id}`,
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Next Navigation */}
+          {navigationPosition !== 'none' && navigationPosition !== 'bottom' && (
+            <button
+              type="button"
+              class="related-products-carousel__nav related-products-carousel__nav--next"
+              aria-label="Next products"
+              data-carousel-next
+            >
+              <span class="related-products-carousel__nav-icon" set:html={arrowRightIcon} />
+            </button>
+          )}
+
+          <!-- Live Region for Screen Readers -->
+          <div
+            id={liveRegionId}
+            class="sr-only"
+            aria-live="polite"
+            aria-atomic="true"
+            data-carousel-live
+          ></div>
+        </div>
+      ) : (
+        <!-- Grid Layout -->
+        <div class="related-products-carousel__grid">
+          {displayProducts.map((product, index) => (
+            <div
+              class:list={[
+                'related-products-carousel__item',
+                enableAnimation && 'reveal',
+              ]}
+              style={enableAnimation ? `--stagger-delay: ${index * 100}ms;` : undefined}
+            >
+              <ProductCard
+                id={product.id}
+                name={product.name}
+                image={product.image}
+                hoverImage={product.hoverImage}
+                price={product.price}
+                shopUrl={product.shopUrl}
+                description={product.description}
+                category={product.category}
+                isNew={product.isNew}
+                onSale={product.onSale}
+                soldOut={product.soldOut}
+                aspectRatio={aspectRatio}
+                utmParams={{
+                  ...product.utmParams,
+                  content: product.utmParams?.content || `related_product_${product.id}`,
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      )
+    ) : showEmptyState ? (
+      <!-- Empty State -->
+      <div class="related-products-carousel__empty" role="status" aria-live="polite">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="2" y="2" width="20" height="20" rx="2" />
+          <path d="M7 7h.01M7 12h.01M7 17h.01M12 7h5M12 12h5M12 17h5" />
+        </svg>
+        <p>No related products found</p>
+      </div>
+    ) : null}
+
+    <!-- Pagination Indicators -->
+    {hasProducts && isCarousel && showIndicators && (
+      <div
+        class="related-products-carousel__indicators"
+        role="tablist"
+        aria-label="Carousel pagination"
+        data-carousel-indicators
+      >
+        <!-- Indicators generated by JavaScript -->
+      </div>
+    )}
+
+    <!-- Bottom Navigation (when position is 'bottom') -->
+    {hasProducts && isCarousel && navigationPosition === 'bottom' && (
+      <div class="related-products-carousel__nav-bottom">
+        <button
+          type="button"
+          class="related-products-carousel__nav related-products-carousel__nav--prev"
+          aria-label="Previous products"
+          data-carousel-prev
+          disabled
+        >
+          <span class="related-products-carousel__nav-icon" set:html={arrowLeftIcon} />
+        </button>
+        <button
+          type="button"
+          class="related-products-carousel__nav related-products-carousel__nav--next"
+          aria-label="Next products"
+          data-carousel-next
+        >
+          <span class="related-products-carousel__nav-icon" set:html={arrowRightIcon} />
+        </button>
+      </div>
+    )}
+
+    <!-- View All CTA -->
+    {hasProducts && showViewAll && (
+      <div class="related-products-carousel__cta">
+        <a
+          href={viewAllUrl}
+          class="related-products-carousel__view-all"
+        >
+          {viewAllText}
+          <span class="related-products-carousel__view-all-icon" set:html={viewAllArrowIcon} />
+        </a>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * RELATED PRODUCTS CAROUSEL COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .related-products-carousel {
+    padding: var(--spacing-12) 0;
+    border-top: 1px solid var(--color-border);
+    overflow: hidden;
+  }
+
+  .related-products-carousel__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  /* =================================================================
+   * SECTION HEADER
+   * ================================================================= */
+  .related-products-carousel__header {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+  }
+
+  .related-products-carousel__badge {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-3);
+    margin-bottom: var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+    color: var(--color-accent-dark);
+    background-color: var(--color-accent-subtle);
+    border-radius: var(--radius-full);
+  }
+
+  .related-products-carousel__heading {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+  }
+
+  .related-products-carousel__description {
+    margin: var(--spacing-2) 0 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* =================================================================
+   * GRID LAYOUT
+   * ================================================================= */
+  .related-products-carousel__grid {
+    display: grid;
+    gap: var(--carousel-gap, var(--spacing-6));
+  }
+
+  /* Column variants for grid */
+  .related-products-carousel--cols-2 .related-products-carousel__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .related-products-carousel--cols-3 .related-products-carousel__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .related-products-carousel--cols-4 .related-products-carousel__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Grid items */
+  .related-products-carousel__item {
+    transition-delay: var(--stagger-delay, 0ms);
+  }
+
+  /* =================================================================
+   * CAROUSEL LAYOUT
+   * ================================================================= */
+  .related-products-carousel__wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+  }
+
+  .related-products-carousel__viewport {
+    flex: 1;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
+
+  .related-products-carousel__viewport:focus {
+    outline: none;
+  }
+
+  .related-products-carousel__viewport:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+    border-radius: var(--radius-lg);
+  }
+
+  .related-products-carousel__track {
+    display: flex;
+    gap: var(--carousel-gap, var(--spacing-6));
+    transition: transform var(--carousel-animation-duration, 300ms) var(--ease-out);
+    touch-action: pan-y pinch-zoom;
+    will-change: transform;
+  }
+
+  /* Disable smooth scrolling during drag */
+  .related-products-carousel__track.is-dragging {
+    transition: none;
+    cursor: grabbing;
+  }
+
+  .related-products-carousel__track:not(.is-dragging) {
+    cursor: grab;
+  }
+
+  /* =================================================================
+   * CAROUSEL SLIDES
+   * ================================================================= */
+  .related-products-carousel__slide {
+    flex: 0 0 calc(100% - var(--carousel-gap, var(--spacing-6)));
+    min-width: 0;
+    scroll-snap-align: start;
+    transition-delay: var(--stagger-delay, 0ms);
+  }
+
+  /* Featured slide styling */
+  .related-products-carousel__slide--featured {
+    position: relative;
+  }
+
+  .related-products-carousel__slide--featured::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 2px solid var(--color-accent);
+    border-radius: var(--radius-xl);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Responsive slide widths */
+  @media screen and (min-width: 480px) {
+    .related-products-carousel__slide {
+      flex: 0 0 calc(50% - var(--carousel-gap, var(--spacing-6)) / 2);
+    }
+  }
+
+  @media screen and (min-width: 768px) {
+    .related-products-carousel__slide {
+      flex: 0 0 calc(33.333% - var(--carousel-gap, var(--spacing-6)) * 2 / 3);
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .related-products-carousel__slide {
+      flex: 0 0 calc(25% - var(--carousel-gap, var(--spacing-6)) * 3 / 4);
+    }
+  }
+
+  /* =================================================================
+   * NAVIGATION BUTTONS
+   * ================================================================= */
+  .related-products-carousel__nav {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-md);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out),
+      opacity var(--duration-150) var(--ease-in-out);
+  }
+
+  .related-products-carousel__nav:hover:not(:disabled) {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .related-products-carousel__nav:hover:not(:disabled) .related-products-carousel__nav-icon {
+    color: var(--color-text-inverse);
+  }
+
+  .related-products-carousel__nav:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-md), var(--focus-ring);
+  }
+
+  .related-products-carousel__nav:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .related-products-carousel__nav-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--color-text-primary);
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .related-products-carousel__nav-icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Navigation inside variant (overlay on carousel) */
+  .related-products-carousel--nav-inside .related-products-carousel__wrapper {
+    gap: 0;
+  }
+
+  .related-products-carousel--nav-inside .related-products-carousel__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .related-products-carousel--nav-inside .related-products-carousel__nav--prev {
+    left: var(--spacing-2);
+  }
+
+  .related-products-carousel--nav-inside .related-products-carousel__nav--next {
+    right: var(--spacing-2);
+  }
+
+  .related-products-carousel--nav-inside .related-products-carousel__nav:hover:not(:disabled) {
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  /* Bottom navigation */
+  .related-products-carousel__nav-bottom {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-6);
+  }
+
+  /* =================================================================
+   * PAGINATION INDICATORS
+   * ================================================================= */
+  .related-products-carousel__indicators {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-6);
+  }
+
+  .related-products-carousel__indicators :global(button) {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-full);
+    background-color: var(--color-border-dark);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      width var(--duration-200) var(--ease-out);
+  }
+
+  .related-products-carousel__indicators :global(button:hover) {
+    background-color: var(--color-primary-light);
+  }
+
+  .related-products-carousel__indicators :global(button[aria-selected="true"]) {
+    width: 24px;
+    background-color: var(--color-primary);
+  }
+
+  .related-products-carousel__indicators :global(button:focus-visible) {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+  .related-products-carousel__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-12);
+    text-align: center;
+    color: var(--color-text-tertiary);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+  }
+
+  .related-products-carousel__empty svg {
+    width: 48px;
+    height: 48px;
+    opacity: 0.5;
+  }
+
+  .related-products-carousel__empty p {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+  }
+
+  /* =================================================================
+   * VIEW ALL CTA
+   * ================================================================= */
+  .related-products-carousel__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--spacing-8);
+  }
+
+  .related-products-carousel__view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-6);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    background-color: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out);
+  }
+
+  .related-products-carousel__view-all:hover {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .related-products-carousel__view-all:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .related-products-carousel__view-all-icon {
+    width: 18px;
+    height: 18px;
+    transition: transform var(--duration-150) var(--ease-in-out);
+  }
+
+  .related-products-carousel__view-all:hover .related-products-carousel__view-all-icon {
+    transform: translateX(4px);
+  }
+
+  .related-products-carousel__view-all-icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* =================================================================
+   * SCREEN READER ONLY TEXT
+   * ================================================================= */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * COMPLETE THE LOOK VARIANT STYLES
+   * ================================================================= */
+  .related-products-carousel--complete-the-look {
+    background-color: var(--color-background-subtle);
+    border-top: none;
+    border-radius: var(--radius-xl);
+    margin: var(--spacing-8) 0;
+    padding: var(--spacing-10) 0;
+  }
+
+  .related-products-carousel--complete-the-look .related-products-carousel__header {
+    margin-bottom: var(--spacing-10);
+  }
+
+  .related-products-carousel--complete-the-look .related-products-carousel__heading {
+    font-size: var(--font-size-3xl);
+    font-family: var(--font-editorial-heading);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-tight);
+  }
+
+  .related-products-carousel--complete-the-look .related-products-carousel__description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+  }
+
+  /* =================================================================
+   * REVEAL ANIMATION
+   * ================================================================= */
+  .related-products-carousel--animated .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity var(--animation-duration-slow) var(--ease-enter),
+      transform var(--animation-duration-slow) var(--ease-enter-emphasized);
+    transition-delay: var(--stagger-delay, 0ms);
+  }
+
+  .related-products-carousel--animated .reveal.reveal--visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Mobile - Hide nav buttons in carousel, rely on swipe */
+  @media screen and (max-width: 767px) {
+    .related-products-carousel {
+      padding: var(--spacing-8) 0;
+    }
+
+    .related-products-carousel__heading {
+      font-size: var(--font-size-xl);
+    }
+
+    .related-products-carousel--complete-the-look .related-products-carousel__heading {
+      font-size: var(--font-size-2xl);
+    }
+
+    /* Grid responsive columns */
+    .related-products-carousel--cols-4 .related-products-carousel__grid,
+    .related-products-carousel--cols-3 .related-products-carousel__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .related-products-carousel__grid {
+      gap: var(--spacing-4);
+    }
+
+    /* Carousel - hide nav buttons */
+    .related-products-carousel--carousel .related-products-carousel__nav,
+    .related-products-carousel--complete-the-look .related-products-carousel__nav {
+      display: none;
+    }
+
+    /* Enable native scroll snapping on mobile */
+    .related-products-carousel--carousel .related-products-carousel__viewport,
+    .related-products-carousel--complete-the-look .related-products-carousel__viewport {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .related-products-carousel--carousel .related-products-carousel__viewport::-webkit-scrollbar,
+    .related-products-carousel--complete-the-look .related-products-carousel__viewport::-webkit-scrollbar {
+      display: none;
+    }
+
+    .related-products-carousel--carousel .related-products-carousel__track,
+    .related-products-carousel--complete-the-look .related-products-carousel__track {
+      transition: none;
+    }
+  }
+
+  @media screen and (max-width: 479px) {
+    .related-products-carousel--cols-2 .related-products-carousel__grid,
+    .related-products-carousel--cols-3 .related-products-carousel__grid,
+    .related-products-carousel--cols-4 .related-products-carousel__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Tablet */
+  @media screen and (min-width: 768px) and (max-width: 1023px) {
+    .related-products-carousel--cols-4 .related-products-carousel__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Large Desktop */
+  @media screen and (min-width: 1280px) {
+    .related-products-carousel__nav {
+      width: 56px;
+      height: 56px;
+    }
+
+    .related-products-carousel__nav-icon {
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .related-products-carousel__track {
+      transition: none;
+    }
+
+    .related-products-carousel__nav {
+      transition: none;
+    }
+
+    .related-products-carousel__nav:hover:not(:disabled) {
+      transform: none;
+    }
+
+    .related-products-carousel--nav-inside .related-products-carousel__nav:hover:not(:disabled) {
+      transform: translateY(-50%);
+    }
+
+    .related-products-carousel__indicators :global(button) {
+      transition: none;
+    }
+
+    .related-products-carousel--animated .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .related-products-carousel__view-all-icon {
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .related-products-carousel {
+    border-top-color: var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .related-products-carousel--complete-the-look {
+    background-color: var(--color-background-subtle);
+  }
+
+  :global(html[data-theme="dark"]) .related-products-carousel__badge {
+    background-color: var(--color-accent-subtle);
+    color: var(--color-accent-light);
+  }
+
+  :global(html[data-theme="dark"]) .related-products-carousel__nav {
+    background-color: var(--color-background-elevated);
+    border-color: var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .related-products-carousel__nav:hover:not(:disabled) {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  :global(html[data-theme="dark"]) .related-products-carousel__empty {
+    background-color: var(--color-background-subtle);
+  }
+
+  :global(html[data-theme="dark"]) .related-products-carousel__view-all {
+    border-color: var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .related-products-carousel__view-all:hover {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .related-products-carousel__nav {
+      border: 2px solid currentColor;
+    }
+
+    .related-products-carousel__indicators :global(button) {
+      border: 1px solid currentColor;
+    }
+
+    .related-products-carousel__indicators :global(button[aria-selected="true"]) {
+      background-color: currentColor;
+    }
+
+    .related-products-carousel__badge {
+      border: 1px solid currentColor;
+    }
+
+    .related-products-carousel__slide--featured::before {
+      border-color: currentColor;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .related-products-carousel {
+      padding: var(--spacing-8) 0;
+      border-top: 1px solid #ccc;
+      page-break-inside: avoid;
+    }
+
+    .related-products-carousel--complete-the-look {
+      background-color: transparent;
+    }
+
+    .related-products-carousel__nav {
+      display: none;
+    }
+
+    .related-products-carousel__indicators {
+      display: none;
+    }
+
+    .related-products-carousel__cta {
+      display: none;
+    }
+
+    .related-products-carousel__viewport {
+      overflow: visible;
+    }
+
+    .related-products-carousel__track {
+      flex-wrap: wrap;
+      gap: var(--spacing-4);
+    }
+
+    .related-products-carousel__slide {
+      flex: 0 0 calc(25% - var(--spacing-4));
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .related-products-carousel__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<script>
+  /**
+   * RelatedProductsCarousel Interactive Features
+   * - Navigation button click handlers
+   * - Touch/swipe support
+   * - Keyboard navigation
+   * - ARIA live region updates
+   * - Responsive column detection
+   * - Reveal animation on scroll
+   */
+
+  interface CarouselState {
+    currentIndex: number;
+    totalSlides: number;
+    visibleSlides: number;
+    isAtStart: boolean;
+    isAtEnd: boolean;
+    isDragging: boolean;
+  }
+
+  function initCarousels() {
+    const carousels = document.querySelectorAll('[data-carousel="true"]');
+
+    carousels.forEach((carousel) => {
+      const viewport = carousel.querySelector('[data-carousel-viewport]') as HTMLElement | null;
+      const track = carousel.querySelector('[data-carousel-track]') as HTMLElement | null;
+      const slides = carousel.querySelectorAll('[data-carousel-slide]');
+      const prevBtn = carousel.querySelector('[data-carousel-prev]') as HTMLButtonElement | null;
+      const nextBtn = carousel.querySelector('[data-carousel-next]') as HTMLButtonElement | null;
+      const liveRegion = carousel.querySelector('[data-carousel-live]') as HTMLElement | null;
+      const indicatorsContainer = carousel.querySelector('[data-carousel-indicators]') as HTMLElement | null;
+
+      if (!viewport || !track || slides.length === 0) return;
+
+      // Get configuration from data attributes
+      const config = {
+        infinite: carousel.getAttribute('data-infinite') === 'true',
+        enableSwipe: carousel.getAttribute('data-enable-swipe') === 'true',
+        enableKeyboard: carousel.getAttribute('data-enable-keyboard') === 'true',
+        scrollAmount: parseInt(carousel.getAttribute('data-scroll-amount') || '1', 10),
+        animationDuration: parseInt(carousel.getAttribute('data-animation-duration') || '300', 10),
+        columnsMobile: parseInt(carousel.getAttribute('data-columns-mobile') || '1', 10),
+        columnsSmall: parseInt(carousel.getAttribute('data-columns-small') || '2', 10),
+        columnsTablet: parseInt(carousel.getAttribute('data-columns-tablet') || '3', 10),
+        columnsDesktop: parseInt(carousel.getAttribute('data-columns-desktop') || '4', 10),
+      };
+
+      // Initialize state
+      const state: CarouselState = {
+        currentIndex: 0,
+        totalSlides: slides.length,
+        visibleSlides: getVisibleSlides(),
+        isAtStart: true,
+        isAtEnd: false,
+        isDragging: false,
+      };
+
+      // Calculate visible slides based on viewport width
+      function getVisibleSlides(): number {
+        const width = window.innerWidth;
+        if (width < 480) return config.columnsMobile;
+        if (width < 768) return config.columnsSmall;
+        if (width < 1024) return config.columnsTablet;
+        return config.columnsDesktop;
+      }
+
+      // Update navigation button states
+      function updateNavigation() {
+        state.visibleSlides = getVisibleSlides();
+        const maxIndex = Math.max(0, state.totalSlides - state.visibleSlides);
+
+        state.isAtStart = state.currentIndex <= 0;
+        state.isAtEnd = state.currentIndex >= maxIndex;
+
+        if (prevBtn) {
+          prevBtn.disabled = state.isAtStart && !config.infinite;
+        }
+        if (nextBtn) {
+          nextBtn.disabled = state.isAtEnd && !config.infinite;
+        }
+
+        updateIndicators();
+      }
+
+      // Scroll to specific index
+      function scrollToIndex(index: number, announce = true) {
+        const maxIndex = Math.max(0, state.totalSlides - state.visibleSlides);
+
+        // Handle infinite scroll
+        if (config.infinite) {
+          if (index < 0) {
+            index = maxIndex;
+          } else if (index > maxIndex) {
+            index = 0;
+          }
+        } else {
+          index = Math.max(0, Math.min(index, maxIndex));
+        }
+
+        state.currentIndex = index;
+
+        // Calculate transform
+        const slideElement = slides[0] as HTMLElement;
+        const slideWidth = slideElement.offsetWidth;
+        const gap = parseInt(getComputedStyle(track).gap) || 0;
+        const offset = index * (slideWidth + gap);
+
+        track.style.transform = `translateX(-${offset}px)`;
+
+        updateNavigation();
+
+        // Announce to screen readers
+        if (announce && liveRegion) {
+          const visibleRange = `Showing products ${index + 1} to ${Math.min(index + state.visibleSlides, state.totalSlides)} of ${state.totalSlides}`;
+          liveRegion.textContent = visibleRange;
+        }
+      }
+
+      // Navigate previous
+      function goToPrev() {
+        scrollToIndex(state.currentIndex - config.scrollAmount);
+      }
+
+      // Navigate next
+      function goToNext() {
+        scrollToIndex(state.currentIndex + config.scrollAmount);
+      }
+
+      // Create pagination indicators
+      function createIndicators() {
+        if (!indicatorsContainer) return;
+
+        const pageCount = Math.ceil((state.totalSlides - state.visibleSlides + 1) / config.scrollAmount);
+
+        for (let i = 0; i < pageCount; i++) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.setAttribute('role', 'tab');
+          button.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+          button.setAttribute('aria-label', `Go to slide group ${i + 1}`);
+          button.setAttribute('data-index', i.toString());
+
+          button.addEventListener('click', () => {
+            scrollToIndex(i * config.scrollAmount);
+          });
+
+          indicatorsContainer.appendChild(button);
+        }
+      }
+
+      // Update indicators
+      function updateIndicators() {
+        if (!indicatorsContainer) return;
+
+        const buttons = indicatorsContainer.querySelectorAll('button');
+        const currentPage = Math.floor(state.currentIndex / config.scrollAmount);
+
+        buttons.forEach((btn, index) => {
+          btn.setAttribute('aria-selected', index === currentPage ? 'true' : 'false');
+        });
+      }
+
+      // Touch/Swipe handling
+      let touchStartX = 0;
+      let touchCurrentX = 0;
+      let initialTransform = 0;
+
+      function handleTouchStart(e: TouchEvent) {
+        if (!config.enableSwipe) return;
+
+        state.isDragging = true;
+        track.classList.add('is-dragging');
+
+        touchStartX = e.touches[0].clientX;
+        touchCurrentX = touchStartX;
+
+        const transform = track.style.transform;
+        const match = transform.match(/translateX\((-?\d+\.?\d*)px\)/);
+        initialTransform = match ? parseFloat(match[1]) : 0;
+      }
+
+      function handleTouchMove(e: TouchEvent) {
+        if (!state.isDragging || !config.enableSwipe) return;
+
+        touchCurrentX = e.touches[0].clientX;
+        const touchCurrentY = e.touches[0].clientY;
+
+        const deltaX = touchCurrentX - touchStartX;
+        const deltaY = Math.abs(touchCurrentY - e.touches[0].clientY);
+
+        // If vertical scroll is dominant, don't interfere
+        if (deltaY > Math.abs(deltaX)) {
+          return;
+        }
+
+        e.preventDefault();
+
+        const newTransform = initialTransform + deltaX;
+        track.style.transform = `translateX(${newTransform}px)`;
+      }
+
+      function handleTouchEnd() {
+        if (!state.isDragging || !config.enableSwipe) return;
+
+        state.isDragging = false;
+        track.classList.remove('is-dragging');
+
+        const deltaX = touchCurrentX - touchStartX;
+        const threshold = 50;
+
+        if (deltaX < -threshold) {
+          goToNext();
+        } else if (deltaX > threshold) {
+          goToPrev();
+        } else {
+          scrollToIndex(state.currentIndex, false);
+        }
+      }
+
+      // Mouse drag handling (desktop)
+      let mouseStartX = 0;
+
+      function handleMouseDown(e: MouseEvent) {
+        if (!config.enableSwipe || e.button !== 0) return;
+
+        state.isDragging = true;
+        track.classList.add('is-dragging');
+
+        mouseStartX = e.clientX;
+
+        const transform = track.style.transform;
+        const match = transform.match(/translateX\((-?\d+\.?\d*)px\)/);
+        initialTransform = match ? parseFloat(match[1]) : 0;
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+      }
+
+      function handleMouseMove(e: MouseEvent) {
+        if (!state.isDragging) return;
+
+        const deltaX = e.clientX - mouseStartX;
+        const newTransform = initialTransform + deltaX;
+        track.style.transform = `translateX(${newTransform}px)`;
+      }
+
+      function handleMouseUp(e: MouseEvent) {
+        if (!state.isDragging) return;
+
+        state.isDragging = false;
+        track.classList.remove('is-dragging');
+
+        const deltaX = e.clientX - mouseStartX;
+        const threshold = 50;
+
+        if (deltaX < -threshold) {
+          goToNext();
+        } else if (deltaX > threshold) {
+          goToPrev();
+        } else {
+          scrollToIndex(state.currentIndex, false);
+        }
+
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      }
+
+      // Keyboard navigation
+      function handleKeydown(e: KeyboardEvent) {
+        if (!config.enableKeyboard) return;
+
+        switch (e.key) {
+          case 'ArrowLeft':
+            e.preventDefault();
+            goToPrev();
+            break;
+          case 'ArrowRight':
+            e.preventDefault();
+            goToNext();
+            break;
+          case 'Home':
+            e.preventDefault();
+            scrollToIndex(0);
+            break;
+          case 'End':
+            e.preventDefault();
+            scrollToIndex(state.totalSlides - state.visibleSlides);
+            break;
+        }
+      }
+
+      // Event listeners
+      if (prevBtn) {
+        prevBtn.addEventListener('click', goToPrev);
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', goToNext);
+      }
+
+      // Touch events
+      viewport.addEventListener('touchstart', handleTouchStart, { passive: true });
+      viewport.addEventListener('touchmove', handleTouchMove, { passive: false });
+      viewport.addEventListener('touchend', handleTouchEnd);
+      viewport.addEventListener('touchcancel', handleTouchEnd);
+
+      // Mouse drag events
+      viewport.addEventListener('mousedown', handleMouseDown);
+
+      // Keyboard events
+      viewport.addEventListener('keydown', handleKeydown);
+
+      // Resize handler
+      let resizeTimeout: ReturnType<typeof setTimeout>;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          updateNavigation();
+          scrollToIndex(state.currentIndex, false);
+        }, 100);
+      });
+
+      // Initialize
+      createIndicators();
+      updateNavigation();
+    });
+  }
+
+  // Initialize reveal animations
+  function initRevealAnimations() {
+    const revealElements = document.querySelectorAll('.related-products-carousel--animated .reveal');
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('reveal--visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px',
+      }
+    );
+
+    revealElements.forEach((el) => observer.observe(el));
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      initCarousels();
+      initRevealAnimations();
+    });
+  } else {
+    initCarousels();
+    initRevealAnimations();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', () => {
+    initCarousels();
+    initRevealAnimations();
+  });
+</script>

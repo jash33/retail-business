@@ -1,0 +1,830 @@
+---
+/**
+ * StoreHours Component
+ * A comprehensive store hours display component with current day highlighting,
+ * open/closed status indicator, and special holiday hours notation.
+ *
+ * Features:
+ * - Current day highlighting
+ * - Real-time open/closed status indicator
+ * - Regular hours display
+ * - Special/holiday hours with collapsible section
+ * - LocalBusiness schema.org integration support
+ * - Full accessibility support (ARIA labels, keyboard navigation)
+ * - Responsive design
+ * - Dark mode support
+ * - Reduced motion preference support
+ *
+ * @example
+ * ```astro
+ * <StoreHours
+ *   hours={locationConfig.hours}
+ *   specialHours={locationConfig.specialHours}
+ *   showStatusIndicator={true}
+ *   showSpecialHours={true}
+ * />
+ * ```
+ */
+
+import type { StoreHours, SpecialHours } from '../types/location';
+
+interface Props {
+  /** Regular store hours */
+  hours: StoreHours[];
+  /** Special/holiday hours (optional) */
+  specialHours?: SpecialHours[];
+  /** Show open/closed status indicator (default: true) */
+  showStatusIndicator?: boolean;
+  /** Show special hours section (default: true) */
+  showSpecialHours?: boolean;
+  /** Additional CSS class */
+  className?: string;
+  /** Compact display mode */
+  compact?: boolean;
+}
+
+const {
+  hours,
+  specialHours = [],
+  showStatusIndicator = true,
+  showSpecialHours = true,
+  className = '',
+  compact = false,
+} = Astro.props;
+
+// Day name mappings for current day detection
+const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const currentDayIndex = new Date().getDay();
+const currentDayName = dayNames[currentDayIndex];
+
+/**
+ * Check if a day string matches the current day
+ * Handles formats like "Monday", "Monday - Friday", "Mon", "Mon-Fri"
+ */
+function isCurrentDay(dayString: string): boolean {
+  const normalizedDay = dayString.toLowerCase();
+  const currentDay = currentDayName.toLowerCase();
+  const currentDayShort = currentDay.substring(0, 3);
+
+  // Exact match
+  if (normalizedDay === currentDay || normalizedDay === currentDayShort) {
+    return true;
+  }
+
+  // Check for day ranges like "Monday - Friday" or "Mon-Fri"
+  const rangePatterns = [
+    /(\w+)\s*[-–—]\s*(\w+)/, // Monday - Friday, Mon-Fri
+  ];
+
+  for (const pattern of rangePatterns) {
+    const match = normalizedDay.match(pattern);
+    if (match) {
+      const startDay = match[1].toLowerCase();
+      const endDay = match[2].toLowerCase();
+
+      const startIndex = dayNames.findIndex(
+        d => d.toLowerCase() === startDay || d.toLowerCase().substring(0, 3) === startDay
+      );
+      const endIndex = dayNames.findIndex(
+        d => d.toLowerCase() === endDay || d.toLowerCase().substring(0, 3) === endDay
+      );
+
+      if (startIndex !== -1 && endIndex !== -1) {
+        // Handle ranges that wrap around (e.g., Sat-Sun would be 6-0)
+        if (startIndex <= endIndex) {
+          return currentDayIndex >= startIndex && currentDayIndex <= endIndex;
+        } else {
+          return currentDayIndex >= startIndex || currentDayIndex <= endIndex;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Parse time string to minutes for comparison
+ * Handles formats like "9:00 AM", "5:00 PM", "09:00", "17:00"
+ */
+function parseTimeToMinutes(timeStr: string): number {
+  const normalized = timeStr.trim().toLowerCase();
+
+  // Handle 12-hour format with AM/PM
+  const ampmMatch = normalized.match(/(\d{1,2}):(\d{2})\s*(am|pm)?/);
+  if (ampmMatch) {
+    let hours = parseInt(ampmMatch[1], 10);
+    const minutes = parseInt(ampmMatch[2], 10);
+    const period = ampmMatch[3];
+
+    if (period === 'pm' && hours !== 12) {
+      hours += 12;
+    } else if (period === 'am' && hours === 12) {
+      hours = 0;
+    }
+
+    return hours * 60 + minutes;
+  }
+
+  return 0;
+}
+
+/**
+ * Get current status (open/closed) based on hours
+ */
+function getCurrentStatus(): { isOpen: boolean; message: string; nextChange?: string } {
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  // Find today's hours
+  const todayHours = hours.find(h => isCurrentDay(h.days));
+
+  if (!todayHours || todayHours.isClosed) {
+    // Find next opening day
+    const nextOpenDay = findNextOpenDay();
+    return {
+      isOpen: false,
+      message: 'Closed',
+      nextChange: nextOpenDay ? `Opens ${nextOpenDay}` : undefined,
+    };
+  }
+
+  const openTime = parseTimeToMinutes(todayHours.open);
+  const closeTime = parseTimeToMinutes(todayHours.close);
+
+  if (currentMinutes >= openTime && currentMinutes < closeTime) {
+    // Calculate time until closing
+    const minutesUntilClose = closeTime - currentMinutes;
+    const hoursUntilClose = Math.floor(minutesUntilClose / 60);
+    const minsRemaining = minutesUntilClose % 60;
+
+    let closingSoon = '';
+    if (minutesUntilClose <= 60) {
+      closingSoon = minutesUntilClose <= 30 ? ' · Closing soon' : '';
+    }
+
+    return {
+      isOpen: true,
+      message: 'Open',
+      nextChange: hoursUntilClose > 0
+        ? `Closes in ${hoursUntilClose}h ${minsRemaining}m${closingSoon}`
+        : `Closes in ${minsRemaining}m${closingSoon}`,
+    };
+  }
+
+  if (currentMinutes < openTime) {
+    // Not yet open today
+    const minutesUntilOpen = openTime - currentMinutes;
+    const hoursUntilOpen = Math.floor(minutesUntilOpen / 60);
+    const minsRemaining = minutesUntilOpen % 60;
+
+    return {
+      isOpen: false,
+      message: 'Closed',
+      nextChange: hoursUntilOpen > 0
+        ? `Opens in ${hoursUntilOpen}h ${minsRemaining}m`
+        : `Opens in ${minsRemaining}m`,
+    };
+  }
+
+  // After closing time
+  const nextOpenDay = findNextOpenDay();
+  return {
+    isOpen: false,
+    message: 'Closed',
+    nextChange: nextOpenDay ? `Opens ${nextOpenDay}` : undefined,
+  };
+}
+
+/**
+ * Find the next day the store is open
+ */
+function findNextOpenDay(): string | null {
+  for (let i = 1; i <= 7; i++) {
+    const checkDayIndex = (currentDayIndex + i) % 7;
+    const checkDayName = dayNames[checkDayIndex];
+
+    const dayHours = hours.find(h => {
+      const normalizedDay = h.days.toLowerCase();
+      return normalizedDay.includes(checkDayName.toLowerCase()) && !h.isClosed;
+    });
+
+    if (dayHours) {
+      if (i === 1) {
+        return `tomorrow at ${dayHours.open}`;
+      }
+      return `${checkDayName} at ${dayHours.open}`;
+    }
+  }
+
+  return null;
+}
+
+const status = showStatusIndicator ? getCurrentStatus() : null;
+---
+
+<div class:list={['store-hours', { 'store-hours--compact': compact }, className]} data-store-hours>
+  {/* Status Indicator */}
+  {showStatusIndicator && status && (
+    <div class="store-hours__status" aria-live="polite">
+      <span
+        class:list={['store-hours__status-badge', { 'store-hours__status-badge--open': status.isOpen, 'store-hours__status-badge--closed': !status.isOpen }]}
+        role="status"
+        aria-label={status.isOpen ? 'Store is currently open' : 'Store is currently closed'}
+      >
+        <span class="store-hours__status-indicator" aria-hidden="true"></span>
+        <span class="store-hours__status-text">{status.message}</span>
+      </span>
+      {status.nextChange && (
+        <span class="store-hours__status-next">{status.nextChange}</span>
+      )}
+    </div>
+  )}
+
+  {/* Regular Hours Table */}
+  <div class="store-hours__schedule" role="table" aria-label="Regular store hours">
+    <div class="store-hours__schedule-header" role="row">
+      <span role="columnheader">Day</span>
+      <span role="columnheader">Hours</span>
+    </div>
+    {hours.map((schedule) => {
+      const isCurrent = isCurrentDay(schedule.days);
+      return (
+        <div
+          class:list={['store-hours__schedule-row', { 'store-hours__schedule-row--current': isCurrent }]}
+          role="row"
+          aria-current={isCurrent ? 'date' : undefined}
+        >
+          <span class="store-hours__day" role="cell">
+            {schedule.days}
+            {isCurrent && (
+              <span class="store-hours__today-badge" aria-label="(Today)">Today</span>
+            )}
+          </span>
+          <span
+            class:list={['store-hours__time', { 'store-hours__time--closed': schedule.isClosed }]}
+            role="cell"
+          >
+            {schedule.isClosed ? 'Closed' : `${schedule.open} – ${schedule.close}`}
+          </span>
+        </div>
+      );
+    })}
+  </div>
+
+  {/* Special/Holiday Hours */}
+  {showSpecialHours && specialHours && specialHours.length > 0 && (
+    <div class="store-hours__special">
+      <button
+        class="store-hours__special-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="special-hours-list"
+        data-special-hours-toggle
+      >
+        <svg
+          class="store-hours__special-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <span class="store-hours__special-title">Holiday Hours</span>
+        <svg
+          class="store-hours__special-chevron"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+      <ul
+        id="special-hours-list"
+        class="store-hours__special-list"
+        role="list"
+        data-special-hours-list
+        hidden
+      >
+        {specialHours.map((special) => (
+          <li class="store-hours__special-item">
+            <div class="store-hours__special-info">
+              <span class="store-hours__special-name">{special.name}</span>
+              <span class="store-hours__special-date">{special.date}</span>
+            </div>
+            <span
+              class:list={['store-hours__special-time', { 'store-hours__special-time--closed': special.isClosed }]}
+            >
+              {special.isClosed ? 'Closed' : `${special.open} – ${special.close}`}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</div>
+
+<style>
+  /* =================================================================
+   * STORE HOURS COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .store-hours {
+    font-family: var(--font-body);
+  }
+
+  /* -----------------------------------------------------------------
+   * Status Indicator
+   * Real-time open/closed status with pulse animation
+   * ----------------------------------------------------------------- */
+  .store-hours__status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-6);
+  }
+
+  .store-hours__status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .store-hours__status-badge--open {
+    background-color: var(--color-success-light);
+    color: var(--color-success-text);
+  }
+
+  .store-hours__status-badge--closed {
+    background-color: var(--color-error-light);
+    color: var(--color-error-text);
+  }
+
+  .store-hours__status-indicator {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: var(--radius-full);
+  }
+
+  .store-hours__status-badge--open .store-hours__status-indicator {
+    background-color: var(--color-success);
+    animation: pulse-open 2s infinite;
+  }
+
+  .store-hours__status-badge--closed .store-hours__status-indicator {
+    background-color: var(--color-error);
+  }
+
+  @keyframes pulse-open {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.2);
+    }
+  }
+
+  .store-hours__status-text {
+    line-height: 1;
+  }
+
+  .store-hours__status-next {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  /* -----------------------------------------------------------------
+   * Schedule Table
+   * Regular hours display with current day highlighting
+   * ----------------------------------------------------------------- */
+  .store-hours__schedule {
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-4);
+    overflow: hidden;
+  }
+
+  .store-hours__schedule-header {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    border-bottom: 1px solid var(--color-border-light);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .store-hours__schedule-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-3);
+    border-radius: var(--radius-base);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-in-out);
+  }
+
+  .store-hours__schedule-row:hover {
+    background-color: var(--color-background);
+  }
+
+  /* Current day highlighting */
+  .store-hours__schedule-row--current {
+    background-color: var(--color-primary-50);
+    border-left: 3px solid var(--color-primary);
+    padding-left: calc(var(--spacing-3) - 3px);
+  }
+
+  .store-hours__schedule-row--current:hover {
+    background-color: var(--color-primary-100);
+  }
+
+  .store-hours__day {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  .store-hours__today-badge {
+    display: inline-flex;
+    padding: var(--spacing-0-5) var(--spacing-2);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .store-hours__time {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .store-hours__time--closed {
+    color: var(--color-text-tertiary);
+    font-style: italic;
+  }
+
+  /* -----------------------------------------------------------------
+   * Special/Holiday Hours
+   * Collapsible section for holiday hours
+   * ----------------------------------------------------------------- */
+  .store-hours__special {
+    margin-top: var(--spacing-6);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .store-hours__special-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    width: 100%;
+    padding: var(--spacing-4);
+    background-color: var(--color-background);
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    text-align: left;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out);
+  }
+
+  .store-hours__special-toggle:hover {
+    background-color: var(--color-background-subtle);
+  }
+
+  .store-hours__special-toggle:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: calc(-1 * var(--focus-ring-width));
+    border-radius: var(--radius-lg);
+  }
+
+  .store-hours__special-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+
+  .store-hours__special-title {
+    flex: 1;
+  }
+
+  .store-hours__special-chevron {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-text-tertiary);
+    flex-shrink: 0;
+    transition: transform var(--duration-200) var(--ease-in-out);
+  }
+
+  .store-hours__special-toggle[aria-expanded="true"] .store-hours__special-chevron {
+    transform: rotate(180deg);
+  }
+
+  .store-hours__special-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background-color: var(--color-background-subtle);
+    border-top: 1px solid var(--color-border-light);
+    animation: slide-down var(--duration-200) var(--ease-out);
+  }
+
+  .store-hours__special-list[hidden] {
+    display: none;
+  }
+
+  @keyframes slide-down {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .store-hours__special-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-3) var(--spacing-4);
+    border-bottom: 1px solid var(--color-border-light);
+    font-size: var(--font-size-sm);
+  }
+
+  .store-hours__special-item:last-child {
+    border-bottom: none;
+  }
+
+  .store-hours__special-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-0-5);
+  }
+
+  .store-hours__special-name {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  .store-hours__special-date {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .store-hours__special-time {
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .store-hours__special-time--closed {
+    color: var(--color-error);
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* -----------------------------------------------------------------
+   * Compact Mode
+   * Reduced padding and font sizes for tighter layouts
+   * ----------------------------------------------------------------- */
+  .store-hours--compact .store-hours__status {
+    margin-bottom: var(--spacing-4);
+  }
+
+  .store-hours--compact .store-hours__status-badge {
+    padding: var(--spacing-1) var(--spacing-3);
+    font-size: var(--font-size-xs);
+  }
+
+  .store-hours--compact .store-hours__schedule {
+    padding: var(--spacing-3);
+  }
+
+  .store-hours--compact .store-hours__schedule-row {
+    padding: var(--spacing-2);
+  }
+
+  .store-hours--compact .store-hours__day,
+  .store-hours--compact .store-hours__time {
+    font-size: var(--font-size-sm);
+  }
+
+  .store-hours--compact .store-hours__special {
+    margin-top: var(--spacing-4);
+  }
+
+  .store-hours--compact .store-hours__special-toggle {
+    padding: var(--spacing-3);
+    font-size: var(--font-size-sm);
+  }
+
+  .store-hours--compact .store-hours__special-item {
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+
+  /* -----------------------------------------------------------------
+   * Responsive Styles
+   * ----------------------------------------------------------------- */
+  @media (max-width: 480px) {
+    .store-hours__status {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-2);
+    }
+
+    .store-hours__special-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-1);
+    }
+
+    .store-hours__special-time {
+      align-self: flex-end;
+    }
+  }
+
+  /* -----------------------------------------------------------------
+   * Dark Mode
+   * ----------------------------------------------------------------- */
+  :global(html[data-theme="dark"]) .store-hours__schedule {
+    background-color: var(--color-background-subtle);
+  }
+
+  :global(html[data-theme="dark"]) .store-hours__schedule-row--current {
+    background-color: rgba(54, 83, 149, 0.2);
+    border-left-color: var(--color-primary-400);
+  }
+
+  :global(html[data-theme="dark"]) .store-hours__schedule-row--current:hover {
+    background-color: rgba(54, 83, 149, 0.3);
+  }
+
+  :global(html[data-theme="dark"]) .store-hours__today-badge {
+    background-color: var(--color-primary-400);
+  }
+
+  :global(html[data-theme="dark"]) .store-hours__special {
+    border-color: var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .store-hours__special-toggle {
+    background-color: var(--color-background);
+  }
+
+  :global(html[data-theme="dark"]) .store-hours__special-toggle:hover {
+    background-color: var(--color-background-subtle);
+  }
+
+  :global(html[data-theme="dark"]) .store-hours__special-list {
+    background-color: var(--color-background-subtle);
+    border-top-color: var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .store-hours__special-item {
+    border-bottom-color: var(--color-border);
+  }
+
+  /* -----------------------------------------------------------------
+   * Reduced Motion
+   * ----------------------------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .store-hours__status-badge--open .store-hours__status-indicator {
+      animation: none;
+    }
+
+    .store-hours__schedule-row,
+    .store-hours__special-toggle,
+    .store-hours__special-chevron {
+      transition: none;
+    }
+
+    .store-hours__special-list {
+      animation: none;
+    }
+  }
+
+  /* -----------------------------------------------------------------
+   * Print Styles
+   * ----------------------------------------------------------------- */
+  @media print {
+    .store-hours__status {
+      display: none;
+    }
+
+    .store-hours__schedule {
+      background-color: transparent;
+      border: 1px solid var(--color-border);
+    }
+
+    .store-hours__schedule-row--current {
+      background-color: transparent;
+      border-left: 2px solid var(--color-text-primary);
+    }
+
+    .store-hours__today-badge {
+      display: none;
+    }
+
+    .store-hours__special {
+      border-color: var(--color-border);
+    }
+
+    .store-hours__special-list {
+      display: block !important;
+    }
+
+    .store-hours__special-toggle {
+      pointer-events: none;
+    }
+
+    .store-hours__special-chevron {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * StoreHours Component Client-Side Script
+   * Handles special hours toggle functionality and real-time status updates
+   */
+
+  function initStoreHours() {
+    // Handle special hours toggle
+    const toggleButtons = document.querySelectorAll('[data-special-hours-toggle]');
+
+    toggleButtons.forEach((button) => {
+      const list = button.parentElement?.querySelector('[data-special-hours-list]');
+
+      if (!list) return;
+
+      button.addEventListener('click', () => {
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+        button.setAttribute('aria-expanded', String(!isExpanded));
+
+        if (isExpanded) {
+          list.setAttribute('hidden', '');
+        } else {
+          list.removeAttribute('hidden');
+        }
+      });
+
+      // Enable keyboard navigation
+      button.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          (button as HTMLButtonElement).click();
+        }
+      });
+    });
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', initStoreHours);
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initStoreHours);
+</script>

@@ -1,0 +1,406 @@
+---
+/**
+ * Skeleton Loading Demo Page
+ * Showcases all skeleton loading components for visual testing and documentation.
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import ProductCardSkeleton from '../../components/ProductCardSkeleton.astro';
+import ProductGridSkeleton from '../../components/ProductGridSkeleton.astro';
+import ProductDetailsSkeleton from '../../components/ProductDetailsSkeleton.astro';
+import ImageGallerySkeleton from '../../components/ImageGallerySkeleton.astro';
+
+const pageTitle = 'Skeleton Loading States Demo';
+const pageDescription = 'Demonstration of skeleton loading components for product grids and detail pages.';
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <main class="skeleton-demo">
+    <div class="skeleton-demo__container">
+      <header class="skeleton-demo__header">
+        <h1 class="skeleton-demo__title">Skeleton Loading States</h1>
+        <p class="skeleton-demo__description">
+          These skeleton components provide visual feedback during content loading,
+          improving perceived performance and user experience.
+        </p>
+      </header>
+
+      <!-- ProductCardSkeleton Demo -->
+      <section class="skeleton-demo__section" id="product-card-skeleton">
+        <h2 class="skeleton-demo__section-title">ProductCardSkeleton</h2>
+        <p class="skeleton-demo__section-description">
+          Individual product card skeleton with configurable aspect ratio and category display.
+        </p>
+
+        <div class="skeleton-demo__examples">
+          <!-- Default -->
+          <div class="skeleton-demo__example">
+            <h3 class="skeleton-demo__example-title">Default (4:5 aspect ratio)</h3>
+            <div class="skeleton-demo__card-wrapper">
+              <ProductCardSkeleton />
+            </div>
+          </div>
+
+          <!-- Square -->
+          <div class="skeleton-demo__example">
+            <h3 class="skeleton-demo__example-title">Square (1:1 aspect ratio)</h3>
+            <div class="skeleton-demo__card-wrapper">
+              <ProductCardSkeleton aspectRatio="1:1" />
+            </div>
+          </div>
+
+          <!-- Without category -->
+          <div class="skeleton-demo__example">
+            <h3 class="skeleton-demo__example-title">Without category</h3>
+            <div class="skeleton-demo__card-wrapper">
+              <ProductCardSkeleton showCategory={false} />
+            </div>
+          </div>
+
+          <!-- With description -->
+          <div class="skeleton-demo__example">
+            <h3 class="skeleton-demo__example-title">With description</h3>
+            <div class="skeleton-demo__card-wrapper">
+              <ProductCardSkeleton showDescription={true} />
+            </div>
+          </div>
+
+          <!-- Static (no animation) -->
+          <div class="skeleton-demo__example">
+            <h3 class="skeleton-demo__example-title">Static (no animation)</h3>
+            <div class="skeleton-demo__card-wrapper">
+              <ProductCardSkeleton animate={false} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ProductGridSkeleton Demo -->
+      <section class="skeleton-demo__section" id="product-grid-skeleton">
+        <h2 class="skeleton-demo__section-title">ProductGridSkeleton</h2>
+        <p class="skeleton-demo__section-description">
+          Grid of product card skeletons with configurable columns, count, and header.
+        </p>
+
+        <div class="skeleton-demo__grid-examples">
+          <!-- 3 columns with header -->
+          <div class="skeleton-demo__grid-example">
+            <h3 class="skeleton-demo__example-title">3 columns with header</h3>
+            <ProductGridSkeleton
+              count={6}
+              columns={3}
+              showHeader={true}
+            />
+          </div>
+
+          <!-- 4 columns -->
+          <div class="skeleton-demo__grid-example">
+            <h3 class="skeleton-demo__example-title">4 columns, no header</h3>
+            <ProductGridSkeleton
+              count={8}
+              columns={4}
+              showHeader={false}
+            />
+          </div>
+
+          <!-- 2 columns, square -->
+          <div class="skeleton-demo__grid-example">
+            <h3 class="skeleton-demo__example-title">2 columns, square aspect ratio</h3>
+            <ProductGridSkeleton
+              count={4}
+              columns={2}
+              aspectRatio="1:1"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- ProductDetailsSkeleton Demo -->
+      <section class="skeleton-demo__section" id="product-details-skeleton">
+        <h2 class="skeleton-demo__section-title">ProductDetailsSkeleton</h2>
+        <p class="skeleton-demo__section-description">
+          Product detail page skeleton with all major content sections.
+        </p>
+
+        <div class="skeleton-demo__detail-examples">
+          <!-- Full skeleton -->
+          <div class="skeleton-demo__detail-example">
+            <h3 class="skeleton-demo__example-title">Full skeleton (all sections)</h3>
+            <div class="skeleton-demo__detail-wrapper">
+              <div class="skeleton-demo__gallery-column">
+                <ImageGallerySkeleton thumbnailCount={4} />
+              </div>
+              <div class="skeleton-demo__details-column">
+                <ProductDetailsSkeleton />
+              </div>
+            </div>
+          </div>
+
+          <!-- Minimal skeleton -->
+          <div class="skeleton-demo__detail-example">
+            <h3 class="skeleton-demo__example-title">Minimal skeleton (no variants)</h3>
+            <div class="skeleton-demo__detail-wrapper">
+              <div class="skeleton-demo__gallery-column">
+                <ImageGallerySkeleton
+                  aspectRatio="1:1"
+                  showThumbnails={false}
+                />
+              </div>
+              <div class="skeleton-demo__details-column">
+                <ProductDetailsSkeleton
+                  showVariants={false}
+                  showBreadcrumb={false}
+                  showBadges={false}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ImageGallerySkeleton Demo -->
+      <section class="skeleton-demo__section" id="image-gallery-skeleton">
+        <h2 class="skeleton-demo__section-title">ImageGallerySkeleton</h2>
+        <p class="skeleton-demo__section-description">
+          Image gallery skeleton with configurable aspect ratio and thumbnail count.
+        </p>
+
+        <div class="skeleton-demo__gallery-examples">
+          <!-- Default -->
+          <div class="skeleton-demo__gallery-example">
+            <h3 class="skeleton-demo__example-title">Default (4:5, 4 thumbnails)</h3>
+            <ImageGallerySkeleton />
+          </div>
+
+          <!-- Square -->
+          <div class="skeleton-demo__gallery-example">
+            <h3 class="skeleton-demo__example-title">Square (1:1, 6 thumbnails)</h3>
+            <ImageGallerySkeleton aspectRatio="1:1" thumbnailCount={6} />
+          </div>
+
+          <!-- No thumbnails -->
+          <div class="skeleton-demo__gallery-example">
+            <h3 class="skeleton-demo__example-title">No thumbnails</h3>
+            <ImageGallerySkeleton showThumbnails={false} aspectRatio="16:9" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Usage Examples -->
+      <section class="skeleton-demo__section" id="usage">
+        <h2 class="skeleton-demo__section-title">Usage Examples</h2>
+        <p class="skeleton-demo__section-description">
+          How to use these skeleton components in your Astro pages.
+        </p>
+
+        <div class="skeleton-demo__code-examples">
+          <div class="skeleton-demo__code-block">
+            <h3 class="skeleton-demo__example-title">ProductCardSkeleton</h3>
+            <pre><code>&lt;ProductCardSkeleton
+  aspectRatio="4:5"
+  animate={true}
+  showCategory={true}
+  showDescription={false}
+/&gt;</code></pre>
+          </div>
+
+          <div class="skeleton-demo__code-block">
+            <h3 class="skeleton-demo__example-title">ProductGridSkeleton</h3>
+            <pre><code>&lt;ProductGridSkeleton
+  count={6}
+  columns={3}
+  gap="medium"
+  showHeader={true}
+  animate={true}
+  stagger={true}
+/&gt;</code></pre>
+          </div>
+
+          <div class="skeleton-demo__code-block">
+            <h3 class="skeleton-demo__example-title">ProductDetailsSkeleton</h3>
+            <pre><code>&lt;ProductDetailsSkeleton
+  animate={true}
+  showVariants={true}
+  showBreadcrumb={true}
+  showBadges={true}
+/&gt;</code></pre>
+          </div>
+
+          <div class="skeleton-demo__code-block">
+            <h3 class="skeleton-demo__example-title">ImageGallerySkeleton</h3>
+            <pre><code>&lt;ImageGallerySkeleton
+  aspectRatio="4:5"
+  thumbnailCount={4}
+  showThumbnails={true}
+  animate={true}
+/&gt;</code></pre>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .skeleton-demo {
+    padding: var(--spacing-8) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .skeleton-demo__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  .skeleton-demo__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .skeleton-demo__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+  }
+
+  .skeleton-demo__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .skeleton-demo__section {
+    margin-bottom: var(--spacing-16);
+    padding-bottom: var(--spacing-16);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .skeleton-demo__section:last-child {
+    border-bottom: none;
+  }
+
+  .skeleton-demo__section-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2);
+  }
+
+  .skeleton-demo__section-description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-8);
+  }
+
+  .skeleton-demo__example-title {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+    margin: 0 0 var(--spacing-4);
+  }
+
+  /* Card examples grid */
+  .skeleton-demo__examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-8);
+  }
+
+  .skeleton-demo__card-wrapper {
+    max-width: 300px;
+  }
+
+  /* Grid examples */
+  .skeleton-demo__grid-examples {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-12);
+  }
+
+  .skeleton-demo__grid-example {
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+  }
+
+  /* Detail examples */
+  .skeleton-demo__detail-examples {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-12);
+  }
+
+  .skeleton-demo__detail-example {
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+  }
+
+  .skeleton-demo__detail-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-8);
+  }
+
+  @media screen and (max-width: 767px) {
+    .skeleton-demo__detail-wrapper {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Gallery examples */
+  .skeleton-demo__gallery-examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-8);
+  }
+
+  .skeleton-demo__gallery-example {
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+  }
+
+  /* Code examples */
+  .skeleton-demo__code-examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-6);
+  }
+
+  .skeleton-demo__code-block {
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-4);
+  }
+
+  .skeleton-demo__code-block pre {
+    margin: 0;
+    overflow-x: auto;
+  }
+
+  .skeleton-demo__code-block code {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Dark mode */
+  :global(html[data-theme="dark"]) .skeleton-demo__grid-example,
+  :global(html[data-theme="dark"]) .skeleton-demo__detail-example,
+  :global(html[data-theme="dark"]) .skeleton-demo__gallery-example,
+  :global(html[data-theme="dark"]) .skeleton-demo__code-block {
+    background-color: var(--color-background-elevated);
+  }
+</style>

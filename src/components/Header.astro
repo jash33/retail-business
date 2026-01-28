@@ -18,6 +18,12 @@
  */
 
 import ThemeToggle from './ThemeToggle.astro';
+import CartIcon from './CartIcon.astro';
+import { isShopEnabled, getCartUrl, shopConfig } from '../config/shop.config';
+
+// Check if shop integration is enabled
+const showCartIcon = isShopEnabled() && shopConfig.showCartIcon;
+const cartUrl = showCartIcon ? getCartUrl() : '';
 
 interface Props {
   /** Current page path for active link styling (e.g., "/", "/about") */
@@ -32,6 +38,8 @@ const navLinks = [
   { href: '/services', label: 'Services' },
   { href: '/portfolio', label: 'Portfolio' },
   { href: '/about', label: 'About' },
+  { href: '/brand-story', label: 'Our Story' },
+  { href: '/visit', label: 'Visit' },
   { href: '/contact', label: 'Contact' },
 ];
 ---
@@ -60,8 +68,14 @@ const navLinks = [
       </ul>
     </nav>
 
-    <!-- Theme Toggle (Desktop) -->
+    <!-- Header Actions (Desktop) -->
     <div class="header__actions">
+      {showCartIcon && (
+        <CartIcon
+          href={cartUrl}
+          class="header__cart-icon"
+        />
+      )}
       <ThemeToggle class="header__theme-toggle" />
     </div>
 
@@ -103,8 +117,36 @@ const navLinks = [
         ))}
       </ul>
 
-      <!-- Mobile Theme Toggle Section -->
+      <!-- Mobile Actions Section -->
       <div class="header__mobile-actions" style={`--item-index: ${navLinks.length}`}>
+        {showCartIcon && (
+          <div class="header__mobile-shop-link">
+            <a
+              href={cartUrl}
+              class="header__mobile-nav-link header__mobile-shop-link-anchor"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-shop-link="cart-mobile"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="header__mobile-shop-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              <span>Visit Shop</span>
+            </a>
+          </div>
+        )}
         <div class="header__mobile-theme-toggle">
           <span class="header__mobile-theme-label">Theme</span>
           <ThemeToggle class="header__theme-toggle--mobile" />
@@ -458,6 +500,23 @@ const navLinks = [
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
     color: var(--color-text-secondary);
+  }
+
+  /* Mobile Shop Link */
+  .header__mobile-shop-link {
+    margin-bottom: var(--spacing-4);
+  }
+
+  .header__mobile-shop-link-anchor {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+  }
+
+  .header__mobile-shop-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
   }
 
   /* -----------------------------------------------------------------

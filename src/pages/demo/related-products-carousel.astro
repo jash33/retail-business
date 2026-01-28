@@ -1,0 +1,482 @@
+---
+/**
+ * Demo Page - RelatedProductsCarousel Component
+ * Showcases all variants: grid, carousel, and complete-the-look
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import RelatedProductsCarousel from '../../components/RelatedProductsCarousel.astro';
+import type { ProductCardProps } from '../../types/product';
+
+// Sample product data for demos
+const sampleProducts: ProductCardProps[] = [
+  {
+    id: 'demo-1',
+    name: 'Classic Cotton T-Shirt',
+    image: {
+      src: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop',
+      alt: 'White classic cotton t-shirt',
+    },
+    hoverImage: {
+      src: 'https://images.unsplash.com/photo-1622445275576-721325763afe?w=400&h=500&fit=crop',
+      alt: 'White classic cotton t-shirt back view',
+    },
+    price: { amount: 29.99 },
+    shopUrl: 'https://example.com/products/classic-tshirt',
+    category: 'Tops',
+    isNew: true,
+  },
+  {
+    id: 'demo-2',
+    name: 'Premium Hoodie',
+    image: {
+      src: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=500&fit=crop',
+      alt: 'Black premium hoodie',
+    },
+    hoverImage: {
+      src: 'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=400&h=500&fit=crop',
+      alt: 'Black premium hoodie detail',
+    },
+    price: { amount: 59.99, originalAmount: 79.99 },
+    shopUrl: 'https://example.com/products/premium-hoodie',
+    category: 'Hoodies',
+    onSale: true,
+  },
+  {
+    id: 'demo-3',
+    name: 'Slim Fit Jeans',
+    image: {
+      src: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=500&fit=crop',
+      alt: 'Blue slim fit jeans',
+    },
+    price: { amount: 89.99 },
+    shopUrl: 'https://example.com/products/slim-jeans',
+    category: 'Pants',
+  },
+  {
+    id: 'demo-4',
+    name: 'Leather Sneakers',
+    image: {
+      src: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=500&fit=crop',
+      alt: 'White leather sneakers',
+    },
+    hoverImage: {
+      src: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&h=500&fit=crop',
+      alt: 'White leather sneakers side view',
+    },
+    price: { amount: 149.99 },
+    shopUrl: 'https://example.com/products/leather-sneakers',
+    category: 'Footwear',
+  },
+  {
+    id: 'demo-5',
+    name: 'Minimalist Watch',
+    image: {
+      src: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400&h=500&fit=crop',
+      alt: 'Minimalist watch with leather strap',
+    },
+    price: { amount: 199.99 },
+    shopUrl: 'https://example.com/products/minimalist-watch',
+    category: 'Accessories',
+  },
+  {
+    id: 'demo-6',
+    name: 'Canvas Backpack',
+    image: {
+      src: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=500&fit=crop',
+      alt: 'Brown canvas backpack',
+    },
+    hoverImage: {
+      src: 'https://images.unsplash.com/photo-1581605405669-fcdf81165afa?w=400&h=500&fit=crop',
+      alt: 'Canvas backpack open view',
+    },
+    price: { amount: 79.99 },
+    shopUrl: 'https://example.com/products/canvas-backpack',
+    category: 'Bags',
+    isNew: true,
+  },
+  {
+    id: 'demo-7',
+    name: 'Designer Sunglasses',
+    image: {
+      src: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=500&fit=crop',
+      alt: 'Designer sunglasses',
+    },
+    price: { amount: 189.99 },
+    shopUrl: 'https://example.com/products/designer-sunglasses',
+    category: 'Eyewear',
+  },
+  {
+    id: 'demo-8',
+    name: 'Running Shoes',
+    image: {
+      src: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=500&fit=crop',
+      alt: 'Running shoes',
+    },
+    hoverImage: {
+      src: 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=500&fit=crop',
+      alt: 'Running shoes side view',
+    },
+    price: { amount: 99.99, originalAmount: 149.99 },
+    shopUrl: 'https://example.com/products/running-shoes',
+    category: 'Footwear',
+    onSale: true,
+  },
+];
+---
+
+<Layout title="Related Products Carousel Demo | Houston Web Services">
+  <main class="demo-page">
+    <section class="demo-header">
+      <div class="demo-container">
+        <h1>RelatedProductsCarousel Component Demo</h1>
+        <p>Versatile related products section with multiple display variants: grid, carousel, and complete-the-look styling options.</p>
+      </div>
+    </section>
+
+    <!-- Demo 1: Carousel Variant (Default) -->
+    <section class="demo-section">
+      <div class="demo-container">
+        <h2>Carousel Variant</h2>
+        <p>Horizontal scrolling carousel with navigation arrows, touch/swipe support, and keyboard navigation.</p>
+      </div>
+
+      <RelatedProductsCarousel
+        products={sampleProducts}
+        variant="carousel"
+        heading="You May Also Like"
+        description="Explore more products from our collection"
+        id="demo-carousel"
+        navigationPosition="outside"
+        showIndicators={true}
+        enableSwipe={true}
+        enableKeyboard={true}
+        maxProducts={8}
+        gap="medium"
+        carouselColumns={{
+          mobile: 1,
+          small: 2,
+          tablet: 3,
+          desktop: 4,
+        }}
+      />
+    </section>
+
+    <!-- Demo 2: Complete the Look Variant -->
+    <section class="demo-section demo-section--alt">
+      <div class="demo-container">
+        <h2>Complete the Look Variant</h2>
+        <p>Styled curated section for outfit/collection pairing with badge, editorial typography, and subtle background.</p>
+      </div>
+
+      <div class="demo-container">
+        <RelatedProductsCarousel
+          products={sampleProducts.slice(0, 6)}
+          variant="complete-the-look"
+          heading="Complete the Look"
+          description="Pair perfectly with these items"
+          id="demo-complete-look"
+          badgeText="Styling Pick"
+          navigationPosition="inside"
+          enableSwipe={true}
+          maxProducts={6}
+          gap="large"
+          carouselColumns={{
+            mobile: 1,
+            small: 2,
+            tablet: 3,
+            desktop: 4,
+          }}
+        />
+      </div>
+    </section>
+
+    <!-- Demo 3: Grid Variant -->
+    <section class="demo-section">
+      <div class="demo-container">
+        <h2>Grid Variant</h2>
+        <p>Traditional responsive grid layout, ideal for showing related products in a structured format.</p>
+      </div>
+
+      <div class="demo-container">
+        <RelatedProductsCarousel
+          products={sampleProducts.slice(0, 4)}
+          variant="grid"
+          heading="Related Products"
+          description="Products you might also like"
+          id="demo-grid"
+          columns={4}
+          maxProducts={4}
+          gap="medium"
+          enableAnimation={true}
+        />
+      </div>
+    </section>
+
+    <!-- Demo 4: Carousel with Inside Navigation -->
+    <section class="demo-section demo-section--alt">
+      <div class="demo-container">
+        <h2>Carousel with Inside Navigation</h2>
+        <p>Navigation buttons overlaid inside the carousel viewport for a more compact look.</p>
+      </div>
+
+      <RelatedProductsCarousel
+        products={sampleProducts}
+        variant="carousel"
+        heading="More to Explore"
+        id="demo-inside-nav"
+        navigationPosition="inside"
+        showIndicators={true}
+        enableSwipe={true}
+        maxProducts={8}
+        gap="medium"
+      />
+    </section>
+
+    <!-- Demo 5: Carousel with View All CTA -->
+    <section class="demo-section">
+      <div class="demo-container">
+        <h2>Carousel with View All Link</h2>
+        <p>Includes a "View All" call-to-action button for navigation to a full collection page.</p>
+      </div>
+
+      <RelatedProductsCarousel
+        products={sampleProducts}
+        variant="carousel"
+        heading="Recently Viewed"
+        description="Continue where you left off"
+        id="demo-view-all"
+        navigationPosition="outside"
+        showIndicators={true}
+        showViewAll={true}
+        viewAllUrl="/products"
+        viewAllText="View All Products"
+        maxProducts={8}
+        gap="medium"
+      />
+    </section>
+
+    <!-- Demo 6: Compact Carousel -->
+    <section class="demo-section demo-section--alt">
+      <div class="demo-container">
+        <h2>Compact Carousel (No Navigation Buttons)</h2>
+        <p>Swipe-only carousel for mobile-first designs or narrow spaces. Perfect for sidebars.</p>
+      </div>
+
+      <div class="demo-container demo-container--narrow">
+        <RelatedProductsCarousel
+          products={sampleProducts.slice(0, 6)}
+          variant="carousel"
+          heading="Quick Picks"
+          id="demo-compact"
+          navigationPosition="none"
+          showIndicators={true}
+          enableSwipe={true}
+          maxProducts={6}
+          gap="small"
+          carouselColumns={{
+            mobile: 2,
+            small: 2,
+            tablet: 3,
+            desktop: 3,
+          }}
+        />
+      </div>
+    </section>
+
+    <!-- Features List -->
+    <section class="demo-section">
+      <div class="demo-container">
+        <h2>Component Features</h2>
+        <ul class="feature-list">
+          <li><strong>Multiple Variants:</strong> Grid, carousel, and complete-the-look display modes</li>
+          <li><strong>Horizontal Scroll:</strong> Smooth CSS-based carousel with transform animations</li>
+          <li><strong>Touch/Swipe Support:</strong> Native touch gestures for mobile devices</li>
+          <li><strong>Keyboard Navigation:</strong> Arrow keys, Home, and End key support</li>
+          <li><strong>Navigation Positions:</strong> Outside, inside, bottom, or none</li>
+          <li><strong>Pagination Indicators:</strong> Optional dot indicators for carousel position</li>
+          <li><strong>Complete the Look:</strong> Editorial styling with badge and custom typography</li>
+          <li><strong>Responsive Columns:</strong> Configurable columns for mobile, tablet, and desktop</li>
+          <li><strong>Reveal Animations:</strong> Staggered entrance animations with scroll detection</li>
+          <li><strong>Accessibility:</strong> ARIA labels, live regions, and screen reader support</li>
+          <li><strong>Reduced Motion:</strong> Respects user motion preferences</li>
+          <li><strong>Dark Mode:</strong> Full dark mode support with theme-aware colors</li>
+          <li><strong>UTM Tracking:</strong> Automatic campaign tracking for product links</li>
+          <li><strong>Infinite Scroll:</strong> Optional continuous scrolling mode</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Usage Examples -->
+    <section class="demo-section demo-section--alt">
+      <div class="demo-container">
+        <h2>Usage Examples</h2>
+        <div class="code-examples">
+          <div class="code-example">
+            <h3>Carousel Variant</h3>
+            <pre><code>&lt;RelatedProductsCarousel
+  products={'{'}relatedProducts{'}'}
+  variant="carousel"
+  heading="You May Also Like"
+  navigationPosition="outside"
+  showIndicators={'{'}true{'}'}
+  enableSwipe={'{'}true{'}'}
+/&gt;</code></pre>
+          </div>
+
+          <div class="code-example">
+            <h3>Complete the Look Variant</h3>
+            <pre><code>&lt;RelatedProductsCarousel
+  products={'{'}curatedProducts{'}'}
+  variant="complete-the-look"
+  heading="Complete the Look"
+  badgeText="Styling Pick"
+  description="Pair perfectly with these items"
+/&gt;</code></pre>
+          </div>
+
+          <div class="code-example">
+            <h3>Grid Variant</h3>
+            <pre><code>&lt;RelatedProductsCarousel
+  products={'{'}relatedProducts{'}'}
+  variant="grid"
+  heading="Related Products"
+  columns={'{'}4{'}'}
+  enableAnimation={'{'}true{'}'}
+/&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .demo-page {
+    min-height: 100vh;
+  }
+
+  .demo-header {
+    padding: var(--spacing-16) var(--spacing-4) var(--spacing-12);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-700) 100%
+    );
+    text-align: center;
+  }
+
+  .demo-header h1 {
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .demo-header p {
+    color: var(--color-primary-100);
+    font-size: var(--font-size-lg);
+    max-width: 50rem;
+    margin: 0 auto;
+  }
+
+  .demo-container {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  .demo-container--narrow {
+    max-width: 48rem;
+  }
+
+  .demo-section {
+    padding: var(--spacing-12) 0;
+  }
+
+  .demo-section--alt {
+    background-color: var(--color-background-subtle);
+  }
+
+  .demo-section h2 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .demo-section > .demo-container > p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-8);
+  }
+
+  /* Feature List */
+  .feature-list {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: var(--spacing-4);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .feature-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .feature-list li {
+    padding: var(--spacing-3) var(--spacing-4);
+    background-color: var(--color-background);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+  }
+
+  .feature-list strong {
+    color: var(--color-text-primary);
+  }
+
+  /* Code Examples */
+  .code-examples {
+    display: grid;
+    gap: var(--spacing-6);
+  }
+
+  @media (min-width: 1024px) {
+    .code-examples {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .code-example {
+    background-color: var(--color-background);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+  }
+
+  .code-example h3 {
+    padding: var(--spacing-3) var(--spacing-4);
+    margin: 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    background-color: var(--color-background-subtle);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .code-example pre {
+    margin: 0;
+    padding: var(--spacing-4);
+    overflow-x: auto;
+    background-color: var(--color-primary-950);
+  }
+
+  .code-example code {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-primary-100);
+    line-height: 1.6;
+    white-space: pre;
+  }
+</style>

@@ -1,0 +1,429 @@
+---
+/**
+ * Announcement Bar Component
+ *
+ * A dismissible announcement bar for promotions, free shipping thresholds,
+ * or store updates. Includes cookie-based dismissal persistence and
+ * scheduled visibility support.
+ *
+ * @example
+ * ```astro
+ * <AnnouncementBar />
+ * ```
+ *
+ * @example Custom announcements
+ * ```astro
+ * <AnnouncementBar
+ *   announcements={[
+ *     {
+ *       id: 'sale-2024',
+ *       message: '50% off all items!',
+ *       type: 'promotion',
+ *       linkUrl: '/shop',
+ *       linkText: 'Shop Now',
+ *     }
+ *   ]}
+ *   dismissDurationDays={14}
+ * />
+ * ```
+ */
+
+import type { AnnouncementBarProps, Announcement } from '../types/announcement';
+import {
+  announcementBarConfig,
+  getActiveAnnouncement,
+  ANNOUNCEMENT_STORAGE_KEY,
+  ANNOUNCEMENT_STORAGE_VERSION,
+} from '../config/announcement.config';
+
+interface Props extends AnnouncementBarProps {}
+
+const {
+  announcements = announcementBarConfig.announcements,
+  dismissible = true,
+  dismissDurationDays = announcementBarConfig.dismissDurationDays,
+  showCloseButton = true,
+} = Astro.props;
+
+// Get the active announcement (highest priority, within schedule)
+const activeAnnouncement = getActiveAnnouncement(announcements);
+
+// Type-based styling classes
+const typeClasses: Record<Announcement['type'], string> = {
+  promotion: 'announcement-bar--promotion',
+  shipping: 'announcement-bar--shipping',
+  update: 'announcement-bar--update',
+  info: 'announcement-bar--info',
+};
+---
+
+{activeAnnouncement && (
+  <div
+    id="announcement-bar"
+    class={`announcement-bar ${typeClasses[activeAnnouncement.type]}`}
+    role="banner"
+    aria-label="Store announcement"
+    data-announcement-id={activeAnnouncement.id}
+    data-dismissible={dismissible && activeAnnouncement.dismissible !== false}
+    data-dismiss-duration={dismissDurationDays}
+    hidden
+  >
+    <div class="announcement-bar__container">
+      <div class="announcement-bar__content">
+        <span class="announcement-bar__message">
+          {activeAnnouncement.message}
+        </span>
+        {activeAnnouncement.linkUrl && (
+          <a
+            href={activeAnnouncement.linkUrl}
+            class="announcement-bar__link"
+          >
+            {activeAnnouncement.linkText || 'Learn more'}
+            <svg
+              class="announcement-bar__link-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              width="16"
+              height="16"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </a>
+        )}
+      </div>
+
+      {showCloseButton && dismissible && activeAnnouncement.dismissible !== false && (
+        <button
+          type="button"
+          id="announcement-bar-close"
+          class="announcement-bar__close"
+          aria-label="Dismiss announcement"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            width="20"
+            height="20"
+            aria-hidden="true"
+          >
+            <path
+              d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
+            />
+          </svg>
+        </button>
+      )}
+    </div>
+  </div>
+)}
+
+<style>
+  /* Announcement Bar Base Styles */
+  .announcement-bar {
+    position: relative;
+    width: 100%;
+    z-index: var(--z-sticky, 200);
+    background: var(--color-primary, #365395);
+    color: var(--color-text-inverse, #ffffff);
+    transform: translateY(-100%);
+    transition: transform var(--duration-300, 300ms) var(--ease-out, ease-out);
+  }
+
+  .announcement-bar[data-visible="true"] {
+    transform: translateY(0);
+  }
+
+  .announcement-bar[hidden] {
+    display: block; /* Override hidden to allow animation */
+  }
+
+  .announcement-bar__container {
+    max-width: var(--container-7xl, 80rem);
+    margin: 0 auto;
+    padding: var(--spacing-2, 0.5rem) var(--spacing-4, 1rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4, 1rem);
+  }
+
+  .announcement-bar__content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-3, 0.75rem);
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  .announcement-bar__message {
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: var(--font-weight-medium, 500);
+    line-height: var(--line-height-snug, 1.375);
+  }
+
+  .announcement-bar__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1, 0.25rem);
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: var(--font-weight-semibold, 600);
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: opacity var(--duration-150, 150ms) var(--ease-in-out, ease-in-out);
+  }
+
+  .announcement-bar__link:hover {
+    opacity: 0.9;
+  }
+
+  .announcement-bar__link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: var(--radius-sm, 0.125rem);
+  }
+
+  .announcement-bar__link-icon {
+    flex-shrink: 0;
+    transition: transform var(--duration-150, 150ms) var(--ease-in-out, ease-in-out);
+  }
+
+  .announcement-bar__link:hover .announcement-bar__link-icon {
+    transform: translateX(2px);
+  }
+
+  .announcement-bar__close {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md, 0.375rem);
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: all var(--duration-150, 150ms) var(--ease-in-out, ease-in-out);
+  }
+
+  .announcement-bar__close:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .announcement-bar__close:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    opacity: 1;
+  }
+
+  /* Type Variations */
+
+  /* Promotion - Accent purple/magenta */
+  .announcement-bar--promotion {
+    background: linear-gradient(135deg, var(--color-accent, #8b5cf6) 0%, var(--color-accent-dark, #7c3aed) 100%);
+  }
+
+  /* Shipping - Success green */
+  .announcement-bar--shipping {
+    background: linear-gradient(135deg, var(--color-success, #10b981) 0%, var(--color-success-dark, #059669) 100%);
+  }
+
+  /* Update - Primary brand color */
+  .announcement-bar--update {
+    background: linear-gradient(135deg, var(--color-primary-500, #365395) 0%, var(--color-primary-700, #284182) 100%);
+  }
+
+  /* Info - Info blue */
+  .announcement-bar--info {
+    background: linear-gradient(135deg, var(--color-info, #3b82f6) 0%, var(--color-info-dark, #2563eb) 100%);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .announcement-bar__container {
+      padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
+    }
+
+    .announcement-bar__message {
+      font-size: var(--font-size-xs, 0.75rem);
+    }
+
+    .announcement-bar__link {
+      font-size: var(--font-size-xs, 0.75rem);
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .announcement-bar {
+      transition: none;
+    }
+
+    .announcement-bar__link-icon {
+      transition: none;
+    }
+  }
+
+  /* Dark mode adjustments */
+  :global(html[data-theme="dark"]) .announcement-bar {
+    /* Slightly adjust opacity for dark backgrounds */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+</style>
+
+<script>
+  import type { AnnouncementStorageState, AnnouncementDismissalState } from '../types/announcement';
+  import { ANNOUNCEMENT_STORAGE_KEY, ANNOUNCEMENT_STORAGE_VERSION } from '../config/announcement.config';
+
+  /**
+   * Get the stored dismissal state from localStorage
+   */
+  function getStoredState(): AnnouncementStorageState | null {
+    try {
+      const stored = localStorage.getItem(ANNOUNCEMENT_STORAGE_KEY);
+      if (!stored) return null;
+
+      const state = JSON.parse(stored) as AnnouncementStorageState;
+
+      // Version check for future migrations
+      if (state.version !== ANNOUNCEMENT_STORAGE_VERSION) {
+        // Clear old version data
+        localStorage.removeItem(ANNOUNCEMENT_STORAGE_KEY);
+        return null;
+      }
+
+      return state;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Save dismissal state to localStorage
+   */
+  function saveStoredState(state: AnnouncementStorageState): void {
+    try {
+      localStorage.setItem(ANNOUNCEMENT_STORAGE_KEY, JSON.stringify(state));
+    } catch {
+      // localStorage might be full or disabled
+      console.warn('Failed to save announcement dismissal state');
+    }
+  }
+
+  /**
+   * Check if an announcement has been dismissed and is still within dismissal period
+   */
+  function isAnnouncementDismissed(announcementId: string): boolean {
+    const state = getStoredState();
+    if (!state) return false;
+
+    const now = Date.now();
+
+    // Find dismissal for this announcement
+    const dismissal = state.dismissed.find((d) => d.announcementId === announcementId);
+    if (!dismissal) return false;
+
+    // Check if dismissal has expired
+    if (now > dismissal.expiresAt) {
+      // Clean up expired dismissal
+      state.dismissed = state.dismissed.filter((d) => d.announcementId !== announcementId);
+      saveStoredState(state);
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Dismiss an announcement
+   */
+  function dismissAnnouncement(announcementId: string, durationDays: number): void {
+    const state = getStoredState() || {
+      dismissed: [],
+      version: ANNOUNCEMENT_STORAGE_VERSION,
+    };
+
+    const now = Date.now();
+    const expiresAt = now + durationDays * 24 * 60 * 60 * 1000;
+
+    // Remove any existing dismissal for this announcement
+    state.dismissed = state.dismissed.filter((d) => d.announcementId !== announcementId);
+
+    // Add new dismissal
+    const dismissal: AnnouncementDismissalState = {
+      announcementId,
+      dismissedAt: now,
+      expiresAt,
+    };
+    state.dismissed.push(dismissal);
+
+    // Clean up expired dismissals
+    state.dismissed = state.dismissed.filter((d) => now <= d.expiresAt);
+
+    saveStoredState(state);
+  }
+
+  /**
+   * Initialize the announcement bar
+   */
+  function initAnnouncementBar(): void {
+    const bar = document.getElementById('announcement-bar');
+    if (!bar) return;
+
+    const announcementId = bar.dataset.announcementId;
+    const isDismissible = bar.dataset.dismissible === 'true';
+    const dismissDuration = parseInt(bar.dataset.dismissDuration || '7', 10);
+
+    // Check if already dismissed
+    if (announcementId && isAnnouncementDismissed(announcementId)) {
+      bar.hidden = true;
+      return;
+    }
+
+    // Show the bar
+    bar.hidden = false;
+    // Trigger reflow for animation
+    void bar.offsetHeight;
+    bar.setAttribute('data-visible', 'true');
+
+    // Set up close button
+    if (isDismissible) {
+      const closeBtn = document.getElementById('announcement-bar-close');
+      if (closeBtn && announcementId) {
+        closeBtn.addEventListener('click', () => {
+          // Animate out
+          bar.setAttribute('data-visible', 'false');
+
+          // Save dismissal
+          dismissAnnouncement(announcementId, dismissDuration);
+
+          // Hide after animation
+          setTimeout(() => {
+            bar.hidden = true;
+          }, 300);
+        });
+      }
+    }
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAnnouncementBar);
+  } else {
+    initAnnouncementBar();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initAnnouncementBar);
+</script>

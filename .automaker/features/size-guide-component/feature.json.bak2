@@ -1,0 +1,12 @@
+{
+  "id": "size-guide-component",
+  "category": "UI",
+  "title": "Size Guide Modal Component",
+  "description": "Create size guide component for clothing/jewelry products with measurement tables, fit recommendations, and conversion charts. Accessible modal with responsive tables.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "simple",
+  "createdAt": "2026-01-26T01:49:59.743Z",
+  "updatedAt": "2026-01-26T01:49:59.743Z",
+  "descriptionHistory": []
+}

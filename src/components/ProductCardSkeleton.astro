@@ -1,0 +1,284 @@
+---
+/**
+ * ProductCardSkeleton Component
+ * A skeleton loading placeholder for ProductCard that provides visual feedback
+ * during content loading. Improves perceived performance by showing the
+ * structure of incoming content.
+ *
+ * Features:
+ * - Shimmer animation matching ProductCard design
+ * - Configurable aspect ratio (4:5 or 1:1)
+ * - Shows placeholder for image, name, category, and price
+ * - Full accessibility support with aria-hidden
+ * - Reduced motion support
+ * - Dark mode support
+ *
+ * @example Basic usage
+ * ```astro
+ * <ProductCardSkeleton />
+ * ```
+ *
+ * @example With custom aspect ratio
+ * ```astro
+ * <ProductCardSkeleton aspectRatio="1:1" />
+ * ```
+ *
+ * @example With animation disabled
+ * ```astro
+ * <ProductCardSkeleton animate={false} />
+ * ```
+ */
+
+interface Props {
+  /** Aspect ratio for the image placeholder */
+  aspectRatio?: '4:5' | '1:1';
+  /** Whether to show the shimmer animation */
+  animate?: boolean;
+  /** Whether to show the category placeholder */
+  showCategory?: boolean;
+  /** Whether to show the description placeholder */
+  showDescription?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  aspectRatio = '4:5',
+  animate = true,
+  showCategory = true,
+  showDescription = false,
+  class: className = '',
+} = Astro.props;
+
+// Calculate aspect ratio CSS value
+const aspectRatioCss = aspectRatio === '4:5' ? '4 / 5' : '1 / 1';
+
+// Build CSS classes
+const skeletonClasses = [
+  'product-card-skeleton',
+  animate && 'product-card-skeleton--animated',
+  className,
+].filter(Boolean).join(' ');
+---
+
+<article
+  class={skeletonClasses}
+  aria-hidden="true"
+  role="presentation"
+  style={`--skeleton-aspect-ratio: ${aspectRatioCss};`}
+>
+  <!-- Image Placeholder -->
+  <div class="product-card-skeleton__image">
+    <div class="product-card-skeleton__shimmer"></div>
+  </div>
+
+  <!-- Content Placeholder -->
+  <div class="product-card-skeleton__content">
+    <!-- Category -->
+    {showCategory && (
+      <div class="product-card-skeleton__category">
+        <div class="product-card-skeleton__shimmer"></div>
+      </div>
+    )}
+
+    <!-- Name -->
+    <div class="product-card-skeleton__name">
+      <div class="product-card-skeleton__shimmer"></div>
+    </div>
+    <div class="product-card-skeleton__name product-card-skeleton__name--short">
+      <div class="product-card-skeleton__shimmer"></div>
+    </div>
+
+    <!-- Description -->
+    {showDescription && (
+      <div class="product-card-skeleton__description">
+        <div class="product-card-skeleton__shimmer"></div>
+      </div>
+    )}
+
+    <!-- Price -->
+    <div class="product-card-skeleton__price">
+      <div class="product-card-skeleton__shimmer"></div>
+    </div>
+  </div>
+</article>
+
+<style>
+  /* =================================================================
+   * PRODUCT CARD SKELETON STYLES
+   * =================================================================
+   * Skeleton loading placeholder matching ProductCard structure
+   * Uses design system variables for consistency
+   */
+
+  .product-card-skeleton {
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    /* Visual */
+    background-color: var(--color-background-elevated);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  /* =================================================================
+   * IMAGE PLACEHOLDER
+   * ================================================================= */
+  .product-card-skeleton__image {
+    position: relative;
+    aspect-ratio: var(--skeleton-aspect-ratio, 4 / 5);
+    background-color: var(--color-background-muted);
+    overflow: hidden;
+  }
+
+  /* =================================================================
+   * CONTENT AREA
+   * ================================================================= */
+  .product-card-skeleton__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4);
+    flex: 1;
+  }
+
+  /* Category placeholder */
+  .product-card-skeleton__category {
+    width: 40%;
+    height: 0.625rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  /* Name placeholder */
+  .product-card-skeleton__name {
+    width: 100%;
+    height: 1rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .product-card-skeleton__name--short {
+    width: 70%;
+  }
+
+  /* Description placeholder */
+  .product-card-skeleton__description {
+    width: 90%;
+    height: 0.875rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+    margin-top: var(--spacing-1);
+  }
+
+  /* Price placeholder */
+  .product-card-skeleton__price {
+    width: 30%;
+    height: 1.125rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+    margin-top: auto;
+    padding-top: var(--spacing-2);
+  }
+
+  /* =================================================================
+   * SHIMMER ANIMATION
+   * ================================================================= */
+  .product-card-skeleton__shimmer {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--color-background-subtle) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  /* Only animate when animation class is present */
+  .product-card-skeleton--animated .product-card-skeleton__shimmer {
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  }
+
+  @keyframes skeleton-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Position shimmer in content elements */
+  .product-card-skeleton__category,
+  .product-card-skeleton__name,
+  .product-card-skeleton__description,
+  .product-card-skeleton__price {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .product-card-skeleton__content {
+      padding: var(--spacing-3);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .product-card-skeleton--animated .product-card-skeleton__shimmer {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .product-card-skeleton {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .product-card-skeleton__image,
+  :global(html[data-theme="dark"]) .product-card-skeleton__category,
+  :global(html[data-theme="dark"]) .product-card-skeleton__name,
+  :global(html[data-theme="dark"]) .product-card-skeleton__description,
+  :global(html[data-theme="dark"]) .product-card-skeleton__price {
+    background-color: var(--color-background-muted);
+  }
+
+  :global(html[data-theme="dark"]) .product-card-skeleton__shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--color-background-elevated) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .product-card-skeleton {
+      border: 2px solid currentColor;
+    }
+
+    .product-card-skeleton__shimmer {
+      display: none;
+    }
+  }
+</style>

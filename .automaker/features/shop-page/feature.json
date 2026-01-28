@@ -1,0 +1,12 @@
+{
+  "id": "shop-page",
+  "category": "Core",
+  "title": "Main Shop/Products Page with Filtering",
+  "description": "Build primary shop page with product grid, category filtering, sort options (newest, price, popular), and view toggle (grid/list). Includes SEO optimization and product schema markup.",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "complex",
+  "createdAt": "2026-01-26T01:49:59.699Z",
+  "updatedAt": "2026-01-26T04:46:26.533Z",
+  "descriptionHistory": []
+}

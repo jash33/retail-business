@@ -1,0 +1,287 @@
+---
+/**
+ * CollectionGrid Component
+ * A responsive grid layout for displaying collection cards with various
+ * layout options and smooth entrance animations.
+ *
+ * Features:
+ * - Responsive grid layouts (2-4 columns)
+ * - Multiple layout variants (standard, featured-first, featured-hero, asymmetric)
+ * - Configurable gaps
+ * - Optional section heading and subheading
+ * - Stagger animation for items
+ * - Full accessibility
+ *
+ * @example Basic usage
+ * ```astro
+ * <CollectionGrid collections={collections} columns={3} />
+ * ```
+ *
+ * @example With heading and featured layout
+ * ```astro
+ * <CollectionGrid
+ *   collections={collections}
+ *   heading="Shop by Collection"
+ *   subheading="Discover our curated collections"
+ *   layout="featured-first"
+ *   columns={3}
+ *   gap="large"
+ * />
+ * ```
+ */
+
+import type { CollectionGridProps } from '../types/collection';
+import CollectionCard from './CollectionCard.astro';
+
+interface Props extends CollectionGridProps {}
+
+const {
+  collections,
+  columns = 3,
+  gap = 'medium',
+  layout = 'standard',
+  heading,
+  subheading,
+  id,
+  class: className = '',
+  enableAnimation = true,
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'collection-grid-section',
+  className,
+].filter(Boolean).join(' ');
+
+const gridClasses = [
+  'collection-grid',
+  `collection-grid--${columns}-cols`,
+  `collection-grid--gap-${gap}`,
+  `collection-grid--layout-${layout}`,
+  enableAnimation && 'collection-grid--animated',
+].filter(Boolean).join(' ');
+---
+
+<section class={sectionClasses} id={id}>
+  {/* Section Header */}
+  {(heading || subheading) && (
+    <header class="collection-grid__header">
+      {heading && (
+        <h2 class="collection-grid__heading">{heading}</h2>
+      )}
+      {subheading && (
+        <p class="collection-grid__subheading">{subheading}</p>
+      )}
+    </header>
+  )}
+
+  {/* Grid */}
+  <div class={gridClasses}>
+    {collections.map((collection, index) => (
+      <div
+        class={`collection-grid__item ${index === 0 && (layout === 'featured-first' || layout === 'featured-hero') ? 'collection-grid__item--featured' : ''}`}
+        style={enableAnimation ? `--stagger-delay: ${Math.min(index, 8) * 100}ms;` : undefined}
+      >
+        <CollectionCard
+          {...collection}
+          aspectRatio={index === 0 && layout === 'featured-hero' ? '16:9' : collection.aspectRatio}
+        />
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * COLLECTION GRID SECTION STYLES
+   * =================================================================
+   */
+
+  .collection-grid-section {
+    width: 100%;
+  }
+
+  /* =================================================================
+   * SECTION HEADER
+   * ================================================================= */
+  .collection-grid__header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+    max-width: var(--container-4xl);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .collection-grid__heading {
+    margin: 0 0 var(--spacing-3) 0;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+  }
+
+  .collection-grid__subheading {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    max-width: var(--container-2xl);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* =================================================================
+   * GRID LAYOUT
+   * ================================================================= */
+  .collection-grid {
+    display: grid;
+    width: 100%;
+  }
+
+  /* Gap variants */
+  .collection-grid--gap-small {
+    gap: var(--spacing-3);
+  }
+
+  .collection-grid--gap-medium {
+    gap: var(--spacing-5);
+  }
+
+  .collection-grid--gap-large {
+    gap: var(--spacing-8);
+  }
+
+  /* Column variants - Mobile first */
+  .collection-grid--2-cols,
+  .collection-grid--3-cols,
+  .collection-grid--4-cols {
+    grid-template-columns: 1fr;
+  }
+
+  /* Tablet (640px+) */
+  @media screen and (min-width: 640px) {
+    .collection-grid--2-cols,
+    .collection-grid--3-cols,
+    .collection-grid--4-cols {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Desktop (1024px+) */
+  @media screen and (min-width: 1024px) {
+    .collection-grid--2-cols {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .collection-grid--3-cols {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .collection-grid--4-cols {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* =================================================================
+   * LAYOUT VARIANTS
+   * ================================================================= */
+
+  /* Featured First - First item spans 2 columns */
+  @media screen and (min-width: 640px) {
+    .collection-grid--layout-featured-first .collection-grid__item--featured {
+      grid-column: span 2;
+    }
+  }
+
+  /* Featured Hero - First item spans full width with larger height */
+  .collection-grid--layout-featured-hero .collection-grid__item--featured {
+    grid-column: 1 / -1;
+  }
+
+  /* Asymmetric layout for 3 columns */
+  @media screen and (min-width: 1024px) {
+    .collection-grid--layout-asymmetric.collection-grid--3-cols {
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: repeat(2, 1fr);
+    }
+
+    .collection-grid--layout-asymmetric.collection-grid--3-cols .collection-grid__item:first-child {
+      grid-row: span 2;
+    }
+  }
+
+  /* =================================================================
+   * GRID ITEMS
+   * ================================================================= */
+  .collection-grid__item {
+    min-width: 0; /* Prevent grid blowout */
+  }
+
+  /* =================================================================
+   * ANIMATION
+   * ================================================================= */
+  .collection-grid--animated .collection-grid__item {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: collection-reveal var(--animation-duration-slow) var(--ease-enter-emphasized) forwards;
+    animation-delay: var(--stagger-delay, 0ms);
+  }
+
+  @keyframes collection-reveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE HEADER
+   * ================================================================= */
+  @media screen and (min-width: 768px) {
+    .collection-grid__header {
+      margin-bottom: var(--spacing-12);
+    }
+
+    .collection-grid__heading {
+      font-size: var(--font-size-4xl);
+    }
+
+    .collection-grid__subheading {
+      font-size: var(--font-size-xl);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .collection-grid--animated .collection-grid__item {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .collection-grid {
+      display: block;
+    }
+
+    .collection-grid__item {
+      break-inside: avoid;
+      page-break-inside: avoid;
+      margin-bottom: var(--spacing-4);
+    }
+
+    .collection-grid--animated .collection-grid__item {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+  }
+</style>

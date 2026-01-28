@@ -1,0 +1,985 @@
+---
+/**
+ * Brand Story Page - Houston Web Services
+ * An editorial-style page showcasing the brand's story, values, and founders.
+ * Distinct from the existing about page with a magazine-inspired aesthetic.
+ *
+ * Features:
+ * - Editorial hero with lifestyle imagery
+ * - Long-form text with optimal reading measure
+ * - Magazine-style pull quotes
+ * - Founder photos with asymmetric layouts
+ * - Brand values grid
+ * - WCAG 2.1 AA accessible
+ */
+
+import Layout from '../layouts/Layout.astro';
+import HeroEditorial from '../components/HeroEditorial.astro';
+import PullQuote from '../components/PullQuote.astro';
+import Button from '../components/Button.astro';
+
+/**
+ * Brand values data for the values grid section
+ */
+const brandValues = [
+  {
+    id: 'authenticity',
+    title: 'Authenticity',
+    description: 'We believe in honest relationships and transparent communication. No jargon, no hidden fees—just real conversations about what your business needs.',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
+  },
+  {
+    id: 'craftsmanship',
+    title: 'Craftsmanship',
+    description: 'Every website we build is crafted with attention to detail. We obsess over the pixels, the performance, and the user experience because your brand deserves nothing less.',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,
+  },
+  {
+    id: 'community',
+    title: 'Community',
+    description: 'We\'re rooted in Houston. We support local businesses because when the community thrives, we all thrive. Your success is our success.',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  },
+  {
+    id: 'innovation',
+    title: 'Innovation',
+    description: 'Technology evolves, and so do we. We stay ahead of trends so you can focus on running your business while we handle the digital landscape.',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,
+  },
+];
+
+/**
+ * Founders data
+ */
+const founders = [
+  {
+    name: 'James',
+    role: 'Founder & Lead Developer',
+    bio: 'James founded Houston Web Services with a simple belief: small businesses deserve big results. With over a decade of experience in web development, he combines technical expertise with a genuine passion for helping local entrepreneurs succeed online.',
+    philosophy: 'I don\'t just build websites—I build partnerships. When you work with me, you\'re not getting an agency; you\'re getting a neighbor who genuinely cares about your success.',
+  },
+];
+
+/**
+ * Timeline milestones
+ */
+const milestones = [
+  { year: '2016', event: 'Houston Web Services Founded', description: 'Started with a laptop, a dream, and a commitment to serving local businesses.' },
+  { year: '2018', event: 'First 50 Clients', description: 'Reached a milestone of 50 satisfied local business clients.' },
+  { year: '2020', event: 'Pandemic Pivot', description: 'Helped dozens of businesses quickly transition to e-commerce during uncertain times.' },
+  { year: '2022', event: '100+ Projects Completed', description: 'Celebrated completing over 100 successful web projects.' },
+  { year: '2024', event: 'Expanded Services', description: 'Launched comprehensive SEO and digital marketing offerings.' },
+];
+---
+
+<Layout
+  title="Our Story"
+  description="Discover the story behind Houston Web Services. Learn about our journey, values, and commitment to helping Houston businesses succeed online."
+  openGraph={{
+    type: 'article',
+  }}
+  jsonLd={{
+    type: 'AboutPage',
+    name: 'Our Brand Story',
+    description: 'The story, values, and people behind Houston Web Services.',
+  }}
+>
+  <main class="brand-story">
+    <!-- Editorial Hero Section -->
+    <HeroEditorial
+      headline="Building Digital Dreams, One Story at a Time"
+      subheadline="We're more than a web design agency—we're storytellers, craftspeople, and neighbors dedicated to helping Houston businesses thrive."
+      cta={{
+        text: 'Start Your Story',
+        href: '/contact',
+      }}
+      overlayPosition="bottom-left"
+      overlayOpacity={0.5}
+      minHeight="90vh"
+      id="brand-story-hero"
+    />
+
+    <!-- Opening Story Section -->
+    <section class="story-intro" aria-labelledby="story-intro-heading">
+      <div class="story-intro__container">
+        <div class="story-intro__content editorial">
+          <span class="editorial-kicker reveal reveal--up">Our Origin</span>
+          <h2 id="story-intro-heading" class="editorial-headline reveal reveal--up reveal--delay-1">
+            It Started with a Question
+          </h2>
+
+          <div class="story-intro__text">
+            <p class="editorial-dropcap reveal reveal--up reveal--delay-2">
+              Why do small businesses struggle to compete online? This was the question that kept
+              James awake at night in 2016. Working in corporate web development, he watched as
+              enterprise companies poured millions into their digital presence while local shops—the
+              bakeries, boutiques, and family restaurants that give neighborhoods their character—were
+              left behind with outdated websites or no web presence at all.
+            </p>
+
+            <p class="reveal reveal--up reveal--delay-3">
+              The answer wasn't complicated: most web agencies didn't speak the language of small
+              business owners. They used jargon, charged premium prices, and treated local businesses
+              as afterthoughts. There had to be a better way.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pull Quote Section -->
+    <section class="story-quote" aria-label="Featured quote">
+      <div class="story-quote__container">
+        <PullQuote
+          quote="Every small business has a story worth telling. Our job is to help the world hear it."
+          attribution="James, Founder"
+          position="center"
+        />
+      </div>
+    </section>
+
+    <!-- Founder Section with Asymmetric Layout -->
+    <section class="story-founders" aria-labelledby="story-founders-heading">
+      <div class="story-founders__container">
+        <div class="story-founders__header section-heading--decorated reveal reveal--up">
+          <h2 id="story-founders-heading">The People Behind the Pixels</h2>
+          <p>Meet the team dedicated to your digital success</p>
+        </div>
+
+        {founders.map((founder, index) => (
+          <article class={`founder-feature ${index % 2 === 0 ? 'founder-feature--left' : 'founder-feature--right'}`}>
+            <div class="founder-feature__photo-wrapper reveal reveal--scale">
+              <!-- Photo placeholder - in production, use OptimizedImage -->
+              <div class="founder-feature__photo" role="img" aria-label={`Photo of ${founder.name}`}>
+                <svg class="founder-feature__photo-placeholder" viewBox="0 0 400 500" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect width="400" height="500" fill="currentColor" opacity="0.08"/>
+                  <circle cx="200" cy="160" r="80" fill="currentColor" opacity="0.12"/>
+                  <ellipse cx="200" cy="400" rx="120" ry="100" fill="currentColor" opacity="0.12"/>
+                </svg>
+                <span class="founder-feature__photo-label">Photo Coming Soon</span>
+              </div>
+              <div class="founder-feature__badge">
+                <span>{founder.role}</span>
+              </div>
+            </div>
+
+            <div class="founder-feature__content reveal reveal--up reveal--delay-1">
+              <h3 class="founder-feature__name">{founder.name}</h3>
+              <p class="founder-feature__bio">{founder.bio}</p>
+
+              <blockquote class="founder-feature__philosophy">
+                <p>"{founder.philosophy}"</p>
+              </blockquote>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Journey/Timeline Section -->
+    <section class="story-journey" aria-labelledby="story-journey-heading">
+      <div class="story-journey__container">
+        <div class="story-journey__header section-heading--decorated reveal reveal--up">
+          <h2 id="story-journey-heading">Our Journey</h2>
+          <p>Milestones that shaped who we are today</p>
+        </div>
+
+        <div class="story-journey__timeline">
+          {milestones.map((milestone, index) => (
+            <div class={`timeline-item reveal reveal--left reveal--delay-${(index % 3) + 1}`}>
+              <div class="timeline-item__marker">
+                <span class="timeline-item__year">{milestone.year}</span>
+              </div>
+              <div class="timeline-item__content">
+                <h3 class="timeline-item__title">{milestone.event}</h3>
+                <p class="timeline-item__description">{milestone.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Second Pull Quote -->
+    <section class="story-quote story-quote--alt" aria-label="Featured quote">
+      <div class="story-quote__container">
+        <PullQuote
+          quote="Success isn't measured in page views or rankings—it's measured in the smile on a business owner's face when their phone starts ringing."
+          position="offset-right"
+        />
+      </div>
+    </section>
+
+    <!-- Brand Values Grid Section -->
+    <section class="story-values" aria-labelledby="story-values-heading">
+      <div class="story-values__container">
+        <div class="story-values__header section-heading--decorated reveal reveal--up">
+          <h2 id="story-values-heading">What We Stand For</h2>
+          <p>The principles that guide everything we do</p>
+        </div>
+
+        <div class="story-values__grid">
+          {brandValues.map((value, index) => (
+            <article class={`value-card reveal reveal--up reveal--delay-${(index % 4) + 1}`} id={`value-${value.id}`}>
+              <div class="value-card__icon" aria-hidden="true">
+                <Fragment set:html={value.icon} />
+              </div>
+              <h3 class="value-card__title">{value.title}</h3>
+              <p class="value-card__description">{value.description}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Vision Section -->
+    <section class="story-vision" aria-labelledby="story-vision-heading">
+      <div class="story-vision__container">
+        <div class="story-vision__content editorial">
+          <span class="editorial-kicker reveal reveal--up">Looking Ahead</span>
+          <h2 id="story-vision-heading" class="editorial-title reveal reveal--up reveal--delay-1">
+            The Future We're Building
+          </h2>
+
+          <div class="story-vision__text reveal reveal--up reveal--delay-2">
+            <p>
+              Our vision extends beyond websites. We're building a future where every local business
+              has the digital tools they need to compete, connect, and thrive. A future where
+              technology serves people, not the other way around.
+            </p>
+
+            <p>
+              As Houston continues to grow and evolve, we're committed to growing alongside our
+              community. New technologies will emerge, trends will come and go, but our dedication
+              to personal service and genuine partnership will remain constant.
+            </p>
+
+            <p>
+              Because at the end of the day, this isn't just about building websites. It's about
+              building relationships, supporting dreams, and helping our neighbors succeed. That's
+              the story we're proud to tell.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="story-cta" aria-labelledby="story-cta-heading">
+      <div class="story-cta__container">
+        <h2 id="story-cta-heading" class="story-cta__title reveal reveal--up">
+          Ready to Write Your Chapter?
+        </h2>
+        <p class="story-cta__description reveal reveal--up reveal--delay-1">
+          Every great brand has a story. Let's work together to make sure the world hears yours.
+        </p>
+        <div class="story-cta__buttons reveal reveal--up reveal--delay-2">
+          <Button
+            text="Start Your Story"
+            href="/contact"
+            variant="primary"
+            size="large"
+          />
+          <Button
+            text="View Our Work"
+            href="/portfolio"
+            variant="secondary"
+            size="large"
+          />
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * BRAND STORY PAGE STYLES
+   * =================================================================
+   * Magazine-inspired editorial layout with asymmetric elements
+   * Uses design system variables from variables.css
+   * =================================================================
+   */
+
+  .brand-story {
+    overflow-x: hidden;
+  }
+
+  /* =================================================================
+   * STORY INTRO SECTION
+   * =================================================================
+   */
+
+  .story-intro {
+    padding: var(--spacing-20) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .story-intro__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .story-intro__content {
+    max-width: var(--measure-normal);
+    margin: 0 auto;
+  }
+
+  .story-intro__text {
+    margin-top: var(--spacing-8);
+  }
+
+  .story-intro__text p {
+    margin-bottom: var(--spacing-6);
+  }
+
+  /* =================================================================
+   * PULL QUOTE SECTIONS
+   * =================================================================
+   */
+
+  .story-quote {
+    padding: var(--spacing-12) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .story-quote--alt {
+    background-color: var(--color-background);
+  }
+
+  .story-quote__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * FOUNDERS SECTION
+   * =================================================================
+   */
+
+  .story-founders {
+    padding: var(--spacing-20) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .story-founders__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+  }
+
+  .story-founders__header {
+    text-align: center;
+    margin-bottom: var(--spacing-16);
+  }
+
+  .story-founders__header h2 {
+    font-family: var(--font-editorial-heading);
+    font-size: var(--font-size-editorial-3xl);
+    font-weight: var(--font-weight-editorial-medium);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+  }
+
+  .story-founders__header p {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  /* Founder Feature Card */
+  .founder-feature {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-8);
+    margin-bottom: var(--spacing-16);
+    align-items: start;
+  }
+
+  @media (min-width: 768px) {
+    .founder-feature {
+      grid-template-columns: 320px 1fr;
+      gap: var(--spacing-12);
+    }
+
+    .founder-feature--right {
+      grid-template-columns: 1fr 320px;
+    }
+
+    .founder-feature--right .founder-feature__photo-wrapper {
+      order: 2;
+    }
+
+    .founder-feature--right .founder-feature__content {
+      order: 1;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .founder-feature {
+      grid-template-columns: 380px 1fr;
+      gap: var(--spacing-16);
+    }
+
+    .founder-feature--right {
+      grid-template-columns: 1fr 380px;
+    }
+  }
+
+  .founder-feature__photo-wrapper {
+    position: relative;
+  }
+
+  .founder-feature__photo {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .founder-feature__photo-placeholder {
+    width: 100%;
+    height: 100%;
+    color: var(--color-primary);
+  }
+
+  .founder-feature__photo-label {
+    position: absolute;
+    bottom: var(--spacing-6);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+  }
+
+  .founder-feature__badge {
+    position: absolute;
+    bottom: -1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    padding: var(--spacing-2) var(--spacing-5);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-md);
+    white-space: nowrap;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .founder-feature__content {
+    padding-top: var(--spacing-4);
+  }
+
+  .founder-feature__name {
+    font-family: var(--font-editorial-heading);
+    font-size: var(--font-size-editorial-2xl);
+    font-weight: var(--font-weight-editorial-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+  }
+
+  .founder-feature__bio {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0 0 var(--spacing-6);
+  }
+
+  .founder-feature__philosophy {
+    font-family: var(--font-editorial-heading);
+    font-size: var(--font-size-lg);
+    font-style: italic;
+    color: var(--color-text-primary);
+    padding-left: var(--spacing-6);
+    border-left: 3px solid var(--color-primary-200);
+    margin: 0;
+  }
+
+  .founder-feature__philosophy p {
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * JOURNEY/TIMELINE SECTION
+   * =================================================================
+   */
+
+  .story-journey {
+    padding: var(--spacing-20) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .story-journey__container {
+    max-width: var(--container-5xl);
+    margin: 0 auto;
+  }
+
+  .story-journey__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .story-journey__header h2 {
+    font-family: var(--font-editorial-heading);
+    font-size: var(--font-size-editorial-3xl);
+    font-weight: var(--font-weight-editorial-medium);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+  }
+
+  .story-journey__header p {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .story-journey__timeline {
+    position: relative;
+    padding-left: var(--spacing-8);
+  }
+
+  /* Timeline vertical line */
+  .story-journey__timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(
+      to bottom,
+      var(--color-primary-200) 0%,
+      var(--color-primary) 50%,
+      var(--color-primary-200) 100%
+    );
+    border-radius: var(--radius-full);
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-bottom: var(--spacing-8);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--spacing-4);
+    align-items: start;
+  }
+
+  .timeline-item:last-child {
+    padding-bottom: 0;
+  }
+
+  .timeline-item__marker {
+    position: relative;
+    margin-left: calc(-1 * var(--spacing-8) - 1.5px);
+  }
+
+  .timeline-item__year {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.5rem;
+    height: 2.5rem;
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-md);
+  }
+
+  .timeline-item__content {
+    padding-top: var(--spacing-1);
+  }
+
+  .timeline-item__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2);
+  }
+
+  .timeline-item__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .story-journey__timeline {
+      padding-left: var(--spacing-12);
+    }
+
+    .timeline-item__marker {
+      margin-left: calc(-1 * var(--spacing-12) - 1.5px);
+    }
+
+    .timeline-item__year {
+      width: 5.5rem;
+      height: 3rem;
+      font-size: var(--font-size-base);
+    }
+  }
+
+  /* =================================================================
+   * VALUES GRID SECTION
+   * =================================================================
+   */
+
+  .story-values {
+    padding: var(--spacing-20) var(--spacing-4);
+    background-color: var(--color-background);
+  }
+
+  .story-values__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+  }
+
+  .story-values__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .story-values__header h2 {
+    font-family: var(--font-editorial-heading);
+    font-size: var(--font-size-editorial-3xl);
+    font-weight: var(--font-weight-editorial-medium);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+  }
+
+  .story-values__header p {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .story-values__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  @media (min-width: 640px) {
+    .story-values__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .story-values__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    /* Asymmetric offset for visual interest */
+    .story-values__grid .value-card:nth-child(2),
+    .story-values__grid .value-card:nth-child(4) {
+      transform: translateY(var(--spacing-8));
+    }
+  }
+
+  /* Value Card */
+  .value-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--spacing-8);
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out),
+      border-color var(--duration-300) var(--ease-out);
+  }
+
+  .value-card:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary-200);
+  }
+
+  @media (min-width: 1024px) {
+    .value-card:hover {
+      transform: translateY(calc(var(--spacing-8) - 6px));
+    }
+
+    .value-card:nth-child(odd):hover {
+      transform: translateY(-6px);
+    }
+  }
+
+  .value-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-16);
+    height: var(--spacing-16);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-50) 0%,
+      var(--color-primary-100) 100%
+    );
+    border-radius: var(--radius-full);
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-4);
+    transition: transform var(--duration-300) var(--ease-out);
+  }
+
+  .value-card:hover .value-card__icon {
+    transform: scale(1.1);
+  }
+
+  .value-card__icon :global(svg) {
+    width: var(--spacing-8);
+    height: var(--spacing-8);
+  }
+
+  .value-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3);
+  }
+
+  .value-card__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  /* =================================================================
+   * VISION SECTION
+   * =================================================================
+   */
+
+  .story-vision {
+    padding: var(--spacing-20) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .story-vision__container {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  .story-vision__content {
+    max-width: var(--measure-normal);
+    margin: 0 auto;
+  }
+
+  .story-vision__content .editorial-title {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .story-vision__text p {
+    margin-bottom: var(--spacing-6);
+  }
+
+  .story-vision__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* =================================================================
+   * CTA SECTION
+   * =================================================================
+   */
+
+  .story-cta {
+    padding: var(--spacing-20) var(--spacing-4);
+    background-color: var(--color-primary);
+    text-align: center;
+  }
+
+  .story-cta__container {
+    max-width: var(--container-3xl);
+    margin: 0 auto;
+  }
+
+  .story-cta__title {
+    font-family: var(--font-editorial-heading);
+    font-size: var(--font-size-editorial-3xl);
+    font-weight: var(--font-weight-editorial-medium);
+    color: var(--color-text-inverse);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .story-cta__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-primary-100);
+    line-height: var(--line-height-relaxed);
+    margin: 0 0 var(--spacing-8);
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .story-cta__buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    justify-content: center;
+    align-items: center;
+  }
+
+  @media (min-width: 640px) {
+    .story-cta__buttons {
+      flex-direction: row;
+    }
+  }
+
+  /* Override secondary button colors for dark background */
+  .story-cta :global(.btn--secondary) {
+    color: var(--color-text-inverse);
+    border-color: var(--color-text-inverse);
+  }
+
+  .story-cta :global(.btn--secondary:hover:not(.btn--disabled)) {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-text-inverse);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * RESPONSIVE ADJUSTMENTS
+   * =================================================================
+   */
+
+  @media (max-width: 767px) {
+    .story-intro {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .story-founders {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .story-founders__header h2 {
+      font-size: var(--font-size-editorial-2xl);
+    }
+
+    .founder-feature__name {
+      font-size: var(--font-size-editorial-xl);
+    }
+
+    .story-journey {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .story-journey__header h2 {
+      font-size: var(--font-size-editorial-2xl);
+    }
+
+    .story-values {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .story-values__header h2 {
+      font-size: var(--font-size-editorial-2xl);
+    }
+
+    .story-vision {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .story-cta {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .story-cta__title {
+      font-size: var(--font-size-editorial-2xl);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * =================================================================
+   */
+
+  @media (prefers-reduced-motion: reduce) {
+    .value-card,
+    .value-card__icon {
+      transition: none;
+    }
+
+    .value-card:hover {
+      transform: none;
+    }
+
+    .value-card:nth-child(odd):hover {
+      transform: none;
+    }
+
+    @media (min-width: 1024px) {
+      .story-values__grid .value-card:nth-child(2),
+      .story-values__grid .value-card:nth-child(4) {
+        transform: none;
+      }
+
+      .value-card:hover,
+      .value-card:nth-child(odd):hover {
+        transform: none;
+      }
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * =================================================================
+   */
+
+  @media print {
+    .story-intro,
+    .story-founders,
+    .story-journey,
+    .story-values,
+    .story-vision {
+      padding: var(--spacing-8) 0;
+      background: none;
+    }
+
+    .story-quote {
+      padding: var(--spacing-6) 0;
+      background: none;
+    }
+
+    .story-cta {
+      display: none;
+    }
+
+    .founder-feature__photo {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+    }
+
+    .timeline-item__year {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+      background: none;
+      color: var(--color-text-primary);
+    }
+
+    .value-card {
+      box-shadow: none;
+    }
+  }
+</style>

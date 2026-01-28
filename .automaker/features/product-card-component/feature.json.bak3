@@ -1,0 +1,14 @@
+{
+  "id": "product-card-component",
+  "category": "Core",
+  "title": "Product Card Component with Hover Effects",
+  "description": "Build gallery-style product cards with 4:5 or 1:1 aspect ratios, second-image hover reveal, quick shop button, price display, and external shop linking. Includes optimized image loading and accessibility features.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [
+    "cta-button-component"
+  ],
+  "createdAt": "2026-01-26T01:49:59.696Z",
+  "updatedAt": "2026-01-26T01:49:59.696Z"
+}

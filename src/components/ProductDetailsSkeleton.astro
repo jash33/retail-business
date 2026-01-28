@@ -1,0 +1,551 @@
+---
+/**
+ * ProductDetailsSkeleton Component
+ * A skeleton loading placeholder for ProductDetails that provides visual feedback
+ * during content loading on product detail pages. Improves perceived performance.
+ *
+ * Features:
+ * - Shimmer animation matching ProductDetails design
+ * - Placeholder for all major content sections
+ * - Breadcrumb, badges, name, price, description, variants, CTA
+ * - Full accessibility support with aria-hidden
+ * - Reduced motion support
+ * - Dark mode support
+ *
+ * @example Basic usage
+ * ```astro
+ * <ProductDetailsSkeleton />
+ * ```
+ *
+ * @example With variants hidden
+ * ```astro
+ * <ProductDetailsSkeleton showVariants={false} />
+ * ```
+ *
+ * @example Without animation
+ * ```astro
+ * <ProductDetailsSkeleton animate={false} />
+ * ```
+ */
+
+interface Props {
+  /** Whether to show the shimmer animation */
+  animate?: boolean;
+  /** Whether to show variant placeholders */
+  showVariants?: boolean;
+  /** Whether to show breadcrumb placeholder */
+  showBreadcrumb?: boolean;
+  /** Whether to show badge placeholders */
+  showBadges?: boolean;
+  /** Whether to show brand placeholder */
+  showBrand?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  animate = true,
+  showVariants = true,
+  showBreadcrumb = true,
+  showBadges = true,
+  showBrand = false,
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const skeletonClasses = [
+  'product-details-skeleton',
+  animate && 'product-details-skeleton--animated',
+  className,
+].filter(Boolean).join(' ');
+---
+
+<div
+  class={skeletonClasses}
+  aria-hidden="true"
+  role="presentation"
+  aria-label="Loading product details"
+>
+  <!-- Breadcrumb Placeholder -->
+  {showBreadcrumb && (
+    <nav class="product-details-skeleton__breadcrumb">
+      <div class="product-details-skeleton__breadcrumb-item">
+        <div class="product-details-skeleton__shimmer"></div>
+      </div>
+      <span class="product-details-skeleton__breadcrumb-separator">/</span>
+      <div class="product-details-skeleton__breadcrumb-item">
+        <div class="product-details-skeleton__shimmer"></div>
+      </div>
+      <span class="product-details-skeleton__breadcrumb-separator">/</span>
+      <div class="product-details-skeleton__breadcrumb-item product-details-skeleton__breadcrumb-item--current">
+        <div class="product-details-skeleton__shimmer"></div>
+      </div>
+    </nav>
+  )}
+
+  <!-- Badges Placeholder -->
+  {showBadges && (
+    <div class="product-details-skeleton__badges">
+      <div class="product-details-skeleton__badge">
+        <div class="product-details-skeleton__shimmer"></div>
+      </div>
+    </div>
+  )}
+
+  <!-- Product Name Placeholder -->
+  <div class="product-details-skeleton__name">
+    <div class="product-details-skeleton__shimmer"></div>
+  </div>
+  <div class="product-details-skeleton__name product-details-skeleton__name--short">
+    <div class="product-details-skeleton__shimmer"></div>
+  </div>
+
+  <!-- Brand Placeholder -->
+  {showBrand && (
+    <div class="product-details-skeleton__brand">
+      <div class="product-details-skeleton__shimmer"></div>
+    </div>
+  )}
+
+  <!-- Price Placeholder -->
+  <div class="product-details-skeleton__price-container">
+    <div class="product-details-skeleton__price">
+      <div class="product-details-skeleton__shimmer"></div>
+    </div>
+    <div class="product-details-skeleton__price product-details-skeleton__price--original">
+      <div class="product-details-skeleton__shimmer"></div>
+    </div>
+  </div>
+
+  <!-- Availability Placeholder -->
+  <div class="product-details-skeleton__availability">
+    <div class="product-details-skeleton__stock">
+      <div class="product-details-skeleton__shimmer"></div>
+    </div>
+  </div>
+
+  <!-- Description Placeholder -->
+  <div class="product-details-skeleton__description">
+    <div class="product-details-skeleton__description-line">
+      <div class="product-details-skeleton__shimmer"></div>
+    </div>
+    <div class="product-details-skeleton__description-line">
+      <div class="product-details-skeleton__shimmer"></div>
+    </div>
+    <div class="product-details-skeleton__description-line product-details-skeleton__description-line--short">
+      <div class="product-details-skeleton__shimmer"></div>
+    </div>
+  </div>
+
+  <!-- Variants Placeholder -->
+  {showVariants && (
+    <div class="product-details-skeleton__variants">
+      <!-- Colors -->
+      <div class="product-details-skeleton__variant-group">
+        <div class="product-details-skeleton__variant-label">
+          <div class="product-details-skeleton__shimmer"></div>
+        </div>
+        <div class="product-details-skeleton__variant-list">
+          <div class="product-details-skeleton__variant-item">
+            <div class="product-details-skeleton__shimmer"></div>
+          </div>
+          <div class="product-details-skeleton__variant-item">
+            <div class="product-details-skeleton__shimmer"></div>
+          </div>
+          <div class="product-details-skeleton__variant-item">
+            <div class="product-details-skeleton__shimmer"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sizes -->
+      <div class="product-details-skeleton__variant-group">
+        <div class="product-details-skeleton__variant-label">
+          <div class="product-details-skeleton__shimmer"></div>
+        </div>
+        <div class="product-details-skeleton__variant-list">
+          <div class="product-details-skeleton__variant-item product-details-skeleton__variant-item--small">
+            <div class="product-details-skeleton__shimmer"></div>
+          </div>
+          <div class="product-details-skeleton__variant-item product-details-skeleton__variant-item--small">
+            <div class="product-details-skeleton__shimmer"></div>
+          </div>
+          <div class="product-details-skeleton__variant-item product-details-skeleton__variant-item--small">
+            <div class="product-details-skeleton__shimmer"></div>
+          </div>
+          <div class="product-details-skeleton__variant-item product-details-skeleton__variant-item--small">
+            <div class="product-details-skeleton__shimmer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <!-- CTA Button Placeholder -->
+  <div class="product-details-skeleton__cta">
+    <div class="product-details-skeleton__button">
+      <div class="product-details-skeleton__shimmer"></div>
+    </div>
+    <div class="product-details-skeleton__shop-info">
+      <div class="product-details-skeleton__shimmer"></div>
+    </div>
+  </div>
+
+  <!-- SKU Placeholder -->
+  <div class="product-details-skeleton__sku">
+    <div class="product-details-skeleton__shimmer"></div>
+  </div>
+</div>
+
+<style>
+  /* =================================================================
+   * PRODUCT DETAILS SKELETON STYLES
+   * =================================================================
+   * Skeleton loading placeholder matching ProductDetails structure
+   * Uses design system variables for consistency
+   */
+
+  .product-details-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  /* =================================================================
+   * SHIMMER BASE
+   * ================================================================= */
+  .product-details-skeleton__shimmer {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--color-background-subtle) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  .product-details-skeleton--animated .product-details-skeleton__shimmer {
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  }
+
+  @keyframes skeleton-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* =================================================================
+   * BREADCRUMB
+   * ================================================================= */
+  .product-details-skeleton__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  .product-details-skeleton__breadcrumb-item {
+    position: relative;
+    width: 40px;
+    height: 0.875rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .product-details-skeleton__breadcrumb-item--current {
+    width: 60px;
+  }
+
+  .product-details-skeleton__breadcrumb-separator {
+    color: var(--color-border-dark);
+    font-size: var(--font-size-sm);
+  }
+
+  /* =================================================================
+   * BADGES
+   * ================================================================= */
+  .product-details-skeleton__badges {
+    display: flex;
+    gap: var(--spacing-2);
+  }
+
+  .product-details-skeleton__badge {
+    position: relative;
+    width: 80px;
+    height: 1.5rem;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  /* =================================================================
+   * NAME
+   * ================================================================= */
+  .product-details-skeleton__name {
+    position: relative;
+    width: 80%;
+    height: 2.25rem;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .product-details-skeleton__name--short {
+    width: 50%;
+    height: 2.25rem;
+    margin-top: var(--spacing-1);
+  }
+
+  /* =================================================================
+   * BRAND
+   * ================================================================= */
+  .product-details-skeleton__brand {
+    position: relative;
+    width: 100px;
+    height: 1rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  /* =================================================================
+   * PRICE
+   * ================================================================= */
+  .product-details-skeleton__price-container {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-3);
+  }
+
+  .product-details-skeleton__price {
+    position: relative;
+    width: 100px;
+    height: 1.875rem;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .product-details-skeleton__price--original {
+    width: 70px;
+    height: 1.25rem;
+  }
+
+  /* =================================================================
+   * AVAILABILITY
+   * ================================================================= */
+  .product-details-skeleton__availability {
+    margin-top: var(--spacing-1);
+  }
+
+  .product-details-skeleton__stock {
+    position: relative;
+    width: 100px;
+    height: 0.875rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  /* =================================================================
+   * DESCRIPTION
+   * ================================================================= */
+  .product-details-skeleton__description {
+    margin-top: var(--spacing-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .product-details-skeleton__description-line {
+    position: relative;
+    width: 100%;
+    height: 1rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .product-details-skeleton__description-line--short {
+    width: 75%;
+  }
+
+  /* =================================================================
+   * VARIANTS
+   * ================================================================= */
+  .product-details-skeleton__variants {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .product-details-skeleton__variant-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .product-details-skeleton__variant-label {
+    position: relative;
+    width: 60px;
+    height: 0.875rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .product-details-skeleton__variant-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+  }
+
+  .product-details-skeleton__variant-item {
+    position: relative;
+    width: 70px;
+    height: 2rem;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .product-details-skeleton__variant-item--small {
+    width: 40px;
+  }
+
+  /* =================================================================
+   * CTA
+   * ================================================================= */
+  .product-details-skeleton__cta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-4);
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .product-details-skeleton__button {
+    position: relative;
+    width: 100%;
+    height: 3.5rem;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .product-details-skeleton__shop-info {
+    position: relative;
+    width: 150px;
+    height: 0.875rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * SKU
+   * ================================================================= */
+  .product-details-skeleton__sku {
+    position: relative;
+    width: 100px;
+    height: 0.75rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+    margin-top: var(--spacing-4);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .product-details-skeleton__name {
+      width: 100%;
+      height: 1.875rem;
+    }
+
+    .product-details-skeleton__name--short {
+      width: 60%;
+      height: 1.875rem;
+    }
+
+    .product-details-skeleton__price {
+      height: 1.5rem;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .product-details-skeleton--animated .product-details-skeleton__shimmer {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .product-details-skeleton__breadcrumb-item,
+  :global(html[data-theme="dark"]) .product-details-skeleton__badge,
+  :global(html[data-theme="dark"]) .product-details-skeleton__name,
+  :global(html[data-theme="dark"]) .product-details-skeleton__brand,
+  :global(html[data-theme="dark"]) .product-details-skeleton__price,
+  :global(html[data-theme="dark"]) .product-details-skeleton__stock,
+  :global(html[data-theme="dark"]) .product-details-skeleton__description-line,
+  :global(html[data-theme="dark"]) .product-details-skeleton__variant-label,
+  :global(html[data-theme="dark"]) .product-details-skeleton__variant-item,
+  :global(html[data-theme="dark"]) .product-details-skeleton__button,
+  :global(html[data-theme="dark"]) .product-details-skeleton__shop-info,
+  :global(html[data-theme="dark"]) .product-details-skeleton__sku {
+    background-color: var(--color-background-muted);
+  }
+
+  :global(html[data-theme="dark"]) .product-details-skeleton__shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--color-background-elevated) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  :global(html[data-theme="dark"]) .product-details-skeleton__variants,
+  :global(html[data-theme="dark"]) .product-details-skeleton__cta {
+    border-color: var(--color-border);
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .product-details-skeleton__breadcrumb-item,
+    .product-details-skeleton__badge,
+    .product-details-skeleton__name,
+    .product-details-skeleton__brand,
+    .product-details-skeleton__price,
+    .product-details-skeleton__stock,
+    .product-details-skeleton__description-line,
+    .product-details-skeleton__variant-label,
+    .product-details-skeleton__variant-item,
+    .product-details-skeleton__button,
+    .product-details-skeleton__shop-info,
+    .product-details-skeleton__sku {
+      border: 2px solid currentColor;
+    }
+
+    .product-details-skeleton__shimmer {
+      display: none;
+    }
+  }
+</style>

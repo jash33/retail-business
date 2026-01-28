@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769528005825-14d17a21",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-27T15:33:25.825Z",
+  "projectPath": "C:\\Users\\James\\Repos\\retail-business",
+  "projectName": "retail-business",
+  "featureId": "events-calendar-page",
+  "featureName": "Events Calendar for Pop-ups and Workshops",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

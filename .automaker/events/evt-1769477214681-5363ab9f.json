@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769477214681-5363ab9f",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T01:26:54.681Z",
+  "projectPath": "C:\\Users\\James\\Repos\\retail-business",
+  "projectName": "retail-business",
+  "featureId": "product-schema-markup",
+  "featureName": "Product Schema Markup for Rich Results",
+  "error": "Feature completed in 798s",
+  "passes": true
+}

@@ -1,0 +1,406 @@
+---
+/**
+ * ProductGridSkeleton Component
+ * A skeleton loading placeholder for ProductGrid that provides visual feedback
+ * during content loading. Shows multiple ProductCardSkeleton components in a grid.
+ *
+ * Features:
+ * - Configurable number of skeleton items
+ * - Flexible column layouts (2, 3, or 4 columns)
+ * - Responsive breakpoints matching ProductGrid
+ * - Optional header skeleton
+ * - Stagger animation for sequential reveal
+ * - Full accessibility support
+ * - Reduced motion support
+ * - Dark mode support
+ *
+ * @example Basic usage (6 items, 3 columns)
+ * ```astro
+ * <ProductGridSkeleton count={6} columns={3} />
+ * ```
+ *
+ * @example With header
+ * ```astro
+ * <ProductGridSkeleton
+ *   count={8}
+ *   columns={4}
+ *   showHeader={true}
+ * />
+ * ```
+ *
+ * @example Custom responsive columns
+ * ```astro
+ * <ProductGridSkeleton
+ *   count={6}
+ *   responsiveColumns={{ mobile: 1, tablet: 2, desktop: 3 }}
+ * />
+ * ```
+ */
+
+import ProductCardSkeleton from './ProductCardSkeleton.astro';
+
+interface Props {
+  /** Number of skeleton items to display */
+  count?: number;
+  /** Number of columns (2, 3, or 4) */
+  columns?: 2 | 3 | 4;
+  /** Gap between items */
+  gap?: 'small' | 'medium' | 'large';
+  /** Whether to show header skeleton */
+  showHeader?: boolean;
+  /** Whether to animate the skeletons */
+  animate?: boolean;
+  /** Whether to stagger the animation */
+  stagger?: boolean;
+  /** Aspect ratio for card skeletons */
+  aspectRatio?: '4:5' | '1:1';
+  /** Custom responsive columns */
+  responsiveColumns?: {
+    mobile?: number;
+    tablet?: number;
+    desktop?: number;
+  };
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  count = 6,
+  columns = 3,
+  gap = 'medium',
+  showHeader = false,
+  animate = true,
+  stagger = true,
+  aspectRatio = '4:5',
+  responsiveColumns,
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const gridClasses = [
+  'product-grid-skeleton',
+  `product-grid-skeleton--cols-${columns}`,
+  `product-grid-skeleton--gap-${gap}`,
+  animate && 'product-grid-skeleton--animated',
+  stagger && 'product-grid-skeleton--stagger',
+  className,
+].filter(Boolean).join(' ');
+
+// Get gap CSS value
+const gapValues: Record<string, string> = {
+  small: 'var(--spacing-4)',
+  medium: 'var(--spacing-6)',
+  large: 'var(--spacing-8)',
+};
+
+// Build responsive column CSS custom properties
+const responsiveColsStyle = responsiveColumns
+  ? `--grid-cols-mobile: ${responsiveColumns.mobile || 1}; --grid-cols-tablet: ${responsiveColumns.tablet || 2}; --grid-cols-desktop: ${responsiveColumns.desktop || columns};`
+  : '';
+
+// Create array of skeleton items
+const skeletonItems = Array.from({ length: count }, (_, index) => index);
+---
+
+<section
+  class={gridClasses}
+  aria-hidden="true"
+  role="presentation"
+  aria-label="Loading products"
+  style={`--grid-cols: ${columns}; --grid-gap: ${gapValues[gap]}; ${responsiveColsStyle}`}
+>
+  <div class="product-grid-skeleton__container">
+    <!-- Header Skeleton -->
+    {showHeader && (
+      <header class="product-grid-skeleton__header">
+        <div class="product-grid-skeleton__heading">
+          <div class="product-grid-skeleton__shimmer"></div>
+        </div>
+        <div class="product-grid-skeleton__subheading">
+          <div class="product-grid-skeleton__shimmer"></div>
+        </div>
+      </header>
+    )}
+
+    <!-- Grid Skeleton -->
+    <div class="product-grid-skeleton__grid">
+      {skeletonItems.map((index) => (
+        <div
+          class="product-grid-skeleton__item"
+          style={stagger ? `--stagger-delay: ${Math.min(index, 7) * 100}ms` : ''}
+        >
+          <ProductCardSkeleton
+            aspectRatio={aspectRatio}
+            animate={animate}
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * PRODUCT GRID SKELETON STYLES
+   * =================================================================
+   * Skeleton loading placeholder matching ProductGrid structure
+   * Uses design system variables for consistency
+   */
+
+  .product-grid-skeleton {
+    padding: var(--spacing-8) var(--spacing-4);
+  }
+
+  .product-grid-skeleton__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * HEADER SKELETON
+   * ================================================================= */
+  .product-grid-skeleton__header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4);
+  }
+
+  .product-grid-skeleton__heading {
+    position: relative;
+    width: 200px;
+    height: 2.25rem;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .product-grid-skeleton__subheading {
+    position: relative;
+    width: 320px;
+    max-width: 90%;
+    height: 1.25rem;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  /* =================================================================
+   * GRID
+   * ================================================================= */
+  .product-grid-skeleton__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols, 3), 1fr);
+    gap: var(--grid-gap, var(--spacing-6));
+  }
+
+  .product-grid-skeleton__item {
+    min-width: 0;
+  }
+
+  /* =================================================================
+   * SHIMMER ANIMATION
+   * ================================================================= */
+  .product-grid-skeleton__shimmer {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--color-background-subtle) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  .product-grid-skeleton--animated .product-grid-skeleton__shimmer {
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  }
+
+  @keyframes skeleton-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* =================================================================
+   * STAGGER ANIMATION
+   * ================================================================= */
+  .product-grid-skeleton--stagger .product-grid-skeleton__item {
+    opacity: 0;
+    animation: skeleton-fade-in 0.3s ease-out forwards;
+    animation-delay: var(--stagger-delay, 0ms);
+  }
+
+  @keyframes skeleton-fade-in {
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* =================================================================
+   * GAP VARIANTS
+   * ================================================================= */
+  .product-grid-skeleton--gap-small .product-grid-skeleton__grid {
+    gap: var(--spacing-4);
+  }
+
+  .product-grid-skeleton--gap-medium .product-grid-skeleton__grid {
+    gap: var(--spacing-6);
+  }
+
+  .product-grid-skeleton--gap-large .product-grid-skeleton__grid {
+    gap: var(--spacing-8);
+  }
+
+  /* =================================================================
+   * COLUMN VARIANTS
+   * ================================================================= */
+  .product-grid-skeleton--cols-2 .product-grid-skeleton__grid {
+    --grid-cols: 2;
+  }
+
+  .product-grid-skeleton--cols-3 .product-grid-skeleton__grid {
+    --grid-cols: 3;
+  }
+
+  .product-grid-skeleton--cols-4 .product-grid-skeleton__grid {
+    --grid-cols: 4;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Large Desktop (1280px+) */
+  @media screen and (min-width: 1280px) {
+    .product-grid-skeleton {
+      padding: var(--spacing-12) var(--spacing-8);
+    }
+
+    .product-grid-skeleton__heading {
+      width: 280px;
+      height: 3rem;
+    }
+  }
+
+  /* Desktop (1024px - 1279px) */
+  @media screen and (min-width: 1024px) and (max-width: 1279px) {
+    .product-grid-skeleton__grid {
+      grid-template-columns: repeat(var(--grid-cols-desktop, var(--grid-cols, 3)), 1fr);
+    }
+  }
+
+  /* Tablet (768px - 1023px) */
+  @media screen and (min-width: 768px) and (max-width: 1023px) {
+    .product-grid-skeleton {
+      padding: var(--spacing-8) var(--spacing-6);
+    }
+
+    .product-grid-skeleton__grid {
+      grid-template-columns: repeat(var(--grid-cols-tablet, 2), 1fr);
+    }
+
+    .product-grid-skeleton__heading {
+      height: 2.25rem;
+    }
+  }
+
+  /* Small Tablet / Large Mobile (480px - 767px) */
+  @media screen and (min-width: 480px) and (max-width: 767px) {
+    .product-grid-skeleton {
+      padding: var(--spacing-6) var(--spacing-4);
+    }
+
+    .product-grid-skeleton__grid {
+      grid-template-columns: repeat(var(--grid-cols-tablet, 2), 1fr);
+      gap: var(--spacing-4);
+    }
+
+    .product-grid-skeleton__heading {
+      height: 1.875rem;
+    }
+
+    .product-grid-skeleton__subheading {
+      height: 1rem;
+    }
+  }
+
+  /* Mobile (< 480px) */
+  @media screen and (max-width: 479px) {
+    .product-grid-skeleton {
+      padding: var(--spacing-4) var(--spacing-3);
+    }
+
+    .product-grid-skeleton__header {
+      margin-bottom: var(--spacing-6);
+    }
+
+    .product-grid-skeleton__grid {
+      grid-template-columns: repeat(var(--grid-cols-mobile, 1), 1fr);
+      gap: var(--spacing-4);
+    }
+
+    .product-grid-skeleton__heading {
+      width: 150px;
+      height: 1.5rem;
+    }
+
+    .product-grid-skeleton__subheading {
+      width: 200px;
+      height: 0.875rem;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .product-grid-skeleton--animated .product-grid-skeleton__shimmer {
+      animation: none;
+    }
+
+    .product-grid-skeleton--stagger .product-grid-skeleton__item {
+      opacity: 1;
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .product-grid-skeleton__heading,
+  :global(html[data-theme="dark"]) .product-grid-skeleton__subheading {
+    background-color: var(--color-background-muted);
+  }
+
+  :global(html[data-theme="dark"]) .product-grid-skeleton__shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--color-background-elevated) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .product-grid-skeleton__heading,
+    .product-grid-skeleton__subheading {
+      border: 2px solid currentColor;
+    }
+
+    .product-grid-skeleton__shimmer {
+      display: none;
+    }
+  }
+</style>

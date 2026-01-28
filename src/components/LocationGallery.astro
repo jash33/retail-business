@@ -1,0 +1,746 @@
+---
+/**
+ * LocationGallery Component
+ * A photo gallery specifically designed for location/visit pages.
+ * Displays interior, exterior, and neighborhood photos with category filtering.
+ *
+ * Features:
+ * - Category tabs (All, Exterior, Interior, Neighborhood)
+ * - Lightbox view for full-size images
+ * - Responsive masonry-style grid
+ * - Keyboard navigation support
+ * - Lazy loading for performance
+ * - Smooth animations
+ *
+ * @example
+ * ```astro
+ * <LocationGallery
+ *   photos={locationConfig.photos}
+ *   locationName="Houston Web Services"
+ * />
+ * ```
+ */
+
+import type { LocationPhoto } from '../types/location';
+
+interface Props {
+  /** Array of location photos */
+  photos: LocationPhoto[];
+  /** Location name for accessibility */
+  locationName: string;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  photos,
+  locationName,
+  class: className = '',
+} = Astro.props;
+
+// Group photos by category
+const categories = ['all', 'exterior', 'interior', 'neighborhood'] as const;
+const categoryLabels = {
+  all: 'All Photos',
+  exterior: 'Exterior',
+  interior: 'Interior',
+  neighborhood: 'Neighborhood',
+};
+
+// Count photos per category
+const photoCounts = {
+  all: photos.length,
+  exterior: photos.filter(p => p.category === 'exterior').length,
+  interior: photos.filter(p => p.category === 'interior').length,
+  neighborhood: photos.filter(p => p.category === 'neighborhood').length,
+};
+---
+
+<div class:list={['location-gallery', className]} data-location-gallery>
+  <!-- Category Tabs -->
+  <div class="location-gallery__tabs" role="tablist" aria-label="Photo categories">
+    {categories.map((category, index) => (
+      <button
+        class:list={[
+          'location-gallery__tab',
+          index === 0 && 'location-gallery__tab--active'
+        ]}
+        role="tab"
+        aria-selected={index === 0 ? 'true' : 'false'}
+        aria-controls={`gallery-panel-${category}`}
+        data-category={category}
+        type="button"
+      >
+        {categoryLabels[category]}
+        <span class="location-gallery__tab-count">({photoCounts[category]})</span>
+      </button>
+    ))}
+  </div>
+
+  <!-- Photo Grid -->
+  <div
+    class="location-gallery__grid"
+    role="tabpanel"
+    id="gallery-panel-all"
+    aria-label={`${locationName} photo gallery`}
+  >
+    {photos.map((photo, index) => (
+      <button
+        class="location-gallery__item"
+        data-category={photo.category}
+        data-index={index}
+        type="button"
+        aria-label={`View ${photo.alt}`}
+      >
+        <picture>
+          {photo.srcWebP && (
+            <source srcset={photo.srcWebP} type="image/webp" />
+          )}
+          <img
+            src={photo.src}
+            alt={photo.alt}
+            width={photo.width || 400}
+            height={photo.height || 300}
+            loading="lazy"
+            decoding="async"
+            class="location-gallery__image"
+          />
+        </picture>
+        <div class="location-gallery__overlay">
+          <span class="location-gallery__category-badge">{photo.category}</span>
+          {photo.caption && (
+            <span class="location-gallery__caption">{photo.caption}</span>
+          )}
+          <span class="location-gallery__zoom-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <line x1="11" y1="8" x2="11" y2="14" />
+              <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+          </span>
+        </div>
+      </button>
+    ))}
+  </div>
+
+  <!-- Lightbox -->
+  <div
+    class="location-gallery__lightbox"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Photo lightbox"
+    aria-hidden="true"
+    data-lightbox
+  >
+    <div class="location-gallery__lightbox-backdrop" data-lightbox-close></div>
+    <div class="location-gallery__lightbox-content">
+      <button
+        class="location-gallery__lightbox-close"
+        type="button"
+        aria-label="Close lightbox"
+        data-lightbox-close
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+
+      <button
+        class="location-gallery__lightbox-nav location-gallery__lightbox-nav--prev"
+        type="button"
+        aria-label="Previous image"
+        data-lightbox-prev
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+
+      <div class="location-gallery__lightbox-image-container">
+        <img
+          src=""
+          alt=""
+          class="location-gallery__lightbox-image"
+          data-lightbox-image
+        />
+        <div class="location-gallery__lightbox-caption" data-lightbox-caption></div>
+      </div>
+
+      <button
+        class="location-gallery__lightbox-nav location-gallery__lightbox-nav--next"
+        type="button"
+        aria-label="Next image"
+        data-lightbox-next
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+
+      <div class="location-gallery__lightbox-counter" aria-live="polite">
+        <span data-lightbox-current>1</span> / <span data-lightbox-total>{photos.length}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* =================================================================
+   * LOCATION GALLERY STYLES
+   * ================================================================= */
+
+  .location-gallery {
+    width: 100%;
+  }
+
+  /* =================================================================
+   * CATEGORY TABS
+   * ================================================================= */
+  .location-gallery__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-6);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .location-gallery__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    padding: var(--spacing-2) var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out);
+  }
+
+  .location-gallery__tab:hover {
+    background-color: var(--color-background-subtle);
+    border-color: var(--color-primary-light);
+  }
+
+  .location-gallery__tab:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .location-gallery__tab--active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .location-gallery__tab--active:hover {
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+  }
+
+  .location-gallery__tab-count {
+    font-size: var(--font-size-xs);
+    opacity: 0.8;
+  }
+
+  /* =================================================================
+   * PHOTO GRID
+   * ================================================================= */
+  .location-gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-4);
+  }
+
+  .location-gallery__item {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    background: var(--color-background-muted);
+    transition:
+      transform var(--duration-300) var(--ease-out),
+      box-shadow var(--duration-300) var(--ease-out);
+  }
+
+  .location-gallery__item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .location-gallery__item:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring), var(--shadow-lg);
+  }
+
+  .location-gallery__item[data-hidden="true"] {
+    display: none;
+  }
+
+  .location-gallery__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-300) var(--ease-out);
+  }
+
+  .location-gallery__item:hover .location-gallery__image {
+    transform: scale(1.05);
+  }
+
+  /* =================================================================
+   * OVERLAY
+   * ================================================================= */
+  .location-gallery__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: var(--spacing-4);
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0) 60%
+    );
+    opacity: 0;
+    transition: opacity var(--duration-200) var(--ease-out);
+  }
+
+  .location-gallery__item:hover .location-gallery__overlay,
+  .location-gallery__item:focus-visible .location-gallery__overlay {
+    opacity: 1;
+  }
+
+  .location-gallery__category-badge {
+    position: absolute;
+    top: var(--spacing-3);
+    left: var(--spacing-3);
+    padding: var(--spacing-1) var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: capitalize;
+    color: var(--color-text-inverse);
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: var(--radius-base);
+  }
+
+  .location-gallery__caption {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-inverse);
+    margin-bottom: var(--spacing-1);
+  }
+
+  .location-gallery__zoom-icon {
+    position: absolute;
+    top: var(--spacing-3);
+    right: var(--spacing-3);
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: var(--radius-full);
+    color: var(--color-text-primary);
+  }
+
+  .location-gallery__zoom-icon svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* =================================================================
+   * LIGHTBOX
+   * ================================================================= */
+  .location-gallery__lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      visibility var(--duration-300) var(--ease-out),
+      opacity var(--duration-300) var(--ease-out);
+  }
+
+  .location-gallery__lightbox[aria-hidden="false"] {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .location-gallery__lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+  }
+
+  .location-gallery__lightbox-content {
+    position: relative;
+    width: 100%;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .location-gallery__lightbox-close {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    z-index: 10;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: var(--radius-full);
+    color: var(--color-text-inverse);
+    cursor: pointer;
+    transition: background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .location-gallery__lightbox-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .location-gallery__lightbox-close:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-text-inverse);
+  }
+
+  .location-gallery__lightbox-close svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .location-gallery__lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: var(--radius-full);
+    color: var(--color-text-inverse);
+    cursor: pointer;
+    transition: background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .location-gallery__lightbox-nav:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .location-gallery__lightbox-nav:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-text-inverse);
+  }
+
+  .location-gallery__lightbox-nav svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .location-gallery__lightbox-nav--prev {
+    left: var(--spacing-4);
+  }
+
+  .location-gallery__lightbox-nav--next {
+    right: var(--spacing-4);
+  }
+
+  .location-gallery__lightbox-image-container {
+    max-width: 80vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .location-gallery__lightbox-image {
+    max-width: 100%;
+    max-height: calc(80vh - 3rem);
+    object-fit: contain;
+    border-radius: var(--radius-md);
+  }
+
+  .location-gallery__lightbox-caption {
+    margin-top: var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-inverse);
+    text-align: center;
+    max-width: 600px;
+  }
+
+  .location-gallery__lightbox-counter {
+    position: absolute;
+    bottom: var(--spacing-4);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: var(--spacing-2) var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-inverse);
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: var(--radius-full);
+  }
+
+  /* =================================================================
+   * RESPONSIVE
+   * ================================================================= */
+  @media (max-width: 767px) {
+    .location-gallery__tabs {
+      justify-content: center;
+    }
+
+    .location-gallery__tab {
+      flex: 1;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .location-gallery__tab-count {
+      display: none;
+    }
+
+    .location-gallery__grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--spacing-3);
+    }
+
+    .location-gallery__lightbox-nav--prev {
+      left: var(--spacing-2);
+    }
+
+    .location-gallery__lightbox-nav--next {
+      right: var(--spacing-2);
+    }
+
+    .location-gallery__lightbox-close {
+      top: var(--spacing-2);
+      right: var(--spacing-2);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .location-gallery__item,
+    .location-gallery__image,
+    .location-gallery__overlay,
+    .location-gallery__lightbox,
+    .location-gallery__tab {
+      transition: none;
+    }
+
+    .location-gallery__item:hover {
+      transform: none;
+    }
+
+    .location-gallery__item:hover .location-gallery__image {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .location-gallery__tab {
+    border-color: var(--color-border-dark);
+  }
+
+  :global(html[data-theme="dark"]) .location-gallery__tab:hover {
+    background-color: var(--color-background-elevated);
+  }
+</style>
+
+<script>
+  /**
+   * LocationGallery Interactive Features
+   * - Category filtering
+   * - Lightbox functionality
+   * - Keyboard navigation
+   */
+  function initLocationGalleries() {
+    const galleries = document.querySelectorAll('[data-location-gallery]');
+
+    galleries.forEach((gallery) => {
+      const tabs = gallery.querySelectorAll('.location-gallery__tab');
+      const items = gallery.querySelectorAll('.location-gallery__item') as NodeListOf<HTMLElement>;
+      const lightbox = gallery.querySelector('[data-lightbox]') as HTMLElement;
+      const lightboxImage = gallery.querySelector('[data-lightbox-image]') as HTMLImageElement;
+      const lightboxCaption = gallery.querySelector('[data-lightbox-caption]') as HTMLElement;
+      const lightboxCurrent = gallery.querySelector('[data-lightbox-current]') as HTMLElement;
+      const lightboxTotal = gallery.querySelector('[data-lightbox-total]') as HTMLElement;
+      const closeButtons = gallery.querySelectorAll('[data-lightbox-close]');
+      const prevButton = gallery.querySelector('[data-lightbox-prev]');
+      const nextButton = gallery.querySelector('[data-lightbox-next]');
+
+      let currentCategory = 'all';
+      let currentIndex = 0;
+      let filteredPhotos: HTMLElement[] = [];
+
+      // Get photos based on current category filter
+      function getFilteredPhotos(): HTMLElement[] {
+        if (currentCategory === 'all') {
+          return Array.from(items);
+        }
+        return Array.from(items).filter(
+          (item) => item.getAttribute('data-category') === currentCategory
+        );
+      }
+
+      // Filter photos by category
+      function filterByCategory(category: string) {
+        currentCategory = category;
+
+        // Update tab states
+        tabs.forEach((tab) => {
+          const tabCategory = tab.getAttribute('data-category');
+          const isActive = tabCategory === category;
+          tab.classList.toggle('location-gallery__tab--active', isActive);
+          tab.setAttribute('aria-selected', String(isActive));
+        });
+
+        // Show/hide items
+        items.forEach((item) => {
+          const itemCategory = item.getAttribute('data-category');
+          const shouldShow = category === 'all' || itemCategory === category;
+          item.setAttribute('data-hidden', String(!shouldShow));
+        });
+
+        filteredPhotos = getFilteredPhotos();
+      }
+
+      // Open lightbox
+      function openLightbox(index: number) {
+        filteredPhotos = getFilteredPhotos();
+        currentIndex = index;
+
+        const photo = filteredPhotos[currentIndex];
+        if (!photo) return;
+
+        const img = photo.querySelector('img') as HTMLImageElement;
+        const captionEl = photo.querySelector('.location-gallery__caption') as HTMLElement;
+
+        lightboxImage.src = img.src;
+        lightboxImage.alt = img.alt;
+        lightboxCaption.textContent = captionEl?.textContent || '';
+        lightboxCurrent.textContent = String(currentIndex + 1);
+        lightboxTotal.textContent = String(filteredPhotos.length);
+
+        lightbox.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+
+        // Focus management
+        lightbox.focus();
+      }
+
+      // Close lightbox
+      function closeLightbox() {
+        lightbox.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      // Navigate lightbox
+      function navigateLightbox(direction: 'prev' | 'next') {
+        if (direction === 'prev') {
+          currentIndex = (currentIndex - 1 + filteredPhotos.length) % filteredPhotos.length;
+        } else {
+          currentIndex = (currentIndex + 1) % filteredPhotos.length;
+        }
+
+        const photo = filteredPhotos[currentIndex];
+        if (!photo) return;
+
+        const img = photo.querySelector('img') as HTMLImageElement;
+        const captionEl = photo.querySelector('.location-gallery__caption') as HTMLElement;
+
+        lightboxImage.src = img.src;
+        lightboxImage.alt = img.alt;
+        lightboxCaption.textContent = captionEl?.textContent || '';
+        lightboxCurrent.textContent = String(currentIndex + 1);
+      }
+
+      // Event listeners - Category tabs
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const category = tab.getAttribute('data-category');
+          if (category) {
+            filterByCategory(category);
+          }
+        });
+      });
+
+      // Event listeners - Photo items
+      items.forEach((item, index) => {
+        item.addEventListener('click', () => {
+          // Find the index within filtered photos
+          filteredPhotos = getFilteredPhotos();
+          const filteredIndex = filteredPhotos.indexOf(item);
+          openLightbox(filteredIndex >= 0 ? filteredIndex : index);
+        });
+      });
+
+      // Event listeners - Lightbox controls
+      closeButtons.forEach((btn) => {
+        btn.addEventListener('click', closeLightbox);
+      });
+
+      prevButton?.addEventListener('click', () => navigateLightbox('prev'));
+      nextButton?.addEventListener('click', () => navigateLightbox('next'));
+
+      // Keyboard navigation
+      lightbox.addEventListener('keydown', (e) => {
+        const event = e as KeyboardEvent;
+        if (event.key === 'Escape') {
+          closeLightbox();
+        } else if (event.key === 'ArrowLeft') {
+          navigateLightbox('prev');
+        } else if (event.key === 'ArrowRight') {
+          navigateLightbox('next');
+        }
+      });
+
+      // Initialize
+      filteredPhotos = getFilteredPhotos();
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLocationGalleries);
+  } else {
+    initLocationGalleries();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initLocationGalleries);
+</script>

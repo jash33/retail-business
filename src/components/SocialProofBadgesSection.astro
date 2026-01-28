@@ -1,0 +1,399 @@
+---
+/**
+ * SocialProofBadgesSection Component
+ * A responsive section displaying social proof badges in various layout configurations.
+ * Designed for showcasing trust indicators like payment security, social followers,
+ * press mentions, and certifications.
+ *
+ * Features:
+ * - Multiple layout options: grid, inline, row
+ * - Responsive grid: 1 column (mobile) -> 2 columns (tablet) -> 4 columns (desktop)
+ * - Section heading and subheading
+ * - Consistent badge sizing and spacing
+ * - Accessible with proper semantic structure
+ * - Loading/empty state handling
+ * - Smooth animations with reduced motion support
+ *
+ * @example Basic usage
+ * ```astro
+ * <SocialProofBadgesSection
+ *   heading="Trusted By Thousands"
+ *   badges={[
+ *     { id: 'secure', type: 'payment-security', title: 'Secure Checkout', description: '...' },
+ *     { id: 'followers', type: 'followers', title: 'Instagram', description: '...', metric: '50K+' },
+ *   ]}
+ * />
+ * ```
+ *
+ * @example With subheading and inline layout
+ * ```astro
+ * <SocialProofBadgesSection
+ *   heading="Why Trust Us"
+ *   subheading="Industry-leading security and satisfied customers"
+ *   badges={badges}
+ *   layout="inline"
+ * />
+ * ```
+ */
+
+import type { SocialProofBadgesSectionProps, SocialProofBadge } from '../types/social-proof-badge';
+import SocialProofBadgeComponent from './SocialProofBadge.astro';
+
+interface Props extends SocialProofBadgesSectionProps {}
+
+const {
+  heading = 'Trusted By Thousands',
+  subheading,
+  badges = [],
+  layout = 'grid',
+  size = 'medium',
+  showMetrics = true,
+  id = 'social-proof',
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'social-proof-section',
+  className,
+].filter(Boolean).join(' ');
+
+const gridClasses = [
+  'social-proof-section__grid',
+  `social-proof-section__grid--${layout}`,
+].filter(Boolean).join(' ');
+
+// Check if we have badges to display
+const hasBadges = badges && badges.length > 0;
+---
+
+<section class={sectionClasses} id={id} aria-labelledby={`${id}-heading`}>
+  <div class="social-proof-section__container">
+    <!-- Section Header -->
+    <header class="social-proof-section__header">
+      <h2 id={`${id}-heading`} class="social-proof-section__heading">{heading}</h2>
+      {subheading && (
+        <p class="social-proof-section__subheading">{subheading}</p>
+      )}
+    </header>
+
+    <!-- Badges Grid/Layout -->
+    {hasBadges ? (
+      <div class={gridClasses} role="list">
+        {badges.map((badge) => (
+          <div role="listitem">
+            <SocialProofBadgeComponent
+              id={badge.id}
+              type={badge.type}
+              title={badge.title}
+              description={badge.description}
+              icon={badge.icon}
+              iconAriaLabel={badge.iconAriaLabel}
+              metric={badge.metric}
+              metricLabel={badge.metricLabel}
+              link={badge.link}
+              size={size}
+              showMetric={showMetrics}
+            />
+          </div>
+        ))}
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="social-proof-section__empty" role="status" aria-live="polite">
+        <p class="social-proof-section__empty-text">Trust badges coming soon.</p>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * SOCIAL PROOF BADGES SECTION COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .social-proof-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .social-proof-section__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* Section Header */
+  .social-proof-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .social-proof-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3);
+    line-height: var(--line-height-tight);
+  }
+
+  .social-proof-section__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * GRID LAYOUT (Default)
+   * ================================================================= */
+  .social-proof-section__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+
+  .social-proof-section__grid--grid {
+    /* Default grid behavior - responsive columns handled below */
+  }
+
+  /* =================================================================
+   * INLINE LAYOUT
+   * Horizontal scrolling on mobile, wrapping on larger screens
+   * ================================================================= */
+  .social-proof-section__grid--inline {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-4);
+  }
+
+  .social-proof-section__grid--inline > [role="listitem"] {
+    flex: 0 1 auto;
+    min-width: 200px;
+    max-width: 280px;
+  }
+
+  /* =================================================================
+   * ROW LAYOUT
+   * Single row with equal-width items
+   * ================================================================= */
+  .social-proof-section__grid--row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: var(--spacing-4);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: var(--spacing-2);
+  }
+
+  .social-proof-section__grid--row > [role="listitem"] {
+    flex: 0 0 auto;
+    min-width: 220px;
+    max-width: 280px;
+    scroll-snap-align: start;
+  }
+
+  /* Scrollbar styling for row layout */
+  .social-proof-section__grid--row::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .social-proof-section__grid--row::-webkit-scrollbar-track {
+    background: var(--color-background-muted);
+    border-radius: var(--radius-full);
+  }
+
+  .social-proof-section__grid--row::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+  }
+
+  .social-proof-section__grid--row::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-tertiary);
+  }
+
+  /* Empty State */
+  .social-proof-section__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-12) var(--spacing-8);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .social-proof-section__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Small screens (480px) */
+  @media screen and (min-width: 480px) {
+    .social-proof-section__grid--grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Tablet (768px) - 2 or 3 columns */
+  @media screen and (min-width: 768px) {
+    .social-proof-section {
+      padding: var(--spacing-20) var(--spacing-8);
+    }
+
+    .social-proof-section__header {
+      margin-bottom: var(--spacing-12);
+    }
+
+    .social-proof-section__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    .social-proof-section__subheading {
+      font-size: var(--font-size-lg);
+    }
+
+    .social-proof-section__grid--grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-6);
+    }
+
+    .social-proof-section__grid--row {
+      justify-content: center;
+      overflow-x: visible;
+      flex-wrap: wrap;
+    }
+
+    .social-proof-section__grid--row > [role="listitem"] {
+      flex: 1 1 200px;
+      max-width: 280px;
+    }
+  }
+
+  /* Desktop (1024px) - 4 columns */
+  @media screen and (min-width: 1024px) {
+    .social-proof-section__grid--grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .social-proof-section__grid--inline > [role="listitem"] {
+      flex: 1 1 200px;
+      max-width: 300px;
+    }
+  }
+
+  /* Large Desktop (1280px) */
+  @media screen and (min-width: 1280px) {
+    .social-proof-section {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+
+    .social-proof-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+  }
+
+  /* =================================================================
+   * ANIMATION - Staggered badge appearance
+   * ================================================================= */
+  .social-proof-section__grid > [role="listitem"] {
+    animation: fadeSlideUp 0.5s ease-out backwards;
+  }
+
+  .social-proof-section__grid > [role="listitem"]:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .social-proof-section__grid > [role="listitem"]:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+
+  .social-proof-section__grid > [role="listitem"]:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+
+  .social-proof-section__grid > [role="listitem"]:nth-child(4) {
+    animation-delay: 0.25s;
+  }
+
+  .social-proof-section__grid > [role="listitem"]:nth-child(5) {
+    animation-delay: 0.3s;
+  }
+
+  .social-proof-section__grid > [role="listitem"]:nth-child(6) {
+    animation-delay: 0.35s;
+  }
+
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .social-proof-section {
+    background-color: var(--color-background);
+  }
+
+  :global(html[data-theme="dark"]) .social-proof-section__empty {
+    background-color: var(--color-background-elevated);
+    border-color: var(--color-border);
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .social-proof-section__grid > [role="listitem"] {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .social-proof-section {
+      padding: var(--spacing-8) 0;
+      background-color: transparent;
+    }
+
+    .social-proof-section__grid {
+      gap: var(--spacing-4);
+    }
+
+    .social-proof-section__grid > [role="listitem"] {
+      animation: none;
+    }
+
+    .social-proof-section__grid--row {
+      flex-wrap: wrap;
+      overflow: visible;
+    }
+  }
+</style>

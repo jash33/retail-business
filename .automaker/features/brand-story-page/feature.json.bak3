@@ -1,0 +1,14 @@
+{
+  "id": "brand-story-page",
+  "category": "Core",
+  "title": "Brand Story/About Page with Magazine Layout",
+  "description": "Build editorial-style about page with long-form text, pull quotes, founder photos, brand values grid, and magazine-inspired asymmetric layouts. Distinct from existing about page with retail focus.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "editorial-typography-system"
+  ],
+  "createdAt": "2026-01-26T01:49:59.715Z",
+  "updatedAt": "2026-01-26T01:49:59.715Z"
+}

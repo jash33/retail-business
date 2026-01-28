@@ -1,0 +1,12 @@
+{
+  "id": "collection-card-component",
+  "category": "UI",
+  "title": "Collection/Category Card Component",
+  "description": "Build collection cards with overlay titles, item counts, and hero images. Includes hover effects with gradient overlays and links to filtered shop views.",
+  "status": "in_progress",
+  "priority": 2,
+  "complexity": "simple",
+  "createdAt": "2026-01-26T01:49:59.702Z",
+  "updatedAt": "2026-01-26T14:07:54.973Z",
+  "descriptionHistory": []
+}

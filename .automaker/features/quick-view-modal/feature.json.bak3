@@ -1,0 +1,14 @@
+{
+  "id": "quick-view-modal",
+  "category": "UI",
+  "title": "Product Quick View Modal",
+  "description": "Create modal overlay for quick product preview from grid view with key details, primary image, price, and shop link. Includes keyboard navigation and focus management.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "moderate",
+  "dependencies": [
+    "product-card-component"
+  ],
+  "createdAt": "2026-01-26T01:49:59.727Z",
+  "updatedAt": "2026-01-26T01:49:59.727Z"
+}

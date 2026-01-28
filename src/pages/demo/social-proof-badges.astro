@@ -1,0 +1,391 @@
+---
+/**
+ * Demo Page - Social Proof Badges Component
+ * Showcases the social proof/trust badge components with different configurations
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import SocialProofBadge from '../../components/SocialProofBadge.astro';
+import SocialProofBadgesSection from '../../components/SocialProofBadgesSection.astro';
+import {
+  SOCIAL_PROOF_BADGES,
+  ECOMMERCE_BADGES,
+  SOCIAL_MEDIA_BADGES,
+  PRESS_BADGES,
+  SOCIAL_PROOF_BADGES_SECTION_CONFIG,
+} from '../../config/social-proof-badges.config';
+---
+
+<Layout title="Social Proof Badges Demo | Houston Web Services">
+  <main class="demo-page">
+    <section class="demo-header">
+      <div class="demo-container">
+        <h1>Social Proof Badges Component Demo</h1>
+        <p>Trust badges displaying payment security, social media followers, press mentions, and certifications for credibility building.</p>
+      </div>
+    </section>
+
+    <!-- Demo 1: Full Section with Default Configuration -->
+    <section class="demo-section" data-testid="social-proof-section-demo">
+      <div class="demo-container">
+        <h2>Full Section (Default Configuration)</h2>
+        <p>Complete section with heading, subheading, and grid layout.</p>
+      </div>
+      <SocialProofBadgesSection {...SOCIAL_PROOF_BADGES_SECTION_CONFIG} />
+    </section>
+
+    <!-- Demo 2: Individual Badge Types -->
+    <section class="demo-section" data-testid="badge-types-demo">
+      <div class="demo-container">
+        <h2>Badge Types</h2>
+        <p>Each badge type has a distinct color scheme and default icon.</p>
+
+        <div class="badge-showcase">
+          <SocialProofBadge
+            id="demo-security"
+            type="payment-security"
+            title="Payment Security"
+            description="Secure transactions with SSL encryption"
+          />
+
+          <SocialProofBadge
+            id="demo-guarantee"
+            type="guarantee"
+            title="Guarantee"
+            description="100% satisfaction guaranteed"
+          />
+
+          <SocialProofBadge
+            id="demo-followers"
+            type="followers"
+            title="Followers"
+            description="Join our growing community"
+            metric="10K+"
+            metricLabel="Followers"
+          />
+
+          <SocialProofBadge
+            id="demo-press"
+            type="press"
+            title="Press Mention"
+            description="Featured in industry publications"
+          />
+
+          <SocialProofBadge
+            id="demo-certification"
+            type="certification"
+            title="Certification"
+            description="Industry-certified professional"
+          />
+
+          <SocialProofBadge
+            id="demo-award"
+            type="award"
+            title="Award Winner"
+            description="Recognized excellence"
+            metric="#1"
+            metricLabel="Rated"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 3: Size Variants -->
+    <section class="demo-section" data-testid="size-variants-demo">
+      <div class="demo-container">
+        <h2>Size Variants</h2>
+        <p>Badges come in three sizes: small, medium, and large.</p>
+
+        <div class="size-showcase">
+          <div class="size-group">
+            <h3>Small</h3>
+            <SocialProofBadge
+              id="demo-small"
+              type="payment-security"
+              title="Secure Checkout"
+              description="256-bit SSL"
+              size="small"
+            />
+          </div>
+
+          <div class="size-group">
+            <h3>Medium (Default)</h3>
+            <SocialProofBadge
+              id="demo-medium"
+              type="payment-security"
+              title="Secure Checkout"
+              description="256-bit SSL encryption"
+              size="medium"
+            />
+          </div>
+
+          <div class="size-group">
+            <h3>Large</h3>
+            <SocialProofBadge
+              id="demo-large"
+              type="payment-security"
+              title="Secure Checkout"
+              description="256-bit SSL encryption for all transactions"
+              size="large"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 4: With Metrics -->
+    <section class="demo-section" data-testid="metrics-demo">
+      <div class="demo-container">
+        <h2>Badges with Metrics</h2>
+        <p>Display quantifiable social proof with prominent metrics.</p>
+
+        <div class="badge-showcase">
+          <SocialProofBadge
+            id="demo-metric-1"
+            type="followers"
+            title="Instagram"
+            description="Join our community"
+            metric="50K+"
+            metricLabel="Followers"
+          />
+
+          <SocialProofBadge
+            id="demo-metric-2"
+            type="award"
+            title="Customer Rating"
+            description="Based on verified reviews"
+            metric="4.9"
+            metricLabel="Stars"
+          />
+
+          <SocialProofBadge
+            id="demo-metric-3"
+            type="guarantee"
+            title="Satisfaction Rate"
+            description="Happy customers"
+            metric="99%"
+            metricLabel="Satisfied"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 5: Clickable Badges with Links -->
+    <section class="demo-section" data-testid="links-demo">
+      <div class="demo-container">
+        <h2>Clickable Badges</h2>
+        <p>Badges can include links for navigation or external resources.</p>
+
+        <div class="badge-showcase">
+          <SocialProofBadge
+            id="demo-link-1"
+            type="press"
+            title="Forbes Feature"
+            description="Read our Forbes article"
+            link={{
+              href: "#forbes-feature",
+              ariaLabel: "Read our Forbes feature article"
+            }}
+          />
+
+          <SocialProofBadge
+            id="demo-link-2"
+            type="followers"
+            title="Follow Us"
+            description="@houstonweb on Instagram"
+            metric="25K+"
+            metricLabel="Followers"
+            link={{
+              href: "https://instagram.com",
+              ariaLabel: "Follow us on Instagram",
+              openInNewTab: true
+            }}
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 6: E-commerce Badges -->
+    <section class="demo-section" data-testid="ecommerce-demo">
+      <div class="demo-container">
+        <h2>E-commerce Trust Badges</h2>
+        <p>Common trust indicators for online stores.</p>
+      </div>
+      <SocialProofBadgesSection
+        heading="Shop with Confidence"
+        subheading="Your security and satisfaction are our top priorities"
+        badges={ECOMMERCE_BADGES}
+        layout="grid"
+        id="ecommerce-badges"
+      />
+    </section>
+
+    <!-- Demo 7: Social Media Badges -->
+    <section class="demo-section" data-testid="social-media-demo">
+      <div class="demo-container">
+        <h2>Social Media Badges</h2>
+        <p>Showcase your social media presence and followers.</p>
+      </div>
+      <SocialProofBadgesSection
+        heading="Join Our Community"
+        subheading="Follow us for updates, inspiration, and exclusive content"
+        badges={SOCIAL_MEDIA_BADGES}
+        layout="inline"
+        id="social-media-badges"
+      />
+    </section>
+
+    <!-- Demo 8: Layout Variations -->
+    <section class="demo-section" data-testid="layouts-demo">
+      <div class="demo-container">
+        <h2>Layout Variations</h2>
+        <p>Different layout options for various use cases.</p>
+
+        <h3>Grid Layout (Default)</h3>
+      </div>
+      <SocialProofBadgesSection
+        badges={SOCIAL_PROOF_BADGES.slice(0, 4)}
+        layout="grid"
+        id="layout-grid"
+      />
+
+      <div class="demo-container" style="margin-top: var(--spacing-12);">
+        <h3>Inline Layout</h3>
+      </div>
+      <SocialProofBadgesSection
+        badges={SOCIAL_PROOF_BADGES.slice(0, 3)}
+        layout="inline"
+        id="layout-inline"
+      />
+
+      <div class="demo-container" style="margin-top: var(--spacing-12);">
+        <h3>Row Layout (Horizontal Scroll on Mobile)</h3>
+      </div>
+      <SocialProofBadgesSection
+        badges={SOCIAL_PROOF_BADGES}
+        layout="row"
+        id="layout-row"
+      />
+    </section>
+
+    <!-- Demo 9: Press and Awards -->
+    <section class="demo-section" data-testid="press-awards-demo">
+      <div class="demo-container">
+        <h2>Press & Awards</h2>
+        <p>Showcase media coverage and industry recognition.</p>
+      </div>
+      <SocialProofBadgesSection
+        heading="As Seen In"
+        subheading="Recognized by industry leaders and publications"
+        badges={PRESS_BADGES}
+        layout="inline"
+        id="press-awards"
+      />
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .demo-page {
+    padding-bottom: var(--spacing-16);
+  }
+
+  .demo-header {
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
+    padding: var(--spacing-16) var(--spacing-4);
+    text-align: center;
+  }
+
+  .demo-header h1 {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary-900);
+    margin: 0 0 var(--spacing-4);
+  }
+
+  .demo-header p {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-primary-700);
+    max-width: 40rem;
+    margin: 0 auto;
+  }
+
+  .demo-container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  .demo-section {
+    padding: var(--spacing-12) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .demo-section:last-child {
+    border-bottom: none;
+  }
+
+  .demo-section h2 {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2);
+  }
+
+  .demo-section h3 {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: var(--spacing-6) 0 var(--spacing-3);
+  }
+
+  .demo-section > .demo-container > p {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-8);
+  }
+
+  /* Badge showcase - for individual badge demos */
+  .badge-showcase {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-4);
+  }
+
+  /* Size showcase */
+  .size-showcase {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-8);
+    margin-top: var(--spacing-4);
+  }
+
+  @media screen and (min-width: 768px) {
+    .size-showcase {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .size-group h3 {
+    margin-top: 0;
+  }
+
+  /* Dark mode */
+  :global(html[data-theme="dark"]) .demo-header {
+    background: linear-gradient(135deg, var(--color-primary-900) 0%, var(--color-primary-950) 100%);
+  }
+
+  :global(html[data-theme="dark"]) .demo-header h1 {
+    color: var(--color-text-inverse);
+  }
+
+  :global(html[data-theme="dark"]) .demo-header p {
+    color: var(--color-primary-200);
+  }
+</style>

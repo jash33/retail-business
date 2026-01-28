@@ -1,0 +1,14 @@
+{
+  "id": "social-sharing-component",
+  "category": "UI",
+  "title": "Social Media Sharing Buttons",
+  "description": "Create social sharing component for blog posts and products with Pinterest, Facebook, Twitter, and email options. Includes analytics event tracking.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "simple",
+  "dependencies": [
+    "article-template"
+  ],
+  "createdAt": "2026-01-26T01:49:59.758Z",
+  "updatedAt": "2026-01-26T01:49:59.758Z"
+}

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" fill="none">
+  <rect width="600" height="750" fill="#F5F3EF"/>
+  <!-- Background pattern -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E8E4DC" stroke-width="0.5"/>
+  </pattern>
+  <rect width="600" height="750" fill="url(#grid)"/>
+
+  <!-- Tote bag body -->
+  <path d="M150 280 L180 650 L420 650 L450 280 L150 280" fill="#D4A574" stroke="#8B6914" stroke-width="2"/>
+
+  <!-- Tote bag depth -->
+  <path d="M150 280 L200 250 L500 250 L450 280 L150 280" fill="#C19660" stroke="#8B6914" stroke-width="2"/>
+  <path d="M450 280 L500 250 L500 620 L450 650" fill="#BF9056" stroke="#8B6914" stroke-width="2"/>
+
+  <!-- Handles -->
+  <path d="M220 280 Q220 180 300 180 Q380 180 380 280" fill="none" stroke="#6B4423" stroke-width="12" stroke-linecap="round"/>
+
+  <!-- Pocket -->
+  <rect x="230" y="400" width="140" height="120" rx="8" fill="#C19660" stroke="#8B6914" stroke-width="1.5"/>
+
+  <!-- Stitching details -->
+  <path d="M170 300 L170 630" stroke="#8B6914" stroke-width="1" stroke-dasharray="8 4"/>
+  <path d="M430 300 L430 630" stroke="#8B6914" stroke-width="1" stroke-dasharray="8 4"/>
+
+  <!-- Label text -->
+  <rect x="180" y="80" width="240" height="50" rx="4" fill="#365395"/>
+  <text x="300" y="113" text-anchor="middle" fill="white" font-family="system-ui, sans-serif" font-size="20" font-weight="600">PREMIUM CANVAS</text>
+</svg>

@@ -21,11 +21,14 @@ import '../styles/globals.css';
 import SEO from '../components/SEO.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import AnnouncementBar from '../components/AnnouncementBar.astro';
 import GoogleAnalytics from '../components/GoogleAnalytics.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import PerformanceMonitor from '../components/PerformanceMonitor.astro';
+import ExitIntentPopup from '../components/ExitIntentPopup.astro';
 import type { SEOProps } from '../types/seo';
 import { seoConfig } from '../config/seo.config';
+import { ACTIVE_PALETTE_ID } from '../config/color-palette.config';
 
 // Extend SEOProps but make title and description optional with defaults
 interface Props extends Partial<SEOProps> {
@@ -56,16 +59,29 @@ const {
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<!-- Dark Mode Initialization - Runs before render to prevent flash -->
-		<script is:inline>
+		<!-- Dark Mode & Color Palette Initialization - Runs before render to prevent flash -->
+		<script is:inline define:vars={{ defaultPalette: ACTIVE_PALETTE_ID }}>
 			(function() {
+				// Dark mode initialization
 				const THEME_KEY = 'houston-theme';
-				const stored = localStorage.getItem(THEME_KEY);
+				const storedTheme = localStorage.getItem(THEME_KEY);
 				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-				if (stored === 'dark' || (!stored && prefersDark)) {
+				if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
 					document.documentElement.setAttribute('data-theme', 'dark');
 				}
+
+				// Color palette initialization
+				const PALETTE_KEY = 'retail-color-palette';
+				const VALID_PALETTES = ['light-airy', 'bold-editorial', 'earthy-organic'];
+				const storedPalette = localStorage.getItem(PALETTE_KEY);
+
+				// Use stored palette if valid, otherwise use default from config
+				const palette = storedPalette && VALID_PALETTES.includes(storedPalette)
+					? storedPalette
+					: defaultPalette;
+
+				document.documentElement.setAttribute('data-palette', palette);
 			})();
 		</script>
 
@@ -91,7 +107,16 @@ const {
 		<slot name="head" />
 	</head>
 	<body class={bodyClass}>
-		<a href="#main-content" class="skip-link">Skip to main content</a>
+		<!-- Accessibility Skip Links Navigation -->
+		<nav class="skip-links" aria-label="Skip to sections">
+			<ul class="skip-links__list">
+				<li><a href="#main-content" class="skip-link">Skip to main content</a></li>
+				<li><a href="#shop-filters" class="skip-link">Skip to filters</a></li>
+				<li><a href="#products-grid" class="skip-link">Skip to products</a></li>
+				<li><a href="#footer" class="skip-link">Skip to footer</a></li>
+			</ul>
+		</nav>
+		<AnnouncementBar />
 		<Header currentPath={Astro.url.pathname} />
 		<div id="main-content">
 			<slot />
@@ -103,6 +128,9 @@ const {
 
 		<!-- Performance Monitoring (Core Web Vitals) -->
 		{!disableAnalytics && <PerformanceMonitor />}
+
+		<!-- Exit Intent Newsletter Popup -->
+		<ExitIntentPopup />
 
 		<!-- Scroll Reveal Animation Observer -->
 		<script>

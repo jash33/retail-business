@@ -1,0 +1,654 @@
+---
+/**
+ * ProductGrid Component
+ * A flexible product grid system supporting 2, 3, or 4 columns with optional
+ * asymmetric featured product placements. Includes responsive breakpoints
+ * and masonry-style options for editorial layouts.
+ *
+ * Features:
+ * - Flexible column layouts (2, 3, or 4 columns)
+ * - Responsive breakpoints (mobile → tablet → desktop)
+ * - Asymmetric featured product placements
+ * - Masonry-style layout for editorial content
+ * - Stagger animation support
+ * - Full accessibility support (WCAG 2.1 AA)
+ * - Reduced motion support
+ * - Dark mode support
+ *
+ * @example Basic usage (3 columns)
+ * ```astro
+ * <ProductGrid
+ *   products={products}
+ *   columns={3}
+ * />
+ * ```
+ *
+ * @example Featured first layout
+ * ```astro
+ * <ProductGrid
+ *   products={products}
+ *   columns={3}
+ *   layout="featured-first"
+ *   heading="Our Collection"
+ *   subheading="Discover curated products"
+ * />
+ * ```
+ *
+ * @example Masonry layout for editorial
+ * ```astro
+ * <ProductGrid
+ *   products={products}
+ *   columns={3}
+ *   layout="masonry"
+ *   enableAnimation={true}
+ * />
+ * ```
+ *
+ * @example Asymmetric with custom placements
+ * ```astro
+ * <ProductGrid
+ *   products={products}
+ *   columns={4}
+ *   layout="featured-left"
+ *   featuredPlacements={[{ index: 0, colSpan: 2, rowSpan: 2 }]}
+ * />
+ * ```
+ */
+
+import type { ProductGridProps, FeaturedPlacement, GridLayout } from '../types/product';
+import ProductCard from './ProductCard.astro';
+import QuickViewModal from './QuickViewModal.astro';
+
+interface Props extends ProductGridProps {}
+
+const {
+  products = [],
+  columns = 3,
+  gap = 'medium',
+  layout = 'standard',
+  featuredPlacements = [],
+  heading,
+  subheading,
+  description,
+  id = 'product-grid',
+  class: className = '',
+  enableAnimation = true,
+  maxStaggerItems = 8,
+  responsiveColumns,
+  showQuickView = false,
+} = Astro.props;
+
+// Use description as fallback for subheading
+const displaySubheading = subheading || description;
+
+// Build CSS classes
+const sectionClasses = [
+  'product-grid',
+  `product-grid--cols-${columns}`,
+  `product-grid--gap-${gap}`,
+  `product-grid--layout-${layout}`,
+  enableAnimation && 'product-grid--animated',
+  className,
+].filter(Boolean).join(' ');
+
+// Get gap CSS value
+const gapValues: Record<string, string> = {
+  small: 'var(--spacing-4)',
+  medium: 'var(--spacing-6)',
+  large: 'var(--spacing-8)',
+};
+
+// Build responsive column CSS custom properties
+const responsiveColsStyle = responsiveColumns
+  ? `--grid-cols-mobile: ${responsiveColumns.mobile || 1}; --grid-cols-tablet: ${responsiveColumns.tablet || 2}; --grid-cols-desktop: ${responsiveColumns.desktop || columns};`
+  : '';
+
+// Helper function to get featured placement for an item
+function getFeaturedPlacement(index: number): FeaturedPlacement | undefined {
+  return featuredPlacements.find(p => p.index === index);
+}
+
+// Helper function to check if item should be featured based on layout
+function isItemFeatured(index: number, layout: GridLayout): boolean {
+  if (layout === 'featured-first' && index === 0) return true;
+  if (layout === 'featured-left' && index === 0) return true;
+  if (layout === 'featured-right' && index === 0) return true;
+  return featuredPlacements.some(p => p.index === index);
+}
+
+// Helper function to get item style for grid placement
+function getItemStyle(index: number, layout: GridLayout): string {
+  const placement = getFeaturedPlacement(index);
+  const styles: string[] = [];
+
+  // Apply stagger animation delay
+  if (enableAnimation) {
+    const staggerIndex = Math.min(index, maxStaggerItems - 1);
+    styles.push(`--stagger-delay: ${staggerIndex * 100}ms`);
+  }
+
+  // Apply custom placement spans
+  if (placement) {
+    if (placement.colSpan && placement.colSpan > 1) {
+      styles.push(`grid-column: span ${placement.colSpan}`);
+    }
+    if (placement.rowSpan && placement.rowSpan > 1) {
+      styles.push(`grid-row: span ${placement.rowSpan}`);
+    }
+    return styles.join('; ');
+  }
+
+  // Apply default featured spans based on layout
+  if (layout === 'featured-first' && index === 0) {
+    styles.push('grid-column: span 2');
+    return styles.join('; ');
+  }
+
+  if (layout === 'featured-left' && index === 0) {
+    styles.push('grid-column: span 2');
+    styles.push('grid-row: span 2');
+    return styles.join('; ');
+  }
+
+  if (layout === 'featured-right' && index === 0) {
+    styles.push('grid-column: -3 / -1'); // Last 2 columns
+    styles.push('grid-row: span 2');
+    return styles.join('; ');
+  }
+
+  return styles.join('; ');
+}
+
+// Check if we have products to display
+const hasProducts = products && products.length > 0;
+---
+
+<section
+  class={sectionClasses}
+  id={id}
+  aria-labelledby={heading ? `${id}-heading` : undefined}
+  style={`--grid-cols: ${columns}; --grid-gap: ${gapValues[gap]}; ${responsiveColsStyle}`}
+  data-layout={layout}
+>
+  <div class="product-grid__container">
+    <!-- Section Header -->
+    {(heading || displaySubheading) && (
+      <header class="product-grid__header section-heading--decorated">
+        {heading && (
+          <h2 id={`${id}-heading`} class="product-grid__heading">{heading}</h2>
+        )}
+        {displaySubheading && (
+          <p class="product-grid__subheading">{displaySubheading}</p>
+        )}
+      </header>
+    )}
+
+    <!-- Products Grid -->
+    {hasProducts ? (
+      <div
+        class="product-grid__grid"
+        role="list"
+        aria-label="Products"
+      >
+        {products.map((product, index) => {
+          const isFeatured = isItemFeatured(index, layout);
+          const itemStyle = getItemStyle(index, layout);
+
+          return (
+            <div
+              class={`product-grid__item ${isFeatured ? 'product-grid__item--featured' : ''} ${enableAnimation ? 'product-grid__item--animated' : ''}`}
+              role="listitem"
+              style={itemStyle}
+              data-index={index}
+            >
+              <ProductCard
+                {...product}
+                class={isFeatured ? 'product-card--grid-featured' : ''}
+                showQuickView={showQuickView}
+                utmParams={{
+                  ...product.utmParams,
+                  content: `product_grid_${product.id}`,
+                }}
+              />
+            </div>
+          );
+        })}
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="product-grid__empty" role="status" aria-live="polite">
+        <div class="product-grid__empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 7H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm0 12H4V9h16v10zM9 3h6v2H9zM9 10h2v2H9zm4 0h2v2h-2zm4 0h2v2h-2zM9 14h2v2H9zm4 0h2v2h-2zm4 0h2v2h-2z" fill="currentColor"/>
+          </svg>
+        </div>
+        <p class="product-grid__empty-text">No products to display.</p>
+      </div>
+    )}
+
+    {/* Quick View Modal - only rendered once per grid */}
+    {showQuickView && <QuickViewModal id={`${id}-quick-view-modal`} />}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * PRODUCT GRID COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .product-grid {
+    padding: var(--spacing-8) var(--spacing-4);
+  }
+
+  .product-grid__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * SECTION HEADER
+   * ================================================================= */
+  .product-grid__header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .product-grid__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .product-grid__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * PRODUCTS GRID - Base Styles
+   * ================================================================= */
+  .product-grid__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols, 3), 1fr);
+    gap: var(--grid-gap, var(--spacing-6));
+  }
+
+  .product-grid__item {
+    min-width: 0; /* Prevent grid blowout */
+  }
+
+  /* =================================================================
+   * FEATURED ITEM STYLES
+   * ================================================================= */
+  .product-grid__item--featured {
+    /* Featured items have special styling */
+  }
+
+  .product-grid__item--featured :global(.product-card) {
+    height: 100%;
+  }
+
+  .product-grid__item--featured :global(.product-card__image-container) {
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 300px;
+  }
+
+  /* =================================================================
+   * LAYOUT VARIANTS
+   * ================================================================= */
+
+  /* Standard Grid - No special treatment */
+  .product-grid--layout-standard .product-grid__grid {
+    /* Default grid behavior */
+  }
+
+  /* Featured First - First item spans 2 columns */
+  .product-grid--layout-featured-first .product-grid__grid {
+    grid-auto-flow: dense;
+  }
+
+  /* Featured Left - First item is larger on left */
+  .product-grid--layout-featured-left .product-grid__grid {
+    grid-auto-flow: dense;
+  }
+
+  /* Featured Right - First item is larger on right */
+  .product-grid--layout-featured-right .product-grid__grid {
+    grid-auto-flow: dense;
+  }
+
+  /* Masonry Layout - Pinterest-style staggered grid */
+  .product-grid--layout-masonry .product-grid__grid {
+    grid-template-rows: masonry;
+    align-items: start;
+  }
+
+  /* Fallback for browsers without masonry support */
+  @supports not (grid-template-rows: masonry) {
+    .product-grid--layout-masonry .product-grid__grid {
+      grid-auto-rows: min-content;
+    }
+
+    .product-grid--layout-masonry .product-grid__item:nth-child(3n+1) {
+      /* Stagger odd items */
+    }
+
+    .product-grid--layout-masonry .product-grid__item:nth-child(3n+2) :global(.product-card__image-container) {
+      aspect-ratio: 1 / 1;
+    }
+
+    .product-grid--layout-masonry .product-grid__item:nth-child(3n) :global(.product-card__image-container) {
+      aspect-ratio: 3 / 4;
+    }
+  }
+
+  /* =================================================================
+   * GAP VARIANTS
+   * ================================================================= */
+  .product-grid--gap-small .product-grid__grid {
+    gap: var(--spacing-4);
+  }
+
+  .product-grid--gap-medium .product-grid__grid {
+    gap: var(--spacing-6);
+  }
+
+  .product-grid--gap-large .product-grid__grid {
+    gap: var(--spacing-8);
+  }
+
+  /* =================================================================
+   * COLUMN VARIANTS
+   * ================================================================= */
+  .product-grid--cols-2 .product-grid__grid {
+    --grid-cols: 2;
+  }
+
+  .product-grid--cols-3 .product-grid__grid {
+    --grid-cols: 3;
+  }
+
+  .product-grid--cols-4 .product-grid__grid {
+    --grid-cols: 4;
+  }
+
+  /* =================================================================
+   * ANIMATION STYLES
+   * ================================================================= */
+  .product-grid__item--animated {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity var(--duration-500) var(--ease-out),
+      transform var(--duration-500) var(--ease-out);
+    transition-delay: var(--stagger-delay, 0ms);
+  }
+
+  .product-grid--animated .product-grid__item--animated.product-grid__item--visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Immediate visibility for non-animated grids */
+  .product-grid:not(.product-grid--animated) .product-grid__item--animated {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+  .product-grid__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-16) var(--spacing-8);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .product-grid__empty-icon {
+    width: var(--spacing-16);
+    height: var(--spacing-16);
+    color: var(--color-text-tertiary);
+  }
+
+  .product-grid__empty-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .product-grid__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Large Desktop (1280px+) */
+  @media screen and (min-width: 1280px) {
+    .product-grid {
+      padding: var(--spacing-12) var(--spacing-8);
+    }
+
+    .product-grid__heading {
+      font-size: var(--font-size-4xl);
+    }
+  }
+
+  /* Desktop (1024px - 1279px) */
+  @media screen and (min-width: 1024px) and (max-width: 1279px) {
+    .product-grid__grid {
+      grid-template-columns: repeat(var(--grid-cols-desktop, var(--grid-cols, 3)), 1fr);
+    }
+  }
+
+  /* Tablet (768px - 1023px) */
+  @media screen and (min-width: 768px) and (max-width: 1023px) {
+    .product-grid {
+      padding: var(--spacing-8) var(--spacing-6);
+    }
+
+    .product-grid__grid {
+      grid-template-columns: repeat(var(--grid-cols-tablet, 2), 1fr);
+    }
+
+    /* Adjust featured items on tablet */
+    .product-grid--layout-featured-first .product-grid__item--featured,
+    .product-grid--layout-featured-left .product-grid__item--featured,
+    .product-grid--layout-featured-right .product-grid__item--featured {
+      grid-column: span 2;
+      grid-row: span 1;
+    }
+
+    .product-grid__heading {
+      font-size: var(--font-size-3xl);
+    }
+  }
+
+  /* Small Tablet / Large Mobile (480px - 767px) */
+  @media screen and (min-width: 480px) and (max-width: 767px) {
+    .product-grid {
+      padding: var(--spacing-6) var(--spacing-4);
+    }
+
+    .product-grid__grid {
+      grid-template-columns: repeat(var(--grid-cols-tablet, 2), 1fr);
+      gap: var(--spacing-4);
+    }
+
+    /* Reset featured items on smaller screens */
+    .product-grid--layout-featured-first .product-grid__item--featured,
+    .product-grid--layout-featured-left .product-grid__item--featured,
+    .product-grid--layout-featured-right .product-grid__item--featured {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+
+    .product-grid__heading {
+      font-size: var(--font-size-2xl);
+    }
+
+    .product-grid__subheading {
+      font-size: var(--font-size-base);
+    }
+  }
+
+  /* Mobile (< 480px) */
+  @media screen and (max-width: 479px) {
+    .product-grid {
+      padding: var(--spacing-4) var(--spacing-3);
+    }
+
+    .product-grid__header {
+      margin-bottom: var(--spacing-6);
+    }
+
+    .product-grid__grid {
+      grid-template-columns: repeat(var(--grid-cols-mobile, 1), 1fr);
+      gap: var(--spacing-4);
+    }
+
+    /* All items single column on mobile */
+    .product-grid__item,
+    .product-grid__item--featured {
+      grid-column: span 1 !important;
+      grid-row: span 1 !important;
+    }
+
+    .product-grid__heading {
+      font-size: var(--font-size-xl);
+    }
+
+    .product-grid__subheading {
+      font-size: var(--font-size-sm);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .product-grid__item--animated {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .product-grid {
+    background-color: var(--color-background);
+  }
+
+  :global(html[data-theme="dark"]) .product-grid__empty {
+    background-color: var(--color-background-elevated);
+    border-color: var(--color-border-dark);
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .product-grid__empty {
+      border: 2px solid currentColor;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .product-grid {
+      padding: var(--spacing-4) 0;
+    }
+
+    .product-grid__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-4);
+    }
+
+    .product-grid__item--animated {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * ProductGrid Interactive Features
+   * - Intersection Observer for stagger animation reveal
+   * - Handles visibility on scroll
+   */
+  function initProductGrid() {
+    const grids = document.querySelectorAll('.product-grid--animated');
+
+    grids.forEach((grid) => {
+      const items = grid.querySelectorAll('.product-grid__item--animated');
+
+      // Use Intersection Observer for scroll-triggered animations
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('product-grid__item--visible');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          {
+            root: null,
+            rootMargin: '0px 0px -50px 0px',
+            threshold: 0.1,
+          }
+        );
+
+        items.forEach((item) => {
+          observer.observe(item);
+        });
+      } else {
+        // Fallback: show all items immediately
+        items.forEach((item) => {
+          item.classList.add('product-grid__item--visible');
+        });
+      }
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProductGrid);
+  } else {
+    initProductGrid();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initProductGrid);
+</script>

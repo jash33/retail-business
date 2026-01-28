@@ -1,0 +1,158 @@
+---
+/**
+ * Demo Page - HeroEditorial Component
+ * Showcases the editorial hero variant with different configurations
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import HeroEditorial from '../../components/HeroEditorial.astro';
+---
+
+<Layout title="Hero Editorial Demo | Houston Web Services">
+  <!-- Demo 1: Basic with background image -->
+  <HeroEditorial
+    id="demo-hero-basic"
+    headline="Crafted with Purpose"
+    subheadline="Thoughtful design solutions for modern businesses that want to stand out."
+    backgroundImage="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80"
+    cta={{ text: "Get Started", href: "/contact" }}
+    overlayPosition="bottom-left"
+    minHeight="100vh"
+  />
+
+  <!-- Section divider with demo info -->
+  <section class="demo-info">
+    <div class="demo-info__container">
+      <h2>HeroEditorial Component Demo</h2>
+      <p>This page demonstrates the editorial hero variant with different configurations.</p>
+
+      <h3>Demo 1: Bottom-Left Position (above)</h3>
+      <ul>
+        <li>Background image with parallax effect</li>
+        <li>Text positioned bottom-left</li>
+        <li>Single CTA button</li>
+        <li>Full viewport height</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Demo 2: Center position with different styling -->
+  <HeroEditorial
+    id="demo-hero-center"
+    headline="Experience Excellence"
+    subheadline="Where innovation meets craftsmanship."
+    backgroundImage="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1920&q=80"
+    cta={{ text: "Learn More", href: "/services", variant: "secondary" }}
+    overlayPosition="center"
+    overlayOpacity={0.5}
+    minHeight="80vh"
+  />
+
+  <section class="demo-info">
+    <div class="demo-info__container">
+      <h3>Demo 2: Center Position (above)</h3>
+      <ul>
+        <li>Center-aligned text</li>
+        <li>Secondary button variant</li>
+        <li>Higher overlay opacity (0.5)</li>
+        <li>80vh height</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Demo 3: Top-right position -->
+  <HeroEditorial
+    id="demo-hero-top-right"
+    headline="Bold Visions"
+    subheadline="Turning ideas into digital reality."
+    backgroundImage="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80"
+    cta={{ text: "Start Project", href: "/contact" }}
+    overlayPosition="top-right"
+    minHeight="70vh"
+    parallax={{ enabled: true, intensity: 0.4 }}
+  />
+
+  <section class="demo-info">
+    <div class="demo-info__container">
+      <h3>Demo 3: Top-Right Position (above)</h3>
+      <ul>
+        <li>Text positioned top-right</li>
+        <li>Higher parallax intensity (0.4)</li>
+        <li>70vh height</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Demo 4: No CTA, minimal -->
+  <HeroEditorial
+    id="demo-hero-minimal"
+    headline="Less is More"
+    overlayPosition="bottom-center"
+    backgroundImage="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80"
+    minHeight="60vh"
+    overlayOpacity={0.3}
+  />
+
+  <section class="demo-info">
+    <div class="demo-info__container">
+      <h3>Demo 4: Minimal (above)</h3>
+      <ul>
+        <li>No subheadline or CTA</li>
+        <li>Bottom-center position</li>
+        <li>Lower overlay opacity (0.3)</li>
+        <li>60vh height</li>
+      </ul>
+
+      <h3>Supported Features</h3>
+      <ul>
+        <li>Background image or video support</li>
+        <li>7 overlay positions: center, bottom-left/center/right, top-left/center/right</li>
+        <li>Configurable overlay opacity</li>
+        <li>Parallax scroll effect with adjustable intensity</li>
+        <li>Video playback rate control</li>
+        <li>Reduced motion support</li>
+        <li>WCAG 2.1 AA compliant</li>
+        <li>Responsive design (mobile-first)</li>
+      </ul>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .demo-info {
+    padding: var(--spacing-12) var(--spacing-4);
+    background: var(--color-background);
+  }
+
+  .demo-info__container {
+    max-width: 48rem;
+    margin: 0 auto;
+  }
+
+  .demo-info h2 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .demo-info h3 {
+    font-size: var(--font-size-lg);
+    color: var(--color-primary);
+    margin-top: var(--spacing-6);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .demo-info p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .demo-info ul {
+    color: var(--color-text-secondary);
+    padding-left: var(--spacing-6);
+  }
+
+  .demo-info li {
+    margin-bottom: var(--spacing-2);
+  }
+</style>

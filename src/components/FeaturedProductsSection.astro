@@ -1,0 +1,1085 @@
+---
+/**
+ * FeaturedProductsSection Component
+ * A homepage section showcasing selected featured products with larger cards,
+ * editorial descriptions, and prominent CTAs. Includes manual product selection
+ * via configuration.
+ *
+ * Features:
+ * - Displays 2-3 featured products in a responsive grid layout
+ * - Larger product cards with editorial descriptions
+ * - Prominent "Shop Now" call-to-action buttons
+ * - Product taglines and extended descriptions
+ * - Price display with sale/original price formatting
+ * - Badge system (New, Sale, Sold Out)
+ * - Responsive design: 1 column (mobile) -> 2-3 columns (tablet/desktop)
+ * - Hover effects and smooth transitions
+ * - Lazy loading images for performance
+ * - Full accessibility support (WCAG 2.1 AA)
+ * - Reduced motion support
+ * - Dark mode support
+ *
+ * @example Basic usage with products data
+ * ```astro
+ * <FeaturedProductsSection
+ *   heading="Featured Products"
+ *   subheading="Handpicked favorites from our collection"
+ *   products={featuredProducts}
+ * />
+ * ```
+ *
+ * @example With custom configuration
+ * ```astro
+ * <FeaturedProductsSection
+ *   heading={config.heading}
+ *   products={products}
+ *   viewAllText="Browse Shop"
+ *   viewAllHref="/shop"
+ *   columns={2}
+ * />
+ * ```
+ */
+
+import type { FeaturedProduct, FeaturedProductsSectionProps } from '../types/featured-product';
+import { formatPrice, calculateDiscount } from '../types/product';
+import { sortByPriority } from '../types/featured-product';
+import {
+  appendUTMParams,
+  mergeUTMParams,
+  getShopLinkAttributes,
+} from '../utils/shop-tracking';
+import { shopConfig } from '../config/shop.config';
+import Button from './Button.astro';
+
+interface Props extends FeaturedProductsSectionProps {}
+
+const {
+  heading = 'Featured Products',
+  subheading = 'Handpicked favorites from our collection.',
+  products = [],
+  id = 'featured-products',
+  class: className = '',
+  viewAllText = 'View All Products',
+  viewAllHref = '/shop',
+  showViewAll = true,
+  maxProducts = 3,
+  columns = 3,
+  layout = 'grid',
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'featured-products-section',
+  `featured-products-section--${layout}`,
+  `featured-products-section--cols-${columns}`,
+  className,
+].filter(Boolean).join(' ');
+
+// Sort and limit products
+const sortedProducts = sortByPriority(products);
+const displayProducts = sortedProducts.slice(0, maxProducts);
+
+// Check if we have products to display
+const hasProducts = displayProducts && displayProducts.length > 0;
+
+// Arrow icon for the CTA button
+const arrowIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/></svg>`;
+
+// Helper function to build tracked URL
+function getTrackedUrl(product: FeaturedProduct): string {
+  const mergedParams = mergeUTMParams({
+    ...product.utmParams,
+    content: product.utmParams?.content || `featured_product_${product.id}`,
+  });
+  return shopConfig.trackingEnabled
+    ? appendUTMParams(product.shopUrl, mergedParams)
+    : product.shopUrl;
+}
+
+// Helper function to get product link attributes
+function getProductLinkAttrs(product: FeaturedProduct) {
+  return getShopLinkAttributes(product.openInNewTab);
+}
+---
+
+<section class={sectionClasses} id={id} aria-labelledby={`${id}-heading`}>
+  <div class="featured-products-section__container">
+    <!-- Section Header -->
+    <header class="featured-products-section__header section-heading--decorated">
+      <h2 id={`${id}-heading`} class="featured-products-section__heading">{heading}</h2>
+      {subheading && (
+        <p class="featured-products-section__subheading">{subheading}</p>
+      )}
+    </header>
+
+    <!-- Products Grid -->
+    {hasProducts ? (
+      <div class="featured-products-section__grid" role="list" aria-label="Featured products">
+        {displayProducts.map((product, index) => {
+          const trackedUrl = getTrackedUrl(product);
+          const linkAttrs = getProductLinkAttrs(product);
+          const discountPercent = calculateDiscount(product.price);
+          const currentPrice = formatPrice(product.price);
+          const originalPrice = product.price.originalAmount
+            ? formatPrice({ ...product.price, amount: product.price.originalAmount })
+            : null;
+
+          return (
+            <article
+              class={`featured-products-section__item ${index === 0 && layout === 'featured-first' ? 'featured-products-section__item--primary' : ''}`}
+              role="listitem"
+              data-product-id={product.id}
+            >
+              <div class="featured-product-card">
+                <!-- Image Container -->
+                <div class="featured-product-card__image-container">
+                  {/* Badges */}
+                  <div class="featured-product-card__badges">
+                    {product.isNew && !product.soldOut && (
+                      <span class="featured-product-card__badge featured-product-card__badge--new">New</span>
+                    )}
+                    {product.onSale && discountPercent && !product.soldOut && (
+                      <span class="featured-product-card__badge featured-product-card__badge--sale">-{discountPercent}%</span>
+                    )}
+                    {product.soldOut && (
+                      <span class="featured-product-card__badge featured-product-card__badge--sold-out">Sold Out</span>
+                    )}
+                  </div>
+
+                  {/* Product Image */}
+                  <a
+                    href={trackedUrl}
+                    class="featured-product-card__image-link"
+                    aria-label={`View ${product.name}`}
+                    data-product-link
+                    {...linkAttrs}
+                  >
+                    <picture>
+                      {product.image.srcWebP && (
+                        <source srcset={product.image.srcWebP} type="image/webp" />
+                      )}
+                      <img
+                        src={product.image.src}
+                        alt={product.image.alt}
+                        width={product.image.width || 600}
+                        height={product.image.height || 750}
+                        loading={index === 0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        class="featured-product-card__image"
+                      />
+                    </picture>
+                  </a>
+
+                  {/* Quick Shop Overlay */}
+                  {!product.soldOut && (
+                    <div class="featured-product-card__overlay">
+                      <a
+                        href={trackedUrl}
+                        class="featured-product-card__quick-shop"
+                        aria-label={`Shop ${product.name}`}
+                        data-product-link
+                        {...linkAttrs}
+                      >
+                        <span>Quick View</span>
+                        <svg
+                          class="featured-product-card__quick-shop-icon"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                          <polyline points="15 3 21 3 21 9"></polyline>
+                          <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                      </a>
+                    </div>
+                  )}
+                </div>
+
+                <!-- Content -->
+                <div class="featured-product-card__content">
+                  {/* Tagline */}
+                  {product.tagline && (
+                    <span class="featured-product-card__tagline">{product.tagline}</span>
+                  )}
+
+                  {/* Category */}
+                  {product.category && (
+                    <span class="featured-product-card__category">{product.category}</span>
+                  )}
+
+                  {/* Product Name */}
+                  <h3 class="featured-product-card__name">
+                    <a
+                      href={trackedUrl}
+                      class="featured-product-card__name-link"
+                      data-product-link
+                      {...linkAttrs}
+                    >
+                      {product.name}
+                    </a>
+                  </h3>
+
+                  {/* Editorial Description */}
+                  {product.editorialDescription && (
+                    <p class="featured-product-card__description featured-product-card__description--editorial">
+                      {product.editorialDescription}
+                    </p>
+                  )}
+                  {!product.editorialDescription && product.description && (
+                    <p class="featured-product-card__description">
+                      {product.description}
+                    </p>
+                  )}
+
+                  {/* Price */}
+                  <div class="featured-product-card__price-container">
+                    {product.soldOut ? (
+                      <span class="featured-product-card__price featured-product-card__price--sold-out">Sold Out</span>
+                    ) : (
+                      <>
+                        <span class={`featured-product-card__price ${product.onSale ? 'featured-product-card__price--sale' : ''}`}>
+                          {currentPrice}
+                        </span>
+                        {originalPrice && product.onSale && (
+                          <span class="featured-product-card__price featured-product-card__price--original">
+                            <span class="sr-only">Originally </span>
+                            {originalPrice}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  {/* CTA Button */}
+                  {!product.soldOut && (
+                    <div class="featured-product-card__cta">
+                      <a
+                        href={trackedUrl}
+                        class="featured-product-card__button"
+                        data-product-link
+                        {...linkAttrs}
+                      >
+                        {product.ctaText || 'Shop Now'}
+                        <svg
+                          class="featured-product-card__button-icon"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>
+                        </svg>
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="featured-products-section__empty" role="status" aria-live="polite">
+        <div class="featured-products-section__empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 7H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm0 12H4V9h16v10zM9 3h6v2H9zM9 10h2v2H9zm4 0h2v2h-2zm4 0h2v2h-2zM9 14h2v2H9zm4 0h2v2h-2zm4 0h2v2h-2z" fill="currentColor"/>
+          </svg>
+        </div>
+        <p class="featured-products-section__empty-text">Featured products coming soon.</p>
+      </div>
+    )}
+
+    <!-- View All CTA -->
+    {hasProducts && showViewAll && (
+      <div class="featured-products-section__cta">
+        <Button
+          text={viewAllText}
+          href={viewAllHref}
+          variant="secondary"
+          size="large"
+          iconPosition="trailing"
+          ariaLabel="View all products in our shop"
+        >
+          <Fragment slot="icon" set:html={arrowIcon} />
+        </Button>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * FEATURED PRODUCTS SECTION COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .featured-products-section {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+  }
+
+  .featured-products-section__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * SECTION HEADER
+   * ================================================================= */
+  .featured-products-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .featured-products-section__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .featured-products-section__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * PRODUCTS GRID
+   * ================================================================= */
+  .featured-products-section__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-8);
+  }
+
+  .featured-products-section__item {
+    /* Animation handled by staggered appearance below */
+  }
+
+  /* =================================================================
+   * FEATURED PRODUCT CARD
+   * Larger cards with editorial styling
+   * ================================================================= */
+  .featured-product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--color-background-elevated);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out);
+  }
+
+  .featured-product-card:hover {
+    box-shadow: var(--shadow-xl);
+    transform: translateY(-6px);
+  }
+
+  /* =================================================================
+   * IMAGE CONTAINER
+   * ================================================================= */
+  .featured-product-card__image-container {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .featured-product-card__image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .featured-product-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform var(--duration-500) var(--ease-out);
+  }
+
+  .featured-product-card:hover .featured-product-card__image {
+    transform: scale(1.05);
+  }
+
+  /* =================================================================
+   * BADGES
+   * ================================================================= */
+  .featured-product-card__badges {
+    position: absolute;
+    top: var(--spacing-4);
+    left: var(--spacing-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    z-index: 5;
+  }
+
+  .featured-product-card__badge {
+    display: inline-block;
+    padding: var(--spacing-1-5) var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    border-radius: var(--radius-full);
+  }
+
+  .featured-product-card__badge--new {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .featured-product-card__badge--sale {
+    background-color: var(--color-error);
+    color: var(--color-text-inverse);
+  }
+
+  .featured-product-card__badge--sold-out {
+    background-color: var(--color-text-tertiary);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * QUICK SHOP OVERLAY
+   * ================================================================= */
+  .featured-product-card__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: var(--spacing-6);
+    z-index: 6;
+
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.3) 50%,
+      transparent 100%
+    );
+
+    opacity: 0;
+    transition: opacity var(--duration-300) var(--ease-out);
+  }
+
+  .featured-product-card:hover .featured-product-card__overlay {
+    opacity: 1;
+  }
+
+  .featured-product-card__quick-shop {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-6);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-lg);
+
+    transform: translateY(20px);
+    opacity: 0;
+    transition:
+      transform var(--duration-300) var(--ease-spring-soft),
+      opacity var(--duration-300) var(--ease-out),
+      background-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out);
+  }
+
+  .featured-product-card:hover .featured-product-card__quick-shop {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .featured-product-card__quick-shop:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .featured-product-card__quick-shop:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-lg), var(--focus-ring);
+  }
+
+  .featured-product-card__quick-shop-icon {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+  }
+
+  /* =================================================================
+   * CONTENT AREA
+   * ================================================================= */
+  .featured-product-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-6);
+    flex: 1;
+  }
+
+  .featured-product-card__tagline {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+  }
+
+  .featured-product-card__category {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+  }
+
+  .featured-product-card__name {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-snug);
+    color: var(--color-text-primary);
+  }
+
+  .featured-product-card__name-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .featured-product-card__name-link:hover {
+    color: var(--color-primary);
+  }
+
+  .featured-product-card__name-link:focus-visible {
+    outline: none;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .featured-product-card__description {
+    margin: var(--spacing-2) 0 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+
+    /* Limit to 3 lines for standard description */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .featured-product-card__description--editorial {
+    /* Allow more lines for editorial content */
+    -webkit-line-clamp: 4;
+    font-size: var(--font-size-base);
+  }
+
+  /* =================================================================
+   * PRICE DISPLAY
+   * ================================================================= */
+  .featured-product-card__price-container {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-3);
+  }
+
+  .featured-product-card__price {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .featured-product-card__price--sale {
+    color: var(--color-error);
+  }
+
+  .featured-product-card__price--original {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-tertiary);
+    text-decoration: line-through;
+  }
+
+  .featured-product-card__price--sold-out {
+    color: var(--color-text-tertiary);
+    font-style: italic;
+  }
+
+  /* =================================================================
+   * CTA BUTTON
+   * ================================================================= */
+  .featured-product-card__cta {
+    margin-top: auto;
+    padding-top: var(--spacing-4);
+  }
+
+  .featured-product-card__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-5);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .featured-product-card__button:hover {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .featured-product-card__button:active {
+    background-color: var(--color-primary-active);
+    transform: translateY(0);
+  }
+
+  .featured-product-card__button:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .featured-product-card__button-icon {
+    width: 1em;
+    height: 1em;
+    transition: transform var(--duration-150) var(--ease-in-out);
+  }
+
+  .featured-product-card__button:hover .featured-product-card__button-icon {
+    transform: translateX(4px);
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+  .featured-products-section__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-16) var(--spacing-8);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .featured-products-section__empty-icon {
+    width: var(--spacing-16);
+    height: var(--spacing-16);
+    color: var(--color-text-tertiary);
+  }
+
+  .featured-products-section__empty-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .featured-products-section__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* =================================================================
+   * VIEW ALL CTA
+   * ================================================================= */
+  .featured-products-section__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--spacing-12);
+  }
+
+  /* =================================================================
+   * SCREEN READER ONLY TEXT
+   * ================================================================= */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Tablet (768px) - 2 columns */
+  @media screen and (min-width: 768px) {
+    .featured-products-section {
+      padding: var(--spacing-20) var(--spacing-8);
+    }
+
+    .featured-products-section__header {
+      margin-bottom: var(--spacing-14);
+    }
+
+    .featured-products-section__heading {
+      font-size: var(--font-size-4xl);
+    }
+
+    .featured-products-section__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-8);
+    }
+
+    .featured-products-section--cols-1 .featured-products-section__grid {
+      grid-template-columns: 1fr;
+      max-width: 32rem;
+      margin: 0 auto;
+    }
+
+    .featured-products-section__cta {
+      margin-top: var(--spacing-14);
+    }
+
+    .featured-product-card__content {
+      padding: var(--spacing-8);
+    }
+
+    .featured-product-card__name {
+      font-size: var(--font-size-2xl);
+    }
+  }
+
+  /* Desktop (1024px) - 3 columns */
+  @media screen and (min-width: 1024px) {
+    .featured-products-section__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .featured-products-section--cols-2 .featured-products-section__grid {
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 56rem;
+      margin: 0 auto;
+    }
+
+    /* Featured-first layout: first item spans 2 columns */
+    .featured-products-section--featured-first .featured-products-section__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .featured-products-section--featured-first .featured-products-section__item--primary {
+      grid-column: span 2;
+    }
+
+    .featured-products-section--featured-first .featured-products-section__item--primary .featured-product-card {
+      flex-direction: row;
+    }
+
+    .featured-products-section--featured-first .featured-products-section__item--primary .featured-product-card__image-container {
+      flex: 1;
+      aspect-ratio: 1 / 1;
+    }
+
+    .featured-products-section--featured-first .featured-products-section__item--primary .featured-product-card__content {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+
+  /* Large Desktop (1280px) */
+  @media screen and (min-width: 1280px) {
+    .featured-products-section {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+
+    .featured-products-section__grid {
+      gap: var(--spacing-10);
+    }
+  }
+
+  /* =================================================================
+   * ANIMATION - Staggered card appearance
+   * ================================================================= */
+  .featured-products-section__item {
+    animation: fadeSlideUp 0.6s ease-out backwards;
+  }
+
+  .featured-products-section__item:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .featured-products-section__item:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .featured-products-section__item:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* CTA button fade in */
+  .featured-products-section__cta {
+    animation: fadeIn 0.5s ease-out 0.5s backwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .featured-products-section__item,
+    .featured-products-section__cta,
+    .featured-product-card,
+    .featured-product-card__image,
+    .featured-product-card__overlay,
+    .featured-product-card__quick-shop,
+    .featured-product-card__button,
+    .featured-product-card__button-icon,
+    .featured-product-card__name-link {
+      animation: none;
+      transition: none;
+    }
+
+    .featured-product-card:hover {
+      transform: none;
+    }
+
+    .featured-product-card:hover .featured-product-card__image {
+      transform: none;
+    }
+
+    .featured-product-card:hover .featured-product-card__quick-shop {
+      transform: none;
+    }
+
+    .featured-product-card__button:hover {
+      transform: none;
+    }
+
+    .featured-product-card__button:hover .featured-product-card__button-icon {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .featured-products-section {
+    background-color: var(--color-background);
+  }
+
+  :global(html[data-theme="dark"]) .featured-product-card {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .featured-product-card__quick-shop {
+    background-color: var(--color-background-elevated);
+    color: var(--color-text-primary);
+  }
+
+  :global(html[data-theme="dark"]) .featured-product-card__quick-shop:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .featured-product-card {
+      border: 2px solid currentColor;
+    }
+
+    .featured-product-card__badge {
+      border: 1px solid currentColor;
+    }
+
+    .featured-product-card__button,
+    .featured-product-card__quick-shop {
+      border: 2px solid currentColor;
+    }
+
+    .featured-product-card__overlay {
+      background: transparent;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .featured-products-section {
+      padding: var(--spacing-8) 0;
+      background-color: transparent;
+    }
+
+    .featured-products-section__grid {
+      gap: var(--spacing-4);
+    }
+
+    .featured-products-section__item {
+      animation: none;
+    }
+
+    .featured-products-section__cta {
+      display: none;
+    }
+
+    .featured-product-card {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .featured-product-card:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .featured-product-card__overlay {
+      display: none;
+    }
+  }
+
+  /* =================================================================
+   * TOUCH DEVICES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .featured-product-card__content {
+      padding: var(--spacing-5);
+    }
+
+    .featured-product-card__button {
+      width: 100%;
+      justify-content: center;
+      min-height: 44px;
+    }
+
+    /* Show quick shop always on touch devices */
+    @media (hover: none) {
+      .featured-product-card__overlay {
+        opacity: 1;
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.6) 0%,
+          transparent 70%
+        );
+      }
+
+      .featured-product-card__quick-shop {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  }
+</style>
+
+<script>
+  /**
+   * FeaturedProductsSection Interactive Features
+   * - Analytics tracking for product link clicks
+   */
+  function initFeaturedProducts() {
+    const section = document.querySelector('.featured-products-section');
+    if (!section) return;
+
+    const productLinks = section.querySelectorAll('[data-product-link]');
+
+    productLinks.forEach((link) => {
+      link.addEventListener('click', () => {
+        const card = link.closest('.featured-products-section__item');
+        const productId = card?.getAttribute('data-product-id');
+        const productName = card?.querySelector('.featured-product-card__name-link')?.textContent?.trim();
+
+        // Track via gtag if available
+        if (typeof window !== 'undefined' && window.gtag) {
+          const linkElement = link as HTMLAnchorElement;
+
+          window.gtag('event', 'featured_product_click', {
+            product_id: productId,
+            product_name: productName,
+            destination_url: linkElement.href,
+            click_location: linkElement.classList.contains('featured-product-card__quick-shop')
+              ? 'quick_view'
+              : linkElement.classList.contains('featured-product-card__button')
+                ? 'shop_now_button'
+                : 'product_name',
+          });
+        }
+      });
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFeaturedProducts);
+  } else {
+    initFeaturedProducts();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initFeaturedProducts);
+</script>

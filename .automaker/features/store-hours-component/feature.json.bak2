@@ -1,0 +1,12 @@
+{
+  "id": "store-hours-component",
+  "category": "UI",
+  "title": "Store Hours Display Component",
+  "description": "Create store hours component with current day highlighting, special hours notation (holidays), and open/closed status indicator. Integrates with LocalBusiness schema.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "createdAt": "2026-01-26T01:49:59.731Z",
+  "updatedAt": "2026-01-27T01:55:44.897Z",
+  "descriptionHistory": []
+}

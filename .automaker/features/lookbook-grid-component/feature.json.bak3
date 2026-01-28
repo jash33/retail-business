@@ -1,0 +1,12 @@
+{
+  "id": "lookbook-grid-component",
+  "category": "UI",
+  "title": "Lookbook Grid with Editorial Layouts",
+  "description": "Create lookbook-style grid component with mixed aspect ratios, text overlays, and shoppable product tags. Supports creating curated seasonal collections or style guides.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "complex",
+  "createdAt": "2026-01-26T01:49:59.720Z",
+  "updatedAt": "2026-01-26T01:49:59.720Z",
+  "descriptionHistory": []
+}

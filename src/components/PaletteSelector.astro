@@ -1,0 +1,424 @@
+---
+/**
+ * Palette Selector Component
+ * A UI component for switching between color palettes.
+ *
+ * Features:
+ * - Displays available color palette options
+ * - Persists palette preference in localStorage
+ * - Smooth transition between palettes
+ * - Accessible with proper ARIA labels
+ * - No flash of incorrect palette on page load
+ *
+ * @example
+ * ```astro
+ * <PaletteSelector />
+ * ```
+ */
+
+import {
+  AVAILABLE_PALETTE_IDS,
+  COLOR_PALETTES,
+  ACTIVE_PALETTE_ID,
+  PALETTE_SWITCHING_ENABLED,
+} from '../config/color-palette.config';
+import type { ColorPaletteId } from '../types/color-palette';
+
+interface Props {
+  /** Visual variant of the selector */
+  variant?: 'dropdown' | 'buttons' | 'cards';
+  /** Whether to show palette color previews */
+  showPreviews?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  variant = 'buttons',
+  showPreviews = true,
+  class: className,
+} = Astro.props;
+
+// Get palette metadata for display
+const palettes = AVAILABLE_PALETTE_IDS.map((id) => ({
+  id,
+  ...COLOR_PALETTES[id].metadata,
+}));
+
+// Only render if palette switching is enabled
+const shouldRender = PALETTE_SWITCHING_ENABLED;
+---
+
+{shouldRender && (
+  <div
+    class:list={['palette-selector', `palette-selector--${variant}`, className]}
+    data-palette-selector
+    role="group"
+    aria-label="Color palette selection"
+  >
+    {variant === 'buttons' && (
+      <div class="palette-selector__buttons">
+        {palettes.map((palette) => (
+          <button
+            type="button"
+            class="palette-selector__button"
+            data-palette-option={palette.id}
+            aria-label={`Switch to ${palette.name} palette`}
+            title={palette.description}
+          >
+            {showPreviews && (
+              <span class="palette-selector__preview">
+                <span
+                  class="palette-selector__preview-swatch"
+                  style={`background-color: ${palette.previewColors.primary}`}
+                />
+                <span
+                  class="palette-selector__preview-swatch"
+                  style={`background-color: ${palette.previewColors.secondary}`}
+                />
+                <span
+                  class="palette-selector__preview-swatch"
+                  style={`background-color: ${palette.previewColors.accent}`}
+                />
+              </span>
+            )}
+            <span class="palette-selector__label">{palette.name}</span>
+          </button>
+        ))}
+      </div>
+    )}
+
+    {variant === 'cards' && (
+      <div class="palette-selector__cards">
+        {palettes.map((palette) => (
+          <button
+            type="button"
+            class="palette-selector__card"
+            data-palette-option={palette.id}
+            aria-label={`Switch to ${palette.name} palette`}
+          >
+            {showPreviews && (
+              <span class="palette-selector__card-preview">
+                <span
+                  class="palette-selector__card-swatch palette-selector__card-swatch--primary"
+                  style={`background-color: ${palette.previewColors.primary}`}
+                />
+                <span
+                  class="palette-selector__card-swatch palette-selector__card-swatch--secondary"
+                  style={`background-color: ${palette.previewColors.secondary}`}
+                />
+                <span
+                  class="palette-selector__card-swatch palette-selector__card-swatch--accent"
+                  style={`background-color: ${palette.previewColors.accent}`}
+                />
+              </span>
+            )}
+            <span class="palette-selector__card-content">
+              <span class="palette-selector__card-name">{palette.name}</span>
+              <span class="palette-selector__card-description">{palette.description}</span>
+            </span>
+          </button>
+        ))}
+      </div>
+    )}
+
+    {variant === 'dropdown' && (
+      <div class="palette-selector__dropdown">
+        <label class="palette-selector__dropdown-label" for="palette-select">
+          Color Palette
+        </label>
+        <select
+          id="palette-select"
+          class="palette-selector__select"
+          data-palette-select
+          aria-label="Select color palette"
+        >
+          {palettes.map((palette) => (
+            <option value={palette.id}>{palette.name}</option>
+          ))}
+        </select>
+      </div>
+    )}
+  </div>
+)}
+
+<style>
+  .palette-selector {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  /* Button Variant Styles */
+  .palette-selector__buttons {
+    display: flex;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
+  }
+
+  .palette-selector__button {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    background: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: var(--transition-hover);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .palette-selector__button:hover {
+    border-color: var(--color-primary);
+    color: var(--color-text-primary);
+  }
+
+  .palette-selector__button:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .palette-selector__button[aria-pressed="true"],
+  .palette-selector__button.is-active {
+    border-color: var(--color-primary);
+    background: var(--color-primary-50);
+    color: var(--color-primary);
+  }
+
+  .palette-selector__preview {
+    display: flex;
+    gap: 2px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .palette-selector__preview-swatch {
+    width: 12px;
+    height: 12px;
+  }
+
+  .palette-selector__label {
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* Card Variant Styles */
+  .palette-selector__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-4);
+    width: 100%;
+  }
+
+  .palette-selector__card {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    background: var(--color-background-elevated);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    overflow: hidden;
+    transition: var(--transition-hover);
+    text-align: left;
+  }
+
+  .palette-selector__card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+  }
+
+  .palette-selector__card:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .palette-selector__card[aria-pressed="true"],
+  .palette-selector__card.is-active {
+    border-color: var(--color-primary);
+    box-shadow: var(--glow-primary-sm);
+  }
+
+  .palette-selector__card-preview {
+    display: flex;
+    height: 60px;
+  }
+
+  .palette-selector__card-swatch {
+    flex: 1;
+  }
+
+  .palette-selector__card-content {
+    padding: var(--spacing-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .palette-selector__card-name {
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+  }
+
+  .palette-selector__card-description {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    line-height: var(--line-height-snug);
+  }
+
+  /* Dropdown Variant Styles */
+  .palette-selector__dropdown {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  .palette-selector__dropdown-label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+  }
+
+  .palette-selector__select {
+    padding: var(--spacing-2) var(--spacing-3);
+    padding-right: var(--spacing-8);
+    background: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--spacing-2) center;
+  }
+
+  .palette-selector__select:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Dark mode adjustments */
+  :global(html[data-theme="dark"]) .palette-selector__button:hover,
+  :global(html[data-theme="dark"]) .palette-selector__card:hover {
+    background: var(--color-background-muted);
+  }
+
+  :global(html[data-theme="dark"]) .palette-selector__button[aria-pressed="true"],
+  :global(html[data-theme="dark"]) .palette-selector__button.is-active {
+    background: var(--color-background-muted);
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .palette-selector__button,
+    .palette-selector__card {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Palette Selector Functionality
+   * Handles palette switching with localStorage persistence.
+   */
+  function initPaletteSelector() {
+    const PALETTE_KEY = 'retail-color-palette';
+    const VALID_PALETTES = ['light-airy', 'bold-editorial', 'earthy-organic'];
+
+    const selectors = document.querySelectorAll('[data-palette-selector]');
+    if (selectors.length === 0) return;
+
+    /**
+     * Get the current palette from localStorage or default
+     */
+    function getCurrentPalette(): string {
+      const stored = localStorage.getItem(PALETTE_KEY);
+      if (stored && VALID_PALETTES.includes(stored)) {
+        return stored;
+      }
+      // Return palette from HTML attribute or default
+      return document.documentElement.getAttribute('data-palette') || 'light-airy';
+    }
+
+    /**
+     * Apply the palette to the document
+     */
+    function applyPalette(palette: string) {
+      if (!VALID_PALETTES.includes(palette)) {
+        console.warn(`Invalid palette: ${palette}`);
+        return;
+      }
+
+      document.documentElement.setAttribute('data-palette', palette);
+      localStorage.setItem(PALETTE_KEY, palette);
+      updateActiveStates(palette);
+
+      // Dispatch custom event for other components
+      window.dispatchEvent(new CustomEvent('palette-change', {
+        detail: { palette }
+      }));
+    }
+
+    /**
+     * Update active states on all palette buttons
+     */
+    function updateActiveStates(currentPalette: string) {
+      // Update buttons
+      document.querySelectorAll('[data-palette-option]').forEach((button) => {
+        const isActive = button.getAttribute('data-palette-option') === currentPalette;
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-pressed', isActive.toString());
+      });
+
+      // Update select dropdowns
+      document.querySelectorAll('[data-palette-select]').forEach((select) => {
+        if (select instanceof HTMLSelectElement) {
+          select.value = currentPalette;
+        }
+      });
+    }
+
+    /**
+     * Initialize the selector with current palette
+     */
+    function initialize() {
+      const currentPalette = getCurrentPalette();
+      updateActiveStates(currentPalette);
+
+      // Listen for button clicks
+      document.querySelectorAll('[data-palette-option]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const palette = button.getAttribute('data-palette-option');
+          if (palette) {
+            applyPalette(palette);
+          }
+        });
+      });
+
+      // Listen for select changes
+      document.querySelectorAll('[data-palette-select]').forEach((select) => {
+        select.addEventListener('change', (e) => {
+          if (e.target instanceof HTMLSelectElement) {
+            applyPalette(e.target.value);
+          }
+        });
+      });
+    }
+
+    initialize();
+  }
+
+  // Initialize on DOM ready
+  document.addEventListener('DOMContentLoaded', initPaletteSelector);
+
+  // Re-initialize on Astro page transitions (View Transitions API)
+  document.addEventListener('astro:page-load', initPaletteSelector);
+</script>

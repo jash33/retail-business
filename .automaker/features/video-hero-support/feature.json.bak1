@@ -1,0 +1,12 @@
+{
+  "id": "video-hero-support",
+  "category": "UI",
+  "title": "Video Background Support for Hero Sections",
+  "description": "Add support for looping video backgrounds in hero sections with fallback images, autoplay controls, and reduced-motion alternative. Optimized for brand storytelling.",
+  "status": "in_progress",
+  "priority": 2,
+  "complexity": "moderate",
+  "createdAt": "2026-01-26T01:49:59.726Z",
+  "updatedAt": "2026-01-27T06:14:21.476Z",
+  "descriptionHistory": []
+}

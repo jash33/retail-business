@@ -1,0 +1,693 @@
+---
+/**
+ * HeroEditorial Component
+ * A minimal, statement hero variant with large lifestyle imagery,
+ * subtle headline overlays, and clean single CTA.
+ *
+ * Features:
+ * - Large lifestyle imagery or video background
+ * - Subtle headline overlays with flexible positioning
+ * - Clean single CTA button
+ * - Video loop background support with poster fallback
+ * - CSS-based parallax scroll effects
+ * - Mobile-first responsive design
+ * - WCAG 2.1 AA compliant with reduced motion support
+ * - GPU-accelerated animations for smooth 60fps performance
+ *
+ * @example Basic usage with image
+ * ```astro
+ * <HeroEditorial
+ *   headline="Crafted with Purpose"
+ *   subheadline="Thoughtful design for modern businesses"
+ *   backgroundImage="/images/hero-lifestyle.jpg"
+ *   cta={{ text: "Explore", href: "/services" }}
+ * />
+ * ```
+ *
+ * @example With video background
+ * ```astro
+ * <HeroEditorial
+ *   headline="Experience Excellence"
+ *   video={{ src: "/videos/hero-loop.mp4", poster: "/images/hero-poster.jpg" }}
+ *   cta={{ text: "Get Started", href: "/contact" }}
+ *   overlayPosition="bottom-left"
+ *   parallax={{ enabled: true, intensity: 0.3 }}
+ * />
+ * ```
+ */
+
+import type { HeroEditorialProps } from '../types/hero';
+import Button from './Button.astro';
+
+interface Props extends HeroEditorialProps {}
+
+const {
+  headline,
+  subheadline,
+  cta,
+  backgroundImage,
+  video,
+  parallax = { enabled: true, intensity: 0.3, direction: 'up' },
+  overlayPosition = 'bottom-left',
+  overlayOpacity = 0.4,
+  id = 'hero-editorial',
+  class: className = '',
+  minHeight = '100vh',
+  animateText = true,
+} = Astro.props;
+
+// Compute CSS classes
+const sectionClasses = [
+  'hero-editorial',
+  `hero-editorial--overlay-${overlayPosition}`,
+  parallax?.enabled ? 'hero-editorial--parallax' : '',
+  animateText ? 'hero-editorial--animate' : '',
+  className,
+].filter(Boolean).join(' ');
+
+// Compute CSS custom properties for dynamic values
+const cssVars = {
+  '--hero-min-height': minHeight,
+  '--hero-overlay-opacity': overlayOpacity,
+  '--hero-parallax-intensity': parallax?.intensity ?? 0.3,
+};
+
+const cssVarsString = Object.entries(cssVars)
+  .map(([key, value]) => `${key}: ${value}`)
+  .join('; ');
+---
+
+<section
+  class={sectionClasses}
+  id={id}
+  aria-labelledby={`${id}-headline`}
+  style={cssVarsString}
+  data-parallax={parallax?.enabled ? 'true' : 'false'}
+  data-parallax-direction={parallax?.direction ?? 'up'}
+>
+  <!-- Background Media Container -->
+  <div class="hero-editorial__media" aria-hidden="true">
+    {video ? (
+      <video
+        class="hero-editorial__video"
+        autoplay
+        muted
+        loop={video.loop !== false}
+        playsinline
+        poster={video.poster}
+        data-playback-rate={video.playbackRate ?? 1}
+      >
+        <source src={video.src} type="video/mp4" />
+      </video>
+    ) : backgroundImage ? (
+      <div
+        class="hero-editorial__image"
+        style={`background-image: url('${backgroundImage}')`}
+      />
+    ) : (
+      <div class="hero-editorial__gradient-fallback" />
+    )}
+  </div>
+
+  <!-- Overlay for text readability -->
+  <div class="hero-editorial__overlay" aria-hidden="true" />
+
+  <!-- Content Container -->
+  <div class="hero-editorial__container">
+    <div class="hero-editorial__content">
+      <h1 id={`${id}-headline`} class="hero-editorial__headline">
+        {headline}
+      </h1>
+
+      {subheadline && (
+        <p class="hero-editorial__subheadline">
+          {subheadline}
+        </p>
+      )}
+
+      {cta && (
+        <div class="hero-editorial__cta">
+          <Button
+            text={cta.text}
+            href={cta.href}
+            variant={cta.variant || 'primary'}
+            size="large"
+            class="hero-editorial__button"
+          />
+        </div>
+      )}
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="hero-editorial__scroll-indicator" aria-hidden="true">
+    <div class="hero-editorial__scroll-arrow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M5 12l7 7 7-7" />
+      </svg>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * HERO EDITORIAL COMPONENT STYLES
+   * =================================================================
+   * Minimal, statement hero with lifestyle imagery
+   * Mobile-first approach with responsive breakpoints
+   * Uses design system variables from variables.css
+   */
+
+  .hero-editorial {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    min-height: var(--hero-min-height, 100vh);
+    overflow: hidden;
+    background-color: var(--color-primary-900);
+  }
+
+  /* =================================================================
+   * BACKGROUND MEDIA
+   * =================================================================
+   */
+
+  .hero-editorial__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero-editorial__image {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transform: scale(1.1);
+    transition: transform 0.1s linear;
+  }
+
+  .hero-editorial__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.1);
+  }
+
+  .hero-editorial__gradient-fallback {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-700) 50%,
+      var(--color-primary-800) 100%
+    );
+  }
+
+  /* Parallax effect via CSS transform (JS-enhanced) */
+  .hero-editorial--parallax .hero-editorial__image,
+  .hero-editorial--parallax .hero-editorial__video {
+    will-change: transform;
+  }
+
+  /* =================================================================
+   * OVERLAY
+   * =================================================================
+   */
+
+  .hero-editorial__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, calc(var(--hero-overlay-opacity, 0.4) + 0.2)) 0%,
+      rgba(0, 0, 0, calc(var(--hero-overlay-opacity, 0.4) * 0.5)) 40%,
+      rgba(0, 0, 0, calc(var(--hero-overlay-opacity, 0.4) * 0.3)) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* =================================================================
+   * CONTENT CONTAINER
+   * =================================================================
+   */
+
+  .hero-editorial__container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: var(--container-7xl, 80rem);
+    margin: 0 auto;
+    padding: var(--spacing-8, 2rem) var(--spacing-4, 1rem);
+    padding-bottom: var(--spacing-16, 4rem);
+  }
+
+  .hero-editorial__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4, 1rem);
+    max-width: 100%;
+  }
+
+  /* =================================================================
+   * TYPOGRAPHY
+   * =================================================================
+   */
+
+  .hero-editorial__headline {
+    font-family: var(--font-heading, system-ui, sans-serif);
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: var(--font-weight-bold, 700);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--color-text-inverse, #ffffff);
+    margin: 0;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .hero-editorial__subheadline {
+    font-family: var(--font-body, system-ui, sans-serif);
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    font-weight: var(--font-weight-normal, 400);
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    max-width: 40ch;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  /* =================================================================
+   * CTA BUTTON
+   * =================================================================
+   */
+
+  .hero-editorial__cta {
+    margin-top: var(--spacing-4, 1rem);
+  }
+
+  /* Style overrides for button in editorial context */
+  .hero-editorial :global(.btn--primary) {
+    background-color: var(--color-background, #ffffff);
+    color: var(--color-primary-700, #284182);
+    border: none;
+    box-shadow:
+      0 4px 15px rgba(0, 0, 0, 0.2),
+      0 0 0 0 rgba(255, 255, 255, 0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hero-editorial :global(.btn--primary:hover:not(.btn--disabled)) {
+    background-color: var(--color-primary-50, #e6eaf2);
+    color: var(--color-primary-800, #203777);
+    box-shadow:
+      0 8px 25px rgba(0, 0, 0, 0.25),
+      0 0 0 3px rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .hero-editorial :global(.btn--secondary) {
+    background-color: transparent;
+    color: var(--color-text-inverse, #ffffff);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hero-editorial :global(.btn--secondary:hover:not(.btn--disabled)) {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* =================================================================
+   * SCROLL INDICATOR
+   * =================================================================
+   */
+
+  .hero-editorial__scroll-indicator {
+    position: absolute;
+    bottom: var(--spacing-6, 1.5rem);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+  }
+
+  .hero-editorial__scroll-indicator:hover {
+    opacity: 1;
+  }
+
+  .hero-editorial__scroll-arrow {
+    width: 24px;
+    height: 24px;
+    color: var(--color-text-inverse, #ffffff);
+    animation: scrollBounce 2s ease-in-out infinite;
+  }
+
+  .hero-editorial__scroll-arrow svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  @keyframes scrollBounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(8px);
+    }
+  }
+
+  /* =================================================================
+   * OVERLAY POSITION VARIANTS
+   * =================================================================
+   */
+
+  /* Center */
+  .hero-editorial--overlay-center {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-editorial--overlay-center .hero-editorial__content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero-editorial--overlay-center .hero-editorial__subheadline {
+    max-width: 50ch;
+  }
+
+  /* Bottom Left (default) */
+  .hero-editorial--overlay-bottom-left {
+    align-items: flex-end;
+    justify-content: flex-start;
+  }
+
+  .hero-editorial--overlay-bottom-left .hero-editorial__content {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  /* Bottom Center */
+  .hero-editorial--overlay-bottom-center {
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .hero-editorial--overlay-bottom-center .hero-editorial__content {
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Bottom Right */
+  .hero-editorial--overlay-bottom-right {
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+
+  .hero-editorial--overlay-bottom-right .hero-editorial__content {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  /* Top Left */
+  .hero-editorial--overlay-top-left {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .hero-editorial--overlay-top-left .hero-editorial__container {
+    padding-top: var(--spacing-16, 4rem);
+    padding-bottom: var(--spacing-8, 2rem);
+  }
+
+  .hero-editorial--overlay-top-left .hero-editorial__content {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  /* Top Center */
+  .hero-editorial--overlay-top-center {
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .hero-editorial--overlay-top-center .hero-editorial__container {
+    padding-top: var(--spacing-16, 4rem);
+    padding-bottom: var(--spacing-8, 2rem);
+  }
+
+  .hero-editorial--overlay-top-center .hero-editorial__content {
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Top Right */
+  .hero-editorial--overlay-top-right {
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+
+  .hero-editorial--overlay-top-right .hero-editorial__container {
+    padding-top: var(--spacing-16, 4rem);
+    padding-bottom: var(--spacing-8, 2rem);
+  }
+
+  .hero-editorial--overlay-top-right .hero-editorial__content {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  /* =================================================================
+   * TEXT ANIMATIONS
+   * =================================================================
+   */
+
+  .hero-editorial--animate .hero-editorial__headline {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: editorialFadeIn 0.8s ease-out 0.2s forwards;
+  }
+
+  .hero-editorial--animate .hero-editorial__subheadline {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: editorialFadeIn 0.8s ease-out 0.4s forwards;
+  }
+
+  .hero-editorial--animate .hero-editorial__cta {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: editorialFadeIn 0.8s ease-out 0.6s forwards;
+  }
+
+  .hero-editorial--animate .hero-editorial__scroll-indicator {
+    opacity: 0;
+    animation: editorialFadeIn 0.8s ease-out 0.8s forwards;
+  }
+
+  @keyframes editorialFadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* =================================================================
+   * RESPONSIVE DESIGN
+   * =================================================================
+   */
+
+  /* Tablet */
+  @media (min-width: 640px) {
+    .hero-editorial__container {
+      padding: var(--spacing-12, 3rem) var(--spacing-6, 1.5rem);
+      padding-bottom: var(--spacing-20, 5rem);
+    }
+
+    .hero-editorial__content {
+      max-width: 60%;
+    }
+
+    .hero-editorial--overlay-center .hero-editorial__content {
+      max-width: 80%;
+    }
+  }
+
+  /* Desktop */
+  @media (min-width: 1024px) {
+    .hero-editorial__container {
+      padding: var(--spacing-16, 4rem) var(--spacing-8, 2rem);
+      padding-bottom: var(--spacing-24, 6rem);
+    }
+
+    .hero-editorial__content {
+      max-width: 50%;
+    }
+
+    .hero-editorial--overlay-center .hero-editorial__content {
+      max-width: 70%;
+    }
+
+    .hero-editorial__scroll-arrow {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  /* Large Desktop */
+  @media (min-width: 1280px) {
+    .hero-editorial__content {
+      max-width: 45%;
+    }
+  }
+
+  /* =================================================================
+   * ACCESSIBILITY
+   * =================================================================
+   */
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-editorial--animate .hero-editorial__headline,
+    .hero-editorial--animate .hero-editorial__subheadline,
+    .hero-editorial--animate .hero-editorial__cta,
+    .hero-editorial--animate .hero-editorial__scroll-indicator {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+
+    .hero-editorial__scroll-arrow {
+      animation: none;
+    }
+
+    .hero-editorial__image,
+    .hero-editorial__video {
+      transform: none;
+    }
+
+    .hero-editorial__video {
+      /* Pause video for users who prefer reduced motion */
+      animation-play-state: paused;
+    }
+  }
+
+  /* High contrast mode */
+  @media (forced-colors: active) {
+    .hero-editorial__overlay {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .hero-editorial__headline,
+    .hero-editorial__subheadline {
+      text-shadow: none;
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .hero-editorial {
+      min-height: auto;
+      padding: 2rem;
+    }
+
+    .hero-editorial__media,
+    .hero-editorial__overlay,
+    .hero-editorial__scroll-indicator {
+      display: none;
+    }
+
+    .hero-editorial__headline,
+    .hero-editorial__subheadline {
+      color: #000;
+      text-shadow: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * HeroEditorial Client-side Enhancements
+   * - Parallax scroll effect
+   * - Video playback rate control
+   * - Reduced motion handling
+   */
+
+  // Check for reduced motion preference
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Initialize parallax effect
+  function initParallax() {
+    const heroSections = document.querySelectorAll<HTMLElement>('[data-parallax="true"]');
+
+    heroSections.forEach((section) => {
+      const media = section.querySelector<HTMLElement>('.hero-editorial__image, .hero-editorial__video');
+      if (!media || prefersReducedMotion) return;
+
+      const intensity = parseFloat(getComputedStyle(section).getPropertyValue('--hero-parallax-intensity')) || 0.3;
+      const direction = section.dataset.parallaxDirection === 'down' ? 1 : -1;
+
+      function updateParallax() {
+        const rect = section.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+
+        // Only apply parallax when section is in view
+        if (rect.bottom < 0 || rect.top > viewportHeight) return;
+
+        // Calculate scroll progress through the section
+        const scrollProgress = (viewportHeight - rect.top) / (viewportHeight + rect.height);
+        const translateY = (scrollProgress - 0.5) * intensity * 100 * direction;
+
+        media.style.transform = `scale(1.1) translateY(${translateY}px)`;
+      }
+
+      // Initial update
+      updateParallax();
+
+      // Throttled scroll handler
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            updateParallax();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    });
+  }
+
+  // Initialize video playback rate
+  function initVideoPlayback() {
+    const videos = document.querySelectorAll<HTMLVideoElement>('.hero-editorial__video');
+
+    videos.forEach((video) => {
+      const playbackRate = parseFloat(video.dataset.playbackRate || '1');
+      video.playbackRate = playbackRate;
+
+      // Pause video for users who prefer reduced motion
+      if (prefersReducedMotion) {
+        video.pause();
+      }
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      initParallax();
+      initVideoPlayback();
+    });
+  } else {
+    initParallax();
+    initVideoPlayback();
+  }
+</script>

@@ -1,0 +1,1638 @@
+---
+/**
+ * LookbookGrid Component
+ * A lookbook-style grid component with mixed aspect ratios, text overlays,
+ * and shoppable product tags. Perfect for curated seasonal collections or
+ * style guides.
+ *
+ * Features:
+ * - Mixed aspect ratios for editorial layouts
+ * - Text overlays with flexible positioning
+ * - Shoppable product tags with hover tooltips
+ * - Responsive grid layouts (2-4 columns)
+ * - Stagger animation support
+ * - Full accessibility support (WCAG 2.1 AA)
+ * - Reduced motion support
+ * - Dark mode support
+ *
+ * @example Basic usage
+ * ```astro
+ * <LookbookGrid
+ *   items={lookbookItems}
+ *   columns={3}
+ *   heading="Spring Collection"
+ * />
+ * ```
+ *
+ * @example With product tags and tooltips
+ * ```astro
+ * <LookbookGrid
+ *   items={lookbookItems}
+ *   columns={3}
+ *   layout="editorial"
+ *   enableTooltips={true}
+ *   showTagsByDefault={false}
+ * />
+ * ```
+ */
+
+import type {
+  LookbookGridProps,
+  LookbookItem,
+  ProductTag,
+  LookbookLayout,
+} from '../types/lookbook';
+import { getLookbookAspectRatioCss, validateTagPosition } from '../types/lookbook';
+import { formatPrice } from '../types/product';
+import {
+  appendUTMParams,
+  mergeUTMParams,
+  getShopLinkAttributes,
+} from '../utils/shop-tracking';
+import { shopConfig } from '../config/shop.config';
+
+interface Props extends LookbookGridProps {}
+
+const {
+  items = [],
+  columns = 3,
+  gap = 'medium',
+  layout = 'standard',
+  heading,
+  subheading,
+  id = 'lookbook-grid',
+  class: className = '',
+  enableAnimation = true,
+  maxStaggerItems = 12,
+  showTagsByDefault = false,
+  enableTooltips = true,
+  responsiveColumns,
+} = Astro.props;
+
+// Build CSS classes
+const sectionClasses = [
+  'lookbook-grid',
+  `lookbook-grid--cols-${columns}`,
+  `lookbook-grid--gap-${gap}`,
+  `lookbook-grid--layout-${layout}`,
+  enableAnimation && 'lookbook-grid--animated',
+  showTagsByDefault && 'lookbook-grid--tags-visible',
+  className,
+].filter(Boolean).join(' ');
+
+// Gap values mapping
+const gapValues: Record<string, string> = {
+  none: '0',
+  small: 'var(--spacing-2)',
+  medium: 'var(--spacing-4)',
+  large: 'var(--spacing-6)',
+};
+
+// Build responsive column CSS custom properties
+const responsiveColsStyle = responsiveColumns
+  ? `--grid-cols-mobile: ${responsiveColumns.mobile || 1}; --grid-cols-tablet: ${responsiveColumns.tablet || 2}; --grid-cols-desktop: ${responsiveColumns.desktop || columns};`
+  : '';
+
+// Helper function to get item style for grid placement
+function getItemStyle(item: LookbookItem, index: number): string {
+  const styles: string[] = [];
+
+  // Apply stagger animation delay
+  if (enableAnimation) {
+    const staggerIndex = Math.min(index, maxStaggerItems - 1);
+    styles.push(`--stagger-delay: ${staggerIndex * 80}ms`);
+  }
+
+  // Apply item size/span
+  if (item.size?.colSpan && item.size.colSpan > 1) {
+    styles.push(`grid-column: span ${item.size.colSpan}`);
+  }
+  if (item.size?.rowSpan && item.size.rowSpan > 1) {
+    styles.push(`grid-row: span ${item.size.rowSpan}`);
+  }
+
+  // Apply aspect ratio
+  const aspectRatio = getLookbookAspectRatioCss(item.aspectRatio || '4:5');
+  styles.push(`--item-aspect-ratio: ${aspectRatio}`);
+
+  return styles.join('; ');
+}
+
+// Helper function to build tracked URL
+function getTrackedUrl(href: string, utmParams?: any, itemId?: string): string {
+  if (!href) return '#';
+  const mergedParams = mergeUTMParams({
+    ...utmParams,
+    content: utmParams?.content || `lookbook_item_${itemId}`,
+  });
+  return shopConfig.trackingEnabled
+    ? appendUTMParams(href, mergedParams)
+    : href;
+}
+
+// Helper function to get product tag tooltip content
+function getTagTooltipId(itemId: string, tagId: string): string {
+  return `tooltip-${itemId}-${tagId}`;
+}
+
+// Check if we have items to display
+const hasItems = items && items.length > 0;
+---
+
+<section
+  class={sectionClasses}
+  id={id}
+  aria-labelledby={heading ? `${id}-heading` : undefined}
+  style={`--grid-cols: ${columns}; --grid-gap: ${gapValues[gap]}; ${responsiveColsStyle}`}
+  data-layout={layout}
+  data-enable-tooltips={enableTooltips}
+>
+  <div class="lookbook-grid__container">
+    <!-- Section Header -->
+    {(heading || subheading) && (
+      <header class="lookbook-grid__header">
+        {heading && (
+          <h2 id={`${id}-heading`} class="lookbook-grid__heading">{heading}</h2>
+        )}
+        {subheading && (
+          <p class="lookbook-grid__subheading">{subheading}</p>
+        )}
+      </header>
+    )}
+
+    <!-- Lookbook Grid -->
+    {hasItems ? (
+      <div
+        class="lookbook-grid__grid"
+        role="list"
+        aria-label="Lookbook collection"
+      >
+        {items.map((item, index) => {
+          const itemClasses = [
+            'lookbook-grid__item',
+            item.featured && 'lookbook-grid__item--featured',
+            item.textOverlay && 'lookbook-grid__item--has-overlay',
+            item.productTags?.length && 'lookbook-grid__item--has-tags',
+            enableAnimation && 'lookbook-grid__item--animated',
+            item.class,
+          ].filter(Boolean).join(' ');
+
+          const itemStyle = getItemStyle(item, index);
+          const linkAttrs = getShopLinkAttributes(item.openInNewTab);
+          const trackedHref = item.href ? getTrackedUrl(item.href, item.utmParams, item.id) : null;
+
+          return (
+            <article
+              class={itemClasses}
+              role="listitem"
+              style={itemStyle}
+              data-item-id={item.id}
+              data-index={index}
+            >
+              {/* Item container - either link or div */}
+              {trackedHref ? (
+                <a
+                  href={trackedHref}
+                  class="lookbook-grid__item-link"
+                  aria-label={item.textOverlay?.heading || `View lookbook item ${index + 1}`}
+                  data-lookbook-link
+                  {...linkAttrs}
+                >
+                  <div class="lookbook-grid__item-inner">
+                    <!-- Image -->
+                    <div class="lookbook-grid__image-container">
+                      <picture>
+                        {item.image.srcWebP && (
+                          <source srcset={item.image.srcWebP} type="image/webp" />
+                        )}
+                        <img
+                          src={item.image.src}
+                          alt={item.alt || item.image.alt}
+                          width={item.image.width || 600}
+                          height={item.image.height || 750}
+                          loading={index < 4 ? 'eager' : 'lazy'}
+                          decoding="async"
+                          class="lookbook-grid__image"
+                          onload="this.closest('.lookbook-grid__image-container').classList.add('lookbook-grid__image-container--loaded')"
+                        />
+                      </picture>
+
+                      {/* Loading placeholder */}
+                      <div class="lookbook-grid__image-placeholder" aria-hidden="true">
+                        <div class="lookbook-grid__shimmer"></div>
+                      </div>
+                    </div>
+
+                    <!-- Badges -->
+                    {(item.isNew || item.featured || item.category) && (
+                      <div class="lookbook-grid__badges">
+                        {item.isNew && (
+                          <span class="lookbook-grid__badge lookbook-grid__badge--new">New</span>
+                        )}
+                        {item.featured && !item.isNew && (
+                          <span class="lookbook-grid__badge lookbook-grid__badge--featured">Featured</span>
+                        )}
+                        {item.category && (
+                          <span class="lookbook-grid__badge lookbook-grid__badge--category">{item.category}</span>
+                        )}
+                      </div>
+                    )}
+
+                    <!-- Text Overlay -->
+                    {item.textOverlay && (
+                      <div
+                        class={`lookbook-grid__overlay lookbook-grid__overlay--${item.textOverlay.position || 'bottom-left'} lookbook-grid__overlay--${item.textOverlay.theme || 'dark'}`}
+                        style={`text-align: ${item.textOverlay.alignment || 'left'};`}
+                      >
+                        <div class="lookbook-grid__overlay-content">
+                          {item.textOverlay.heading && (
+                            <h3 class="lookbook-grid__overlay-heading">{item.textOverlay.heading}</h3>
+                          )}
+                          {item.textOverlay.subheading && (
+                            <p class="lookbook-grid__overlay-subheading">{item.textOverlay.subheading}</p>
+                          )}
+                          {item.textOverlay.ctaText && (
+                            <span class="lookbook-grid__overlay-cta">
+                              <span class="lookbook-grid__overlay-cta-text">{item.textOverlay.ctaText}</span>
+                              <svg
+                                class="lookbook-grid__overlay-cta-icon"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                              >
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                              </svg>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </a>
+              ) : (
+                <div class="lookbook-grid__item-inner">
+                  <!-- Image -->
+                  <div class="lookbook-grid__image-container">
+                    <picture>
+                      {item.image.srcWebP && (
+                        <source srcset={item.image.srcWebP} type="image/webp" />
+                      )}
+                      <img
+                        src={item.image.src}
+                        alt={item.alt || item.image.alt}
+                        width={item.image.width || 600}
+                        height={item.image.height || 750}
+                        loading={index < 4 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        class="lookbook-grid__image"
+                        onload="this.closest('.lookbook-grid__image-container').classList.add('lookbook-grid__image-container--loaded')"
+                      />
+                    </picture>
+
+                    {/* Loading placeholder */}
+                    <div class="lookbook-grid__image-placeholder" aria-hidden="true">
+                      <div class="lookbook-grid__shimmer"></div>
+                    </div>
+                  </div>
+
+                  <!-- Badges -->
+                  {(item.isNew || item.featured || item.category) && (
+                    <div class="lookbook-grid__badges">
+                      {item.isNew && (
+                        <span class="lookbook-grid__badge lookbook-grid__badge--new">New</span>
+                      )}
+                      {item.featured && !item.isNew && (
+                        <span class="lookbook-grid__badge lookbook-grid__badge--featured">Featured</span>
+                      )}
+                      {item.category && (
+                        <span class="lookbook-grid__badge lookbook-grid__badge--category">{item.category}</span>
+                      )}
+                    </div>
+                  )}
+
+                  <!-- Text Overlay -->
+                  {item.textOverlay && (
+                    <div
+                      class={`lookbook-grid__overlay lookbook-grid__overlay--${item.textOverlay.position || 'bottom-left'} lookbook-grid__overlay--${item.textOverlay.theme || 'dark'}`}
+                      style={`text-align: ${item.textOverlay.alignment || 'left'};`}
+                    >
+                      <div class="lookbook-grid__overlay-content">
+                        {item.textOverlay.heading && (
+                          <h3 class="lookbook-grid__overlay-heading">{item.textOverlay.heading}</h3>
+                        )}
+                        {item.textOverlay.subheading && (
+                          <p class="lookbook-grid__overlay-subheading">{item.textOverlay.subheading}</p>
+                        )}
+                        {item.textOverlay.ctaText && (
+                          <span class="lookbook-grid__overlay-cta">
+                            <span class="lookbook-grid__overlay-cta-text">{item.textOverlay.ctaText}</span>
+                            <svg
+                              class="lookbook-grid__overlay-cta-icon"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              aria-hidden="true"
+                            >
+                              <line x1="5" y1="12" x2="19" y2="12"></line>
+                              <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Product Tags */}
+              {item.productTags && item.productTags.length > 0 && (
+                <div class="lookbook-grid__tags" aria-label="Shop this look">
+                  {item.productTags.map((tag) => {
+                    const validatedTag = validateTagPosition(tag);
+                    const tagLinkAttrs = getShopLinkAttributes(tag.openInNewTab);
+                    const tagHref = getTrackedUrl(tag.shopUrl, tag.utmParams, tag.id);
+                    const tooltipId = getTagTooltipId(item.id, tag.id);
+
+                    return (
+                      <div
+                        class="lookbook-grid__tag"
+                        style={`left: ${validatedTag.x}%; top: ${validatedTag.y}%;`}
+                        data-tag-id={tag.id}
+                      >
+                        {/* Tag hotspot button */}
+                        <button
+                          class="lookbook-grid__tag-hotspot"
+                          aria-label={`Shop ${tag.name} - ${formatPrice(tag.price)}`}
+                          aria-describedby={enableTooltips ? tooltipId : undefined}
+                          data-tag-trigger
+                        >
+                          <span class="lookbook-grid__tag-hotspot-inner">
+                            <svg
+                              class="lookbook-grid__tag-hotspot-icon"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              aria-hidden="true"
+                            >
+                              <line x1="12" y1="5" x2="12" y2="19"></line>
+                              <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                          </span>
+                          <span class="lookbook-grid__tag-hotspot-pulse"></span>
+                        </button>
+
+                        {/* Tag tooltip/card */}
+                        {enableTooltips && (
+                          <div
+                            class="lookbook-grid__tag-tooltip"
+                            id={tooltipId}
+                            role="tooltip"
+                          >
+                            {tag.image && (
+                              <div class="lookbook-grid__tag-tooltip-image">
+                                <img
+                                  src={tag.image.src}
+                                  alt={tag.image.alt}
+                                  width="80"
+                                  height="100"
+                                  loading="lazy"
+                                />
+                              </div>
+                            )}
+                            <div class="lookbook-grid__tag-tooltip-content">
+                              <span class="lookbook-grid__tag-tooltip-name">{tag.name}</span>
+                              <span class="lookbook-grid__tag-tooltip-price">{formatPrice(tag.price)}</span>
+                              {tag.description && (
+                                <span class="lookbook-grid__tag-tooltip-description">{tag.description}</span>
+                              )}
+                              <a
+                                href={tagHref}
+                                class="lookbook-grid__tag-tooltip-link"
+                                data-product-link
+                                {...tagLinkAttrs}
+                              >
+                                Shop Now
+                                <svg
+                                  class="lookbook-grid__tag-tooltip-link-icon"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  aria-hidden="true"
+                                >
+                                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                  <polyline points="15 3 21 3 21 9"></polyline>
+                                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                                </svg>
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </article>
+          );
+        })}
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="lookbook-grid__empty" role="status" aria-live="polite">
+        <div class="lookbook-grid__empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M3 14L7 10L10 13L17 6L21 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <p class="lookbook-grid__empty-text">No lookbook items to display.</p>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * LOOKBOOK GRID COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .lookbook-grid {
+    padding: var(--spacing-8) var(--spacing-4);
+  }
+
+  .lookbook-grid__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * SECTION HEADER
+   * ================================================================= */
+  .lookbook-grid__header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .lookbook-grid__heading {
+    font-family: var(--font-editorial-heading, var(--font-heading));
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-editorial-heading, var(--letter-spacing-tight));
+  }
+
+  .lookbook-grid__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * LOOKBOOK GRID - Base Styles
+   * ================================================================= */
+  .lookbook-grid__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols, 3), 1fr);
+    gap: var(--grid-gap, var(--spacing-4));
+    grid-auto-flow: dense;
+  }
+
+  .lookbook-grid__item {
+    position: relative;
+    min-width: 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  .lookbook-grid__item-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .lookbook-grid__item-link:focus-visible {
+    outline: none;
+  }
+
+  .lookbook-grid__item-link:focus-visible .lookbook-grid__item-inner {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: 2px;
+  }
+
+  .lookbook-grid__item-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  /* =================================================================
+   * IMAGE CONTAINER
+   * ================================================================= */
+  .lookbook-grid__image-container {
+    position: relative;
+    aspect-ratio: var(--item-aspect-ratio, 4 / 5);
+    overflow: hidden;
+  }
+
+  .lookbook-grid__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform var(--duration-500) var(--ease-out);
+  }
+
+  .lookbook-grid__item:hover .lookbook-grid__image {
+    transform: scale(1.05);
+  }
+
+  /* Loading placeholder */
+  .lookbook-grid__image-placeholder {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    transition: opacity var(--duration-300) var(--ease-out);
+  }
+
+  .lookbook-grid__image-container--loaded .lookbook-grid__image-placeholder {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .lookbook-grid__shimmer {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      var(--color-background-muted) 0%,
+      var(--color-background-subtle) 50%,
+      var(--color-background-muted) 100%
+    );
+    background-size: 200% 100%;
+    animation: lookbook-shimmer 1.5s ease-in-out infinite;
+  }
+
+  @keyframes lookbook-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* =================================================================
+   * BADGES
+   * ================================================================= */
+  .lookbook-grid__badges {
+    position: absolute;
+    top: var(--spacing-3);
+    left: var(--spacing-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    z-index: 10;
+  }
+
+  .lookbook-grid__badge {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-2-5);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+    border-radius: var(--radius-sm);
+  }
+
+  .lookbook-grid__badge--new {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .lookbook-grid__badge--featured {
+    background-color: var(--color-accent);
+    color: var(--color-text-inverse);
+  }
+
+  .lookbook-grid__badge--category {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--color-text-primary);
+    backdrop-filter: blur(4px);
+  }
+
+  /* =================================================================
+   * TEXT OVERLAY
+   * ================================================================= */
+  .lookbook-grid__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    padding: var(--spacing-5);
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .lookbook-grid__overlay-content {
+    pointer-events: auto;
+    max-width: 85%;
+  }
+
+  /* Overlay positions */
+  .lookbook-grid__overlay--top-left {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .lookbook-grid__overlay--top-center {
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .lookbook-grid__overlay--top-right {
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+
+  .lookbook-grid__overlay--center-left {
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .lookbook-grid__overlay--center {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lookbook-grid__overlay--center-right {
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .lookbook-grid__overlay--bottom-left {
+    align-items: flex-end;
+    justify-content: flex-start;
+  }
+
+  .lookbook-grid__overlay--bottom-center {
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .lookbook-grid__overlay--bottom-right {
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+
+  /* Overlay themes */
+  .lookbook-grid__overlay--dark {
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.3) 50%,
+      transparent 100%
+    );
+  }
+
+  .lookbook-grid__overlay--dark .lookbook-grid__overlay-heading,
+  .lookbook-grid__overlay--dark .lookbook-grid__overlay-subheading,
+  .lookbook-grid__overlay--dark .lookbook-grid__overlay-cta {
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .lookbook-grid__overlay--light {
+    background: linear-gradient(
+      to top,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(255, 255, 255, 0.5) 50%,
+      transparent 100%
+    );
+  }
+
+  .lookbook-grid__overlay--light .lookbook-grid__overlay-heading,
+  .lookbook-grid__overlay--light .lookbook-grid__overlay-subheading,
+  .lookbook-grid__overlay--light .lookbook-grid__overlay-cta {
+    color: var(--color-text-primary);
+  }
+
+  .lookbook-grid__overlay--gradient {
+    background: linear-gradient(
+      135deg,
+      rgba(54, 83, 149, 0.8) 0%,
+      rgba(139, 92, 246, 0.6) 100%
+    );
+  }
+
+  .lookbook-grid__overlay--gradient .lookbook-grid__overlay-heading,
+  .lookbook-grid__overlay--gradient .lookbook-grid__overlay-subheading,
+  .lookbook-grid__overlay--gradient .lookbook-grid__overlay-cta {
+    color: #ffffff;
+  }
+
+  /* Top-positioned overlays get different gradient */
+  .lookbook-grid__overlay--top-left.lookbook-grid__overlay--dark,
+  .lookbook-grid__overlay--top-center.lookbook-grid__overlay--dark,
+  .lookbook-grid__overlay--top-right.lookbook-grid__overlay--dark {
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.3) 50%,
+      transparent 100%
+    );
+  }
+
+  .lookbook-grid__overlay--top-left.lookbook-grid__overlay--light,
+  .lookbook-grid__overlay--top-center.lookbook-grid__overlay--light,
+  .lookbook-grid__overlay--top-right.lookbook-grid__overlay--light {
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(255, 255, 255, 0.5) 50%,
+      transparent 100%
+    );
+  }
+
+  .lookbook-grid__overlay-heading {
+    margin: 0 0 var(--spacing-1);
+    font-family: var(--font-editorial-heading, var(--font-heading));
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    transition: transform var(--duration-200) var(--ease-out);
+  }
+
+  .lookbook-grid__item:hover .lookbook-grid__overlay-heading {
+    transform: translateY(-2px);
+  }
+
+  .lookbook-grid__overlay-subheading {
+    margin: 0 0 var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
+    opacity: 0.9;
+  }
+
+  .lookbook-grid__overlay-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-spring-soft);
+  }
+
+  .lookbook-grid__item:hover .lookbook-grid__overlay-cta {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .lookbook-grid__overlay-cta-icon {
+    width: 1.25em;
+    height: 1.25em;
+    transition: transform var(--duration-200) var(--ease-out);
+  }
+
+  .lookbook-grid__item:hover .lookbook-grid__overlay-cta-icon {
+    transform: translateX(4px);
+  }
+
+  /* =================================================================
+   * PRODUCT TAGS
+   * ================================================================= */
+  .lookbook-grid__tags {
+    position: absolute;
+    inset: 0;
+    z-index: 15;
+    pointer-events: none;
+  }
+
+  .lookbook-grid__tag {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+  }
+
+  .lookbook-grid__tag-hotspot {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-full);
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    transition:
+      transform var(--duration-200) var(--ease-out),
+      background-color var(--duration-150) var(--ease-in-out);
+
+    /* Hide by default, show on hover */
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  .lookbook-grid__item:hover .lookbook-grid__tag-hotspot,
+  .lookbook-grid--tags-visible .lookbook-grid__tag-hotspot {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .lookbook-grid__tag-hotspot:hover {
+    background-color: var(--color-primary);
+    transform: scale(1.1);
+  }
+
+  .lookbook-grid__tag-hotspot:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-md), var(--focus-ring);
+  }
+
+  .lookbook-grid__tag-hotspot-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: var(--color-text-primary);
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .lookbook-grid__tag-hotspot:hover .lookbook-grid__tag-hotspot-inner {
+    color: var(--color-text-inverse);
+  }
+
+  .lookbook-grid__tag-hotspot-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .lookbook-grid__tag-hotspot-pulse {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-full);
+    background-color: rgba(255, 255, 255, 0.6);
+    animation: tag-pulse 2s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes tag-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.6;
+    }
+    50% {
+      transform: scale(1.4);
+      opacity: 0;
+    }
+  }
+
+  /* Tag tooltip */
+  .lookbook-grid__tag-tooltip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + var(--spacing-2));
+    transform: translateX(-50%) translateY(10px);
+    min-width: 180px;
+    max-width: 240px;
+    padding: var(--spacing-3);
+    background-color: var(--color-background-elevated);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--duration-200) var(--ease-out),
+      transform var(--duration-200) var(--ease-spring-soft),
+      visibility var(--duration-200);
+    z-index: 20;
+  }
+
+  .lookbook-grid__tag-hotspot:hover + .lookbook-grid__tag-tooltip,
+  .lookbook-grid__tag-hotspot:focus + .lookbook-grid__tag-tooltip,
+  .lookbook-grid__tag-tooltip:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Tooltip arrow */
+  .lookbook-grid__tag-tooltip::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: var(--color-background-elevated);
+  }
+
+  .lookbook-grid__tag-tooltip-image {
+    margin-bottom: var(--spacing-2);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .lookbook-grid__tag-tooltip-image img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .lookbook-grid__tag-tooltip-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .lookbook-grid__tag-tooltip-name {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-snug);
+  }
+
+  .lookbook-grid__tag-tooltip-price {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+  }
+
+  .lookbook-grid__tag-tooltip-description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .lookbook-grid__tag-tooltip-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin-top: var(--spacing-2);
+    padding: var(--spacing-1-5) var(--spacing-2-5);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-out);
+  }
+
+  .lookbook-grid__tag-tooltip-link:hover {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+  }
+
+  .lookbook-grid__tag-tooltip-link:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .lookbook-grid__tag-tooltip-link-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* =================================================================
+   * LAYOUT VARIANTS
+   * ================================================================= */
+
+  /* Editorial layout - mixed sizes for magazine feel */
+  .lookbook-grid--layout-editorial .lookbook-grid__item:nth-child(5n+1) {
+    grid-column: span 2;
+  }
+
+  .lookbook-grid--layout-editorial .lookbook-grid__item:nth-child(5n+1) .lookbook-grid__overlay-heading {
+    font-size: var(--font-size-2xl);
+  }
+
+  /* Featured first layout */
+  .lookbook-grid--layout-featured-first .lookbook-grid__item:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .lookbook-grid--layout-featured-first .lookbook-grid__item:first-child .lookbook-grid__overlay-heading {
+    font-size: var(--font-size-3xl);
+  }
+
+  /* Masonry layout */
+  .lookbook-grid--layout-masonry .lookbook-grid__grid {
+    grid-template-rows: masonry;
+    align-items: start;
+  }
+
+  @supports not (grid-template-rows: masonry) {
+    .lookbook-grid--layout-masonry .lookbook-grid__item:nth-child(3n+2) .lookbook-grid__image-container {
+      aspect-ratio: 1 / 1;
+    }
+
+    .lookbook-grid--layout-masonry .lookbook-grid__item:nth-child(3n) .lookbook-grid__image-container {
+      aspect-ratio: 3 / 4;
+    }
+  }
+
+  /* Gallery layout - minimal gaps, square images */
+  .lookbook-grid--layout-gallery .lookbook-grid__grid {
+    gap: var(--spacing-1);
+  }
+
+  .lookbook-grid--layout-gallery .lookbook-grid__item {
+    border-radius: 0;
+  }
+
+  .lookbook-grid--layout-gallery .lookbook-grid__image-container {
+    aspect-ratio: 1 / 1;
+  }
+
+  /* =================================================================
+   * ANIMATION STYLES
+   * ================================================================= */
+  .lookbook-grid__item--animated {
+    opacity: 0;
+    transform: translateY(30px);
+    transition:
+      opacity var(--duration-500) var(--ease-out),
+      transform var(--duration-500) var(--ease-out);
+    transition-delay: var(--stagger-delay, 0ms);
+  }
+
+  .lookbook-grid--animated .lookbook-grid__item--animated.lookbook-grid__item--visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Immediate visibility for non-animated grids */
+  .lookbook-grid:not(.lookbook-grid--animated) .lookbook-grid__item--animated {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+  .lookbook-grid__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-16) var(--spacing-8);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .lookbook-grid__empty-icon {
+    width: var(--spacing-16);
+    height: var(--spacing-16);
+    color: var(--color-text-tertiary);
+  }
+
+  .lookbook-grid__empty-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .lookbook-grid__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Large Desktop (1280px+) */
+  @media screen and (min-width: 1280px) {
+    .lookbook-grid {
+      padding: var(--spacing-12) var(--spacing-8);
+    }
+
+    .lookbook-grid__heading {
+      font-size: var(--font-size-4xl);
+    }
+
+    .lookbook-grid__overlay-heading {
+      font-size: var(--font-size-2xl);
+    }
+  }
+
+  /* Desktop (1024px - 1279px) */
+  @media screen and (min-width: 1024px) and (max-width: 1279px) {
+    .lookbook-grid__grid {
+      grid-template-columns: repeat(var(--grid-cols-desktop, var(--grid-cols, 3)), 1fr);
+    }
+  }
+
+  /* Tablet (768px - 1023px) */
+  @media screen and (min-width: 768px) and (max-width: 1023px) {
+    .lookbook-grid {
+      padding: var(--spacing-8) var(--spacing-6);
+    }
+
+    .lookbook-grid__grid {
+      grid-template-columns: repeat(var(--grid-cols-tablet, 2), 1fr);
+    }
+
+    .lookbook-grid__heading {
+      font-size: var(--font-size-3xl);
+    }
+
+    /* Adjust layout variants for tablet */
+    .lookbook-grid--layout-editorial .lookbook-grid__item:nth-child(5n+1),
+    .lookbook-grid--layout-featured-first .lookbook-grid__item:first-child {
+      grid-column: span 2;
+      grid-row: span 1;
+    }
+  }
+
+  /* Small Tablet / Large Mobile (480px - 767px) */
+  @media screen and (min-width: 480px) and (max-width: 767px) {
+    .lookbook-grid {
+      padding: var(--spacing-6) var(--spacing-4);
+    }
+
+    .lookbook-grid__grid {
+      grid-template-columns: repeat(var(--grid-cols-tablet, 2), 1fr);
+      gap: var(--spacing-3);
+    }
+
+    .lookbook-grid__heading {
+      font-size: var(--font-size-2xl);
+    }
+
+    .lookbook-grid__subheading {
+      font-size: var(--font-size-base);
+    }
+
+    /* Reset layout variants on smaller screens */
+    .lookbook-grid--layout-editorial .lookbook-grid__item:nth-child(5n+1),
+    .lookbook-grid--layout-featured-first .lookbook-grid__item:first-child {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+
+    .lookbook-grid__overlay {
+      padding: var(--spacing-3);
+    }
+
+    .lookbook-grid__overlay-heading {
+      font-size: var(--font-size-lg);
+    }
+  }
+
+  /* Mobile (< 480px) */
+  @media screen and (max-width: 479px) {
+    .lookbook-grid {
+      padding: var(--spacing-4) var(--spacing-3);
+    }
+
+    .lookbook-grid__header {
+      margin-bottom: var(--spacing-6);
+    }
+
+    .lookbook-grid__grid {
+      grid-template-columns: repeat(var(--grid-cols-mobile, 1), 1fr);
+      gap: var(--spacing-3);
+    }
+
+    .lookbook-grid__heading {
+      font-size: var(--font-size-xl);
+    }
+
+    .lookbook-grid__subheading {
+      font-size: var(--font-size-sm);
+    }
+
+    /* All items single column on mobile */
+    .lookbook-grid__item {
+      grid-column: span 1 !important;
+      grid-row: span 1 !important;
+    }
+
+    .lookbook-grid__overlay {
+      padding: var(--spacing-3);
+    }
+
+    .lookbook-grid__overlay-heading {
+      font-size: var(--font-size-base);
+    }
+
+    .lookbook-grid__overlay-subheading {
+      font-size: var(--font-size-xs);
+    }
+
+    /* Always show tags on mobile for touch */
+    .lookbook-grid__tag-hotspot {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Show CTA on mobile for touch */
+    @media (hover: none) {
+      .lookbook-grid__overlay-cta {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Adjust tooltip positioning for mobile */
+    .lookbook-grid__tag-tooltip {
+      position: fixed;
+      left: 50% !important;
+      bottom: var(--spacing-4) !important;
+      transform: translateX(-50%) !important;
+      max-width: calc(100vw - var(--spacing-8));
+      width: 280px;
+    }
+
+    .lookbook-grid__tag-tooltip::after {
+      display: none;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .lookbook-grid__item--animated {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .lookbook-grid__image,
+    .lookbook-grid__overlay-heading,
+    .lookbook-grid__overlay-cta,
+    .lookbook-grid__overlay-cta-icon,
+    .lookbook-grid__tag-hotspot,
+    .lookbook-grid__tag-tooltip {
+      transition: none;
+    }
+
+    .lookbook-grid__item:hover .lookbook-grid__image {
+      transform: none;
+    }
+
+    .lookbook-grid__item:hover .lookbook-grid__overlay-heading {
+      transform: none;
+    }
+
+    .lookbook-grid__item:hover .lookbook-grid__overlay-cta-icon {
+      transform: none;
+    }
+
+    .lookbook-grid__overlay-cta {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .lookbook-grid__tag-hotspot-pulse {
+      animation: none;
+    }
+
+    .lookbook-grid__shimmer {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .lookbook-grid {
+    background-color: var(--color-background);
+  }
+
+  :global(html[data-theme="dark"]) .lookbook-grid__item {
+    background-color: var(--color-background-muted);
+  }
+
+  :global(html[data-theme="dark"]) .lookbook-grid__empty {
+    background-color: var(--color-background-elevated);
+    border-color: var(--color-border-dark);
+  }
+
+  :global(html[data-theme="dark"]) .lookbook-grid__badge--category {
+    background-color: rgba(30, 41, 59, 0.9);
+    color: var(--color-text-primary);
+  }
+
+  :global(html[data-theme="dark"]) .lookbook-grid__tag-hotspot {
+    background-color: rgba(30, 41, 59, 0.95);
+  }
+
+  :global(html[data-theme="dark"]) .lookbook-grid__tag-hotspot:hover {
+    background-color: var(--color-primary);
+  }
+
+  :global(html[data-theme="dark"]) .lookbook-grid__tag-hotspot-inner {
+    color: var(--color-text-primary);
+  }
+
+  :global(html[data-theme="dark"]) .lookbook-grid__tag-tooltip {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .lookbook-grid__tag-tooltip::after {
+    border-top-color: var(--color-background-elevated);
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .lookbook-grid__item {
+      border: 2px solid currentColor;
+    }
+
+    .lookbook-grid__empty {
+      border: 2px solid currentColor;
+    }
+
+    .lookbook-grid__badge {
+      border: 1px solid currentColor;
+    }
+
+    .lookbook-grid__overlay {
+      background: transparent;
+    }
+
+    .lookbook-grid__overlay-heading,
+    .lookbook-grid__overlay-subheading,
+    .lookbook-grid__overlay-cta {
+      color: CanvasText;
+      text-shadow: none;
+      background: Canvas;
+    }
+
+    .lookbook-grid__tag-hotspot {
+      border: 2px solid currentColor;
+    }
+
+    .lookbook-grid__tag-tooltip {
+      border: 2px solid currentColor;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .lookbook-grid {
+      padding: var(--spacing-4) 0;
+    }
+
+    .lookbook-grid__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-4);
+    }
+
+    .lookbook-grid__item {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .lookbook-grid__item--animated {
+      opacity: 1;
+      transform: none;
+    }
+
+    .lookbook-grid__overlay {
+      background: transparent;
+    }
+
+    .lookbook-grid__overlay-heading,
+    .lookbook-grid__overlay-subheading {
+      color: #000000;
+      text-shadow: none;
+    }
+
+    .lookbook-grid__overlay-cta {
+      display: none;
+    }
+
+    .lookbook-grid__tags {
+      display: none;
+    }
+
+    .lookbook-grid__image-placeholder {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * LookbookGrid Interactive Features
+   * - Intersection Observer for stagger animation reveal
+   * - Tag tooltip keyboard navigation
+   * - Analytics tracking for lookbook interactions
+   */
+  function initLookbookGrid() {
+    const grids = document.querySelectorAll('.lookbook-grid--animated');
+
+    grids.forEach((grid) => {
+      const items = grid.querySelectorAll('.lookbook-grid__item--animated');
+
+      // Use Intersection Observer for scroll-triggered animations
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('lookbook-grid__item--visible');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          {
+            root: null,
+            rootMargin: '0px 0px -50px 0px',
+            threshold: 0.1,
+          }
+        );
+
+        items.forEach((item) => {
+          observer.observe(item);
+        });
+      } else {
+        // Fallback: show all items immediately
+        items.forEach((item) => {
+          item.classList.add('lookbook-grid__item--visible');
+        });
+      }
+    });
+
+    // Initialize tag interactions
+    initTagInteractions();
+
+    // Initialize analytics tracking
+    initLookbookTracking();
+  }
+
+  /**
+   * Initialize product tag interactions
+   */
+  function initTagInteractions() {
+    const tagTriggers = document.querySelectorAll('[data-tag-trigger]');
+
+    tagTriggers.forEach((trigger) => {
+      const tag = trigger.closest('.lookbook-grid__tag');
+      const tooltip = tag?.querySelector('.lookbook-grid__tag-tooltip');
+
+      if (!tooltip) return;
+
+      // Toggle tooltip on click (for touch devices)
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Close other open tooltips
+        document.querySelectorAll('.lookbook-grid__tag-tooltip--active').forEach((t) => {
+          if (t !== tooltip) {
+            t.classList.remove('lookbook-grid__tag-tooltip--active');
+          }
+        });
+
+        tooltip.classList.toggle('lookbook-grid__tag-tooltip--active');
+      });
+
+      // Keyboard navigation
+      trigger.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          tooltip.classList.toggle('lookbook-grid__tag-tooltip--active');
+        }
+        if (e.key === 'Escape') {
+          tooltip.classList.remove('lookbook-grid__tag-tooltip--active');
+        }
+      });
+    });
+
+    // Close tooltips when clicking outside
+    document.addEventListener('click', (e) => {
+      const target = e.target as Element;
+      if (!target.closest('.lookbook-grid__tag')) {
+        document.querySelectorAll('.lookbook-grid__tag-tooltip--active').forEach((t) => {
+          t.classList.remove('lookbook-grid__tag-tooltip--active');
+        });
+      }
+    });
+  }
+
+  /**
+   * Initialize analytics tracking for lookbook interactions
+   */
+  function initLookbookTracking() {
+    // Track lookbook item clicks
+    const lookbookLinks = document.querySelectorAll('[data-lookbook-link]');
+    lookbookLinks.forEach((link) => {
+      link.addEventListener('click', () => {
+        const item = link.closest('.lookbook-grid__item');
+        const itemId = item?.getAttribute('data-item-id');
+        const heading = item?.querySelector('.lookbook-grid__overlay-heading')?.textContent?.trim();
+
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'lookbook_item_click', {
+            item_id: itemId,
+            item_name: heading,
+            destination_url: (link as HTMLAnchorElement).href,
+            click_location: 'lookbook_grid',
+          });
+        }
+      });
+    });
+
+    // Track product tag clicks
+    const productLinks = document.querySelectorAll('.lookbook-grid__tag-tooltip-link');
+    productLinks.forEach((link) => {
+      link.addEventListener('click', () => {
+        const tag = link.closest('.lookbook-grid__tag');
+        const tagId = tag?.getAttribute('data-tag-id');
+        const productName = tag?.querySelector('.lookbook-grid__tag-tooltip-name')?.textContent?.trim();
+        const item = link.closest('.lookbook-grid__item');
+        const itemId = item?.getAttribute('data-item-id');
+
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'lookbook_product_click', {
+            product_id: tagId,
+            product_name: productName,
+            lookbook_item_id: itemId,
+            destination_url: (link as HTMLAnchorElement).href,
+            click_location: 'lookbook_product_tag',
+          });
+        }
+      });
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLookbookGrid);
+  } else {
+    initLookbookGrid();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initLookbookGrid);
+</script>

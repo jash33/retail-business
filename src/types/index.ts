@@ -59,6 +59,10 @@ export {
 export type {
   HeroCTA,
   HeroSectionProps,
+  HeroVideoConfig,
+  HeroParallaxConfig,
+  HeroOverlayPosition,
+  HeroEditorialProps,
 } from './hero';
 
 export type {
@@ -96,6 +100,25 @@ export {
 } from './faq';
 
 export type {
+  ShopPlatform,
+  CartIconPosition,
+  UTMSource,
+  UTMMedium,
+  UTMParams,
+  ShopConfig,
+  ProductShopLink,
+  CartIconProps,
+  ShopLinkProps,
+  TrackedURL,
+  ShopClickEvent,
+  ShopifyConfig,
+  SquareConfig,
+  EtsyConfig,
+  BigCartelConfig,
+  PlatformConfig,
+} from './shop';
+
+export type {
   ConsentCategory,
   ConsentStatus,
   ConsentPreferences,
@@ -119,3 +142,100 @@ export type {
   WebVitals,
   PerformanceEntry,
 } from './analytics';
+
+export type {
+  ProductImage,
+  CurrencyCode,
+  ProductPrice,
+  AspectRatio,
+  ProductCardProps,
+  ProductGridProps,
+} from './product';
+
+export {
+  formatPrice,
+  calculateDiscount,
+  getAspectRatioCss,
+} from './product';
+
+export type {
+  FeaturedProduct,
+  FeaturedProductsSectionProps,
+  FeaturedProductsConfig,
+} from './featured-product';
+
+export {
+  sortByPriority,
+  filterAvailable,
+} from './featured-product';
+
+// Content Collections Types
+export type {
+  ProductEntry,
+  ProductData,
+  ProductSlug,
+  ProductCardData,
+  FeaturedProductData,
+  ProductAvailability,
+  ProductSortOption,
+  ProductFilterOptions,
+} from './content-collections';
+
+export {
+  isProductCategory,
+  isProductSortOption,
+  isProductAvailability,
+} from './content-collections';
+
+// Collection Types
+export type {
+  CollectionImage,
+  CollectionAspectRatio,
+  CollectionCardProps,
+  CollectionOverlayPosition,
+  CollectionGridLayout,
+  CollectionGridProps,
+} from './collection';
+
+export {
+  getCollectionAspectRatioCss,
+  formatItemCount,
+  getOverlayPositionStyles,
+} from './collection';
+
+// Lookbook Types
+export type {
+  LookbookAspectRatio,
+  OverlayPosition,
+  LookbookTextOverlay,
+  ProductTag,
+  LookbookItemSize,
+  LookbookItem,
+  LookbookLayout,
+  LookbookGridProps,
+} from './lookbook';
+
+export {
+  getLookbookAspectRatioCss,
+  getOverlayPositionClass,
+  validateTagPosition,
+} from './lookbook';
+
+// New Arrivals Carousel Types
+export type {
+  NavigationPosition,
+  AutoScrollConfig,
+  ResponsiveColumns,
+  GapSize,
+  NewArrivalsCarouselProps,
+  NewArrivalsCarouselConfig,
+  ScrollDirection,
+  CarouselState,
+} from './new-arrivals-carousel';
+
+export {
+  getGapCss,
+  calculateVisibleItems,
+  DEFAULT_COLUMNS,
+  DEFAULT_AUTO_SCROLL,
+} from './new-arrivals-carousel';

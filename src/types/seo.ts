@@ -254,36 +254,68 @@ export interface LocalBusinessSchema {
 // End of LocalBusiness Schema Types
 // ============================================================================
 
-/**
- * Product structured data
- */
+// ============================================================================
+// Product Schema Types (Enhanced for Google Rich Results)
+// ============================================================================
+
+/** Product offer structured data @see https://schema.org/Offer */
+export interface ProductOffer {
+  price: number;
+  priceCurrency: string;
+  availability?: 'InStock' | 'OutOfStock' | 'PreOrder' | 'BackOrder' | 'Discontinued' | 'SoldOut' | 'LimitedAvailability' | 'OnlineOnly' | 'InStoreOnly';
+  url?: string;
+  validFrom?: string;
+  priceValidUntil?: string;
+  itemCondition?: 'NewCondition' | 'UsedCondition' | 'RefurbishedCondition' | 'DamagedCondition';
+  seller?: { name: string; url?: string; };
+}
+
+/** Individual review structured data @see https://schema.org/Review */
+export interface ProductReview {
+  author: string;
+  datePublished: string;
+  reviewBody?: string;
+  reviewRating: { ratingValue: number; bestRating?: number; worstRating?: number; };
+}
+
+/** Product aggregate rating @see https://schema.org/AggregateRating */
+export interface ProductAggregateRating {
+  ratingValue: number;
+  bestRating?: number;
+  worstRating?: number;
+  ratingCount?: number;
+  reviewCount?: number;
+}
+
+/** Product structured data - Enhanced for Google Rich Results @see https://developers.google.com/search/docs/appearance/structured-data/product */
 export interface ProductSchema {
   type: 'Product';
-  /** Product name */
   name: string;
-  /** Product description */
   description?: string;
-  /** Product image URL(s) */
   image?: string | string[];
-  /** Product brand */
   brand?: string;
-  /** Product SKU */
   sku?: string;
-  /** Price and availability */
-  offers?: {
-    price: number;
-    priceCurrency: string;
-    availability?: 'InStock' | 'OutOfStock' | 'PreOrder' | 'Discontinued';
-    url?: string;
-    validFrom?: string;
-    priceValidUntil?: string;
-  };
-  /** Aggregate rating */
-  aggregateRating?: {
-    ratingValue: number;
-    reviewCount: number;
-  };
+  gtin?: string;
+  gtin8?: string;
+  gtin12?: string;
+  gtin13?: string;
+  gtin14?: string;
+  mpn?: string;
+  model?: string;
+  color?: string;
+  material?: string;
+  size?: string;
+  category?: string;
+  url?: string;
+  itemCondition?: 'NewCondition' | 'UsedCondition' | 'RefurbishedCondition' | 'DamagedCondition';
+  offers?: ProductOffer | ProductOffer[];
+  aggregateRating?: ProductAggregateRating;
+  review?: ProductReview | ProductReview[];
 }
+
+// ============================================================================
+// End of Product Schema Types
+// ============================================================================
 
 /**
  * Breadcrumb structured data

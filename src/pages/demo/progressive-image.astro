@@ -1,0 +1,474 @@
+---
+/**
+ * Demo Page - ProgressiveImage Component
+ * Showcases the progressive image loading with LQIP blur effect,
+ * Intersection Observer lazy loading, and WebP fallback support.
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import ProgressiveImage from '../../components/ProgressiveImage.astro';
+
+// Sample LQIP placeholder (tiny base64 blur image)
+// In production, these would be generated at build time
+const sampleLQIP = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMCwsLCgwMDQ4SEA4RDgoMEBQQEg0SDwgPEBYPDxgKERYYDQ7/2wBDAQMEBAUEBQkFBQkNDA0MDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ3/wAARCAAKAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABgcI/8QAIhAAAQMEAgMBAAAAAAAAAAAAAQIDBAUGESEAEgcTMUH/xAAVAQEBAAAAAAAAAAAAAAAAAAADBP/EABsRAAICAwEAAAAAAAAAAAAAAAECAAMRITFB/9oADAMBAAIRAxEAPwBXe/m5mq3TPpUeA5T6MHUoYbcWFGQ6kZyojOM+uP34+c5Ny+cqVSrqrUKNRzOp8aetqLLDvVb7QJCS4jHXfYdfO8HGOenOGsF3EgMVzgzzq+Y+Z//Z';
+---
+
+<Layout title="Progressive Image Demo | Houston Web Services">
+  <main class="demo-page">
+    <section class="demo-header">
+      <div class="demo-container">
+        <h1>ProgressiveImage Component Demo</h1>
+        <p>High-performance progressive image loading with LQIP blur effect, Intersection Observer lazy loading, and WebP with fallback support.</p>
+      </div>
+    </section>
+
+    <!-- Demo 1: LQIP Blur Effect -->
+    <section class="demo-section">
+      <div class="demo-container">
+        <h2>LQIP Blur-Up Effect</h2>
+        <p>Images start with a low-quality blurred placeholder and smoothly transition to full quality when loaded.</p>
+
+        <div class="image-grid image-grid--2">
+          <div class="demo-card">
+            <h3>With LQIP Placeholder</h3>
+            <ProgressiveImage
+              src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop"
+              alt="Modern retail store interior"
+              width={800}
+              height={600}
+              placeholder={sampleLQIP}
+              class="demo-image-wrapper"
+            />
+            <p class="caption">Blur-up transition from tiny placeholder</p>
+          </div>
+
+          <div class="demo-card">
+            <h3>With Color Placeholder</h3>
+            <ProgressiveImage
+              src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop"
+              alt="E-commerce shopping concept"
+              width={800}
+              height={600}
+              placeholderColor="#e0d4c8"
+              class="demo-image-wrapper"
+            />
+            <p class="caption">Solid dominant color placeholder</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 2: Lazy Loading with Intersection Observer -->
+    <section class="demo-section demo-section--alt">
+      <div class="demo-container">
+        <h2>Intersection Observer Lazy Loading</h2>
+        <p>Images only load when they enter the viewport. Scroll down to trigger loading.</p>
+
+        <div class="scroll-indicator">
+          <span>Scroll down to see lazy loading in action</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M19 12l-7 7-7-7"/>
+          </svg>
+        </div>
+
+        <div class="image-grid image-grid--3">
+          <div class="demo-card" data-testid="lazy-image-1">
+            <ProgressiveImage
+              src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=600&fit=crop"
+              alt="Product photography - Watch"
+              width={600}
+              height={600}
+              placeholder={sampleLQIP}
+              class="demo-image-wrapper"
+            />
+            <p class="caption">Product: Watch</p>
+          </div>
+
+          <div class="demo-card" data-testid="lazy-image-2">
+            <ProgressiveImage
+              src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop"
+              alt="Product photography - Headphones"
+              width={600}
+              height={600}
+              placeholder={sampleLQIP}
+              class="demo-image-wrapper"
+            />
+            <p class="caption">Product: Headphones</p>
+          </div>
+
+          <div class="demo-card" data-testid="lazy-image-3">
+            <ProgressiveImage
+              src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&h=600&fit=crop"
+              alt="Product photography - Sunglasses"
+              width={600}
+              height={600}
+              placeholder={sampleLQIP}
+              class="demo-image-wrapper"
+            />
+            <p class="caption">Product: Sunglasses</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 3: Priority Images -->
+    <section class="demo-section">
+      <div class="demo-container">
+        <h2>Priority Images (LCP Optimization)</h2>
+        <p>Priority images load immediately without lazy loading - perfect for hero images and above-the-fold content.</p>
+
+        <div class="image-grid image-grid--1">
+          <div class="demo-card demo-card--hero" data-testid="priority-image">
+            <ProgressiveImage
+              src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=1200&h=600&fit=crop"
+              alt="Hero image - Fashion store"
+              width={1200}
+              height={600}
+              placeholder={sampleLQIP}
+              priority
+              class="demo-image-wrapper"
+            />
+            <p class="caption">Priority image with fetchPriority="high" - no Intersection Observer delay</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 4: Responsive Images -->
+    <section class="demo-section demo-section--alt">
+      <div class="demo-container">
+        <h2>Responsive Images with srcset</h2>
+        <p>Automatic responsive srcset generation for optimal image delivery across all screen sizes.</p>
+
+        <div class="image-grid image-grid--2">
+          <div class="demo-card">
+            <h3>Responsive with Custom Sizes</h3>
+            <ProgressiveImage
+              src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&h=500&fit=crop"
+              alt="E-commerce lifestyle image"
+              width={800}
+              height={500}
+              responsive
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
+              placeholder={sampleLQIP}
+              class="demo-image-wrapper"
+            />
+            <p class="caption">Custom responsive sizes</p>
+          </div>
+
+          <div class="demo-card">
+            <h3>Default Responsive</h3>
+            <ProgressiveImage
+              src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=500&fit=crop"
+              alt="Retail product display"
+              width={800}
+              height={500}
+              responsive
+              placeholder={sampleLQIP}
+              class="demo-image-wrapper"
+            />
+            <p class="caption">Default responsive sizes</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 5: Different Aspect Ratios -->
+    <section class="demo-section">
+      <div class="demo-container">
+        <h2>Various Aspect Ratios</h2>
+        <p>The component preserves aspect ratios and prevents Cumulative Layout Shift (CLS).</p>
+
+        <div class="aspect-demo-grid">
+          <div class="demo-card" data-testid="aspect-16-9">
+            <h3>16:9 Landscape</h3>
+            <ProgressiveImage
+              src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800&h=450&fit=crop"
+              alt="Shopping mall interior - 16:9"
+              width={800}
+              height={450}
+              placeholder={sampleLQIP}
+              class="demo-image-wrapper"
+            />
+          </div>
+
+          <div class="demo-card" data-testid="aspect-4-5">
+            <h3>4:5 Portrait</h3>
+            <ProgressiveImage
+              src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&h=500&fit=crop"
+              alt="Fashion model - 4:5"
+              width={400}
+              height={500}
+              placeholder={sampleLQIP}
+              class="demo-image-wrapper"
+            />
+          </div>
+
+          <div class="demo-card" data-testid="aspect-1-1">
+            <h3>1:1 Square</h3>
+            <ProgressiveImage
+              src="https://images.unsplash.com/photo-1491553895911-0055uj6a357?w=500&h=500&fit=crop"
+              alt="Product shot - 1:1"
+              width={500}
+              height={500}
+              placeholder={sampleLQIP}
+              class="demo-image-wrapper"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 6: Without Placeholder -->
+    <section class="demo-section demo-section--alt">
+      <div class="demo-container">
+        <h2>Shimmer Placeholder (No LQIP)</h2>
+        <p>When no LQIP placeholder is provided, a shimmer animation is shown instead.</p>
+
+        <div class="image-grid image-grid--3">
+          <div class="demo-card" data-testid="shimmer-image-1">
+            <ProgressiveImage
+              src="https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=400&h=500&fit=crop"
+              alt="Fashion retail store"
+              width={400}
+              height={500}
+              class="demo-image-wrapper"
+            />
+            <p class="caption">Shimmer animation</p>
+          </div>
+
+          <div class="demo-card" data-testid="shimmer-image-2">
+            <ProgressiveImage
+              src="https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=400&h=500&fit=crop"
+              alt="Shopping bags"
+              width={400}
+              height={500}
+              class="demo-image-wrapper"
+            />
+            <p class="caption">Shimmer animation</p>
+          </div>
+
+          <div class="demo-card" data-testid="shimmer-image-3">
+            <ProgressiveImage
+              src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=500&fit=crop"
+              alt="Fashion shopping"
+              width={400}
+              height={500}
+              class="demo-image-wrapper"
+            />
+            <p class="caption">Shimmer animation</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features List -->
+    <section class="demo-section">
+      <div class="demo-container">
+        <h2>Component Features</h2>
+        <ul class="feature-list">
+          <li><strong>LQIP Blur Effect:</strong> Low-quality image placeholder with blur-up transition</li>
+          <li><strong>Intersection Observer:</strong> Efficient lazy loading only when images enter viewport</li>
+          <li><strong>WebP with Fallback:</strong> Automatic WebP detection with JPG/PNG fallback</li>
+          <li><strong>Priority Images:</strong> Disable lazy loading for LCP/above-fold images</li>
+          <li><strong>Responsive srcset:</strong> Automatic generation of responsive image sources</li>
+          <li><strong>CLS Prevention:</strong> Aspect ratio preservation prevents layout shift</li>
+          <li><strong>Color Placeholder:</strong> Dominant color fallback when LQIP not available</li>
+          <li><strong>Shimmer Animation:</strong> Loading animation when no placeholder provided</li>
+          <li><strong>Connection Awareness:</strong> Adapts to slow connections and data-saver mode</li>
+          <li><strong>Reduced Motion:</strong> Respects prefers-reduced-motion setting</li>
+          <li><strong>Dark Mode:</strong> Full dark mode support for placeholders</li>
+          <li><strong>Accessible:</strong> Proper alt text, ARIA labels, and semantic HTML</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .demo-page {
+    min-height: 100vh;
+  }
+
+  .demo-header {
+    padding: var(--spacing-16) var(--spacing-4) var(--spacing-12);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-700) 100%
+    );
+    text-align: center;
+  }
+
+  .demo-header h1 {
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .demo-header p {
+    color: var(--color-primary-100);
+    font-size: var(--font-size-lg);
+    max-width: 50rem;
+    margin: 0 auto;
+  }
+
+  .demo-container {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  .demo-section {
+    padding: var(--spacing-12) 0;
+  }
+
+  .demo-section--alt {
+    background-color: var(--color-background-subtle);
+  }
+
+  .demo-section h2 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .demo-section > .demo-container > p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-8);
+  }
+
+  /* Demo Cards */
+  .demo-card {
+    background: var(--color-background);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border);
+  }
+
+  .demo-card h3 {
+    padding: var(--spacing-4);
+    font-size: var(--font-size-md);
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border);
+    margin: 0;
+  }
+
+  .demo-card .caption {
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .demo-card--hero {
+    max-width: 60rem;
+    margin: 0 auto;
+  }
+
+  /* Image Grids */
+  .image-grid {
+    display: grid;
+    gap: var(--spacing-6);
+  }
+
+  .image-grid--1 {
+    grid-template-columns: 1fr;
+  }
+
+  .image-grid--2 {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .image-grid--3 {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  @media (min-width: 640px) {
+    .image-grid--2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .image-grid--3 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .image-grid--3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Aspect Ratio Demo */
+  .aspect-demo-grid {
+    display: grid;
+    gap: var(--spacing-6);
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  @media (min-width: 768px) {
+    .aspect-demo-grid {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+  }
+
+  /* Scroll Indicator */
+  .scroll-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-sm);
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(5px); }
+  }
+
+  /* Feature List */
+  .feature-list {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: var(--spacing-4);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .feature-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .feature-list li {
+    padding: var(--spacing-3) var(--spacing-4);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+  }
+
+  .feature-list strong {
+    color: var(--color-text-primary);
+  }
+
+  /* Demo Image Wrapper */
+  .demo-image-wrapper {
+    border-radius: 0;
+  }
+
+  /* Dark mode */
+  :global(html[data-theme="dark"]) .demo-card {
+    background: var(--color-background-elevated);
+  }
+</style>

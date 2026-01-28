@@ -1,0 +1,397 @@
+---
+/**
+ * Product Detail Page
+ * Dynamic route for individual product pages with image gallery,
+ * product details, external shop CTA, related products, and
+ * Product schema markup for SEO.
+ *
+ * Features:
+ * - Dynamic routing based on product slug
+ * - Image gallery with thumbnail navigation
+ * - Full product details with variants
+ * - External shop CTA (Shopify/Square/Etsy)
+ * - Related products section with carousel layout
+ * - Product JSON-LD schema for SEO
+ * - Responsive layout
+ * - Dark mode support
+ *
+ * @route /products/[slug]
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ImageGallery from '../../components/ImageGallery.astro';
+import ProductDetails from '../../components/ProductDetails.astro';
+import RelatedProductsCarousel from '../../components/RelatedProductsCarousel.astro';
+import SocialShareButtons from '../../components/SocialShareButtons.astro';
+import {
+  getAllProducts,
+  getRelatedProducts,
+  toProductCardProps,
+} from '../../utils/products';
+import type { ProductEntry } from '../../utils/products';
+import type { ProductSchema, BreadcrumbSchema } from '../../types/seo';
+
+// Generate static paths for all products
+export async function getStaticPaths() {
+  const products = await getAllProducts({ publishedOnly: true });
+
+  return products.map((product) => ({
+    params: { slug: product.slug },
+    props: { product },
+  }));
+}
+
+interface Props {
+  product: ProductEntry;
+}
+
+const { product } = Astro.props;
+const { data } = product;
+
+// Get related products (increased to 8 for carousel)
+const relatedProductEntries = await getRelatedProducts(product, 8);
+const relatedProducts = relatedProductEntries.map(toProductCardProps);
+
+// Build gallery images array
+const galleryImages = [
+  data.image,
+  ...(data.hoverImage ? [data.hoverImage] : []),
+  ...(data.images || []),
+];
+
+// Determine product availability status for schema
+const getAvailability = (): ProductSchema['offers'] extends { availability?: infer A } ? A : never => {
+  if (data.soldOut) return 'OutOfStock';
+  if (data.preOrder) return 'PreOrder';
+  if (data.stockQuantity !== undefined && data.stockQuantity <= 0) return 'OutOfStock';
+  if (data.stockQuantity !== undefined && data.stockQuantity <= (data.lowStockThreshold || 5)) return 'LimitedAvailability';
+  return data.metadata?.availability || 'InStock';
+};
+
+// Build comprehensive Product schema for SEO (Google Rich Results)
+// @see https://developers.google.com/search/docs/appearance/structured-data/product
+const productSchema: ProductSchema = {
+  type: 'Product',
+  name: data.name,
+  description: data.editorialDescription || data.description,
+  image: galleryImages.map(img => img.src),
+  brand: data.metadata?.brand,
+  sku: data.metadata?.sku,
+  gtin: data.metadata?.gtin,
+  mpn: data.metadata?.mpn,
+  category: data.category,
+  url: Astro.url.href,
+  itemCondition: data.metadata?.condition,
+  color: data.colors?.[0],
+  material: data.materials?.[0],
+  size: data.sizes?.[0],
+  offers: {
+    price: data.price.amount,
+    priceCurrency: data.price.currency || 'USD',
+    availability: getAvailability(),
+    url: Astro.url.href,
+    priceValidUntil: data.saleEndDate?.toISOString().split('T')[0],
+    itemCondition: data.metadata?.condition,
+  },
+};
+
+// Build Breadcrumb items for visual navigation
+const breadcrumbItems = [
+  { name: 'Home', url: '/' },
+  { name: 'Shop', url: '/products' },
+  ...(data.category ? [{ name: data.category, url: `/products?category=${data.category}` }] : []),
+  { name: data.name },
+];
+
+// Build Breadcrumb schema for SEO (passed to Layout)
+const breadcrumbSchema: BreadcrumbSchema = {
+  type: 'BreadcrumbList',
+  items: breadcrumbItems,
+};
+
+// SEO metadata
+const pageTitle = data.metadata?.metaTitle || `${data.name} | Shop`;
+const pageDescription = data.metadata?.metaDescription || data.description;
+const ogImage = data.metadata?.ogImage || data.image.src;
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  image={ogImage}
+  canonicalUrl={Astro.url.href}
+  jsonLd={[productSchema, breadcrumbSchema]}
+  openGraph={{
+    type: 'product',
+    title: data.name,
+    description: pageDescription,
+    image: ogImage,
+  }}
+>
+  <main class="product-page">
+    <div class="product-page__container">
+      <!-- Breadcrumb Navigation -->
+      <Breadcrumb
+        items={breadcrumbItems}
+        includeSchema={false}
+        class="product-page__breadcrumb"
+      />
+
+      <div class="product-page__layout">
+        <!-- Image Gallery -->
+        <div class="product-page__gallery">
+          <ImageGallery
+            images={galleryImages}
+            productName={data.name}
+            aspectRatio={data.aspectRatio || '4:5'}
+            enableZoom={true}
+          />
+        </div>
+
+        <!-- Product Details -->
+        <div class="product-page__details">
+          <ProductDetails
+            name={data.name}
+            description={data.description}
+            editorialDescription={data.editorialDescription}
+            price={data.price}
+            shopUrl={data.shopUrl}
+            category={data.category}
+            tagline={data.tagline}
+            isNew={data.isNew}
+            onSale={data.onSale}
+            soldOut={data.soldOut}
+            preOrder={data.preOrder}
+            colors={data.colors}
+            sizes={data.sizes}
+            materials={data.materials}
+            stockQuantity={data.stockQuantity}
+            lowStockThreshold={data.lowStockThreshold}
+            sku={data.metadata?.sku}
+            brand={data.metadata?.brand}
+            ctaText={data.ctaText}
+            openInNewTab={data.openInNewTab}
+            utmParams={data.utmParams}
+          />
+
+          <!-- Social Share Buttons -->
+          <div class="product-page__share">
+            <SocialShareButtons
+              url={Astro.url.href}
+              title={data.name}
+              description={data.description}
+              image={data.image.src}
+              contentType="product"
+              contentId={product.slug}
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Content (from markdown body) -->
+      {product.body && (
+        <div class="product-page__content">
+          <div class="product-page__content-inner prose">
+            <slot />
+          </div>
+        </div>
+      )}
+
+      <!-- Related Products - Carousel Layout -->
+      {relatedProducts.length > 0 && (
+        <RelatedProductsCarousel
+          products={relatedProducts}
+          variant="carousel"
+          heading="You May Also Like"
+          description="Explore more products from our collection"
+          id="related-products"
+          navigationPosition="outside"
+          showIndicators={true}
+          enableSwipe={true}
+          enableKeyboard={true}
+          maxProducts={8}
+          gap="medium"
+          carouselColumns={{
+            mobile: 1,
+            small: 2,
+            tablet: 3,
+            desktop: 4,
+          }}
+        />
+      )}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * PRODUCT PAGE STYLES
+   * =================================================================
+   */
+
+  .product-page {
+    padding: var(--spacing-4) 0 var(--spacing-8);
+  }
+
+  .product-page__breadcrumb {
+    margin-bottom: var(--spacing-4);
+  }
+
+  .product-page__container {
+    width: 100%;
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  /* =================================================================
+   * MAIN LAYOUT - Two Column Grid
+   * ================================================================= */
+  .product-page__layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-12);
+    align-items: start;
+  }
+
+  .product-page__gallery {
+    position: sticky;
+    top: var(--spacing-8);
+  }
+
+  .product-page__details {
+    padding-top: var(--spacing-2);
+  }
+
+  .product-page__share {
+    margin-top: var(--spacing-8);
+    padding-top: var(--spacing-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  /* =================================================================
+   * PRODUCT CONTENT (Markdown)
+   * ================================================================= */
+  .product-page__content {
+    margin-top: var(--spacing-12);
+    padding-top: var(--spacing-12);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .product-page__content-inner {
+    max-width: var(--container-4xl);
+    margin: 0 auto;
+  }
+
+  /* Prose styles for markdown content */
+  .prose {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-secondary);
+  }
+
+  .prose :global(h2) {
+    margin-top: var(--spacing-8);
+    margin-bottom: var(--spacing-4);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+  }
+
+  .prose :global(h3) {
+    margin-top: var(--spacing-6);
+    margin-bottom: var(--spacing-3);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-snug);
+    color: var(--color-text-primary);
+  }
+
+  .prose :global(p) {
+    margin-bottom: var(--spacing-4);
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin-bottom: var(--spacing-4);
+    padding-left: var(--spacing-6);
+  }
+
+  .prose :global(li) {
+    margin-bottom: var(--spacing-2);
+  }
+
+  .prose :global(strong) {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .prose :global(a) {
+    color: var(--color-text-link);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .prose :global(a:hover) {
+    color: var(--color-text-link-hover);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 1023px) {
+    .product-page__layout {
+      gap: var(--spacing-8);
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .product-page {
+      padding: var(--spacing-4) 0;
+    }
+
+    .product-page__layout {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-6);
+    }
+
+    .product-page__gallery {
+      position: relative;
+      top: 0;
+    }
+
+    .product-page__content {
+      margin-top: var(--spacing-8);
+      padding-top: var(--spacing-8);
+    }
+
+    .prose :global(h2) {
+      font-size: var(--font-size-lg);
+    }
+
+    .prose :global(h3) {
+      font-size: var(--font-size-base);
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .product-page__layout {
+      grid-template-columns: 1fr;
+    }
+
+    .product-page__gallery {
+      position: relative;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+  }
+</style>

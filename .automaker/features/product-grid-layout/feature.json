@@ -1,0 +1,12 @@
+{
+  "id": "product-grid-layout",
+  "category": "UI",
+  "title": "Responsive Product Grid with Asymmetric Layouts",
+  "description": "Create flexible product grid system supporting 2, 3, or 4 columns with optional asymmetric featured product placements. Includes responsive breakpoints and masonry-style options for editorial layouts.",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "moderate",
+  "createdAt": "2026-01-26T01:49:59.697Z",
+  "updatedAt": "2026-01-26T04:10:58.326Z",
+  "descriptionHistory": []
+}

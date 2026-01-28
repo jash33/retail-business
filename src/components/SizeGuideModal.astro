@@ -1,0 +1,1242 @@
+---
+/**
+ * SizeGuideModal Component
+ * An accessible modal overlay for displaying size guides with measurement tables,
+ * fit recommendations, and conversion charts for clothing and jewelry products.
+ *
+ * Features:
+ * - Tabbed interface for different product categories (clothing/jewelry)
+ * - Responsive measurement tables
+ * - Size conversion charts (US, EU, UK)
+ * - Fit recommendations
+ * - How to measure guide
+ * - Keyboard navigation (ESC to close, Tab trapping)
+ * - Focus management (trap & restore)
+ * - Body scroll lock when open
+ * - Smooth open/close animations
+ * - Full accessibility support (WCAG 2.1 AA)
+ * - Reduced motion support
+ * - Dark mode support
+ *
+ * @example Basic usage
+ * ```astro
+ * <SizeGuideModal id="size-guide-modal" />
+ * ```
+ *
+ * The modal is controlled via JavaScript events:
+ * - Dispatch 'sizeguide:open' with optional category to open
+ * - Dispatch 'sizeguide:close' to close
+ */
+
+interface Props {
+  /** Component ID */
+  id?: string;
+  /** Additional CSS classes */
+  class?: string;
+  /** Default active tab */
+  defaultTab?: 'clothing' | 'jewelry';
+}
+
+const {
+  id = 'size-guide-modal',
+  class: className = '',
+  defaultTab = 'clothing',
+} = Astro.props;
+---
+
+<div
+  class={`size-guide-modal ${className}`}
+  id={id}
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="size-guide-title"
+  aria-hidden="true"
+  data-size-guide-modal
+  data-default-tab={defaultTab}
+>
+  {/* Backdrop */}
+  <div class="size-guide-modal__backdrop" data-sizeguide-close></div>
+
+  {/* Main Content */}
+  <div class="size-guide-modal__content" role="document">
+    {/* Close Button */}
+    <button
+      class="size-guide-modal__close"
+      type="button"
+      aria-label="Close size guide"
+      data-sizeguide-close
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    {/* Modal Header */}
+    <div class="size-guide-modal__header">
+      <h2 id="size-guide-title" class="size-guide-modal__title">Size Guide</h2>
+      <p class="size-guide-modal__subtitle">Find your perfect fit with our comprehensive sizing information</p>
+    </div>
+
+    {/* Tab Navigation */}
+    <div class="size-guide-modal__tabs" role="tablist" aria-label="Size guide categories">
+      <button
+        class="size-guide-modal__tab"
+        role="tab"
+        aria-selected="true"
+        aria-controls="panel-clothing"
+        id="tab-clothing"
+        data-tab="clothing"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>
+        </svg>
+        <span>Clothing</span>
+      </button>
+      <button
+        class="size-guide-modal__tab"
+        role="tab"
+        aria-selected="false"
+        aria-controls="panel-jewelry"
+        id="tab-jewelry"
+        data-tab="jewelry"
+        tabindex="-1"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <circle cx="12" cy="12" r="6"/>
+          <circle cx="12" cy="12" r="2"/>
+        </svg>
+        <span>Jewelry</span>
+      </button>
+    </div>
+
+    {/* Tab Panels */}
+    <div class="size-guide-modal__body">
+      {/* Clothing Panel */}
+      <div
+        class="size-guide-modal__panel"
+        id="panel-clothing"
+        role="tabpanel"
+        aria-labelledby="tab-clothing"
+        data-panel="clothing"
+      >
+        {/* How to Measure Section */}
+        <section class="size-guide-modal__section">
+          <h3 class="size-guide-modal__section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+              <circle cx="12" cy="13" r="3"/>
+            </svg>
+            How to Measure
+          </h3>
+          <div class="size-guide-modal__measure-tips">
+            <div class="size-guide-modal__measure-tip">
+              <strong>Chest/Bust:</strong>
+              <span>Measure around the fullest part of your chest, keeping the tape horizontal.</span>
+            </div>
+            <div class="size-guide-modal__measure-tip">
+              <strong>Waist:</strong>
+              <span>Measure around your natural waistline, keeping the tape comfortably loose.</span>
+            </div>
+            <div class="size-guide-modal__measure-tip">
+              <strong>Hips:</strong>
+              <span>Measure around the fullest part of your hips, approximately 8" below your waist.</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Women's Sizes */}
+        <section class="size-guide-modal__section">
+          <h3 class="size-guide-modal__section-title">Women's Clothing Sizes</h3>
+          <div class="size-guide-modal__table-container">
+            <table class="size-guide-modal__table" aria-label="Women's clothing size chart">
+              <thead>
+                <tr>
+                  <th scope="col">Size</th>
+                  <th scope="col">US</th>
+                  <th scope="col">UK</th>
+                  <th scope="col">EU</th>
+                  <th scope="col">Bust (in)</th>
+                  <th scope="col">Waist (in)</th>
+                  <th scope="col">Hips (in)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>XS</strong></td>
+                  <td>0-2</td>
+                  <td>4-6</td>
+                  <td>32-34</td>
+                  <td>31-32</td>
+                  <td>23-24</td>
+                  <td>33-34</td>
+                </tr>
+                <tr>
+                  <td><strong>S</strong></td>
+                  <td>4-6</td>
+                  <td>8-10</td>
+                  <td>36-38</td>
+                  <td>33-34</td>
+                  <td>25-26</td>
+                  <td>35-36</td>
+                </tr>
+                <tr>
+                  <td><strong>M</strong></td>
+                  <td>8-10</td>
+                  <td>12-14</td>
+                  <td>40-42</td>
+                  <td>35-36</td>
+                  <td>27-28</td>
+                  <td>37-38</td>
+                </tr>
+                <tr>
+                  <td><strong>L</strong></td>
+                  <td>12-14</td>
+                  <td>16-18</td>
+                  <td>44-46</td>
+                  <td>37-39</td>
+                  <td>29-31</td>
+                  <td>39-41</td>
+                </tr>
+                <tr>
+                  <td><strong>XL</strong></td>
+                  <td>16-18</td>
+                  <td>20-22</td>
+                  <td>48-50</td>
+                  <td>40-42</td>
+                  <td>32-34</td>
+                  <td>42-44</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* Men's Sizes */}
+        <section class="size-guide-modal__section">
+          <h3 class="size-guide-modal__section-title">Men's Clothing Sizes</h3>
+          <div class="size-guide-modal__table-container">
+            <table class="size-guide-modal__table" aria-label="Men's clothing size chart">
+              <thead>
+                <tr>
+                  <th scope="col">Size</th>
+                  <th scope="col">US</th>
+                  <th scope="col">UK</th>
+                  <th scope="col">EU</th>
+                  <th scope="col">Chest (in)</th>
+                  <th scope="col">Waist (in)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>S</strong></td>
+                  <td>34-36</td>
+                  <td>34-36</td>
+                  <td>44-46</td>
+                  <td>34-36</td>
+                  <td>28-30</td>
+                </tr>
+                <tr>
+                  <td><strong>M</strong></td>
+                  <td>38-40</td>
+                  <td>38-40</td>
+                  <td>48-50</td>
+                  <td>38-40</td>
+                  <td>31-33</td>
+                </tr>
+                <tr>
+                  <td><strong>L</strong></td>
+                  <td>42-44</td>
+                  <td>42-44</td>
+                  <td>52-54</td>
+                  <td>42-44</td>
+                  <td>34-36</td>
+                </tr>
+                <tr>
+                  <td><strong>XL</strong></td>
+                  <td>46-48</td>
+                  <td>46-48</td>
+                  <td>56-58</td>
+                  <td>46-48</td>
+                  <td>37-40</td>
+                </tr>
+                <tr>
+                  <td><strong>XXL</strong></td>
+                  <td>50-52</td>
+                  <td>50-52</td>
+                  <td>60-62</td>
+                  <td>50-52</td>
+                  <td>41-44</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* Fit Recommendations */}
+        <section class="size-guide-modal__section">
+          <h3 class="size-guide-modal__section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+            Fit Recommendations
+          </h3>
+          <div class="size-guide-modal__recommendations">
+            <div class="size-guide-modal__recommendation">
+              <span class="size-guide-modal__recommendation-label">Between sizes?</span>
+              <span class="size-guide-modal__recommendation-text">We recommend sizing up for a more comfortable fit.</span>
+            </div>
+            <div class="size-guide-modal__recommendation">
+              <span class="size-guide-modal__recommendation-label">Relaxed fit</span>
+              <span class="size-guide-modal__recommendation-text">Consider ordering one size larger than your measured size.</span>
+            </div>
+            <div class="size-guide-modal__recommendation">
+              <span class="size-guide-modal__recommendation-label">Fitted styles</span>
+              <span class="size-guide-modal__recommendation-text">Order your exact measured size for the intended silhouette.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* Jewelry Panel */}
+      <div
+        class="size-guide-modal__panel"
+        id="panel-jewelry"
+        role="tabpanel"
+        aria-labelledby="tab-jewelry"
+        data-panel="jewelry"
+        hidden
+      >
+        {/* How to Measure Section */}
+        <section class="size-guide-modal__section">
+          <h3 class="size-guide-modal__section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+              <circle cx="12" cy="13" r="3"/>
+            </svg>
+            How to Measure
+          </h3>
+          <div class="size-guide-modal__measure-tips">
+            <div class="size-guide-modal__measure-tip">
+              <strong>Ring Size:</strong>
+              <span>Wrap a piece of string around your finger, mark where it overlaps, then measure the length in mm.</span>
+            </div>
+            <div class="size-guide-modal__measure-tip">
+              <strong>Bracelet Size:</strong>
+              <span>Measure your wrist just above the wrist bone and add 1/2" - 1" for comfort.</span>
+            </div>
+            <div class="size-guide-modal__measure-tip">
+              <strong>Necklace Length:</strong>
+              <span>Use a string to test different lengths against your neckline and preferred style.</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Ring Sizes */}
+        <section class="size-guide-modal__section">
+          <h3 class="size-guide-modal__section-title">Ring Size Conversion</h3>
+          <div class="size-guide-modal__table-container">
+            <table class="size-guide-modal__table" aria-label="Ring size conversion chart">
+              <thead>
+                <tr>
+                  <th scope="col">US/Canada</th>
+                  <th scope="col">UK/Australia</th>
+                  <th scope="col">EU</th>
+                  <th scope="col">Diameter (mm)</th>
+                  <th scope="col">Circumference (mm)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>5</strong></td>
+                  <td>J 1/2</td>
+                  <td>49</td>
+                  <td>15.7</td>
+                  <td>49.3</td>
+                </tr>
+                <tr>
+                  <td><strong>6</strong></td>
+                  <td>L 1/2</td>
+                  <td>52</td>
+                  <td>16.5</td>
+                  <td>51.9</td>
+                </tr>
+                <tr>
+                  <td><strong>7</strong></td>
+                  <td>N 1/2</td>
+                  <td>54</td>
+                  <td>17.3</td>
+                  <td>54.4</td>
+                </tr>
+                <tr>
+                  <td><strong>8</strong></td>
+                  <td>P 1/2</td>
+                  <td>57</td>
+                  <td>18.1</td>
+                  <td>56.9</td>
+                </tr>
+                <tr>
+                  <td><strong>9</strong></td>
+                  <td>R 1/2</td>
+                  <td>59</td>
+                  <td>19.0</td>
+                  <td>59.5</td>
+                </tr>
+                <tr>
+                  <td><strong>10</strong></td>
+                  <td>T 1/2</td>
+                  <td>62</td>
+                  <td>19.8</td>
+                  <td>62.1</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* Bracelet Sizes */}
+        <section class="size-guide-modal__section">
+          <h3 class="size-guide-modal__section-title">Bracelet Sizes</h3>
+          <div class="size-guide-modal__table-container">
+            <table class="size-guide-modal__table" aria-label="Bracelet size chart">
+              <thead>
+                <tr>
+                  <th scope="col">Size</th>
+                  <th scope="col">Wrist (in)</th>
+                  <th scope="col">Wrist (cm)</th>
+                  <th scope="col">Bracelet Length</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>XS</strong></td>
+                  <td>5.5 - 6.0</td>
+                  <td>14 - 15</td>
+                  <td>6.5"</td>
+                </tr>
+                <tr>
+                  <td><strong>S</strong></td>
+                  <td>6.0 - 6.5</td>
+                  <td>15 - 16.5</td>
+                  <td>7.0"</td>
+                </tr>
+                <tr>
+                  <td><strong>M</strong></td>
+                  <td>6.5 - 7.0</td>
+                  <td>16.5 - 18</td>
+                  <td>7.5"</td>
+                </tr>
+                <tr>
+                  <td><strong>L</strong></td>
+                  <td>7.0 - 7.5</td>
+                  <td>18 - 19</td>
+                  <td>8.0"</td>
+                </tr>
+                <tr>
+                  <td><strong>XL</strong></td>
+                  <td>7.5 - 8.0</td>
+                  <td>19 - 20</td>
+                  <td>8.5"</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* Necklace Lengths */}
+        <section class="size-guide-modal__section">
+          <h3 class="size-guide-modal__section-title">Necklace Lengths</h3>
+          <div class="size-guide-modal__table-container">
+            <table class="size-guide-modal__table" aria-label="Necklace length guide">
+              <thead>
+                <tr>
+                  <th scope="col">Style</th>
+                  <th scope="col">Length (in)</th>
+                  <th scope="col">Length (cm)</th>
+                  <th scope="col">Sits At</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Choker</strong></td>
+                  <td>14 - 16</td>
+                  <td>35 - 40</td>
+                  <td>Base of neck</td>
+                </tr>
+                <tr>
+                  <td><strong>Princess</strong></td>
+                  <td>17 - 19</td>
+                  <td>43 - 48</td>
+                  <td>Collarbone</td>
+                </tr>
+                <tr>
+                  <td><strong>Matinee</strong></td>
+                  <td>20 - 24</td>
+                  <td>50 - 60</td>
+                  <td>Above bust</td>
+                </tr>
+                <tr>
+                  <td><strong>Opera</strong></td>
+                  <td>28 - 36</td>
+                  <td>70 - 90</td>
+                  <td>Below bust</td>
+                </tr>
+                <tr>
+                  <td><strong>Rope</strong></td>
+                  <td>36+</td>
+                  <td>90+</td>
+                  <td>At or below waist</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* Fit Recommendations */}
+        <section class="size-guide-modal__section">
+          <h3 class="size-guide-modal__section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+            Jewelry Tips
+          </h3>
+          <div class="size-guide-modal__recommendations">
+            <div class="size-guide-modal__recommendation">
+              <span class="size-guide-modal__recommendation-label">Ring sizing</span>
+              <span class="size-guide-modal__recommendation-text">Fingers can vary in size throughout the day. Measure when your hands are warm.</span>
+            </div>
+            <div class="size-guide-modal__recommendation">
+              <span class="size-guide-modal__recommendation-label">Dominant hand</span>
+              <span class="size-guide-modal__recommendation-text">Your dominant hand is typically slightly larger - measure both if unsure.</span>
+            </div>
+            <div class="size-guide-modal__recommendation">
+              <span class="size-guide-modal__recommendation-label">Wide bands</span>
+              <span class="size-guide-modal__recommendation-text">Wide band rings fit more snugly. Consider sizing up half a size.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* =================================================================
+   * SIZE GUIDE MODAL COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .size-guide-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-4);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--duration-300) var(--ease-out),
+      visibility var(--duration-300) var(--ease-out);
+  }
+
+  .size-guide-modal[aria-hidden="false"] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* =================================================================
+   * BACKDROP
+   * ================================================================= */
+
+  .size-guide-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    cursor: pointer;
+  }
+
+  /* =================================================================
+   * CONTENT CONTAINER
+   * ================================================================= */
+
+  .size-guide-modal__content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 900px;
+    max-height: calc(100vh - var(--spacing-8));
+    background-color: var(--color-background-elevated);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-2xl);
+    overflow: hidden;
+    transform: scale(0.95) translateY(10px);
+    transition: transform var(--duration-300) var(--ease-out);
+  }
+
+  .size-guide-modal[aria-hidden="false"] .size-guide-modal__content {
+    transform: scale(1) translateY(0);
+  }
+
+  /* =================================================================
+   * CLOSE BUTTON
+   * ================================================================= */
+
+  .size-guide-modal__close {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-out),
+      color var(--duration-150) var(--ease-out),
+      transform var(--duration-150) var(--ease-out);
+    z-index: 10;
+  }
+
+  .size-guide-modal__close:hover {
+    background-color: var(--color-background-muted);
+    color: var(--color-text-primary);
+    transform: scale(1.05);
+  }
+
+  .size-guide-modal__close:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .size-guide-modal__close svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* =================================================================
+   * HEADER
+   * ================================================================= */
+
+  .size-guide-modal__header {
+    padding: var(--spacing-6);
+    padding-bottom: 0;
+    text-align: center;
+  }
+
+  .size-guide-modal__title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+  }
+
+  .size-guide-modal__subtitle {
+    margin: var(--spacing-2) 0 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+  }
+
+  /* =================================================================
+   * TABS
+   * ================================================================= */
+
+  .size-guide-modal__tabs {
+    display: flex;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4) var(--spacing-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .size-guide-modal__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    background-color: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-out),
+      color var(--duration-150) var(--ease-out),
+      border-color var(--duration-150) var(--ease-out);
+  }
+
+  .size-guide-modal__tab svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .size-guide-modal__tab:hover {
+    background-color: var(--color-background-muted);
+    color: var(--color-text-primary);
+  }
+
+  .size-guide-modal__tab:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .size-guide-modal__tab[aria-selected="true"] {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    border-color: var(--color-primary);
+  }
+
+  /* =================================================================
+   * BODY & PANELS
+   * ================================================================= */
+
+  .size-guide-modal__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-6);
+    scroll-behavior: smooth;
+  }
+
+  .size-guide-modal__panel {
+    display: block;
+  }
+
+  .size-guide-modal__panel[hidden] {
+    display: none;
+  }
+
+  /* =================================================================
+   * SECTIONS
+   * ================================================================= */
+
+  .size-guide-modal__section {
+    margin-bottom: var(--spacing-8);
+  }
+
+  .size-guide-modal__section:last-child {
+    margin-bottom: 0;
+  }
+
+  .size-guide-modal__section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin: 0 0 var(--spacing-4);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .size-guide-modal__section-title svg {
+    width: 20px;
+    height: 20px;
+    color: var(--color-primary);
+  }
+
+  /* =================================================================
+   * HOW TO MEASURE
+   * ================================================================= */
+
+  .size-guide-modal__measure-tips {
+    display: grid;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+  }
+
+  .size-guide-modal__measure-tip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .size-guide-modal__measure-tip strong {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+    min-width: 100px;
+  }
+
+  .size-guide-modal__measure-tip span {
+    color: var(--color-text-secondary);
+    flex: 1;
+  }
+
+  /* =================================================================
+   * TABLES
+   * ================================================================= */
+
+  .size-guide-modal__table-container {
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .size-guide-modal__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+  }
+
+  .size-guide-modal__table th,
+  .size-guide-modal__table td {
+    padding: var(--spacing-3) var(--spacing-4);
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  .size-guide-modal__table th {
+    background-color: var(--color-background-muted);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    position: sticky;
+    top: 0;
+  }
+
+  .size-guide-modal__table th:first-child {
+    border-top-left-radius: var(--radius-lg);
+  }
+
+  .size-guide-modal__table th:last-child {
+    border-top-right-radius: var(--radius-lg);
+  }
+
+  .size-guide-modal__table td {
+    color: var(--color-text-secondary);
+  }
+
+  .size-guide-modal__table td strong {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .size-guide-modal__table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .size-guide-modal__table tbody tr:hover {
+    background-color: var(--color-background-subtle);
+  }
+
+  /* =================================================================
+   * RECOMMENDATIONS
+   * ================================================================= */
+
+  .size-guide-modal__recommendations {
+    display: grid;
+    gap: var(--spacing-3);
+  }
+
+  .size-guide-modal__recommendation {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    padding: var(--spacing-3) var(--spacing-4);
+    background-color: var(--color-primary-50);
+    border-left: 3px solid var(--color-primary);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  }
+
+  .size-guide-modal__recommendation-label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary-700);
+  }
+
+  .size-guide-modal__recommendation-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  @media screen and (max-width: 767px) {
+    .size-guide-modal {
+      padding: 0;
+      align-items: flex-end;
+    }
+
+    .size-guide-modal__content {
+      max-height: 90vh;
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    }
+
+    .size-guide-modal__header {
+      padding: var(--spacing-4);
+      padding-bottom: 0;
+    }
+
+    .size-guide-modal__title {
+      font-size: var(--font-size-xl);
+      padding-right: var(--spacing-10);
+    }
+
+    .size-guide-modal__subtitle {
+      font-size: var(--font-size-sm);
+    }
+
+    .size-guide-modal__close {
+      top: var(--spacing-3);
+      right: var(--spacing-3);
+      width: 40px;
+      height: 40px;
+    }
+
+    .size-guide-modal__tabs {
+      padding: var(--spacing-3) var(--spacing-4);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .size-guide-modal__tab {
+      padding: var(--spacing-2) var(--spacing-3);
+      font-size: var(--font-size-xs);
+    }
+
+    .size-guide-modal__body {
+      padding: var(--spacing-4);
+    }
+
+    .size-guide-modal__section-title {
+      font-size: var(--font-size-base);
+    }
+
+    .size-guide-modal__table th,
+    .size-guide-modal__table td {
+      padding: var(--spacing-2) var(--spacing-3);
+      font-size: var(--font-size-xs);
+    }
+
+    .size-guide-modal__measure-tip {
+      flex-direction: column;
+    }
+
+    .size-guide-modal__measure-tip strong {
+      min-width: auto;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .size-guide-modal {
+      transition: none;
+    }
+
+    .size-guide-modal__content {
+      transition: none;
+    }
+
+    .size-guide-modal__close,
+    .size-guide-modal__tab {
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+
+  :global(html[data-theme="dark"]) .size-guide-modal__content {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .size-guide-modal__close {
+    background-color: var(--color-background-elevated);
+    border-color: var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .size-guide-modal__close:hover {
+    background-color: var(--color-background-muted);
+  }
+
+  :global(html[data-theme="dark"]) .size-guide-modal__table-container {
+    border-color: var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .size-guide-modal__table th {
+    background-color: var(--color-background-muted);
+  }
+
+  :global(html[data-theme="dark"]) .size-guide-modal__measure-tips {
+    background-color: var(--color-background-muted);
+  }
+
+  :global(html[data-theme="dark"]) .size-guide-modal__recommendation {
+    background-color: rgba(54, 83, 149, 0.1);
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+
+  @media (forced-colors: active) {
+    .size-guide-modal__content {
+      border: 2px solid currentColor;
+    }
+
+    .size-guide-modal__close {
+      border: 2px solid currentColor;
+    }
+
+    .size-guide-modal__tab {
+      border: 2px solid currentColor;
+    }
+
+    .size-guide-modal__table {
+      border: 1px solid currentColor;
+    }
+
+    .size-guide-modal__table th,
+    .size-guide-modal__table td {
+      border: 1px solid currentColor;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * SizeGuideModal Controller
+   * Handles opening, closing, tab navigation, keyboard events, and focus management
+   */
+  interface SizeGuideOptions {
+    category?: 'clothing' | 'jewelry';
+  }
+
+  class SizeGuideModal {
+    private modal: HTMLElement;
+    private previousFocus: HTMLElement | null = null;
+    private focusableElements: HTMLElement[] = [];
+    private tabs: HTMLButtonElement[] = [];
+    private panels: HTMLElement[] = [];
+    private defaultTab: string;
+
+    constructor(modalElement: HTMLElement) {
+      this.modal = modalElement;
+      this.defaultTab = modalElement.dataset.defaultTab || 'clothing';
+      this.tabs = Array.from(this.modal.querySelectorAll('[role="tab"]'));
+      this.panels = Array.from(this.modal.querySelectorAll('[role="tabpanel"]'));
+      this.init();
+    }
+
+    private init() {
+      // Close button handlers
+      this.modal.querySelectorAll('[data-sizeguide-close]').forEach(el => {
+        el.addEventListener('click', () => this.close());
+      });
+
+      // Tab handlers
+      this.tabs.forEach(tab => {
+        tab.addEventListener('click', () => this.switchTab(tab.dataset.tab!));
+        tab.addEventListener('keydown', (e) => this.handleTabKeydown(e, tab));
+      });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => this.handleKeydown(e));
+
+      // Listen for open events
+      document.addEventListener('sizeguide:open', ((e: CustomEvent<SizeGuideOptions>) => {
+        this.open(e.detail);
+      }) as EventListener);
+
+      // Listen for close events
+      document.addEventListener('sizeguide:close', () => this.close());
+
+      // Update focusable elements
+      this.updateFocusableElements();
+    }
+
+    private updateFocusableElements() {
+      this.focusableElements = Array.from(
+        this.modal.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), a[href]:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      );
+    }
+
+    private handleKeydown(e: KeyboardEvent) {
+      if (this.modal.getAttribute('aria-hidden') === 'true') return;
+
+      switch (e.key) {
+        case 'Escape':
+          e.preventDefault();
+          this.close();
+          break;
+        case 'Tab':
+          this.handleTabKey(e);
+          break;
+      }
+    }
+
+    private handleTabKeydown(e: KeyboardEvent, currentTab: HTMLButtonElement) {
+      const currentIndex = this.tabs.indexOf(currentTab);
+      let newIndex: number;
+
+      switch (e.key) {
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          e.preventDefault();
+          newIndex = currentIndex > 0 ? currentIndex - 1 : this.tabs.length - 1;
+          this.tabs[newIndex].focus();
+          this.switchTab(this.tabs[newIndex].dataset.tab!);
+          break;
+        case 'ArrowRight':
+        case 'ArrowDown':
+          e.preventDefault();
+          newIndex = currentIndex < this.tabs.length - 1 ? currentIndex + 1 : 0;
+          this.tabs[newIndex].focus();
+          this.switchTab(this.tabs[newIndex].dataset.tab!);
+          break;
+        case 'Home':
+          e.preventDefault();
+          this.tabs[0].focus();
+          this.switchTab(this.tabs[0].dataset.tab!);
+          break;
+        case 'End':
+          e.preventDefault();
+          this.tabs[this.tabs.length - 1].focus();
+          this.switchTab(this.tabs[this.tabs.length - 1].dataset.tab!);
+          break;
+      }
+    }
+
+    private handleTabKey(e: KeyboardEvent) {
+      this.updateFocusableElements();
+
+      if (this.focusableElements.length === 0) return;
+
+      const firstElement = this.focusableElements[0];
+      const lastElement = this.focusableElements[this.focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        // Tab
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    }
+
+    private switchTab(tabId: string) {
+      // Update tabs
+      this.tabs.forEach(tab => {
+        const isSelected = tab.dataset.tab === tabId;
+        tab.setAttribute('aria-selected', isSelected.toString());
+        tab.setAttribute('tabindex', isSelected ? '0' : '-1');
+      });
+
+      // Update panels
+      this.panels.forEach(panel => {
+        const isActive = panel.dataset.panel === tabId;
+        panel.hidden = !isActive;
+      });
+
+      // Update focusable elements after switching
+      this.updateFocusableElements();
+    }
+
+    public open(options?: SizeGuideOptions) {
+      // Store current focus
+      this.previousFocus = document.activeElement as HTMLElement;
+
+      // Switch to requested category if provided
+      if (options?.category) {
+        this.switchTab(options.category);
+      } else {
+        this.switchTab(this.defaultTab);
+      }
+
+      // Show modal
+      this.modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+
+      // Focus the close button
+      const closeButton = this.modal.querySelector('[data-sizeguide-close]') as HTMLElement;
+      setTimeout(() => closeButton?.focus(), 100);
+
+      // Track event
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'size_guide_open', {
+          category: options?.category || this.defaultTab,
+        });
+      }
+    }
+
+    public close() {
+      this.modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+
+      // Restore focus
+      this.previousFocus?.focus();
+
+      // Track event
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'size_guide_close');
+      }
+    }
+  }
+
+  function initSizeGuideModal() {
+    document.querySelectorAll('[data-size-guide-modal]').forEach(el => {
+      if (!(el as any)._sizeGuideInstance) {
+        (el as any)._sizeGuideInstance = new SizeGuideModal(el as HTMLElement);
+      }
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSizeGuideModal);
+  } else {
+    initSizeGuideModal();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initSizeGuideModal);
+</script>

@@ -1,0 +1,585 @@
+---
+/**
+ * Pagination Component
+ * A responsive pagination component for navigating through paginated content.
+ *
+ * Features:
+ * - Page numbers with ellipsis for large page counts
+ * - Previous/Next navigation buttons
+ * - First/Last page shortcuts
+ * - Current page highlighting
+ * - Keyboard navigation support
+ * - Screen reader announcements
+ * - Responsive design (simplified on mobile)
+ * - Dark mode support
+ *
+ * @example Basic usage
+ * ```astro
+ * <Pagination
+ *   currentPage={1}
+ *   totalPages={10}
+ *   baseUrl="/blog"
+ * />
+ * ```
+ *
+ * @example With page parameter
+ * ```astro
+ * <Pagination
+ *   currentPage={3}
+ *   totalPages={10}
+ *   baseUrl="/blog"
+ *   pageParam="page"
+ * />
+ * ```
+ */
+
+interface Props {
+  /** Current page number (1-based) */
+  currentPage: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Base URL for pagination links */
+  baseUrl: string;
+  /** Query parameter name for page (default: 'page') */
+  pageParam?: string;
+  /** Number of page numbers to show on each side of current (default: 2) */
+  siblingCount?: number;
+  /** Whether to show first/last page buttons (default: true) */
+  showFirstLast?: boolean;
+  /** Custom CSS class */
+  class?: string;
+}
+
+const {
+  currentPage,
+  totalPages,
+  baseUrl,
+  pageParam = 'page',
+  siblingCount = 2,
+  showFirstLast = true,
+  class: className = '',
+} = Astro.props;
+
+// Helper to generate page URL
+function getPageUrl(page: number): string {
+  if (page === 1) {
+    // First page doesn't need page parameter
+    return baseUrl;
+  }
+  const separator = baseUrl.includes('?') ? '&' : '?';
+  return `${baseUrl}${separator}${pageParam}=${page}`;
+}
+
+// Generate page numbers to display
+function getPageNumbers(): (number | 'ellipsis')[] {
+  const pages: (number | 'ellipsis')[] = [];
+
+  // Always show first page
+  pages.push(1);
+
+  // Calculate range around current page
+  const leftSibling = Math.max(2, currentPage - siblingCount);
+  const rightSibling = Math.min(totalPages - 1, currentPage + siblingCount);
+
+  // Add left ellipsis if needed
+  if (leftSibling > 2) {
+    pages.push('ellipsis');
+  }
+
+  // Add pages in range
+  for (let i = leftSibling; i <= rightSibling; i++) {
+    if (i !== 1 && i !== totalPages) {
+      pages.push(i);
+    }
+  }
+
+  // Add right ellipsis if needed
+  if (rightSibling < totalPages - 1) {
+    pages.push('ellipsis');
+  }
+
+  // Always show last page (if more than 1 page)
+  if (totalPages > 1) {
+    pages.push(totalPages);
+  }
+
+  return pages;
+}
+
+const pageNumbers = getPageNumbers();
+const hasPrevPage = currentPage > 1;
+const hasNextPage = currentPage < totalPages;
+
+// Build CSS classes
+const paginationClasses = [
+  'pagination',
+  className,
+].filter(Boolean).join(' ');
+
+// Don't render if only one page
+if (totalPages <= 1) {
+  return null;
+}
+---
+
+<nav
+  class={paginationClasses}
+  aria-label="Pagination"
+  role="navigation"
+>
+  <ul class="pagination__list">
+    {/* First Page Button */}
+    {showFirstLast && (
+      <li class="pagination__item pagination__item--first">
+        {currentPage > 1 ? (
+          <a
+            href={getPageUrl(1)}
+            class="pagination__link pagination__link--nav"
+            aria-label="Go to first page"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              class="pagination__icon"
+            >
+              <polyline points="11 17 6 12 11 7"></polyline>
+              <polyline points="18 17 13 12 18 7"></polyline>
+            </svg>
+            <span class="pagination__nav-text">First</span>
+          </a>
+        ) : (
+          <span
+            class="pagination__link pagination__link--nav pagination__link--disabled"
+            aria-disabled="true"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              class="pagination__icon"
+            >
+              <polyline points="11 17 6 12 11 7"></polyline>
+              <polyline points="18 17 13 12 18 7"></polyline>
+            </svg>
+            <span class="pagination__nav-text">First</span>
+          </span>
+        )}
+      </li>
+    )}
+
+    {/* Previous Button */}
+    <li class="pagination__item pagination__item--prev">
+      {hasPrevPage ? (
+        <a
+          href={getPageUrl(currentPage - 1)}
+          class="pagination__link pagination__link--nav"
+          aria-label="Go to previous page"
+          rel="prev"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            class="pagination__icon"
+          >
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span class="pagination__nav-text">Previous</span>
+        </a>
+      ) : (
+        <span
+          class="pagination__link pagination__link--nav pagination__link--disabled"
+          aria-disabled="true"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            class="pagination__icon"
+          >
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span class="pagination__nav-text">Previous</span>
+        </span>
+      )}
+    </li>
+
+    {/* Page Numbers */}
+    {pageNumbers.map((page, index) => (
+      <li
+        class={`pagination__item pagination__item--number ${page === 'ellipsis' ? 'pagination__item--ellipsis' : ''}`}
+      >
+        {page === 'ellipsis' ? (
+          <span class="pagination__ellipsis" aria-hidden="true">
+            ...
+          </span>
+        ) : page === currentPage ? (
+          <span
+            class="pagination__link pagination__link--current"
+            aria-current="page"
+            aria-label={`Page ${page}, current page`}
+          >
+            {page}
+          </span>
+        ) : (
+          <a
+            href={getPageUrl(page)}
+            class="pagination__link"
+            aria-label={`Go to page ${page}`}
+          >
+            {page}
+          </a>
+        )}
+      </li>
+    ))}
+
+    {/* Next Button */}
+    <li class="pagination__item pagination__item--next">
+      {hasNextPage ? (
+        <a
+          href={getPageUrl(currentPage + 1)}
+          class="pagination__link pagination__link--nav"
+          aria-label="Go to next page"
+          rel="next"
+        >
+          <span class="pagination__nav-text">Next</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            class="pagination__icon"
+          >
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </a>
+      ) : (
+        <span
+          class="pagination__link pagination__link--nav pagination__link--disabled"
+          aria-disabled="true"
+        >
+          <span class="pagination__nav-text">Next</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            class="pagination__icon"
+          >
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </span>
+      )}
+    </li>
+
+    {/* Last Page Button */}
+    {showFirstLast && (
+      <li class="pagination__item pagination__item--last">
+        {currentPage < totalPages ? (
+          <a
+            href={getPageUrl(totalPages)}
+            class="pagination__link pagination__link--nav"
+            aria-label="Go to last page"
+          >
+            <span class="pagination__nav-text">Last</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              class="pagination__icon"
+            >
+              <polyline points="13 17 18 12 13 7"></polyline>
+              <polyline points="6 17 11 12 6 7"></polyline>
+            </svg>
+          </a>
+        ) : (
+          <span
+            class="pagination__link pagination__link--nav pagination__link--disabled"
+            aria-disabled="true"
+          >
+            <span class="pagination__nav-text">Last</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              class="pagination__icon"
+            >
+              <polyline points="13 17 18 12 13 7"></polyline>
+              <polyline points="6 17 11 12 6 7"></polyline>
+            </svg>
+          </span>
+        )}
+      </li>
+    )}
+  </ul>
+
+  {/* Page Info (mobile-friendly) */}
+  <div class="pagination__info" aria-live="polite">
+    Page <span class="pagination__info-current">{currentPage}</span> of <span class="pagination__info-total">{totalPages}</span>
+  </div>
+</nav>
+
+<style>
+  /* =================================================================
+   * PAGINATION COMPONENT STYLES
+   * ================================================================= */
+
+  .pagination {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-8) 0;
+  }
+
+  .pagination__list {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pagination__item {
+    display: flex;
+  }
+
+  /* =================================================================
+   * PAGINATION LINKS
+   * ================================================================= */
+  .pagination__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    background-color: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition:
+      color var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .pagination__link:hover {
+    color: var(--color-primary);
+    background-color: var(--color-primary-50);
+    border-color: var(--color-primary-light);
+  }
+
+  .pagination__link:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  /* Current Page */
+  .pagination__link--current {
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    cursor: default;
+  }
+
+  .pagination__link--current:hover {
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  /* Disabled State */
+  .pagination__link--disabled {
+    color: var(--color-text-tertiary);
+    background-color: var(--color-background-muted);
+    border-color: var(--color-border);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .pagination__link--disabled:hover {
+    color: var(--color-text-tertiary);
+    background-color: var(--color-background-muted);
+    border-color: var(--color-border);
+  }
+
+  /* Navigation Links (Prev/Next/First/Last) */
+  .pagination__link--nav {
+    gap: var(--spacing-1);
+    padding: 0 var(--spacing-3);
+  }
+
+  .pagination__icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .pagination__nav-text {
+    display: none;
+  }
+
+  /* =================================================================
+   * ELLIPSIS
+   * ================================================================= */
+  .pagination__ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  /* =================================================================
+   * PAGE INFO
+   * ================================================================= */
+  .pagination__info {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .pagination__info-current {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .pagination__info-total {
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Desktop */
+  @media screen and (min-width: 768px) {
+    .pagination__nav-text {
+      display: inline;
+    }
+
+    .pagination__info {
+      display: none;
+    }
+  }
+
+  /* Tablet */
+  @media screen and (min-width: 640px) and (max-width: 767px) {
+    .pagination__item--first,
+    .pagination__item--last {
+      display: none;
+    }
+  }
+
+  /* Mobile */
+  @media screen and (max-width: 639px) {
+    .pagination__item--first,
+    .pagination__item--last {
+      display: none;
+    }
+
+    .pagination__item--number {
+      display: none;
+    }
+
+    .pagination__item--number:has(.pagination__link--current) {
+      display: flex;
+    }
+
+    .pagination__link {
+      min-width: 44px;
+      height: 44px;
+    }
+  }
+
+  /* Very Small Mobile */
+  @media screen and (max-width: 479px) {
+    .pagination__list {
+      gap: var(--spacing-2);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .pagination__link {
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .pagination__link {
+    background-color: var(--color-background-elevated);
+    border-color: var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .pagination__link:hover {
+    background-color: var(--color-primary-900);
+  }
+
+  :global(html[data-theme="dark"]) .pagination__link--disabled {
+    background-color: var(--color-background-muted);
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .pagination {
+      display: none;
+    }
+  }
+</style>

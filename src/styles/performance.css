@@ -338,6 +338,157 @@ img[loading="lazy"] {
 }
 
 /* =================================================================
+ * PROGRESSIVE IMAGE LOADING (LQIP)
+ * =================================================================
+ * Low-Quality Image Placeholder with blur-up effect
+ */
+
+/* Progressive image wrapper */
+.progressive-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-background-muted, #f3f4f6);
+}
+
+/* Blur-up animation keyframes */
+@keyframes blur-up {
+  from {
+    filter: blur(20px);
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  to {
+    filter: blur(0);
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Fade-in with subtle scale animation */
+@keyframes fade-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* LQIP placeholder blur transition */
+.lqip-placeholder {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(20px);
+  transform: scale(1.1);
+  transition:
+    opacity var(--duration-500, 500ms) var(--ease-out, ease-out),
+    filter var(--duration-500, 500ms) var(--ease-out, ease-out);
+  z-index: 1;
+}
+
+/* Hide placeholder when main image loads */
+.lqip-placeholder--hidden {
+  opacity: 0;
+  filter: blur(0);
+  pointer-events: none;
+}
+
+/* Main image with blur-up effect */
+.lqip-image {
+  opacity: 0;
+  transition: opacity var(--duration-300, 300ms) var(--ease-out, ease-out);
+}
+
+.lqip-image--loaded {
+  opacity: 1;
+  animation: blur-up var(--duration-500, 500ms) var(--ease-out, ease-out) forwards;
+}
+
+/* Simple fade-in without blur (for non-LQIP images) */
+.lazy-image {
+  opacity: 0;
+  transition: opacity var(--duration-300, 300ms) var(--ease-out, ease-out);
+}
+
+.lazy-image--loaded {
+  opacity: 1;
+}
+
+/* Intersection Observer loading indicator */
+.io-loading {
+  position: relative;
+}
+
+.io-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: loading-shine 1.5s ease-in-out infinite;
+}
+
+@keyframes loading-shine {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Respect reduced motion for progressive images */
+@media (prefers-reduced-motion: reduce) {
+  .lqip-placeholder {
+    transition: opacity var(--duration-150, 150ms) linear;
+    filter: none;
+    transform: none;
+  }
+
+  .lqip-image--loaded {
+    animation: none;
+    opacity: 1;
+  }
+
+  .io-loading::after {
+    animation: none;
+    display: none;
+  }
+
+  @keyframes blur-up {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fade-scale-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+/* Dark mode adjustments for progressive images */
+:root[data-theme="dark"] .progressive-image-wrapper,
+html[data-theme="dark"] .progressive-image-wrapper {
+  background-color: var(--color-background-muted, #374151);
+}
+
+:root[data-theme="dark"] .io-loading::after,
+html[data-theme="dark"] .io-loading::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+}
+
+/* =================================================================
  * CRITICAL CSS MARKERS
  * =================================================================
  * Classes to help identify critical vs non-critical CSS

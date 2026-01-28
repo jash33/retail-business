@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769450070156-a3abc34a",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-26T17:54:30.156Z",
+  "projectPath": "C:\\Users\\James\\Repos\\retail-business",
+  "projectName": "retail-business",
+  "featureId": "announcement-bar",
+  "featureName": "Promotional Announcement Bar",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

@@ -1,0 +1,924 @@
+---
+/**
+ * Blog Article Page
+ * Dynamic route for individual blog posts with hero image,
+ * author info, reading time estimate, social sharing, and related content.
+ *
+ * Features:
+ * - Dynamic routing based on post slug
+ * - Hero image with caption/credit (16:9 aspect ratio)
+ * - Author bio section with avatar
+ * - Reading time estimate
+ * - Social sharing buttons (Twitter, Facebook, LinkedIn, Pinterest, Email, Copy)
+ * - Table of contents from headings (sticky sidebar on desktop)
+ * - Related posts and products sections
+ * - BlogPosting JSON-LD schema (Article schema markup)
+ * - Editorial typography with prose styles
+ * - Responsive layout
+ * - Dark mode support
+ * - Print styles
+ * - Reduced motion accessibility
+ *
+ * @route /blog/[slug]
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+import type { ArticleSchema, BreadcrumbSchema } from '../../types/seo';
+import { seoConfig } from '../../config/seo.config';
+import SocialShareButtons from '../../components/SocialShareButtons.astro';
+
+// Generate static paths for all blog posts
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => {
+    return data.published === true && data.draft !== true;
+  });
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { data } = post;
+
+// Render the content
+const { Content, headings } = await render(post);
+
+// Get related posts if any
+let relatedPosts: typeof post[] = [];
+if (data.relatedPosts && data.relatedPosts.length > 0) {
+  const allPosts = await getCollection('blog', ({ data }) => {
+    return data.published === true && data.draft !== true;
+  });
+  relatedPosts = allPosts.filter(p => data.relatedPosts?.includes(p.slug));
+}
+
+// Get related products if any
+let relatedProducts: any[] = [];
+if (data.relatedProducts && data.relatedProducts.length > 0) {
+  const allProducts = await getCollection('products');
+  relatedProducts = allProducts.filter(p => data.relatedProducts?.includes(p.slug));
+}
+
+// Format dates
+const pubDateFormatted = data.pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const updatedDateFormatted = data.updatedDate?.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+// Build table of contents from headings (h2 and h3)
+const toc = headings.filter(h => h.depth === 2 || h.depth === 3);
+
+// Build Article schema for SEO
+const articleSchema: ArticleSchema = {
+  type: 'BlogPosting',
+  headline: data.title,
+  description: data.description,
+  author: data.author?.name || 'Editorial Team',
+  datePublished: data.pubDate.toISOString(),
+  dateModified: data.updatedDate?.toISOString() || data.pubDate.toISOString(),
+  image: data.featuredImage?.src,
+  articleSection: data.category,
+  wordCount: data.readingTime ? data.readingTime * 200 : undefined,
+  publisher: {
+    name: seoConfig.organization?.name || seoConfig.siteName,
+    logo: seoConfig.organization?.logo,
+  },
+};
+
+// Build Breadcrumb schema
+const breadcrumbSchema: BreadcrumbSchema = {
+  type: 'BreadcrumbList',
+  items: [
+    { name: 'Home', url: '/' },
+    { name: 'Blog', url: '/blog' },
+    { name: data.category, url: `/blog?category=${data.category.toLowerCase().replace(/\s+/g, '-')}` },
+    { name: data.title },
+  ],
+};
+
+// SEO metadata
+const pageTitle = data.seo?.metaTitle || data.title;
+const pageDescription = data.seo?.metaDescription || data.description;
+const ogImage = data.seo?.ogImage || data.featuredImage?.src;
+const robots = data.seo?.noIndex
+  ? `noindex${data.seo?.noFollow ? ',nofollow' : ''}`
+  : undefined;
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  image={ogImage}
+  canonicalUrl={data.seo?.canonicalUrl || Astro.url.href}
+  robots={robots}
+  jsonLd={[articleSchema, breadcrumbSchema]}
+  openGraph={{
+    type: 'article',
+    title: data.title,
+    description: pageDescription,
+    image: ogImage,
+  }}
+>
+  <main class="article-page">
+    <article class="article" itemscope itemtype="https://schema.org/BlogPosting">
+      <!-- Article Header -->
+      <header class="article__header">
+        <div class="article__header-container">
+          <!-- Category -->
+          <a
+            href={`/blog?category=${data.category.toLowerCase().replace(/\s+/g, '-')}`}
+            class="article__category"
+          >
+            {data.category}
+          </a>
+
+          <!-- Title -->
+          <h1 class="article__title" itemprop="headline">{data.title}</h1>
+
+          <!-- Description -->
+          <p class="article__description" itemprop="description">{data.description}</p>
+
+          <!-- Meta -->
+          <div class="article__meta">
+            {data.author && (
+              <div class="article__author" itemprop="author" itemscope itemtype="https://schema.org/Person">
+                {data.author.avatar && (
+                  <img
+                    src={data.author.avatar}
+                    alt=""
+                    width="48"
+                    height="48"
+                    class="article__author-avatar"
+                    loading="eager"
+                  />
+                )}
+                <div class="article__author-info">
+                  <span class="article__author-name" itemprop="name">{data.author.name}</span>
+                  {data.author.bio && (
+                    <span class="article__author-bio">{data.author.bio}</span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div class="article__meta-details">
+              <time class="article__date" datetime={data.pubDate.toISOString()} itemprop="datePublished">
+                {pubDateFormatted}
+              </time>
+              {data.readingTime && (
+                <>
+                  <span class="article__meta-separator" aria-hidden="true">·</span>
+                  <span class="article__reading-time">{data.readingTime} min read</span>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Featured Image -->
+      {data.featuredImage && (
+        <figure class="article__featured-image">
+          <img
+            src={data.featuredImage.src}
+            alt={data.featuredImage.alt}
+            width={data.featuredImage.width || 1200}
+            height={data.featuredImage.height || 630}
+            loading="eager"
+            decoding="async"
+            itemprop="image"
+          />
+          {(data.featuredImage.caption || data.featuredImage.credit) && (
+            <figcaption class="article__image-caption">
+              {data.featuredImage.caption}
+              {data.featuredImage.credit && (
+                <span class="article__image-credit">{data.featuredImage.credit}</span>
+              )}
+            </figcaption>
+          )}
+        </figure>
+      )}
+
+      <!-- Article Body -->
+      <div class="article__body-wrapper">
+        <!-- Table of Contents (sidebar) -->
+        {toc.length > 2 && (
+          <aside class="article__toc">
+            <nav class="article__toc-nav" aria-label="Table of contents">
+              <h2 class="article__toc-title">In this article</h2>
+              <ul class="article__toc-list">
+                {toc.map((heading) => (
+                  <li class={`article__toc-item article__toc-item--h${heading.depth}`}>
+                    <a href={`#${heading.slug}`} class="article__toc-link">
+                      {heading.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </aside>
+        )}
+
+        <!-- Article Content -->
+        <div class="article__content prose" itemprop="articleBody">
+          <Content />
+        </div>
+      </div>
+
+      <!-- Article Footer with Tags and Social Sharing -->
+      <footer class="article__footer">
+        <!-- Social Share Buttons -->
+        <div class="article__share">
+          <SocialShareButtons
+            url={Astro.url.href}
+            title={data.title}
+            description={data.description}
+            image={data.featuredImage?.src}
+            contentType="article"
+            contentId={post.slug}
+          />
+        </div>
+
+        <!-- Tags -->
+        {data.tags && data.tags.length > 0 && (
+          <div class="article__tags">
+            <span class="article__tags-label">Tags:</span>
+            <ul class="article__tags-list">
+              {data.tags.map((tag) => (
+                <li class="article__tag">#{tag}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {updatedDateFormatted && (
+          <p class="article__updated">
+            Last updated: <time datetime={data.updatedDate?.toISOString()} itemprop="dateModified">{updatedDateFormatted}</time>
+          </p>
+        )}
+      </footer>
+    </article>
+
+    <!-- Related Posts -->
+    {relatedPosts.length > 0 && (
+      <section class="article__related" aria-labelledby="related-posts-heading">
+        <div class="article__related-container">
+          <h2 id="related-posts-heading" class="article__related-title">Related Articles</h2>
+          <div class="article__related-grid">
+            {relatedPosts.map((relatedPost) => (
+              <a href={`/blog/${relatedPost.slug}`} class="article__related-card">
+                {relatedPost.data.featuredImage && (
+                  <img
+                    src={relatedPost.data.featuredImage.src}
+                    alt={relatedPost.data.featuredImage.alt}
+                    width="300"
+                    height="200"
+                    loading="lazy"
+                  />
+                )}
+                <div class="article__related-card-content">
+                  <span class="article__related-card-category">{relatedPost.data.category}</span>
+                  <h3 class="article__related-card-title">{relatedPost.data.title}</h3>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Related Products -->
+    {relatedProducts.length > 0 && (
+      <section class="article__products" aria-labelledby="related-products-heading">
+        <div class="article__products-container">
+          <h2 id="related-products-heading" class="article__products-title">Featured in This Article</h2>
+          <div class="article__products-grid">
+            {relatedProducts.map((product) => (
+              <a href={`/products/${product.slug}`} class="article__product-card">
+                <img
+                  src={product.data.image.src}
+                  alt={product.data.image.alt}
+                  width="200"
+                  height="250"
+                  loading="lazy"
+                />
+                <div class="article__product-card-content">
+                  <h3 class="article__product-card-title">{product.data.name}</h3>
+                  <span class="article__product-card-price">
+                    ${product.data.price.amount.toFixed(2)}
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * ARTICLE PAGE STYLES
+   * ================================================================= */
+
+  .article-page {
+    padding-bottom: var(--spacing-16);
+  }
+
+  .article {
+    max-width: 100%;
+  }
+
+  /* =================================================================
+   * ARTICLE HEADER
+   * ================================================================= */
+  .article__header {
+    padding: var(--spacing-12) 0 var(--spacing-8);
+    text-align: center;
+  }
+
+  .article__header-container {
+    max-width: var(--container-3xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  .article__category {
+    display: inline-block;
+    margin-bottom: var(--spacing-4);
+    padding: var(--spacing-1) var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    color: var(--color-primary);
+    background-color: var(--color-primary-50);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out);
+  }
+
+  .article__category:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .article__title {
+    margin: 0 0 var(--spacing-4);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+  }
+
+  .article__description {
+    margin: 0 0 var(--spacing-6);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xl);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * ARTICLE META
+   * ================================================================= */
+  .article__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4);
+  }
+
+  .article__author {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+  }
+
+  .article__author-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+  }
+
+  .article__author-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+
+  .article__author-name {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .article__author-bio {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .article__meta-details {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  /* =================================================================
+   * FEATURED IMAGE
+   * ================================================================= */
+  .article__featured-image {
+    margin: 0 auto var(--spacing-8);
+    max-width: var(--container-5xl);
+    padding: 0 var(--spacing-4);
+  }
+
+  .article__featured-image img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .article__image-caption {
+    margin-top: var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    text-align: center;
+  }
+
+  .article__image-credit {
+    display: block;
+    font-style: italic;
+  }
+
+  /* =================================================================
+   * ARTICLE BODY
+   * ================================================================= */
+  .article__body-wrapper {
+    display: grid;
+    grid-template-columns: 1fr minmax(0, 720px) 1fr;
+    gap: var(--spacing-8);
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  .article__toc {
+    position: sticky;
+    top: var(--spacing-8);
+    align-self: start;
+    display: none;
+  }
+
+  @media screen and (min-width: 1200px) {
+    .article__toc {
+      display: block;
+    }
+  }
+
+  .article__toc-nav {
+    padding: var(--spacing-4);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-lg);
+  }
+
+  .article__toc-title {
+    margin: 0 0 var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .article__toc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .article__toc-item {
+    margin-bottom: var(--spacing-2);
+  }
+
+  .article__toc-item--h3 {
+    padding-left: var(--spacing-3);
+  }
+
+  .article__toc-link {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .article__toc-link:hover {
+    color: var(--color-primary);
+  }
+
+  .article__content {
+    grid-column: 2;
+  }
+
+  /* =================================================================
+   * PROSE STYLES
+   * ================================================================= */
+  .prose {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-secondary);
+  }
+
+  .prose :global(h2) {
+    margin-top: var(--spacing-10);
+    margin-bottom: var(--spacing-4);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+  }
+
+  .prose :global(h3) {
+    margin-top: var(--spacing-8);
+    margin-bottom: var(--spacing-3);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-snug);
+    color: var(--color-text-primary);
+  }
+
+  .prose :global(p) {
+    margin-bottom: var(--spacing-5);
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin-bottom: var(--spacing-5);
+    padding-left: var(--spacing-6);
+  }
+
+  .prose :global(li) {
+    margin-bottom: var(--spacing-2);
+  }
+
+  .prose :global(strong) {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .prose :global(a) {
+    color: var(--color-text-link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .prose :global(a:hover) {
+    color: var(--color-text-link-hover);
+  }
+
+  .prose :global(blockquote) {
+    margin: var(--spacing-8) 0;
+    padding: var(--spacing-4) var(--spacing-6);
+    border-left: 4px solid var(--color-primary);
+    background-color: var(--color-background-muted);
+    font-style: italic;
+    color: var(--color-text-secondary);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  }
+
+  .prose :global(blockquote p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .prose :global(img) {
+    max-width: 100%;
+    height: auto;
+    margin: var(--spacing-6) 0;
+    border-radius: var(--radius-lg);
+  }
+
+  .prose :global(hr) {
+    margin: var(--spacing-10) 0;
+    border: none;
+    border-top: 1px solid var(--color-border);
+  }
+
+  /* =================================================================
+   * ARTICLE FOOTER
+   * ================================================================= */
+  .article__footer {
+    max-width: 720px;
+    margin: var(--spacing-8) auto 0;
+    padding: var(--spacing-6) var(--spacing-4) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .article__share {
+    margin-bottom: var(--spacing-6);
+    padding-bottom: var(--spacing-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .article__tags {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
+  }
+
+  .article__tags-label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+  }
+
+  .article__tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .article__tag {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-primary);
+  }
+
+  .article__updated {
+    margin-top: var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  /* =================================================================
+   * RELATED SECTIONS
+   * ================================================================= */
+  .article__related,
+  .article__products {
+    margin-top: var(--spacing-16);
+    padding: var(--spacing-12) 0;
+    background-color: var(--color-background-muted);
+  }
+
+  .article__related-container,
+  .article__products-container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  .article__related-title,
+  .article__products-title {
+    margin: 0 0 var(--spacing-8);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    text-align: center;
+    color: var(--color-text-primary);
+  }
+
+  .article__related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-6);
+  }
+
+  .article__related-card {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-background);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    text-decoration: none;
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out);
+  }
+
+  .article__related-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+  }
+
+  .article__related-card img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+
+  .article__related-card-content {
+    padding: var(--spacing-4);
+  }
+
+  .article__related-card-category {
+    display: inline-block;
+    margin-bottom: var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    color: var(--color-primary);
+  }
+
+  .article__related-card-title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-snug);
+  }
+
+  .article__products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-6);
+  }
+
+  .article__product-card {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-background);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    text-decoration: none;
+    text-align: center;
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out);
+  }
+
+  .article__product-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+  }
+
+  .article__product-card img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .article__product-card-content {
+    padding: var(--spacing-4);
+  }
+
+  .article__product-card-title {
+    margin: 0 0 var(--spacing-2);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .article__product-card-price {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 1023px) {
+    .article__related-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .article__products-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .article__header {
+      padding: var(--spacing-8) 0 var(--spacing-6);
+    }
+
+    .article__title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .article__description {
+      font-size: var(--font-size-lg);
+    }
+
+    .article__body-wrapper {
+      grid-template-columns: 1fr;
+    }
+
+    .article__content {
+      grid-column: 1;
+    }
+
+    .prose {
+      font-size: var(--font-size-base);
+    }
+
+    .prose :global(h2) {
+      font-size: var(--font-size-xl);
+    }
+
+    .prose :global(h3) {
+      font-size: var(--font-size-lg);
+    }
+
+    .article__related-grid,
+    .article__products-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .article__category,
+    .article__toc-link,
+    .article__related-card,
+    .article__product-card {
+      transition: none;
+    }
+
+    .article__related-card:hover,
+    .article__product-card:hover {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .article__toc-nav {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .article__related,
+  :global(html[data-theme="dark"]) .article__products {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .article__related-card,
+  :global(html[data-theme="dark"]) .article__product-card {
+    background-color: var(--color-background);
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .article__toc {
+      display: none;
+    }
+
+    .article__related,
+    .article__products {
+      display: none;
+    }
+
+    .article__body-wrapper {
+      display: block;
+    }
+
+    .article__featured-image img {
+      max-height: 300px;
+    }
+  }
+</style>

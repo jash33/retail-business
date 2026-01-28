@@ -1,0 +1,14 @@
+{
+  "id": "article-template",
+  "category": "Core",
+  "title": "Blog Article Detail Page Template",
+  "description": "Build article template with hero image, reading time estimate, social sharing buttons, related posts, and editorial typography. Includes Article schema markup.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "blog-content-system"
+  ],
+  "createdAt": "2026-01-26T01:49:59.757Z",
+  "updatedAt": "2026-01-26T01:49:59.757Z"
+}

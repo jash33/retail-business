@@ -1,0 +1,274 @@
+---
+/**
+ * Shop Link Component
+ * A flexible component for linking to external shop products or pages.
+ *
+ * Features:
+ * - Multiple visual variants (button, link, inline)
+ * - UTM parameter tracking
+ * - External link security attributes
+ * - Full accessibility support
+ * - Consistent with design system styling
+ *
+ * @example
+ * ```astro
+ * <!-- As a button -->
+ * <ShopLink
+ *   href="https://shop.example.com/products/widget"
+ *   text="Buy Now"
+ *   variant="button"
+ *   size="medium"
+ * />
+ *
+ * <!-- As an inline link -->
+ * <ShopLink
+ *   href="https://shop.example.com/products/gadget"
+ *   text="View in Store"
+ *   variant="inline"
+ *   utmParams={{ content: 'product_page' }}
+ * />
+ * ```
+ */
+
+import type { ShopLinkProps } from '../types/shop';
+import {
+  appendUTMParams,
+  mergeUTMParams,
+  getShopLinkAttributes,
+  getShopLinkAriaLabel
+} from '../utils/shop-tracking';
+import { shopConfig } from '../config/shop.config';
+
+interface Props extends ShopLinkProps {}
+
+const {
+  href,
+  text,
+  ariaLabel,
+  openInNewTab,
+  variant = 'link',
+  size = 'medium',
+  utmParams,
+  class: className = '',
+} = Astro.props;
+
+// Build URL with UTM tracking
+const mergedParams = mergeUTMParams(utmParams);
+const trackedHref = shopConfig.trackingEnabled
+  ? appendUTMParams(href, mergedParams)
+  : href;
+
+// Get link attributes (target, rel)
+const linkAttrs = getShopLinkAttributes(openInNewTab);
+
+// Get accessible label
+const accessibleLabel = ariaLabel || getShopLinkAriaLabel();
+
+// Build CSS class list
+const classList = [
+  'shop-link',
+  `shop-link--${variant}`,
+  variant === 'button' ? `shop-link--${size}` : '',
+  className,
+].filter(Boolean);
+---
+
+<a
+  href={trackedHref}
+  class:list={classList}
+  aria-label={accessibleLabel}
+  data-shop-link="product"
+  {...linkAttrs}
+>
+  <span class="shop-link__text">{text}</span>
+  {variant !== 'inline' && (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="shop-link__icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+      <polyline points="15 3 21 3 21 9"></polyline>
+      <line x1="10" y1="14" x2="21" y2="3"></line>
+    </svg>
+  )}
+</a>
+
+<style>
+  /* =================================================================
+   * SHOP LINK COMPONENT STYLES
+   * =================================================================
+   */
+
+  .shop-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    text-decoration: none;
+    font-family: var(--font-body);
+    transition: color var(--animation-duration-fast) var(--ease-smooth),
+                background-color var(--animation-duration-fast) var(--ease-smooth),
+                border-color var(--animation-duration-fast) var(--ease-smooth),
+                transform var(--animation-duration-fast) var(--ease-spring-soft),
+                box-shadow var(--animation-duration-normal) var(--ease-smooth);
+  }
+
+  .shop-link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .shop-link__text {
+    line-height: 1.2;
+  }
+
+  .shop-link__icon {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+  }
+
+  /* -----------------------------------------------------------------
+   * Button Variant
+   * ----------------------------------------------------------------- */
+
+  .shop-link--button {
+    justify-content: center;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-white);
+    background-color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+  }
+
+  .shop-link--button:hover {
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg), var(--glow-primary-sm);
+  }
+
+  .shop-link--button:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Button sizes */
+  .shop-link--small {
+    min-height: 36px;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+  }
+
+  .shop-link--medium {
+    min-height: 44px;
+    padding: var(--spacing-3) var(--spacing-5);
+    font-size: var(--font-size-base);
+  }
+
+  .shop-link--large {
+    min-height: 52px;
+    padding: var(--spacing-4) var(--spacing-6);
+    font-size: var(--font-size-lg);
+  }
+
+  /* -----------------------------------------------------------------
+   * Link Variant
+   * ----------------------------------------------------------------- */
+
+  .shop-link--link {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+  }
+
+  .shop-link--link:hover {
+    color: var(--color-primary-hover);
+    background-color: var(--color-primary-50);
+  }
+
+  .shop-link--link .shop-link__text {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .shop-link--link:hover .shop-link__text {
+    text-decoration-thickness: 2px;
+  }
+
+  /* -----------------------------------------------------------------
+   * Inline Variant
+   * ----------------------------------------------------------------- */
+
+  .shop-link--inline {
+    display: inline;
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .shop-link--inline .shop-link__text {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .shop-link--inline:hover {
+    color: var(--color-primary-hover);
+  }
+
+  .shop-link--inline:hover .shop-link__text {
+    text-decoration-thickness: 2px;
+  }
+
+  /* -----------------------------------------------------------------
+   * Reduced Motion Preferences
+   * ----------------------------------------------------------------- */
+
+  @media (prefers-reduced-motion: reduce) {
+    .shop-link {
+      transition: none;
+    }
+
+    .shop-link--button:hover,
+    .shop-link--button:active {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Shop Link Click Tracking
+   * Tracks clicks on shop links for analytics
+   */
+  function initShopLinkTracking() {
+    const shopLinks = document.querySelectorAll('[data-shop-link="product"]');
+
+    shopLinks.forEach((link) => {
+      link.addEventListener('click', () => {
+        // Track the click event if gtag is available
+        if (typeof window !== 'undefined' && window.gtag) {
+          const linkElement = link as HTMLAnchorElement;
+          window.gtag('event', 'shop_link_click', {
+            source_location: 'product',
+            destination_url: linkElement.href,
+            link_text: linkElement.textContent?.trim(),
+          });
+        }
+      });
+    });
+  }
+
+  // Initialize on DOM ready
+  document.addEventListener('DOMContentLoaded', initShopLinkTracking);
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initShopLinkTracking);
+</script>

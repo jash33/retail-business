@@ -1,0 +1,23 @@
+{
+  "id": "new-arrivals-section",
+  "category": "UI",
+  "title": "New Arrivals Carousel Component",
+  "description": "Create carousel/slider for newest products with automatic date-based sorting, navigation arrows, touch swipe support, and accessibility features. Displays latest inventory additions.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "createdAt": "2026-01-26T01:49:59.724Z",
+  "updatedAt": "2026-01-26T01:49:59.724Z",
+  "descriptionHistory": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "current",
+  "dependencies": []
+}

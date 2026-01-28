@@ -1,0 +1,23 @@
+{
+  "id": "location-visit-page",
+  "category": "Core",
+  "title": "Visit/Location Page with Store Information",
+  "description": "Build location page with store hours, address, interior/exterior photo gallery, neighborhood guide, parking information, and Google Maps embed with directions. Includes LocalBusiness schema enhancement.",
+  "status": "in_progress",
+  "priority": 2,
+  "complexity": "moderate",
+  "createdAt": "2026-01-26T01:49:59.707Z",
+  "updatedAt": "2026-01-26T19:04:01.516Z",
+  "descriptionHistory": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "current",
+  "dependencies": []
+}

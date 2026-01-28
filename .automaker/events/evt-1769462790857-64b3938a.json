@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769462790857-64b3938a",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-26T21:26:30.857Z",
+  "projectPath": "C:\\Users\\James\\Repos\\retail-business",
+  "projectName": "retail-business",
+  "featureId": "product-image-gallery",
+  "featureName": "Product Image Gallery with Lightbox",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

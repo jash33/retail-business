@@ -1,0 +1,597 @@
+---
+/**
+ * Progressive Image Component
+ *
+ * A high-performance image component that implements:
+ * - Low-Quality Image Placeholder (LQIP) with blur-up effect
+ * - Intersection Observer for efficient lazy loading
+ * - WebP format with automatic fallback support
+ * - Proper width/height to prevent CLS
+ * - Accessible and SEO-friendly
+ *
+ * @example Basic usage:
+ * ```astro
+ * <ProgressiveImage
+ *   src="/images/product.jpg"
+ *   alt="Product image"
+ *   width={800}
+ *   height={600}
+ * />
+ * ```
+ *
+ * @example With LQIP placeholder:
+ * ```astro
+ * <ProgressiveImage
+ *   src="/images/hero.jpg"
+ *   alt="Hero image"
+ *   width={1200}
+ *   height={630}
+ *   placeholder="data:image/jpeg;base64,/9j/4AAQSkZ..."
+ *   priority
+ * />
+ * ```
+ *
+ * @example Responsive with custom sizes:
+ * ```astro
+ * <ProgressiveImage
+ *   src="/products/item.jpg"
+ *   alt="Product detail"
+ *   width={600}
+ *   height={750}
+ *   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+ *   responsive
+ * />
+ * ```
+ */
+
+interface Props {
+  /** Image source URL */
+  src: string;
+  /** Alternative text for accessibility */
+  alt: string;
+  /** Image width (required for CLS prevention) */
+  width: number;
+  /** Image height (required for CLS prevention) */
+  height: number;
+  /** CSS class for the wrapper */
+  class?: string;
+  /** CSS class for the image element */
+  imageClass?: string;
+  /** Loading strategy: 'lazy' | 'eager' */
+  loading?: 'lazy' | 'eager';
+  /** Decoding hint */
+  decoding?: 'async' | 'sync' | 'auto';
+  /** Fetch priority for high-priority images (LCP candidates) */
+  fetchPriority?: 'high' | 'low' | 'auto';
+  /** Sizes attribute for responsive images */
+  sizes?: string;
+  /** Generate responsive srcset */
+  responsive?: boolean;
+  /** LQIP base64 data URL for blur placeholder */
+  placeholder?: string;
+  /** Dominant color for placeholder background (hex or CSS color) */
+  placeholderColor?: string;
+  /** Object fit style */
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+  /** Object position */
+  objectPosition?: string;
+  /** Mark as priority image (disables lazy loading, high fetch priority) */
+  priority?: boolean;
+  /** Root margin for Intersection Observer */
+  rootMargin?: string;
+  /** Threshold for Intersection Observer */
+  threshold?: number;
+  /** Custom WebP source (if different naming convention) */
+  srcWebP?: string;
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  class: className = '',
+  imageClass = '',
+  loading: loadingProp,
+  decoding = 'async',
+  fetchPriority: fetchPriorityProp,
+  sizes,
+  responsive = false,
+  placeholder,
+  placeholderColor,
+  objectFit = 'cover',
+  objectPosition = 'center',
+  priority = false,
+  rootMargin = '50px 0px',
+  threshold = 0.01,
+  srcWebP,
+} = Astro.props;
+
+// Determine loading strategy based on priority
+const loading = priority ? 'eager' : (loadingProp ?? 'lazy');
+const fetchPriority = priority ? 'high' : (fetchPriorityProp ?? 'auto');
+
+// Generate responsive widths for srcset
+const responsiveWidths = [320, 480, 640, 768, 1024, 1280, 1536, 1920];
+
+// Function to get WebP version of an image
+function getWebPSrc(imageSrc: string): string {
+  if (imageSrc.endsWith('.svg') || imageSrc.endsWith('.webp')) return imageSrc;
+  const lastDot = imageSrc.lastIndexOf('.');
+  if (lastDot === -1) return imageSrc;
+  return imageSrc.substring(0, lastDot) + '.webp';
+}
+
+// Function to generate srcset string
+function generateSrcSet(imageSrc: string, widths: number[]): string {
+  return widths
+    .filter(w => w <= width * 2) // Include up to 2x for high-DPI
+    .map(w => `${imageSrc} ${w}w`)
+    .join(', ');
+}
+
+// Compute srcset
+const computedSrcSet = responsive ? generateSrcSet(src, responsiveWidths) : undefined;
+
+// Compute sizes (default responsive sizes)
+const computedSizes = sizes || (responsive
+  ? '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+  : undefined);
+
+// Check if image is SVG (no WebP conversion needed)
+const isSVG = src.endsWith('.svg');
+
+// Compute aspect ratio
+const aspectRatio = width / height;
+
+// WebP source URL
+const webPSource = srcWebP || (!isSVG ? getWebPSrc(src) : null);
+
+// Unique ID for this image instance
+const imageId = `progressive-img-${Math.random().toString(36).substring(2, 9)}`;
+
+// Placeholder background color or gradient
+const placeholderBg = placeholderColor
+  ? placeholderColor
+  : 'var(--color-background-muted, #f3f4f6)';
+
+// Use Intersection Observer for lazy loading when not priority
+const useIntersectionObserver = !priority && loading === 'lazy';
+---
+
+<div
+  class:list={['progressive-image', { 'progressive-image--has-placeholder': !!placeholder }, className]}
+  style={`--aspect-ratio: ${aspectRatio}; --placeholder-bg: ${placeholderBg};`}
+  data-progressive-image
+  data-image-id={imageId}
+  data-root-margin={rootMargin}
+  data-threshold={threshold}
+>
+  {/* LQIP Blur Placeholder */}
+  {placeholder && (
+    <div
+      class="progressive-image__placeholder"
+      aria-hidden="true"
+      style={`background-image: url(${placeholder});`}
+    >
+      <div class="progressive-image__placeholder-blur"></div>
+    </div>
+  )}
+
+  {/* Shimmer placeholder when no LQIP */}
+  {!placeholder && (
+    <div class="progressive-image__shimmer" aria-hidden="true"></div>
+  )}
+
+  {/* Picture element with WebP support */}
+  {!isSVG ? (
+    <picture class="progressive-image__picture">
+      {/* WebP source for modern browsers */}
+      {webPSource && (
+        <source
+          type="image/webp"
+          data-srcset={useIntersectionObserver ? (computedSrcSet ? computedSrcSet.replace(/\.(jpg|jpeg|png|gif)/gi, '.webp') : webPSource) : undefined}
+          srcset={!useIntersectionObserver ? (computedSrcSet ? computedSrcSet.replace(/\.(jpg|jpeg|png|gif)/gi, '.webp') : webPSource) : undefined}
+          sizes={computedSizes}
+        />
+      )}
+      {/* Fallback source */}
+      <source
+        type={src.endsWith('.png') ? 'image/png' : 'image/jpeg'}
+        data-srcset={useIntersectionObserver ? (computedSrcSet || src) : undefined}
+        srcset={!useIntersectionObserver ? (computedSrcSet || src) : undefined}
+        sizes={computedSizes}
+      />
+      {/* Image element */}
+      <img
+        data-src={useIntersectionObserver ? src : undefined}
+        src={useIntersectionObserver ? placeholder || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' : src}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        decoding={decoding}
+        fetchpriority={fetchPriority}
+        class:list={['progressive-image__img', imageClass]}
+        style={`object-fit: ${objectFit}; object-position: ${objectPosition};`}
+      />
+    </picture>
+  ) : (
+    <img
+      data-src={useIntersectionObserver ? src : undefined}
+      src={useIntersectionObserver ? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' : src}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={loading}
+      decoding={decoding}
+      fetchpriority={fetchPriority}
+      class:list={['progressive-image__img', imageClass]}
+      style={`object-fit: ${objectFit}; object-position: ${objectPosition};`}
+    />
+  )}
+</div>
+
+<style>
+  .progressive-image {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--placeholder-bg);
+    aspect-ratio: var(--aspect-ratio, 1);
+    width: 100%;
+  }
+
+  /* Shimmer placeholder animation (used when no LQIP) */
+  .progressive-image__shimmer {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      var(--color-background-muted, #f3f4f6) 0%,
+      var(--color-background-subtle, #e5e7eb) 50%,
+      var(--color-background-muted, #f3f4f6) 100%
+    );
+    background-size: 200% 100%;
+    animation: progressive-shimmer 1.5s ease-in-out infinite;
+    z-index: 1;
+    transition: opacity var(--duration-500, 500ms) var(--ease-out, ease-out);
+  }
+
+  /* Hide shimmer when image loads */
+  .progressive-image--loaded .progressive-image__shimmer {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @keyframes progressive-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* LQIP Blur Placeholder */
+  .progressive-image__placeholder {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transform: scale(1.1); /* Prevent edge artifacts during blur */
+    transition: opacity var(--duration-500, 500ms) var(--ease-out, ease-out);
+  }
+
+  /* Blur overlay for LQIP */
+  .progressive-image__placeholder-blur {
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Hide placeholder when image loads */
+  .progressive-image--loaded .progressive-image__placeholder {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Picture element */
+  .progressive-image__picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Main image */
+  .progressive-image__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity var(--duration-500, 500ms) var(--ease-out, ease-out);
+    z-index: 2;
+    position: relative;
+  }
+
+  /* Show image when loaded */
+  .progressive-image--loaded .progressive-image__img {
+    opacity: 1;
+  }
+
+  /* Priority images should be visible immediately */
+  .progressive-image:not([data-lazy]) .progressive-image__img {
+    opacity: 1;
+  }
+
+  /* Blur-up animation for smoother transition */
+  @keyframes blur-up {
+    from {
+      filter: blur(10px);
+      transform: scale(1.05);
+    }
+    to {
+      filter: blur(0);
+      transform: scale(1);
+    }
+  }
+
+  .progressive-image--has-placeholder.progressive-image--loaded .progressive-image__img {
+    animation: blur-up var(--duration-500, 500ms) var(--ease-out, ease-out) forwards;
+  }
+
+  /* Reduced motion: instant transitions */
+  @media (prefers-reduced-motion: reduce) {
+    .progressive-image__shimmer {
+      animation: none;
+    }
+
+    .progressive-image__placeholder,
+    .progressive-image__img {
+      transition: none;
+    }
+
+    .progressive-image--has-placeholder.progressive-image--loaded .progressive-image__img {
+      animation: none;
+    }
+  }
+
+  /* Dark mode adjustments */
+  :global(html[data-theme="dark"]) .progressive-image {
+    background-color: var(--color-background-muted, #374151);
+  }
+
+  :global(html[data-theme="dark"]) .progressive-image__shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--color-background-muted, #374151) 0%,
+      var(--color-background-subtle, #4b5563) 50%,
+      var(--color-background-muted, #374151) 100%
+    );
+  }
+
+  :global(html[data-theme="dark"]) .progressive-image__placeholder-blur {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+</style>
+
+<script>
+  /**
+   * Progressive Image Loader
+   *
+   * Uses Intersection Observer API for efficient lazy loading with:
+   * - Configurable root margin and threshold
+   * - WebP with automatic fallback
+   * - Blur-up animation on load
+   * - Connection-aware loading (saves data on slow connections)
+   */
+
+  interface ProgressiveImageElement extends HTMLElement {
+    dataset: {
+      progressiveImage: string;
+      imageId: string;
+      rootMargin: string;
+      threshold: string;
+    };
+  }
+
+  class ProgressiveImageLoader {
+    private observer: IntersectionObserver | null = null;
+    private loadedImages: Set<string> = new Set();
+
+    constructor() {
+      this.init();
+    }
+
+    private init(): void {
+      // Check for IntersectionObserver support
+      if (!('IntersectionObserver' in window)) {
+        // Fallback: load all images immediately
+        this.loadAllImages();
+        return;
+      }
+
+      this.setupObserver();
+      this.observeImages();
+    }
+
+    private setupObserver(): void {
+      const defaultOptions: IntersectionObserverInit = {
+        rootMargin: '50px 0px',
+        threshold: 0.01,
+      };
+
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const container = entry.target as ProgressiveImageElement;
+            this.loadImage(container);
+            this.observer?.unobserve(container);
+          }
+        });
+      }, defaultOptions);
+    }
+
+    private observeImages(): void {
+      const containers = document.querySelectorAll<ProgressiveImageElement>(
+        '[data-progressive-image]:not(.progressive-image--loaded):not(.progressive-image--loading)'
+      );
+
+      containers.forEach((container) => {
+        const imageId = container.dataset.imageId;
+
+        // Skip already loaded images
+        if (this.loadedImages.has(imageId)) {
+          return;
+        }
+
+        // Check if image should use lazy loading
+        const img = container.querySelector('img[data-src]');
+        if (img) {
+          container.setAttribute('data-lazy', '');
+          this.observer?.observe(container);
+        } else {
+          // Image doesn't need lazy loading (priority or already has src)
+          this.handleImageLoad(container);
+        }
+      });
+    }
+
+    private loadImage(container: ProgressiveImageElement): void {
+      const imageId = container.dataset.imageId;
+
+      // Prevent double loading
+      if (this.loadedImages.has(imageId) || container.classList.contains('progressive-image--loading')) {
+        return;
+      }
+
+      container.classList.add('progressive-image--loading');
+
+      const img = container.querySelector('img[data-src]') as HTMLImageElement | null;
+      const sources = container.querySelectorAll('source[data-srcset]');
+
+      if (!img) {
+        return;
+      }
+
+      // Check for save-data mode
+      const connection = (navigator as any).connection;
+      const saveData = connection?.saveData || connection?.effectiveType === 'slow-2g';
+
+      // Update source elements first
+      sources.forEach((source) => {
+        const srcset = source.getAttribute('data-srcset');
+        if (srcset) {
+          // Skip WebP on save-data mode for smaller file sizes
+          if (saveData && source.getAttribute('type') === 'image/webp') {
+            return;
+          }
+          source.setAttribute('srcset', srcset);
+          source.removeAttribute('data-srcset');
+        }
+      });
+
+      // Load the main image
+      const fullSrc = img.dataset.src;
+
+      if (fullSrc) {
+        // Create a new image to preload
+        const preloadImg = new Image();
+
+        preloadImg.onload = () => {
+          img.src = fullSrc;
+          img.removeAttribute('data-src');
+          this.handleImageLoad(container);
+          this.loadedImages.add(imageId);
+        };
+
+        preloadImg.onerror = () => {
+          // Still show the image even on error
+          img.src = fullSrc;
+          img.removeAttribute('data-src');
+          this.handleImageLoad(container);
+          container.classList.add('progressive-image--error');
+        };
+
+        // Start loading
+        preloadImg.src = fullSrc;
+      }
+    }
+
+    private handleImageLoad(container: Element): void {
+      // Add loaded class to trigger CSS transitions
+      container.classList.remove('progressive-image--loading');
+      container.classList.add('progressive-image--loaded');
+    }
+
+    private loadAllImages(): void {
+      const containers = document.querySelectorAll<ProgressiveImageElement>(
+        '[data-progressive-image]:not(.progressive-image--loaded)'
+      );
+
+      containers.forEach((container) => {
+        this.loadImage(container);
+      });
+    }
+
+    // Public method to manually trigger observation of new images
+    public refresh(): void {
+      this.observeImages();
+    }
+
+    // Clean up observer
+    public destroy(): void {
+      this.observer?.disconnect();
+      this.observer = null;
+    }
+  }
+
+  // Initialize the loader
+  let progressiveImageLoader: ProgressiveImageLoader | null = null;
+
+  function initProgressiveImages(): void {
+    // Clean up previous instance if exists
+    progressiveImageLoader?.destroy();
+    progressiveImageLoader = new ProgressiveImageLoader();
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProgressiveImages);
+  } else {
+    initProgressiveImages();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initProgressiveImages);
+
+  // Handle images that load without Intersection Observer
+  document.addEventListener('DOMContentLoaded', () => {
+    // For priority images that don't use lazy loading
+    const priorityContainers = document.querySelectorAll(
+      '[data-progressive-image]:not([data-lazy])'
+    );
+
+    priorityContainers.forEach((container) => {
+      const img = container.querySelector('img') as HTMLImageElement | null;
+
+      if (img) {
+        if (img.complete && img.naturalHeight !== 0) {
+          container.classList.add('progressive-image--loaded');
+        } else {
+          img.addEventListener('load', () => {
+            container.classList.add('progressive-image--loaded');
+          });
+          img.addEventListener('error', () => {
+            container.classList.add('progressive-image--loaded');
+            container.classList.add('progressive-image--error');
+          });
+        }
+      }
+    });
+  });
+
+  // Expose for external use
+  (window as any).ProgressiveImageLoader = {
+    refresh: () => progressiveImageLoader?.refresh(),
+  };
+</script>

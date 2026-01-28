@@ -1,0 +1,28 @@
+{
+  "category": "Uncategorized",
+  "description": "change the default dev port to 3003",
+  "title": "Update default development port to 3003",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "main",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "backlog",
+  "id": "feature-1769572727839-c1pb9a2ul",
+  "descriptionHistory": [
+    {
+      "description": "change the default dev port to 3003",
+      "timestamp": "2026-01-28T03:58:47.852Z",
+      "source": "initial"
+    }
+  ]
+}

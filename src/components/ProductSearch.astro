@@ -1,0 +1,1075 @@
+---
+/**
+ * ProductSearch Component
+ * An accessible search component with autocomplete, fuzzy matching,
+ * and full keyboard navigation support.
+ *
+ * Features:
+ * - Fuzzy search powered by Fuse.js
+ * - Real-time autocomplete suggestions
+ * - Full keyboard navigation (arrow keys, enter, escape)
+ * - Search by name, description, and category
+ * - Accessible with ARIA labels and live regions
+ * - Responsive design
+ * - Dark mode support
+ *
+ * @example
+ * ```astro
+ * <ProductSearch
+ *   products={allProducts}
+ *   placeholder="Search products..."
+ * />
+ * ```
+ */
+
+import type { ProductEntry } from '../utils/products';
+import { toProductCardProps } from '../utils/products';
+
+interface Props {
+  /** Array of product entries to search */
+  products: ProductEntry[];
+  /** Placeholder text for the search input */
+  placeholder?: string;
+  /** Maximum number of autocomplete suggestions */
+  maxSuggestions?: number;
+  /** Show category badges in results */
+  showCategories?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+  /** ID for the search component */
+  id?: string;
+}
+
+const {
+  products,
+  placeholder = 'Search products...',
+  maxSuggestions = 6,
+  showCategories = true,
+  class: className = '',
+  id = 'product-search',
+} = Astro.props;
+
+// Transform products for client-side search
+const searchableProducts = products.map((product) => ({
+  id: product.slug,
+  name: product.data.name,
+  description: product.data.description || '',
+  editorialDescription: product.data.editorialDescription || '',
+  category: product.data.category || '',
+  tagline: product.data.tagline || '',
+  image: product.data.image,
+  price: product.data.price,
+  shopUrl: product.data.shopUrl,
+  isNew: product.data.isNew,
+  onSale: product.data.onSale,
+  soldOut: product.data.soldOut,
+}));
+---
+
+<div
+  class:list={['product-search', className]}
+  id={id}
+  data-products={JSON.stringify(searchableProducts)}
+  data-max-suggestions={maxSuggestions}
+  data-show-categories={showCategories}
+>
+  <!-- Search Input Container -->
+  <div class="product-search__input-wrapper">
+    <label for={`${id}-input`} class="product-search__label sr-only">
+      Search products
+    </label>
+
+    <!-- Search Icon -->
+    <svg
+      class="product-search__icon product-search__icon--search"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="11" cy="11" r="8"></circle>
+      <path d="m21 21-4.35-4.35"></path>
+    </svg>
+
+    <!-- Search Input -->
+    <input
+      type="search"
+      id={`${id}-input`}
+      class="product-search__input"
+      placeholder={placeholder}
+      autocomplete="off"
+      autocapitalize="off"
+      autocorrect="off"
+      spellcheck="false"
+      role="combobox"
+      aria-expanded="false"
+      aria-controls={`${id}-results`}
+      aria-autocomplete="list"
+      aria-describedby={`${id}-instructions`}
+    />
+
+    <!-- Clear Button -->
+    <button
+      type="button"
+      class="product-search__clear"
+      aria-label="Clear search"
+      hidden
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M18 6 6 18"></path>
+        <path d="m6 6 12 12"></path>
+      </svg>
+    </button>
+
+    <!-- Loading Spinner -->
+    <div class="product-search__loader" aria-hidden="true" hidden>
+      <span class="product-search__spinner"></span>
+    </div>
+  </div>
+
+  <!-- Screen Reader Instructions -->
+  <div id={`${id}-instructions`} class="sr-only">
+    Type to search products. Use arrow keys to navigate suggestions. Press Enter to select. Press Escape to close.
+  </div>
+
+  <!-- Autocomplete Results Dropdown -->
+  <div
+    id={`${id}-results`}
+    class="product-search__results"
+    role="listbox"
+    aria-label="Search suggestions"
+    hidden
+  >
+    <!-- Results will be populated by JavaScript -->
+  </div>
+
+  <!-- Live Region for Screen Reader Announcements -->
+  <div
+    id={`${id}-status`}
+    class="sr-only"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+  ></div>
+</div>
+
+<style>
+  /* =================================================================
+   * PRODUCT SEARCH COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .product-search {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  /* =================================================================
+   * INPUT WRAPPER
+   * ================================================================= */
+  .product-search__input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  /* =================================================================
+   * SEARCH INPUT
+   * ================================================================= */
+  .product-search__input {
+    width: 100%;
+    height: 44px;
+    padding: var(--spacing-2) var(--spacing-10) var(--spacing-2) var(--spacing-10);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    outline: none;
+    transition:
+      border-color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .product-search__input::placeholder {
+    color: var(--color-text-placeholder);
+  }
+
+  .product-search__input:hover {
+    border-color: var(--color-primary-light);
+  }
+
+  .product-search__input:focus {
+    border-color: var(--color-primary);
+    box-shadow: var(--focus-ring);
+  }
+
+  /* Hide default search cancel button */
+  .product-search__input::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  /* =================================================================
+   * ICONS
+   * ================================================================= */
+  .product-search__icon {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    color: var(--color-text-tertiary);
+    pointer-events: none;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .product-search__icon--search {
+    left: var(--spacing-3);
+  }
+
+  .product-search__input:focus ~ .product-search__icon--search,
+  .product-search__input:not(:placeholder-shown) ~ .product-search__icon--search {
+    color: var(--color-primary);
+  }
+
+  /* =================================================================
+   * CLEAR BUTTON
+   * ================================================================= */
+  .product-search__clear {
+    position: absolute;
+    right: var(--spacing-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    color: var(--color-text-tertiary);
+    background-color: transparent;
+    border: none;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition:
+      color var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .product-search__clear:hover {
+    color: var(--color-text-primary);
+    background-color: var(--color-background-muted);
+  }
+
+  .product-search__clear:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .product-search__clear svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .product-search__clear[hidden] {
+    display: none;
+  }
+
+  /* =================================================================
+   * LOADING SPINNER
+   * ================================================================= */
+  .product-search__loader {
+    position: absolute;
+    right: var(--spacing-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-search__loader[hidden] {
+    display: none;
+  }
+
+  .product-search__spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: var(--radius-full);
+    animation: spinner-rotate 0.8s linear infinite;
+  }
+
+  @keyframes spinner-rotate {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* =================================================================
+   * RESULTS DROPDOWN
+   * ================================================================= */
+  .product-search__results {
+    position: absolute;
+    top: calc(100% + var(--spacing-2));
+    left: 0;
+    right: 0;
+    z-index: var(--z-dropdown);
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+
+  .product-search__results[hidden] {
+    display: none;
+  }
+
+  .product-search__results::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .product-search__results::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .product-search__results::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+    border-radius: var(--radius-full);
+  }
+
+  /* =================================================================
+   * RESULT ITEM
+   * ================================================================= */
+  .product-search__result {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
+    text-decoration: none;
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border-light);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .product-search__result:last-child {
+    border-bottom: none;
+  }
+
+  .product-search__result:hover,
+  .product-search__result[data-selected="true"] {
+    background-color: var(--color-primary-50);
+  }
+
+  .product-search__result:focus {
+    outline: none;
+    background-color: var(--color-primary-50);
+  }
+
+  .product-search__result[data-selected="true"] {
+    /* Visual indicator for keyboard selection */
+    box-shadow: inset 3px 0 0 var(--color-primary);
+  }
+
+  /* Result Image */
+  .product-search__result-image {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    background-color: var(--color-background-muted);
+  }
+
+  /* Result Content */
+  .product-search__result-content {
+    flex: 1;
+    min-width: 0; /* Allow text truncation */
+  }
+
+  .product-search__result-name {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-snug);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .product-search__result-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-1);
+  }
+
+  .product-search__result-category {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .product-search__result-price {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+  }
+
+  .product-search__result-price--sale {
+    color: var(--color-error);
+  }
+
+  /* Result Badges */
+  .product-search__result-badge {
+    display: inline-flex;
+    padding: var(--spacing-0-5) var(--spacing-1-5);
+    font-size: 10px;
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    border-radius: var(--radius-sm);
+  }
+
+  .product-search__result-badge--new {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .product-search__result-badge--sale {
+    background-color: var(--color-error);
+    color: var(--color-text-inverse);
+  }
+
+  .product-search__result-badge--sold-out {
+    background-color: var(--color-text-tertiary);
+    color: var(--color-text-inverse);
+  }
+
+  /* Highlight matches */
+  :global(.search-highlight) {
+    background-color: var(--color-warning-light);
+    color: var(--color-warning-text);
+    padding: 0 1px;
+    border-radius: 2px;
+  }
+
+  /* =================================================================
+   * NO RESULTS MESSAGE
+   * ================================================================= */
+  .product-search__no-results {
+    padding: var(--spacing-6);
+    text-align: center;
+  }
+
+  .product-search__no-results-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto var(--spacing-3);
+    color: var(--color-text-tertiary);
+    opacity: 0.5;
+  }
+
+  .product-search__no-results-text {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .product-search__no-results-hint {
+    margin: var(--spacing-2) 0 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-disabled);
+  }
+
+  /* =================================================================
+   * VIEW ALL LINK
+   * ================================================================= */
+  .product-search__view-all {
+    display: block;
+    padding: var(--spacing-3);
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    text-decoration: none;
+    background-color: var(--color-background-subtle);
+    border-top: 1px solid var(--color-border-light);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out);
+  }
+
+  .product-search__view-all:hover,
+  .product-search__view-all[data-selected="true"] {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-hover);
+  }
+
+  .product-search__view-all:focus {
+    outline: none;
+    background-color: var(--color-primary-50);
+  }
+
+  /* =================================================================
+   * SCREEN READER ONLY
+   * ================================================================= */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .product-search {
+      max-width: 100%;
+    }
+
+    .product-search__results {
+      max-height: 300px;
+    }
+
+    .product-search__result {
+      padding: var(--spacing-2-5);
+    }
+
+    .product-search__result-image {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .product-search__input,
+    .product-search__clear,
+    .product-search__result,
+    .product-search__view-all {
+      transition: none;
+    }
+
+    .product-search__spinner {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .product-search__input {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .product-search__results {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .product-search__result:hover,
+  :global(html[data-theme="dark"]) .product-search__result[data-selected="true"] {
+    background-color: var(--color-background-muted);
+  }
+
+  :global(html[data-theme="dark"]) .product-search__view-all {
+    background-color: var(--color-background-muted);
+  }
+
+  :global(html[data-theme="dark"]) .product-search__view-all:hover {
+    background-color: var(--color-background);
+  }
+
+  :global(html[data-theme="dark"]) :global(.search-highlight) {
+    background-color: var(--color-warning-dark);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .product-search__input {
+      border: 2px solid currentColor;
+    }
+
+    .product-search__results {
+      border: 2px solid currentColor;
+    }
+
+    .product-search__result[data-selected="true"] {
+      outline: 2px solid currentColor;
+    }
+  }
+</style>
+
+<script>
+  import Fuse from 'fuse.js';
+
+  interface SearchableProduct {
+    id: string;
+    name: string;
+    description: string;
+    editorialDescription: string;
+    category: string;
+    tagline: string;
+    image: { src: string; alt: string };
+    price: { amount: number; originalAmount?: number; currency?: string };
+    shopUrl: string;
+    isNew?: boolean;
+    onSale?: boolean;
+    soldOut?: boolean;
+  }
+
+  interface SearchState {
+    query: string;
+    results: Fuse.FuseResult<SearchableProduct>[];
+    selectedIndex: number;
+    isOpen: boolean;
+  }
+
+  /**
+   * Initialize product search functionality
+   */
+  function initProductSearch() {
+    const searchContainers = document.querySelectorAll<HTMLElement>('.product-search');
+
+    searchContainers.forEach((container) => {
+      // Get configuration from data attributes
+      const productsData = container.dataset.products;
+      const maxSuggestions = parseInt(container.dataset.maxSuggestions || '6', 10);
+      const showCategories = container.dataset.showCategories === 'true';
+
+      if (!productsData) return;
+
+      const products: SearchableProduct[] = JSON.parse(productsData);
+      const containerId = container.id;
+
+      // Get DOM elements
+      const input = container.querySelector<HTMLInputElement>(`#${containerId}-input`);
+      const resultsContainer = container.querySelector<HTMLElement>(`#${containerId}-results`);
+      const statusElement = container.querySelector<HTMLElement>(`#${containerId}-status`);
+      const clearButton = container.querySelector<HTMLButtonElement>('.product-search__clear');
+      const loader = container.querySelector<HTMLElement>('.product-search__loader');
+
+      if (!input || !resultsContainer || !statusElement) return;
+
+      // Initialize Fuse.js
+      const fuse = new Fuse(products, {
+        keys: [
+          { name: 'name', weight: 0.4 },
+          { name: 'category', weight: 0.25 },
+          { name: 'description', weight: 0.2 },
+          { name: 'tagline', weight: 0.1 },
+          { name: 'editorialDescription', weight: 0.05 },
+        ],
+        includeScore: true,
+        includeMatches: true,
+        threshold: 0.4,
+        ignoreLocation: true,
+        minMatchCharLength: 2,
+      });
+
+      // State management
+      const state: SearchState = {
+        query: '',
+        results: [],
+        selectedIndex: -1,
+        isOpen: false,
+      };
+
+      // Debounce helper
+      function debounce<T extends (...args: unknown[]) => void>(
+        fn: T,
+        delay: number
+      ): (...args: Parameters<T>) => void {
+        let timeoutId: ReturnType<typeof setTimeout> | null = null;
+        return (...args: Parameters<T>) => {
+          if (timeoutId) clearTimeout(timeoutId);
+          timeoutId = setTimeout(() => fn(...args), delay);
+        };
+      }
+
+      // Format price
+      function formatPrice(price: SearchableProduct['price']): string {
+        const amount = price.amount;
+        const currency = price.currency || 'USD';
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency,
+        }).format(amount);
+      }
+
+      // Escape HTML
+      function escapeHtml(text: string): string {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Highlight matches
+      function highlightMatches(
+        text: string,
+        indices: readonly [number, number][] | undefined
+      ): string {
+        if (!indices || indices.length === 0) {
+          return escapeHtml(text);
+        }
+
+        const sortedIndices = [...indices].sort((a, b) => a[0] - b[0]);
+        let result = '';
+        let lastIndex = 0;
+
+        for (const [start, end] of sortedIndices) {
+          result += escapeHtml(text.slice(lastIndex, start));
+          result += `<mark class="search-highlight">${escapeHtml(text.slice(start, end + 1))}</mark>`;
+          lastIndex = end + 1;
+        }
+
+        result += escapeHtml(text.slice(lastIndex));
+        return result;
+      }
+
+      // Render results
+      function renderResults() {
+        if (!state.isOpen || state.results.length === 0) {
+          if (state.query.length >= 2 && state.results.length === 0) {
+            // Show no results message
+            resultsContainer.innerHTML = `
+              <div class="product-search__no-results">
+                <svg class="product-search__no-results-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <p class="product-search__no-results-text">No products found for "${escapeHtml(state.query)}"</p>
+                <p class="product-search__no-results-hint">Try a different search term</p>
+              </div>
+            `;
+            resultsContainer.hidden = false;
+            statusElement.textContent = 'No results found';
+          } else {
+            resultsContainer.hidden = true;
+          }
+          return;
+        }
+
+        const resultsHtml = state.results.map((result, index) => {
+          const product = result.item;
+          const isSelected = index === state.selectedIndex;
+
+          // Get name match indices
+          const nameMatch = result.matches?.find((m) => m.key === 'name');
+          const highlightedName = highlightMatches(
+            product.name,
+            nameMatch?.indices as [number, number][] | undefined
+          );
+
+          // Build badges
+          let badgesHtml = '';
+          if (product.soldOut) {
+            badgesHtml += '<span class="product-search__result-badge product-search__result-badge--sold-out">Sold Out</span>';
+          } else {
+            if (product.isNew) {
+              badgesHtml += '<span class="product-search__result-badge product-search__result-badge--new">New</span>';
+            }
+            if (product.onSale) {
+              badgesHtml += '<span class="product-search__result-badge product-search__result-badge--sale">Sale</span>';
+            }
+          }
+
+          // Format price
+          const priceHtml = product.soldOut
+            ? '<span class="product-search__result-price">Sold Out</span>'
+            : `<span class="product-search__result-price ${product.onSale ? 'product-search__result-price--sale' : ''}">${formatPrice(product.price)}</span>`;
+
+          return `
+            <a
+              href="${product.shopUrl}"
+              class="product-search__result"
+              role="option"
+              id="${containerId}-result-${index}"
+              data-index="${index}"
+              data-selected="${isSelected}"
+              aria-selected="${isSelected}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="${product.image.src}"
+                alt="${escapeHtml(product.image.alt)}"
+                class="product-search__result-image"
+                loading="lazy"
+                width="48"
+                height="48"
+              />
+              <div class="product-search__result-content">
+                <h4 class="product-search__result-name">${highlightedName}</h4>
+                <div class="product-search__result-meta">
+                  ${showCategories && product.category ? `<span class="product-search__result-category">${escapeHtml(product.category)}</span>` : ''}
+                  ${priceHtml}
+                  ${badgesHtml}
+                </div>
+              </div>
+            </a>
+          `;
+        }).join('');
+
+        // Add "View all results" link if there might be more
+        const viewAllHtml = state.results.length >= maxSuggestions
+          ? `<a href="/products?search=${encodeURIComponent(state.query)}" class="product-search__view-all" data-view-all="true">View all results for "${escapeHtml(state.query)}"</a>`
+          : '';
+
+        resultsContainer.innerHTML = resultsHtml + viewAllHtml;
+        resultsContainer.hidden = false;
+
+        // Announce to screen readers
+        const count = state.results.length;
+        statusElement.textContent = `${count} ${count === 1 ? 'result' : 'results'} found. Use arrow keys to navigate.`;
+      }
+
+      // Perform search
+      const performSearch = debounce(() => {
+        const query = input.value.trim();
+        state.query = query;
+
+        if (query.length < 2) {
+          state.results = [];
+          state.selectedIndex = -1;
+          renderResults();
+          return;
+        }
+
+        // Show loader briefly
+        if (loader) loader.hidden = false;
+
+        // Perform search
+        state.results = fuse.search(query, { limit: maxSuggestions });
+        state.selectedIndex = -1;
+        state.isOpen = true;
+
+        // Hide loader
+        if (loader) loader.hidden = true;
+
+        renderResults();
+      }, 150);
+
+      // Update selected item
+      function updateSelection(newIndex: number) {
+        const items = resultsContainer.querySelectorAll<HTMLElement>('.product-search__result, .product-search__view-all');
+        const maxIndex = items.length - 1;
+
+        // Wrap around
+        if (newIndex < -1) newIndex = maxIndex;
+        if (newIndex > maxIndex) newIndex = -1;
+
+        state.selectedIndex = newIndex;
+
+        // Update DOM
+        items.forEach((item, i) => {
+          const isSelected = i === state.selectedIndex;
+          item.dataset.selected = String(isSelected);
+          item.setAttribute('aria-selected', String(isSelected));
+        });
+
+        // Update input's active descendant
+        if (state.selectedIndex >= 0) {
+          const selectedItem = items[state.selectedIndex];
+          if (selectedItem.id) {
+            input.setAttribute('aria-activedescendant', selectedItem.id);
+          }
+          // Scroll into view
+          selectedItem.scrollIntoView({ block: 'nearest' });
+        } else {
+          input.removeAttribute('aria-activedescendant');
+        }
+      }
+
+      // Handle keyboard navigation
+      function handleKeydown(event: KeyboardEvent) {
+        if (!state.isOpen && event.key !== 'ArrowDown') return;
+
+        switch (event.key) {
+          case 'ArrowDown':
+            event.preventDefault();
+            if (!state.isOpen && state.query.length >= 2) {
+              state.isOpen = true;
+              performSearch();
+            } else {
+              updateSelection(state.selectedIndex + 1);
+            }
+            break;
+
+          case 'ArrowUp':
+            event.preventDefault();
+            updateSelection(state.selectedIndex - 1);
+            break;
+
+          case 'Enter':
+            event.preventDefault();
+            if (state.selectedIndex >= 0) {
+              const items = resultsContainer.querySelectorAll<HTMLAnchorElement>('.product-search__result, .product-search__view-all');
+              const selectedItem = items[state.selectedIndex];
+              if (selectedItem) {
+                selectedItem.click();
+              }
+            } else if (state.query.length >= 2) {
+              // Navigate to search results page
+              window.location.href = `/products?search=${encodeURIComponent(state.query)}`;
+            }
+            break;
+
+          case 'Escape':
+            event.preventDefault();
+            closeResults();
+            input.blur();
+            break;
+
+          case 'Tab':
+            closeResults();
+            break;
+        }
+      }
+
+      // Close results dropdown
+      function closeResults() {
+        state.isOpen = false;
+        state.selectedIndex = -1;
+        resultsContainer.hidden = true;
+        input.setAttribute('aria-expanded', 'false');
+      }
+
+      // Open results dropdown
+      function openResults() {
+        if (state.query.length >= 2) {
+          state.isOpen = true;
+          input.setAttribute('aria-expanded', 'true');
+          performSearch();
+        }
+      }
+
+      // Handle input changes
+      input.addEventListener('input', () => {
+        const hasValue = input.value.length > 0;
+        if (clearButton) clearButton.hidden = !hasValue;
+        performSearch();
+      });
+
+      // Handle focus
+      input.addEventListener('focus', () => {
+        openResults();
+      });
+
+      // Handle blur - delay to allow click on results
+      input.addEventListener('blur', (event) => {
+        // Check if blur was caused by clicking inside the results
+        setTimeout(() => {
+          if (!container.contains(document.activeElement)) {
+            closeResults();
+          }
+        }, 150);
+      });
+
+      // Handle keyboard navigation
+      input.addEventListener('keydown', handleKeydown);
+
+      // Handle clear button
+      if (clearButton) {
+        clearButton.addEventListener('click', () => {
+          input.value = '';
+          state.query = '';
+          state.results = [];
+          clearButton.hidden = true;
+          closeResults();
+          input.focus();
+
+          // Dispatch custom event for filtering
+          container.dispatchEvent(new CustomEvent('search-clear'));
+        });
+      }
+
+      // Handle clicks outside to close
+      document.addEventListener('click', (event) => {
+        if (!container.contains(event.target as Node)) {
+          closeResults();
+        }
+      });
+
+      // Handle result clicks (for filtering instead of navigation)
+      resultsContainer.addEventListener('click', (event) => {
+        const target = event.target as HTMLElement;
+        const resultItem = target.closest('.product-search__result');
+
+        if (resultItem) {
+          // Dispatch custom event with selected product
+          const index = parseInt(resultItem.getAttribute('data-index') || '0', 10);
+          const selectedProduct = state.results[index]?.item;
+
+          if (selectedProduct) {
+            container.dispatchEvent(new CustomEvent('search-select', {
+              detail: {
+                product: selectedProduct,
+                query: state.query,
+              },
+            }));
+          }
+        }
+      });
+
+      // Dispatch search event for external filtering
+      container.addEventListener('search-input', () => {
+        container.dispatchEvent(new CustomEvent('search-change', {
+          detail: {
+            query: state.query,
+            results: state.results.map((r) => r.item),
+          },
+        }));
+      });
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProductSearch);
+  } else {
+    initProductSearch();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initProductSearch);
+</script>

@@ -1,0 +1,601 @@
+---
+/**
+ * SocialProofBadge Component
+ * A trust badge component for displaying social proof indicators such as
+ * payment security, social media followers, press mentions, or certifications.
+ *
+ * Features:
+ * - Multiple badge types with semantic styling (security, followers, press, certification)
+ * - Optional metric display for quantifiable social proof
+ * - Configurable icons with accessibility support
+ * - Optional link wrapper for clickable badges
+ * - Hover animations for enhanced interactivity
+ * - Dark mode support
+ * - Accessible with proper ARIA labels
+ *
+ * @example Basic usage
+ * ```astro
+ * <SocialProofBadge
+ *   id="secure-checkout"
+ *   type="payment-security"
+ *   title="Secure Checkout"
+ *   description="256-bit SSL encryption"
+ * />
+ * ```
+ *
+ * @example With metric
+ * ```astro
+ * <SocialProofBadge
+ *   id="instagram-followers"
+ *   type="followers"
+ *   title="Instagram"
+ *   description="Join our community"
+ *   metric="50K+"
+ *   metricLabel="Followers"
+ * />
+ * ```
+ *
+ * @example With icon and link
+ * ```astro
+ * <SocialProofBadge
+ *   id="forbes-featured"
+ *   type="press"
+ *   title="Forbes"
+ *   description="Featured in Forbes 2024"
+ *   icon="<svg>...</svg>"
+ *   link={{ href: '/press', ariaLabel: 'Read our Forbes feature' }}
+ * />
+ * ```
+ */
+
+import type { SocialProofBadgeProps } from '../types/social-proof-badge';
+
+interface Props extends SocialProofBadgeProps {}
+
+const {
+  id,
+  type,
+  title,
+  description,
+  icon,
+  iconAriaLabel,
+  metric,
+  metricLabel,
+  link,
+  size = 'medium',
+  showMetric = true,
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const badgeClasses = [
+  'social-proof-badge',
+  `social-proof-badge--${type}`,
+  `social-proof-badge--${size}`,
+  className,
+].filter(Boolean).join(' ');
+
+// Determine the wrapper element
+const WrapperTag = link ? 'a' : 'article';
+const wrapperProps = link ? {
+  href: link.href,
+  'aria-label': link.ariaLabel || `${title}: ${description}`,
+  target: link.openInNewTab ? '_blank' : undefined,
+  rel: link.openInNewTab ? 'noopener noreferrer' : undefined,
+} : {};
+
+// Default icons for each badge type
+const defaultIcons: Record<string, string> = {
+  'payment-security': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+  'followers': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  'press': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>`,
+  'certification': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>`,
+  'guarantee': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>`,
+  'award': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>`,
+};
+
+// Get the icon to display (custom or default)
+const displayIcon = icon || defaultIcons[type] || defaultIcons['certification'];
+---
+
+{link ? (
+  <a
+    class={badgeClasses}
+    id={`social-proof-${id}`}
+    href={link.href}
+    aria-label={link.ariaLabel || `${title}: ${description}`}
+    target={link.openInNewTab ? '_blank' : undefined}
+    rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+  >
+    <div class="social-proof-badge__icon" aria-hidden="true">
+      <Fragment set:html={displayIcon} />
+    </div>
+
+    <div class="social-proof-badge__content">
+      {showMetric && metric && (
+        <div class="social-proof-badge__metric">
+          <span class="social-proof-badge__metric-value">{metric}</span>
+          {metricLabel && (
+            <span class="social-proof-badge__metric-label">{metricLabel}</span>
+          )}
+        </div>
+      )}
+
+      <h3 class="social-proof-badge__title">{title}</h3>
+      <p class="social-proof-badge__description">{description}</p>
+    </div>
+  </a>
+) : (
+  <article class={badgeClasses} id={`social-proof-${id}`}>
+    <div class="social-proof-badge__icon" aria-hidden="true">
+      <Fragment set:html={displayIcon} />
+    </div>
+
+    <div class="social-proof-badge__content">
+      {showMetric && metric && (
+        <div class="social-proof-badge__metric">
+          <span class="social-proof-badge__metric-value">{metric}</span>
+          {metricLabel && (
+            <span class="social-proof-badge__metric-label">{metricLabel}</span>
+          )}
+        </div>
+      )}
+
+      <h3 class="social-proof-badge__title">{title}</h3>
+      <p class="social-proof-badge__description">{description}</p>
+    </div>
+  </article>
+)}
+
+<style>
+  /* =================================================================
+   * SOCIAL PROOF BADGE COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .social-proof-badge {
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-3);
+
+    /* Box model */
+    padding: var(--spacing-6);
+
+    /* Positioning for pseudo-elements */
+    position: relative;
+
+    /* Visual */
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+
+    /* Overflow for effects */
+    overflow: hidden;
+
+    /* Animation */
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out),
+      border-color var(--duration-300) var(--ease-out);
+
+    /* Reset link styles when used as anchor */
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* Hover states */
+  .social-proof-badge:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    border-color: var(--color-primary-300);
+  }
+
+  /* Focus styles for links */
+  a.social-proof-badge:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  a.social-proof-badge:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  a.social-proof-badge:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* =================================================================
+   * SIZE VARIANTS
+   * ================================================================= */
+  .social-proof-badge--small {
+    padding: var(--spacing-4);
+    gap: var(--spacing-2);
+  }
+
+  .social-proof-badge--large {
+    padding: var(--spacing-8);
+    gap: var(--spacing-4);
+  }
+
+  /* =================================================================
+   * ICON STYLES
+   * ================================================================= */
+  .social-proof-badge__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-14);
+    height: var(--spacing-14);
+    border-radius: var(--radius-full);
+    position: relative;
+    z-index: 2;
+    transition:
+      background var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-spring-soft),
+      box-shadow var(--duration-300) var(--ease-out);
+  }
+
+  .social-proof-badge__icon :global(svg) {
+    width: var(--spacing-7);
+    height: var(--spacing-7);
+    transition: transform var(--duration-300) var(--ease-spring-soft);
+  }
+
+  .social-proof-badge:hover .social-proof-badge__icon {
+    transform: scale(1.1);
+  }
+
+  .social-proof-badge:hover .social-proof-badge__icon :global(svg) {
+    transform: scale(1.05);
+  }
+
+  /* Size variants for icons */
+  .social-proof-badge--small .social-proof-badge__icon {
+    width: var(--spacing-10);
+    height: var(--spacing-10);
+  }
+
+  .social-proof-badge--small .social-proof-badge__icon :global(svg) {
+    width: var(--spacing-5);
+    height: var(--spacing-5);
+  }
+
+  .social-proof-badge--large .social-proof-badge__icon {
+    width: var(--spacing-16);
+    height: var(--spacing-16);
+  }
+
+  .social-proof-badge--large .social-proof-badge__icon :global(svg) {
+    width: var(--spacing-8);
+    height: var(--spacing-8);
+  }
+
+  /* =================================================================
+   * TYPE-SPECIFIC ICON STYLES
+   * ================================================================= */
+
+  /* Payment Security - Green/Success */
+  .social-proof-badge--payment-security .social-proof-badge__icon {
+    background: linear-gradient(
+      135deg,
+      var(--color-success-light) 0%,
+      var(--color-success-border) 100%
+    );
+    color: var(--color-success-dark);
+  }
+
+  .social-proof-badge--payment-security:hover .social-proof-badge__icon {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  }
+
+  /* Guarantee - Green/Success (similar to payment security) */
+  .social-proof-badge--guarantee .social-proof-badge__icon {
+    background: linear-gradient(
+      135deg,
+      var(--color-success-light) 0%,
+      var(--color-success-border) 100%
+    );
+    color: var(--color-success-dark);
+  }
+
+  .social-proof-badge--guarantee:hover .social-proof-badge__icon {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  }
+
+  /* Followers - Purple/Accent */
+  .social-proof-badge--followers .social-proof-badge__icon {
+    background: linear-gradient(
+      135deg,
+      var(--color-accent-subtle) 0%,
+      var(--color-accent-light) 100%
+    );
+    color: var(--color-accent-dark);
+  }
+
+  .social-proof-badge--followers:hover .social-proof-badge__icon {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  }
+
+  /* Press - Blue/Info */
+  .social-proof-badge--press .social-proof-badge__icon {
+    background: linear-gradient(
+      135deg,
+      var(--color-info-light) 0%,
+      var(--color-info-border) 100%
+    );
+    color: var(--color-info-dark);
+  }
+
+  .social-proof-badge--press:hover .social-proof-badge__icon {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+
+  /* Certification - Primary/Navy */
+  .social-proof-badge--certification .social-proof-badge__icon {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-50) 0%,
+      var(--color-primary-100) 100%
+    );
+    color: var(--color-primary);
+  }
+
+  .social-proof-badge--certification:hover .social-proof-badge__icon {
+    box-shadow: var(--glow-primary-sm);
+  }
+
+  /* Award - Gold/Warning */
+  .social-proof-badge--award .social-proof-badge__icon {
+    background: linear-gradient(
+      135deg,
+      var(--color-warning-light) 0%,
+      var(--color-warning-border) 100%
+    );
+    color: var(--color-warning-dark);
+  }
+
+  .social-proof-badge--award:hover .social-proof-badge__icon {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+  }
+
+  /* =================================================================
+   * CONTENT AREA
+   * ================================================================= */
+  .social-proof-badge__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    flex: 1;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Metric Display */
+  .social-proof-badge__metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: var(--spacing-1);
+  }
+
+  .social-proof-badge__metric-value {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: 1;
+  }
+
+  .social-proof-badge--small .social-proof-badge__metric-value {
+    font-size: var(--font-size-xl);
+  }
+
+  .social-proof-badge--large .social-proof-badge__metric-value {
+    font-size: var(--font-size-3xl);
+  }
+
+  .social-proof-badge__metric-label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  /* Title */
+  .social-proof-badge__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+    transition: color var(--duration-200) var(--ease-out);
+  }
+
+  .social-proof-badge--small .social-proof-badge__title {
+    font-size: var(--font-size-sm);
+  }
+
+  .social-proof-badge--large .social-proof-badge__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .social-proof-badge:hover .social-proof-badge__title {
+    color: var(--color-primary);
+  }
+
+  /* Description */
+  .social-proof-badge__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+    transition: color var(--duration-200) var(--ease-out);
+  }
+
+  .social-proof-badge--small .social-proof-badge__description {
+    font-size: var(--font-size-xs);
+  }
+
+  .social-proof-badge--large .social-proof-badge__description {
+    font-size: var(--font-size-base);
+  }
+
+  .social-proof-badge:hover .social-proof-badge__description {
+    color: var(--color-text-primary);
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .social-proof-badge {
+    background-color: var(--color-background-elevated);
+    border-color: var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .social-proof-badge:hover {
+    border-color: var(--color-primary-400);
+  }
+
+  /* Dark mode icon styles */
+  :global(html[data-theme="dark"]) .social-proof-badge--payment-security .social-proof-badge__icon,
+  :global(html[data-theme="dark"]) .social-proof-badge--guarantee .social-proof-badge__icon {
+    background: linear-gradient(
+      135deg,
+      rgba(16, 185, 129, 0.2) 0%,
+      rgba(16, 185, 129, 0.3) 100%
+    );
+    color: var(--color-success);
+  }
+
+  :global(html[data-theme="dark"]) .social-proof-badge--followers .social-proof-badge__icon {
+    background: linear-gradient(
+      135deg,
+      rgba(139, 92, 246, 0.2) 0%,
+      rgba(139, 92, 246, 0.3) 100%
+    );
+    color: var(--color-accent);
+  }
+
+  :global(html[data-theme="dark"]) .social-proof-badge--press .social-proof-badge__icon {
+    background: linear-gradient(
+      135deg,
+      rgba(59, 130, 246, 0.2) 0%,
+      rgba(59, 130, 246, 0.3) 100%
+    );
+    color: var(--color-info);
+  }
+
+  :global(html[data-theme="dark"]) .social-proof-badge--certification .social-proof-badge__icon {
+    background: linear-gradient(
+      135deg,
+      rgba(54, 83, 149, 0.2) 0%,
+      rgba(54, 83, 149, 0.3) 100%
+    );
+    color: var(--color-primary-300);
+  }
+
+  :global(html[data-theme="dark"]) .social-proof-badge--award .social-proof-badge__icon {
+    background: linear-gradient(
+      135deg,
+      rgba(245, 158, 11, 0.2) 0%,
+      rgba(245, 158, 11, 0.3) 100%
+    );
+    color: var(--color-warning);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (min-width: 768px) {
+    .social-proof-badge {
+      padding: var(--spacing-6);
+      gap: var(--spacing-4);
+    }
+
+    .social-proof-badge__icon {
+      width: var(--spacing-16);
+      height: var(--spacing-16);
+    }
+
+    .social-proof-badge__icon :global(svg) {
+      width: var(--spacing-8);
+      height: var(--spacing-8);
+    }
+
+    .social-proof-badge__title {
+      font-size: var(--font-size-lg);
+    }
+
+    .social-proof-badge__description {
+      font-size: var(--font-size-base);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .social-proof-badge,
+    .social-proof-badge__icon,
+    .social-proof-badge__title,
+    .social-proof-badge__description,
+    .social-proof-badge__icon :global(svg) {
+      transition: none;
+    }
+
+    .social-proof-badge:hover {
+      transform: none;
+    }
+
+    .social-proof-badge:hover .social-proof-badge__icon {
+      transform: none;
+    }
+
+    .social-proof-badge:hover .social-proof-badge__icon :global(svg) {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * Windows High Contrast support
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .social-proof-badge {
+      border: 2px solid CanvasText;
+    }
+
+    .social-proof-badge__icon {
+      border: 1px solid CanvasText;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .social-proof-badge {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .social-proof-badge:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+</style>

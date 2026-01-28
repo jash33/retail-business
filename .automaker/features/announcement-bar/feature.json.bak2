@@ -1,0 +1,12 @@
+{
+  "id": "announcement-bar",
+  "category": "UI",
+  "title": "Promotional Announcement Bar",
+  "description": "Create dismissible announcement bar for promotions, free shipping thresholds, or store updates. Includes cookie-based dismissal persistence and scheduled visibility.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "createdAt": "2026-01-26T01:49:59.747Z",
+  "updatedAt": "2026-01-26T19:00:00.485Z",
+  "descriptionHistory": []
+}

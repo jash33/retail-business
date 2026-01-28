@@ -1,0 +1,792 @@
+---
+/**
+ * Blog Index Page
+ * Primary blog archive page with article grid, category filtering, pagination,
+ * featured post highlighting, and magazine-style layout options.
+ *
+ * Features:
+ * - Category filtering with URL parameter support
+ * - Featured posts highlighted
+ * - Article count display
+ * - Pagination support
+ * - Magazine-style layout options (standard, featured-first, featured-left, featured-right)
+ * - Layout selector UI
+ * - CollectionPage schema for SEO
+ * - Responsive layout
+ * - Full accessibility support
+ *
+ * @route /blog
+ * @route /blog?page=2
+ * @route /blog?category=sustainability
+ * @route /blog?layout=featured-left
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import BlogGrid from '../../components/BlogGrid.astro';
+import Pagination from '../../components/Pagination.astro';
+import { getCollection } from 'astro:content';
+import type { WebPageSchema, BreadcrumbSchema } from '../../types/seo';
+import type { BlogCategory } from '../../types/blog';
+
+// Pagination config
+const POSTS_PER_PAGE = 6;
+
+// Get URL parameters
+const url = Astro.url;
+const currentPage = Math.max(1, Number(url.searchParams.get('page')) || 1);
+const currentCategory = url.searchParams.get('category');
+const currentLayout = (url.searchParams.get('layout') || 'featured-first') as 'standard' | 'featured-first' | 'featured-left' | 'featured-right';
+
+// Get all published blog posts
+const allPosts = await getCollection('blog', ({ data }) => {
+  return data.published === true && data.draft !== true;
+});
+
+// Sort posts by date (newest first) then by priority
+// Featured posts come first
+const sortedPosts = allPosts.sort((a, b) => {
+  // Featured posts first
+  if (a.data.featured && !b.data.featured) return -1;
+  if (!a.data.featured && b.data.featured) return 1;
+
+  // Then by date
+  return b.data.pubDate.getTime() - a.data.pubDate.getTime();
+});
+
+// Filter by category if specified
+const filteredPosts = currentCategory
+  ? sortedPosts.filter(post => post.data.category.toLowerCase().replace(/\s+/g, '-') === currentCategory)
+  : sortedPosts;
+
+// Pagination calculations
+const totalPosts = filteredPosts.length;
+const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
+const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+const endIndex = startIndex + POSTS_PER_PAGE;
+const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+
+// Get unique categories with counts
+const categoryMap = new Map<BlogCategory, number>();
+allPosts.forEach(post => {
+  const count = categoryMap.get(post.data.category) || 0;
+  categoryMap.set(post.data.category, count + 1);
+});
+
+const categories = Array.from(categoryMap.entries())
+  .map(([name, count]) => ({
+    name,
+    count,
+    slug: name.toLowerCase().replace(/\s+/g, '-'),
+  }))
+  .sort((a, b) => b.count - a.count);
+
+// Layout options for the selector
+const layoutOptions = [
+  { value: 'featured-first', label: 'Featured First', icon: 'featured-first' },
+  { value: 'featured-left', label: 'Featured Left', icon: 'featured-left' },
+  { value: 'featured-right', label: 'Featured Right', icon: 'featured-right' },
+  { value: 'standard', label: 'Grid', icon: 'standard' },
+] as const;
+
+// Build base URL for pagination (preserving category and layout)
+function getPaginationBaseUrl(): string {
+  const params = new URLSearchParams();
+  if (currentCategory) params.set('category', currentCategory);
+  if (currentLayout !== 'featured-first') params.set('layout', currentLayout);
+  const queryString = params.toString();
+  return queryString ? `/blog?${queryString}` : '/blog';
+}
+
+// Build URL with layout parameter
+function getLayoutUrl(layout: string): string {
+  const params = new URLSearchParams();
+  if (currentCategory) params.set('category', currentCategory);
+  if (layout !== 'featured-first') params.set('layout', layout);
+  const queryString = params.toString();
+  return queryString ? `/blog?${queryString}` : '/blog';
+}
+
+// SEO schemas
+const pageSchema: WebPageSchema = {
+  type: 'CollectionPage',
+  name: 'Blog - Stories & Inspiration',
+  description: 'Discover stories about sustainable living, artisan craftsmanship, style guides, and behind-the-scenes insights into our brand journey.',
+  url: Astro.url.href,
+};
+
+const breadcrumbSchema: BreadcrumbSchema = {
+  type: 'BreadcrumbList',
+  items: [
+    { name: 'Home', url: '/' },
+    { name: 'Blog' },
+  ],
+};
+---
+
+<Layout
+  title="Blog"
+  description="Discover stories about sustainable living, artisan craftsmanship, style guides, and behind-the-scenes insights into our brand journey."
+  jsonLd={[pageSchema, breadcrumbSchema]}
+>
+  <main class="blog-page">
+    <div class="blog-page__container">
+      <!-- Page Header -->
+      <header class="blog-page__header">
+        <h1 class="blog-page__title">Stories & Inspiration</h1>
+        <p class="blog-page__description">
+          Explore our world of sustainable living, artisan craftsmanship, and thoughtful design.
+          Discover the stories behind our products and the people who make them.
+        </p>
+      </header>
+
+      <!-- Controls Bar: Filters + Layout Selector -->
+      <div class="blog-page__controls">
+        <!-- Category Filters -->
+        {categories.length > 0 && (
+          <nav class="blog-page__filters" aria-label="Blog categories">
+            <ul class="blog-page__filter-list" role="tablist">
+              <li role="presentation">
+                <button
+                  type="button"
+                  class={`blog-page__filter-btn ${!currentCategory ? 'blog-page__filter-btn--active' : ''}`}
+                  data-filter="all"
+                  role="tab"
+                  aria-selected={!currentCategory ? 'true' : 'false'}
+                  aria-controls="blog-grid-wrapper"
+                >
+                  <span class="blog-page__filter-text">All</span>
+                  <span class="blog-page__filter-count">
+                    {allPosts.length}
+                  </span>
+                </button>
+              </li>
+              {categories.map((category) => (
+                <li role="presentation">
+                  <button
+                    type="button"
+                    class={`blog-page__filter-btn ${currentCategory === category.slug ? 'blog-page__filter-btn--active' : ''}`}
+                    data-filter={category.slug}
+                    data-category-name={category.name}
+                    role="tab"
+                    aria-selected={currentCategory === category.slug ? 'true' : 'false'}
+                    aria-controls="blog-grid-wrapper"
+                  >
+                    <span class="blog-page__filter-text">{category.name}</span>
+                    <span class="blog-page__filter-count">
+                      {category.count}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+
+        <!-- Layout Selector -->
+        <div class="blog-page__layout-selector" aria-label="Layout options">
+          <span class="blog-page__layout-label">Layout:</span>
+          <div class="blog-page__layout-options" role="group" aria-label="Select grid layout">
+            {layoutOptions.map((option) => (
+              <a
+                href={getLayoutUrl(option.value)}
+                class={`blog-page__layout-btn ${currentLayout === option.value ? 'blog-page__layout-btn--active' : ''}`}
+                aria-label={`${option.label} layout`}
+                aria-pressed={currentLayout === option.value ? 'true' : 'false'}
+                data-layout={option.value}
+              >
+                {option.icon === 'standard' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                    <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                    <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                    <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                  </svg>
+                )}
+                {option.icon === 'featured-first' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="7" rx="1"></rect>
+                    <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                    <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                  </svg>
+                )}
+                {option.icon === 'featured-left' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <rect x="3" y="3" width="11" height="18" rx="1"></rect>
+                    <rect x="17" y="3" width="4" height="7" rx="1"></rect>
+                    <rect x="17" y="14" width="4" height="7" rx="1"></rect>
+                  </svg>
+                )}
+                {option.icon === 'featured-right' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <rect x="3" y="3" width="4" height="7" rx="1"></rect>
+                    <rect x="3" y="14" width="4" height="7" rx="1"></rect>
+                    <rect x="10" y="3" width="11" height="18" rx="1"></rect>
+                  </svg>
+                )}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Count -->
+      <div class="blog-page__results" role="status" aria-live="polite">
+        <span class="blog-page__results-count" data-count>{filteredPosts.length}</span>
+        <span class="blog-page__results-text">articles</span>
+        {currentCategory && (
+          <span class="blog-page__results-filter">
+            in <strong>{categories.find(c => c.slug === currentCategory)?.name}</strong>
+          </span>
+        )}
+        {totalPages > 1 && (
+          <span class="blog-page__results-page">
+            (Page {currentPage} of {totalPages})
+          </span>
+        )}
+      </div>
+
+      <!-- Blog Grid -->
+      {paginatedPosts.length > 0 ? (
+        <div id="blog-grid-wrapper" class="blog-page__grid-wrapper">
+          <BlogGrid
+            posts={paginatedPosts}
+            columns={3}
+            layout={currentLayout}
+            enableAnimation={true}
+            gap="medium"
+          />
+        </div>
+      ) : (
+        <div class="blog-page__empty">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+          >
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          <p>No articles available yet.</p>
+          <p>Check back soon for new content!</p>
+        </div>
+      )}
+
+      <!-- No Results Message (hidden by default, shown via JS when filtering) -->
+      <div class="blog-page__no-results" id="no-results" hidden>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <p>No articles found in this category.</p>
+        <button type="button" class="blog-page__clear-filters">Show all articles</button>
+      </div>
+
+      <!-- Pagination -->
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          baseUrl={getPaginationBaseUrl()}
+          pageParam="page"
+          siblingCount={1}
+          showFirstLast={true}
+        />
+      )}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * BLOG PAGE STYLES
+   * ================================================================= */
+
+  .blog-page {
+    padding: var(--spacing-8) 0 var(--spacing-16);
+  }
+
+  .blog-page__container {
+    width: 100%;
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  /* =================================================================
+   * HEADER
+   * ================================================================= */
+  .blog-page__header {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+  }
+
+  .blog-page__title {
+    margin: 0 0 var(--spacing-4);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+  }
+
+  .blog-page__description {
+    margin: 0 auto;
+    max-width: 600px;
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * CONTROLS BAR
+   * ================================================================= */
+  .blog-page__controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+  }
+
+  /* =================================================================
+   * FILTERS
+   * ================================================================= */
+  .blog-page__filters {
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .blog-page__filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .blog-page__filter-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .blog-page__filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    background-color: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      color var(--duration-200) var(--ease-in-out),
+      background-color var(--duration-200) var(--ease-in-out),
+      border-color var(--duration-200) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-out),
+      box-shadow var(--duration-200) var(--ease-in-out);
+  }
+
+  .blog-page__filter-btn:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary-light);
+    background-color: var(--color-primary-50);
+    transform: translateY(-1px);
+  }
+
+  .blog-page__filter-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .blog-page__filter-btn--active {
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .blog-page__filter-btn--active:hover {
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+  }
+
+  .blog-page__filter-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    height: 1.25rem;
+    padding: 0 var(--spacing-1-5);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-tertiary);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-full);
+    transition:
+      color var(--duration-200) var(--ease-in-out),
+      background-color var(--duration-200) var(--ease-in-out);
+  }
+
+  .blog-page__filter-btn:hover .blog-page__filter-count {
+    color: var(--color-primary);
+    background-color: var(--color-primary-100);
+  }
+
+  .blog-page__filter-btn--active .blog-page__filter-count {
+    color: var(--color-primary);
+    background-color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * LAYOUT SELECTOR
+   * ================================================================= */
+  .blog-page__layout-selector {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    flex-shrink: 0;
+  }
+
+  .blog-page__layout-label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+  }
+
+  .blog-page__layout-options {
+    display: flex;
+    gap: var(--spacing-1);
+    padding: var(--spacing-1);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-md);
+  }
+
+  .blog-page__layout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: var(--spacing-2);
+    color: var(--color-text-tertiary);
+    background-color: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+      color var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out);
+  }
+
+  .blog-page__layout-btn:hover {
+    color: var(--color-text-primary);
+    background-color: var(--color-background-elevated);
+  }
+
+  .blog-page__layout-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .blog-page__layout-btn--active {
+    color: var(--color-primary);
+    background-color: var(--color-background-elevated);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .blog-page__layout-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* =================================================================
+   * RESULTS COUNT
+   * ================================================================= */
+  .blog-page__results {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin-bottom: var(--spacing-6);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .blog-page__results-count {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .blog-page__results-filter {
+    margin-left: var(--spacing-1);
+  }
+
+  .blog-page__results-filter strong {
+    color: var(--color-primary);
+  }
+
+  .blog-page__results-page {
+    margin-left: var(--spacing-2);
+    color: var(--color-text-tertiary);
+  }
+
+  /* =================================================================
+   * BLOG GRID
+   * ================================================================= */
+  .blog-page__grid-wrapper {
+    margin-bottom: var(--spacing-8);
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+  .blog-page__empty,
+  .blog-page__no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-16);
+    text-align: center;
+    color: var(--color-text-tertiary);
+    background-color: var(--color-background-subtle);
+    border-radius: var(--radius-lg);
+  }
+
+  .blog-page__empty svg,
+  .blog-page__no-results svg {
+    width: 64px;
+    height: 64px;
+    opacity: 0.5;
+  }
+
+  .blog-page__empty p,
+  .blog-page__no-results p {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+  }
+
+  .blog-page__clear-filters {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    background-color: transparent;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition:
+      color var(--duration-150) var(--ease-in-out),
+      background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .blog-page__clear-filters:hover {
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+  }
+
+  .blog-page__clear-filters:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 1023px) {
+    .blog-page__controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .blog-page__layout-selector {
+      justify-content: flex-end;
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .blog-page {
+      padding: var(--spacing-4) 0 var(--spacing-12);
+    }
+
+    .blog-page__title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .blog-page__description {
+      font-size: var(--font-size-base);
+    }
+
+    .blog-page__controls {
+      gap: var(--spacing-3);
+    }
+
+    .blog-page__layout-selector {
+      justify-content: flex-start;
+    }
+
+    .blog-page__layout-label {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 479px) {
+    .blog-page__filter-list {
+      justify-content: flex-start;
+      flex-wrap: nowrap;
+    }
+
+    .blog-page__filter-btn {
+      padding: var(--spacing-1-5) var(--spacing-3);
+      font-size: var(--font-size-xs);
+    }
+
+    .blog-page__results {
+      flex-wrap: wrap;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .blog-page__filter-btn,
+    .blog-page__layout-btn,
+    .blog-page__clear-filters {
+      transition: none;
+    }
+
+    .blog-page__filter-btn:hover {
+      transform: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .blog-page__layout-options {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .blog-page__layout-btn--active {
+    background-color: var(--color-background-muted);
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .blog-page__filters,
+    .blog-page__layout-selector {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Blog Page Client-Side Interactivity
+   *
+   * Features:
+   * - Category filtering with URL parameter support
+   * - Results count updates
+   * - Screen reader announcements
+   */
+
+  interface BlogState {
+    currentCategory: string | null;
+  }
+
+  const state: BlogState = {
+    currentCategory: null,
+  };
+
+  function initBlogPage() {
+    const filterButtons = document.querySelectorAll<HTMLButtonElement>('.blog-page__filter-btn');
+    const resultsCount = document.querySelector<HTMLElement>('.blog-page__results-count');
+    const gridWrapper = document.getElementById('blog-grid');
+    const noResults = document.getElementById('no-results');
+    const clearFiltersBtn = document.querySelector<HTMLButtonElement>('.blog-page__clear-filters');
+
+    if (!filterButtons.length) return;
+
+    // Get initial state from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialCategory = urlParams.get('category');
+
+    state.currentCategory = initialCategory;
+
+    // Category filter click handlers - navigate to filtered URL
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        const filter = button.getAttribute('data-filter');
+        const newCategory = filter === 'all' ? null : filter;
+
+        if (newCategory === state.currentCategory) return;
+
+        // Navigate to the filtered URL (server-side filtering with pagination)
+        const url = new URL(window.location.href);
+        if (newCategory) {
+          url.searchParams.set('category', newCategory);
+        } else {
+          url.searchParams.delete('category');
+        }
+        // Reset to page 1 when changing filters
+        url.searchParams.delete('page');
+
+        window.location.href = url.toString();
+      });
+    });
+
+    // Clear filters button
+    if (clearFiltersBtn) {
+      clearFiltersBtn.addEventListener('click', () => {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('category');
+        url.searchParams.delete('page');
+        window.location.href = url.toString();
+      });
+    }
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBlogPage);
+  } else {
+    initBlogPage();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initBlogPage);
+</script>

@@ -1,0 +1,23 @@
+{
+  "id": "product-image-gallery",
+  "category": "UI",
+  "title": "Product Image Gallery with Lightbox",
+  "description": "Build image gallery component for product pages with thumbnail navigation, full-screen lightbox, zoom functionality, and touch-gesture support for mobile. Includes keyboard navigation.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "createdAt": "2026-01-26T01:49:59.712Z",
+  "updatedAt": "2026-01-26T21:46:27.581Z",
+  "descriptionHistory": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "current",
+  "dependencies": []
+}

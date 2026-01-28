@@ -1,0 +1,309 @@
+---
+/**
+ * Breadcrumb Navigation Component
+ * Displays a breadcrumb trail showing the page hierarchy.
+ * Includes BreadcrumbList schema markup for SEO and proper accessibility.
+ *
+ * @example Basic usage:
+ * ```astro
+ * <Breadcrumb
+ *   items={[
+ *     { name: 'Home', url: '/' },
+ *     { name: 'Shop', url: '/products' },
+ *     { name: 'Category', url: '/products?category=shoes' },
+ *     { name: 'Product Name' },
+ *   ]}
+ * />
+ * ```
+ *
+ * Features:
+ * - Accessible with proper ARIA labels and roles
+ * - BreadcrumbList JSON-LD schema for SEO
+ * - Responsive with text truncation on mobile
+ * - Dark mode support
+ * - Configurable separator
+ */
+
+import { seoConfig } from '../config/seo.config';
+
+export interface BreadcrumbItem {
+  /** Display name of the breadcrumb item */
+  name: string;
+  /** URL of the breadcrumb item (optional for the last/current item) */
+  url?: string;
+}
+
+interface Props {
+  /** Array of breadcrumb items in hierarchical order */
+  items: BreadcrumbItem[];
+  /** Custom separator between items (default: '>') */
+  separator?: string;
+  /** Additional CSS class for the container */
+  class?: string;
+  /** Whether to include JSON-LD schema markup (default: true) */
+  includeSchema?: boolean;
+  /** Optional aria-label for the nav element */
+  ariaLabel?: string;
+}
+
+const {
+  items,
+  separator = '>',
+  class: className = '',
+  includeSchema = true,
+  ariaLabel = 'Breadcrumb navigation',
+} = Astro.props;
+
+// Generate absolute URL for schema
+function toAbsoluteUrl(path: string): string {
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  const baseUrl = seoConfig.siteUrl.replace(/\/$/, '');
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `${baseUrl}${cleanPath}`;
+}
+
+// Generate BreadcrumbList schema
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.name,
+    ...(item.url && { item: toAbsoluteUrl(item.url) }),
+  })),
+};
+---
+
+<nav
+  class:list={['breadcrumb', className]}
+  aria-label={ariaLabel}
+>
+  <ol class="breadcrumb__list" itemscope itemtype="https://schema.org/BreadcrumbList">
+    {items.map((item, index) => {
+      const isLast = index === items.length - 1;
+      const isFirst = index === 0;
+
+      return (
+        <li
+          class="breadcrumb__item"
+          itemprop="itemListElement"
+          itemscope
+          itemtype="https://schema.org/ListItem"
+        >
+          {!isFirst && (
+            <span class="breadcrumb__separator" aria-hidden="true">
+              {separator}
+            </span>
+          )}
+
+          {item.url && !isLast ? (
+            <a
+              href={item.url}
+              class="breadcrumb__link"
+              itemprop="item"
+            >
+              <span itemprop="name">{item.name}</span>
+            </a>
+          ) : (
+            <span
+              class="breadcrumb__current"
+              aria-current={isLast ? 'page' : undefined}
+              itemprop="item"
+            >
+              <span itemprop="name">{item.name}</span>
+            </span>
+          )}
+
+          <meta itemprop="position" content={String(index + 1)} />
+        </li>
+      );
+    })}
+  </ol>
+</nav>
+
+{includeSchema && (
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(breadcrumbSchema)}
+  />
+)}
+
+<style>
+  /* =================================================================
+   * BREADCRUMB STYLES
+   * =================================================================
+   */
+
+  .breadcrumb {
+    padding: var(--spacing-4) 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+  }
+
+  .breadcrumb__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumb__item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    min-width: 0; /* Enable text truncation in flex child */
+  }
+
+  .breadcrumb__separator {
+    flex-shrink: 0;
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    margin: 0 var(--spacing-1);
+  }
+
+  .breadcrumb__link {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color var(--duration-150) var(--ease-in-out);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+  }
+
+  .breadcrumb__link:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .breadcrumb__link:focus-visible {
+    outline: none;
+    color: var(--color-primary);
+    box-shadow: var(--focus-ring);
+    border-radius: var(--radius-sm);
+  }
+
+  .breadcrumb__current {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+  }
+
+  /* Home icon for first item (optional - shows chevron-style) */
+  .breadcrumb__item:first-child .breadcrumb__link::before {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: var(--spacing-1);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath d='M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    vertical-align: -0.125em;
+    opacity: 0.7;
+    transition: opacity var(--duration-150) var(--ease-in-out);
+  }
+
+  .breadcrumb__item:first-child .breadcrumb__link:hover::before {
+    opacity: 1;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .breadcrumb {
+      padding: var(--spacing-3) 0;
+      font-size: var(--font-size-xs);
+    }
+
+    .breadcrumb__link {
+      max-width: 100px;
+    }
+
+    .breadcrumb__current {
+      max-width: 150px;
+    }
+
+    .breadcrumb__separator {
+      margin: 0;
+    }
+  }
+
+  @media screen and (max-width: 479px) {
+    .breadcrumb__link {
+      max-width: 60px;
+    }
+
+    .breadcrumb__current {
+      max-width: 100px;
+    }
+
+    /* Hide home text on very small screens, show only icon */
+    .breadcrumb__item:first-child .breadcrumb__link span {
+      display: none;
+    }
+
+    .breadcrumb__item:first-child .breadcrumb__link::before {
+      margin-right: 0;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .breadcrumb__link {
+    color: var(--color-text-secondary);
+  }
+
+  :global(html[data-theme="dark"]) .breadcrumb__link:hover {
+    color: var(--color-primary-light);
+  }
+
+  :global(html[data-theme="dark"]) .breadcrumb__current {
+    color: var(--color-text-primary);
+  }
+
+  :global(html[data-theme="dark"]) .breadcrumb__separator {
+    color: var(--color-text-tertiary);
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .breadcrumb__link {
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .breadcrumb {
+      padding: var(--spacing-2) 0;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .breadcrumb__link {
+      color: #000;
+    }
+
+    .breadcrumb__link::after {
+      content: ' (' attr(href) ')';
+      font-size: 0.75em;
+    }
+  }
+</style>

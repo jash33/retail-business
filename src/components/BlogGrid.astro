@@ -1,0 +1,663 @@
+---
+/**
+ * BlogGrid Component
+ * A flexible responsive grid layout for displaying blog post cards with
+ * multiple layout options including magazine-style layouts.
+ *
+ * Features:
+ * - Configurable columns (2, 3, or 4)
+ * - Multiple layout styles (standard, featured-first, featured-left, featured-right, masonry)
+ * - Featured first post option (spans full width or asymmetric)
+ * - Stagger animation support
+ * - Responsive layout
+ * - CSS Grid for modern browsers
+ * - Full accessibility support
+ * - Dark mode support
+ *
+ * @example Basic usage
+ * ```astro
+ * <BlogGrid posts={blogPosts} />
+ * ```
+ *
+ * @example With featured first post
+ * ```astro
+ * <BlogGrid posts={blogPosts} featuredFirst columns={3} />
+ * ```
+ *
+ * @example Magazine-style layout
+ * ```astro
+ * <BlogGrid posts={blogPosts} layout="featured-left" columns={3} />
+ * ```
+ *
+ * @example Masonry layout
+ * ```astro
+ * <BlogGrid posts={blogPosts} layout="masonry" enableAnimation />
+ * ```
+ */
+
+import type { BlogGridProps } from '../types/blog';
+import BlogCard from './BlogCard.astro';
+
+// Extended props interface with magazine-style options
+interface Props extends BlogGridProps {
+  /** Layout style for the grid */
+  layout?: 'standard' | 'featured-first' | 'featured-left' | 'featured-right' | 'masonry';
+  /** Gap size between grid items */
+  gap?: 'small' | 'medium' | 'large';
+  /** Enable stagger animations on scroll */
+  enableAnimation?: boolean;
+  /** Maximum items to apply stagger animation to */
+  maxStaggerItems?: number;
+  /** Section heading */
+  heading?: string;
+  /** Section subheading */
+  subheading?: string;
+  /** Grid ID for accessibility */
+  id?: string;
+}
+
+const {
+  posts,
+  columns = 3,
+  featuredFirst = false,
+  layout = 'standard',
+  gap = 'medium',
+  enableAnimation = false,
+  maxStaggerItems = 8,
+  heading,
+  subheading,
+  id = 'blog-grid',
+  class: className = '',
+} = Astro.props;
+
+// Determine actual layout based on featuredFirst prop (for backwards compatibility)
+const effectiveLayout = featuredFirst && layout === 'standard' ? 'featured-first' : layout;
+
+// Separate featured and regular posts if featured layout
+const featuredPost = effectiveLayout !== 'standard' && posts.length > 0 ? posts[0] : null;
+const regularPosts = effectiveLayout !== 'standard' ? posts.slice(1) : posts;
+
+// Get gap CSS value
+const gapValues: Record<string, string> = {
+  small: 'var(--spacing-4)',
+  medium: 'var(--spacing-6)',
+  large: 'var(--spacing-8)',
+};
+
+// Build CSS classes
+const gridClasses = [
+  'blog-grid',
+  `blog-grid--cols-${columns}`,
+  `blog-grid--gap-${gap}`,
+  `blog-grid--layout-${effectiveLayout}`,
+  enableAnimation && 'blog-grid--animated',
+  className,
+].filter(Boolean).join(' ');
+
+// Helper to check if item should be featured based on layout
+function isItemFeatured(index: number): boolean {
+  if (effectiveLayout === 'standard') return false;
+  return index === 0;
+}
+
+// Helper function to get item style for grid placement
+function getItemStyle(index: number): string {
+  const styles: string[] = [];
+
+  // Apply stagger animation delay
+  if (enableAnimation) {
+    const staggerIndex = Math.min(index, maxStaggerItems - 1);
+    styles.push(`--stagger-delay: ${staggerIndex * 100}ms`);
+  }
+
+  // Apply featured spans based on layout (for the featured item)
+  if (index === 0 && effectiveLayout !== 'standard') {
+    if (effectiveLayout === 'featured-first') {
+      styles.push('grid-column: span 2');
+    } else if (effectiveLayout === 'featured-left') {
+      styles.push('grid-column: span 2');
+      styles.push('grid-row: span 2');
+    } else if (effectiveLayout === 'featured-right') {
+      styles.push('grid-column: -3 / -1');
+      styles.push('grid-row: span 2');
+    }
+  }
+
+  return styles.join('; ');
+}
+---
+
+<section
+  class={gridClasses}
+  id={id}
+  aria-labelledby={heading ? `${id}-heading` : undefined}
+  style={`--grid-cols: ${columns}; --grid-gap: ${gapValues[gap]};`}
+  data-layout={effectiveLayout}
+>
+  {/* Section Header */}
+  {(heading || subheading) && (
+    <header class="blog-grid__header">
+      {heading && (
+        <h2 id={`${id}-heading`} class="blog-grid__heading">{heading}</h2>
+      )}
+      {subheading && (
+        <p class="blog-grid__subheading">{subheading}</p>
+      )}
+    </header>
+  )}
+
+  {posts.length > 0 ? (
+    <div class="blog-grid__container">
+      {/* For standard layout, render all posts in grid */}
+      {effectiveLayout === 'standard' && (
+        <div class="blog-grid__posts" role="list" aria-label="Blog posts">
+          {posts.map((post, index) => (
+            <div
+              class={`blog-grid__item ${enableAnimation ? 'blog-grid__item--animated' : ''}`}
+              role="listitem"
+              style={getItemStyle(index)}
+              data-index={index}
+            >
+              <BlogCard
+                post={post}
+                variant="default"
+                showCategory={true}
+                showAuthor={true}
+                showReadingTime={true}
+                showDate={true}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* For featured layouts */}
+      {effectiveLayout !== 'standard' && (
+        <>
+          {/* Featured Post */}
+          {featuredPost && (
+            <div
+              class={`blog-grid__featured ${enableAnimation ? 'blog-grid__item--animated' : ''}`}
+              style={getItemStyle(0)}
+            >
+              <BlogCard
+                post={featuredPost}
+                variant="featured"
+                showCategory={true}
+                showAuthor={true}
+                showReadingTime={true}
+                showDate={true}
+              />
+            </div>
+          )}
+
+          {/* Regular Posts Grid */}
+          {regularPosts.length > 0 && (
+            <div class="blog-grid__posts" role="list" aria-label="Blog posts">
+              {regularPosts.map((post, index) => (
+                <div
+                  class={`blog-grid__item ${enableAnimation ? 'blog-grid__item--animated' : ''}`}
+                  role="listitem"
+                  style={getItemStyle(index + 1)}
+                  data-index={index + 1}
+                >
+                  <BlogCard
+                    post={post}
+                    variant="default"
+                    showCategory={true}
+                    showAuthor={true}
+                    showReadingTime={true}
+                    showDate={true}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  ) : (
+    /* Empty State */
+    <div class="blog-grid__empty" role="status" aria-live="polite">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="blog-grid__empty-icon"
+        aria-hidden="true"
+      >
+        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <line x1="10" y1="9" x2="8" y2="9"></line>
+      </svg>
+      <p class="blog-grid__empty-text">No posts found</p>
+    </div>
+  )}
+</section>
+
+<style>
+  /* =================================================================
+   * BLOG GRID COMPONENT STYLES
+   * ================================================================= */
+
+  .blog-grid {
+    width: 100%;
+  }
+
+  .blog-grid__container {
+    display: contents;
+  }
+
+  /* =================================================================
+   * SECTION HEADER
+   * ================================================================= */
+  .blog-grid__header {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+  }
+
+  .blog-grid__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .blog-grid__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * FEATURED POST (for featured layouts)
+   * ================================================================= */
+  .blog-grid__featured {
+    margin-bottom: var(--spacing-8);
+  }
+
+  /* =================================================================
+   * POSTS GRID
+   * ================================================================= */
+  .blog-grid__posts {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols, 3), 1fr);
+    gap: var(--grid-gap, var(--spacing-6));
+  }
+
+  .blog-grid__item {
+    display: flex;
+    min-width: 0;
+  }
+
+  .blog-grid__item > :global(*) {
+    width: 100%;
+  }
+
+  /* =================================================================
+   * COLUMN VARIANTS
+   * ================================================================= */
+  .blog-grid--cols-2 .blog-grid__posts {
+    --grid-cols: 2;
+  }
+
+  .blog-grid--cols-3 .blog-grid__posts {
+    --grid-cols: 3;
+  }
+
+  .blog-grid--cols-4 .blog-grid__posts {
+    --grid-cols: 4;
+  }
+
+  /* =================================================================
+   * GAP VARIANTS
+   * ================================================================= */
+  .blog-grid--gap-small .blog-grid__posts {
+    gap: var(--spacing-4);
+  }
+
+  .blog-grid--gap-medium .blog-grid__posts {
+    gap: var(--spacing-6);
+  }
+
+  .blog-grid--gap-large .blog-grid__posts {
+    gap: var(--spacing-8);
+  }
+
+  /* =================================================================
+   * LAYOUT VARIANTS
+   * ================================================================= */
+
+  /* Standard - No special treatment, uses BlogGrid featured section */
+  .blog-grid--layout-standard .blog-grid__featured {
+    display: none;
+  }
+
+  /* Featured First - First item spans 2 columns in main grid */
+  .blog-grid--layout-featured-first .blog-grid__container {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols, 3), 1fr);
+    gap: var(--grid-gap, var(--spacing-6));
+  }
+
+  .blog-grid--layout-featured-first .blog-grid__featured {
+    grid-column: span 2;
+    margin-bottom: 0;
+  }
+
+  .blog-grid--layout-featured-first .blog-grid__posts {
+    display: contents;
+  }
+
+  .blog-grid--layout-featured-first .blog-grid__item {
+    grid-column: span 1;
+  }
+
+  /* Featured Left - Large image on left */
+  .blog-grid--layout-featured-left .blog-grid__container {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols, 3), 1fr);
+    gap: var(--grid-gap, var(--spacing-6));
+  }
+
+  .blog-grid--layout-featured-left .blog-grid__featured {
+    grid-column: span 2;
+    grid-row: span 2;
+    margin-bottom: 0;
+  }
+
+  .blog-grid--layout-featured-left .blog-grid__posts {
+    display: contents;
+  }
+
+  .blog-grid--layout-featured-left .blog-grid__item {
+    grid-column: span 1;
+  }
+
+  /* Featured Right - Large image on right */
+  .blog-grid--layout-featured-right .blog-grid__container {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols, 3), 1fr);
+    gap: var(--grid-gap, var(--spacing-6));
+  }
+
+  .blog-grid--layout-featured-right .blog-grid__featured {
+    grid-column: -3 / -1;
+    grid-row: span 2;
+    margin-bottom: 0;
+    order: 1;
+  }
+
+  .blog-grid--layout-featured-right .blog-grid__posts {
+    display: contents;
+  }
+
+  .blog-grid--layout-featured-right .blog-grid__item {
+    grid-column: span 1;
+  }
+
+  /* Masonry - Pinterest-style staggered */
+  .blog-grid--layout-masonry .blog-grid__posts {
+    grid-auto-flow: dense;
+  }
+
+  /* Masonry fallback for browsers without native support */
+  @supports not (grid-template-rows: masonry) {
+    .blog-grid--layout-masonry .blog-grid__item:nth-child(3n+2) :global(.blog-card__image-container) {
+      aspect-ratio: 1 / 1;
+    }
+
+    .blog-grid--layout-masonry .blog-grid__item:nth-child(3n) :global(.blog-card__image-container) {
+      aspect-ratio: 3 / 4;
+    }
+  }
+
+  /* =================================================================
+   * ANIMATION STYLES
+   * ================================================================= */
+  .blog-grid__item--animated {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity var(--duration-500) var(--ease-out),
+      transform var(--duration-500) var(--ease-out);
+    transition-delay: var(--stagger-delay, 0ms);
+  }
+
+  .blog-grid--animated .blog-grid__item--animated.blog-grid__item--visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Immediate visibility for non-animated grids */
+  .blog-grid:not(.blog-grid--animated) .blog-grid__item--animated {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+  .blog-grid__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-16) var(--spacing-8);
+    text-align: center;
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-lg);
+  }
+
+  .blog-grid__empty-icon {
+    width: 64px;
+    height: 64px;
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--spacing-4);
+    opacity: 0.5;
+  }
+
+  .blog-grid__empty-text {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Large Desktop */
+  @media screen and (min-width: 1280px) {
+    .blog-grid__heading {
+      font-size: var(--font-size-4xl);
+    }
+  }
+
+  /* Tablet */
+  @media screen and (max-width: 1024px) {
+    .blog-grid--cols-4 .blog-grid__posts {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .blog-grid--layout-featured-first .blog-grid__container,
+    .blog-grid--layout-featured-left .blog-grid__container,
+    .blog-grid--layout-featured-right .blog-grid__container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .blog-grid--layout-featured-left .blog-grid__featured,
+    .blog-grid--layout-featured-right .blog-grid__featured {
+      grid-column: span 2;
+      grid-row: span 1;
+    }
+
+    .blog-grid--layout-featured-right .blog-grid__featured {
+      order: 0;
+    }
+  }
+
+  /* Large Mobile */
+  @media screen and (max-width: 767px) {
+    .blog-grid__posts {
+      gap: var(--spacing-4);
+    }
+
+    .blog-grid--cols-2 .blog-grid__posts,
+    .blog-grid--cols-3 .blog-grid__posts,
+    .blog-grid--cols-4 .blog-grid__posts {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .blog-grid__featured {
+      margin-bottom: var(--spacing-6);
+    }
+
+    .blog-grid--layout-featured-first .blog-grid__container,
+    .blog-grid--layout-featured-left .blog-grid__container,
+    .blog-grid--layout-featured-right .blog-grid__container {
+      display: block;
+    }
+
+    .blog-grid--layout-featured-first .blog-grid__posts,
+    .blog-grid--layout-featured-left .blog-grid__posts,
+    .blog-grid--layout-featured-right .blog-grid__posts {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .blog-grid--layout-featured-first .blog-grid__featured,
+    .blog-grid--layout-featured-left .blog-grid__featured,
+    .blog-grid--layout-featured-right .blog-grid__featured {
+      margin-bottom: var(--spacing-6);
+    }
+
+    .blog-grid__heading {
+      font-size: var(--font-size-2xl);
+    }
+
+    .blog-grid__subheading {
+      font-size: var(--font-size-base);
+    }
+  }
+
+  /* Small Mobile */
+  @media screen and (max-width: 480px) {
+    .blog-grid--cols-2 .blog-grid__posts,
+    .blog-grid--cols-3 .blog-grid__posts,
+    .blog-grid--cols-4 .blog-grid__posts {
+      grid-template-columns: 1fr;
+    }
+
+    .blog-grid--layout-featured-first .blog-grid__posts,
+    .blog-grid--layout-featured-left .blog-grid__posts,
+    .blog-grid--layout-featured-right .blog-grid__posts {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .blog-grid__item--animated {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .blog-grid__empty {
+    background-color: var(--color-background-elevated);
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .blog-grid__posts {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-4);
+    }
+
+    .blog-grid__item {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .blog-grid__item--animated {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * BlogGrid Interactive Features
+   * - Intersection Observer for stagger animation reveal
+   */
+  function initBlogGrid() {
+    const grids = document.querySelectorAll('.blog-grid--animated');
+
+    grids.forEach((grid) => {
+      const items = grid.querySelectorAll('.blog-grid__item--animated');
+
+      // Use Intersection Observer for scroll-triggered animations
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('blog-grid__item--visible');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          {
+            root: null,
+            rootMargin: '0px 0px -50px 0px',
+            threshold: 0.1,
+          }
+        );
+
+        items.forEach((item) => {
+          observer.observe(item);
+        });
+      } else {
+        // Fallback: show all items immediately
+        items.forEach((item) => {
+          item.classList.add('blog-grid__item--visible');
+        });
+      }
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBlogGrid);
+  } else {
+    initBlogGrid();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initBlogGrid);
+</script>

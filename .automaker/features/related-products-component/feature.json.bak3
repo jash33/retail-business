@@ -1,0 +1,12 @@
+{
+  "id": "related-products-component",
+  "category": "UI",
+  "title": "Related Products Section",
+  "description": "Build related products section for product detail pages based on category or manual curation. Includes horizontal scroll layout and 'Complete the Look' styling options.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "createdAt": "2026-01-26T01:49:59.729Z",
+  "updatedAt": "2026-01-26T01:49:59.729Z",
+  "descriptionHistory": []
+}

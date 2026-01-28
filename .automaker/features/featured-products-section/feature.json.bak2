@@ -1,0 +1,12 @@
+{
+  "id": "featured-products-section",
+  "category": "UI",
+  "title": "Featured Products Homepage Section",
+  "description": "Build homepage section showcasing selected featured products with larger cards, editorial descriptions, and prominent CTAs. Includes manual product selection via configuration.",
+  "status": "in_progress",
+  "priority": 1,
+  "complexity": "simple",
+  "createdAt": "2026-01-26T01:49:59.722Z",
+  "updatedAt": "2026-01-26T02:45:55.520Z",
+  "descriptionHistory": []
+}

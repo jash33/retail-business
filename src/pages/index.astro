@@ -2,15 +2,21 @@
 import Layout from '../layouts/Layout.astro';
 import HeroSection from '../components/HeroSection.astro';
 import ServicesSection from '../components/ServicesSection.astro';
+import FeaturedProductsSection from '../components/FeaturedProductsSection.astro';
+import NewArrivalsCarousel from '../components/NewArrivalsCarousel.astro';
 import DifferentiatorsSection from '../components/DifferentiatorsSection.astro';
 import FeaturedProjectsPreview from '../components/FeaturedProjectsPreview.astro';
 import FAQAccordion from '../components/FAQAccordion.astro';
 import ContactCTA from '../components/ContactCTA.astro';
+import TestimonialsSection from '../components/TestimonialsSection.astro';
 import type { Service } from '../types/service';
 import type { Differentiator } from '../types/differentiator';
 import { DEFAULT_FAQ_ITEMS } from '../types/faq';
 import { localBusinessSchema } from '../config/seo.config';
 import { FEATURED_PROJECTS, FEATURED_PROJECTS_CONFIG } from '../config/featured-projects.config';
+import { FEATURED_PRODUCTS, FEATURED_PRODUCTS_SECTION_CONFIG } from '../config/featured-products.config';
+import { NEW_ARRIVALS_CONFIG, NEW_ARRIVALS_PRODUCTS } from '../config/new-arrivals.config';
+import { TESTIMONIALS, TESTIMONIALS_SECTION_CONFIG } from '../config/testimonials.config';
 
 /**
  * Homepage - Houston Web Services
@@ -156,12 +162,71 @@ const differentiators: Differentiator[] = [
 			columns={5}
 		/>
 
+		<!-- Featured Products Section -->
+		<FeaturedProductsSection
+			id={FEATURED_PRODUCTS_SECTION_CONFIG.id}
+			heading={FEATURED_PRODUCTS_SECTION_CONFIG.heading}
+			subheading={FEATURED_PRODUCTS_SECTION_CONFIG.subheading}
+			products={FEATURED_PRODUCTS}
+			viewAllText={FEATURED_PRODUCTS_SECTION_CONFIG.viewAllText}
+			viewAllHref={FEATURED_PRODUCTS_SECTION_CONFIG.viewAllHref}
+			showViewAll={FEATURED_PRODUCTS_SECTION_CONFIG.showViewAll}
+			maxProducts={FEATURED_PRODUCTS_SECTION_CONFIG.maxProducts}
+			columns={FEATURED_PRODUCTS_SECTION_CONFIG.columns}
+			layout={FEATURED_PRODUCTS_SECTION_CONFIG.layout}
+		/>
+
+		<!-- New Arrivals Carousel Section -->
+		<NewArrivalsCarousel
+			id={NEW_ARRIVALS_CONFIG.id}
+			heading={NEW_ARRIVALS_CONFIG.heading}
+			subheading={NEW_ARRIVALS_CONFIG.subheading}
+			products={NEW_ARRIVALS_PRODUCTS}
+			maxProducts={NEW_ARRIVALS_CONFIG.maxProducts}
+			columns={NEW_ARRIVALS_CONFIG.columns}
+			gap={NEW_ARRIVALS_CONFIG.gap}
+			aspectRatio={NEW_ARRIVALS_CONFIG.aspectRatio}
+			navigationPosition={NEW_ARRIVALS_CONFIG.navigationPosition}
+			showIndicators={NEW_ARRIVALS_CONFIG.showIndicators}
+			autoScroll={NEW_ARRIVALS_CONFIG.autoScroll}
+			viewAllText={NEW_ARRIVALS_CONFIG.viewAllText}
+			viewAllHref={NEW_ARRIVALS_CONFIG.viewAllHref}
+			showViewAll={NEW_ARRIVALS_CONFIG.showViewAll}
+			infinite={NEW_ARRIVALS_CONFIG.infinite}
+			enableSwipe={NEW_ARRIVALS_CONFIG.enableSwipe}
+			enableKeyboard={NEW_ARRIVALS_CONFIG.enableKeyboard}
+			scrollAmount={NEW_ARRIVALS_CONFIG.scrollAmount}
+			animationDuration={NEW_ARRIVALS_CONFIG.animationDuration}
+		/>
+
 		<!-- Why Choose Us / Differentiators Section -->
 		<DifferentiatorsSection
 			id="why-choose-us"
 			heading="Why Choose Us"
 			subheading="Here's what sets us apart from other web service providers in the Houston area."
 			differentiators={differentiators}
+		/>
+
+		<!-- Testimonials Section -->
+		<TestimonialsSection
+			id={TESTIMONIALS_SECTION_CONFIG.id}
+			heading={TESTIMONIALS_SECTION_CONFIG.heading}
+			subheading={TESTIMONIALS_SECTION_CONFIG.subheading}
+			testimonials={TESTIMONIALS}
+			maxTestimonials={TESTIMONIALS_SECTION_CONFIG.maxTestimonials}
+			showRatings={TESTIMONIALS_SECTION_CONFIG.showRatings}
+			showVerified={TESTIMONIALS_SECTION_CONFIG.showVerified}
+			columns={TESTIMONIALS_SECTION_CONFIG.columns}
+			gap={TESTIMONIALS_SECTION_CONFIG.gap}
+			navigationPosition={TESTIMONIALS_SECTION_CONFIG.navigationPosition}
+			showIndicators={TESTIMONIALS_SECTION_CONFIG.showIndicators}
+			autoScroll={TESTIMONIALS_SECTION_CONFIG.autoScroll}
+			infinite={TESTIMONIALS_SECTION_CONFIG.infinite}
+			enableSwipe={TESTIMONIALS_SECTION_CONFIG.enableSwipe}
+			enableKeyboard={TESTIMONIALS_SECTION_CONFIG.enableKeyboard}
+			scrollAmount={TESTIMONIALS_SECTION_CONFIG.scrollAmount}
+			animationDuration={TESTIMONIALS_SECTION_CONFIG.animationDuration}
+			businessName={TESTIMONIALS_SECTION_CONFIG.businessName}
 		/>
 
 		<!-- Featured Projects Preview Section -->

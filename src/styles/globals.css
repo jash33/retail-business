@@ -23,7 +23,7 @@
  * DM Sans: Heading font with geometric, modern style
  */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 /* =================================================================
  * CSS RESET & BASE STYLES
@@ -316,22 +316,80 @@ th {
   border-width: 0;
 }
 
-/* Skip link for keyboard navigation */
+/* =================================================================
+ * SKIP LINKS NAVIGATION (Accessibility)
+ * =================================================================
+ * Multiple skip links for improved keyboard navigation to key sections.
+ * Hidden off-screen by default, revealed on focus for keyboard users.
+ * =================================================================
+ */
+
+/* Skip links container - positioned off-screen until focused */
+.skip-links {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: var(--z-max);
+  padding: var(--spacing-2);
+}
+
+.skip-links__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Individual skip link styling */
 .skip-link {
   position: absolute;
-  top: var(--spacing-4);
-  left: var(--spacing-4);
-  z-index: var(--z-max);
   padding: var(--spacing-2) var(--spacing-4);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
   background: var(--color-background);
   border: var(--border-width-2) solid var(--color-primary);
   border-radius: var(--radius-md);
+  text-decoration: none;
+  white-space: nowrap;
   transform: translateY(-200%);
-  transition: transform var(--duration-150) var(--ease-in-out);
+  transition: transform var(--duration-150) var(--ease-in-out),
+              box-shadow var(--duration-150) var(--ease-in-out);
 }
 
 .skip-link:focus {
+  position: relative;
   transform: translateY(0);
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.skip-link:hover {
+  background: var(--color-primary-50);
+}
+
+/* Ensure skip link targets have proper scroll margin */
+#shop-filters:target,
+#products-grid:target,
+#footer:target {
+  scroll-margin-top: calc(44px + var(--spacing-8) + 1px);
+}
+
+/* Make skip link targets focusable for skip link navigation */
+#shop-filters,
+#products-grid,
+#footer {
+  scroll-margin-top: calc(44px + var(--spacing-8) + 1px);
+}
+
+/* Reduced motion: disable skip link transitions */
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
 }
 
 /* =================================================================
@@ -1026,5 +1084,826 @@ html[data-theme="dark"] .section-accent-orb {
   .section-title-accented::after {
     transition: none;
     transform: scaleX(1);
+  }
+}
+
+/* =================================================================
+ * EDITORIAL TYPOGRAPHY SYSTEM
+ * =================================================================
+ * Premium magazine-style typography classes for articles, blogs,
+ * and long-form editorial content. Uses Cormorant Garamond for
+ * headings and Inter for body text.
+ *
+ * Usage:
+ *   <article class="editorial">
+ *     <h1 class="editorial-headline">Article Title</h1>
+ *     <p class="editorial-lead">Introduction paragraph...</p>
+ *     <p>Body text...</p>
+ *   </article>
+ * =================================================================
+ */
+
+/* -----------------------------------------------------------------
+ * Editorial Container
+ * Base styles for editorial content areas
+ * ----------------------------------------------------------------- */
+.editorial {
+  font-family: var(--font-editorial-body);
+  font-size: var(--font-size-editorial-base);
+  line-height: var(--line-height-editorial-body);
+  color: var(--color-text-primary);
+}
+
+.editorial > * + * {
+  margin-top: var(--space-editorial-paragraph);
+}
+
+/* -----------------------------------------------------------------
+ * Editorial Headings
+ * Cormorant Garamond serif headings with elegant styling
+ * ----------------------------------------------------------------- */
+.editorial h1,
+.editorial h2,
+.editorial h3,
+.editorial h4,
+.editorial h5,
+.editorial h6,
+.editorial-heading {
+  font-family: var(--font-editorial-heading);
+  font-weight: var(--font-weight-editorial-semibold);
+  line-height: var(--line-height-editorial-heading);
+  color: var(--color-text-primary);
+  margin-top: var(--space-editorial-heading);
+  margin-bottom: var(--spacing-4);
+  text-wrap: balance;
+}
+
+.editorial h1,
+.editorial-headline {
+  font-size: var(--font-size-editorial-4xl);
+  font-weight: var(--font-weight-editorial-medium);
+  line-height: var(--line-height-editorial-tight);
+  letter-spacing: var(--letter-spacing-editorial-tight);
+  margin-top: 0;
+}
+
+.editorial h2,
+.editorial-title {
+  font-size: var(--font-size-editorial-3xl);
+  letter-spacing: var(--letter-spacing-editorial-heading);
+}
+
+.editorial h3,
+.editorial-subtitle {
+  font-size: var(--font-size-editorial-2xl);
+  letter-spacing: var(--letter-spacing-editorial-heading);
+}
+
+.editorial h4 {
+  font-size: var(--font-size-editorial-xl);
+  letter-spacing: var(--letter-spacing-editorial-normal);
+}
+
+.editorial h5 {
+  font-size: var(--font-size-editorial-lg);
+  font-weight: var(--font-weight-editorial-bold);
+}
+
+.editorial h6 {
+  font-size: var(--font-size-editorial-md);
+  font-weight: var(--font-weight-editorial-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-editorial-caps);
+}
+
+/* -----------------------------------------------------------------
+ * Editorial Body Text
+ * Optimized for comfortable long-form reading
+ * ----------------------------------------------------------------- */
+.editorial p {
+  color: var(--color-text-secondary);
+  max-width: var(--measure-normal);
+  text-wrap: pretty;
+}
+
+/* Lead paragraph - larger intro text */
+.editorial-lead,
+.editorial > p:first-of-type {
+  font-size: var(--font-size-editorial-md);
+  line-height: var(--line-height-editorial-relaxed);
+  color: var(--color-text-primary);
+}
+
+/* Explicit lead class for when you want control */
+.editorial-lead {
+  font-size: var(--font-size-editorial-md);
+  line-height: var(--line-height-editorial-relaxed);
+  color: var(--color-text-primary);
+}
+
+/* Remove lead styling from non-first paragraphs */
+.editorial > p:not(:first-of-type):not(.editorial-lead) {
+  font-size: var(--font-size-editorial-base);
+  color: var(--color-text-secondary);
+}
+
+/* -----------------------------------------------------------------
+ * Drop Cap
+ * Decorative large first letter for article beginnings
+ * Usage: <p class="editorial-dropcap">First paragraph...</p>
+ * ----------------------------------------------------------------- */
+.editorial-dropcap::first-letter {
+  font-family: var(--font-editorial-heading);
+  font-size: var(--dropcap-size);
+  font-weight: var(--font-weight-editorial-bold);
+  float: left;
+  line-height: 0.8;
+  padding-right: var(--spacing-3);
+  padding-top: var(--spacing-1);
+  color: var(--color-primary);
+}
+
+/* Alternative drop cap with background */
+.editorial-dropcap--accent::first-letter {
+  background: var(--gradient-primary);
+  color: var(--color-text-inverse);
+  padding: var(--spacing-3) var(--spacing-4);
+  margin-right: var(--spacing-3);
+  margin-top: var(--spacing-1);
+  border-radius: var(--radius-base);
+}
+
+/* -----------------------------------------------------------------
+ * Pull Quotes & Blockquotes
+ * Elegant pull quotes for highlighting key passages
+ * ----------------------------------------------------------------- */
+.editorial blockquote,
+.editorial-blockquote {
+  font-family: var(--font-editorial-heading);
+  font-size: var(--font-size-editorial-lg);
+  font-style: italic;
+  font-weight: var(--font-weight-editorial-medium);
+  line-height: var(--line-height-editorial-snug);
+  color: var(--color-text-primary);
+  margin: var(--space-editorial-blockquote) 0;
+  padding-left: var(--spacing-6);
+  border-left: var(--pullquote-border-width) solid var(--color-primary);
+  max-width: var(--measure-normal);
+}
+
+.editorial blockquote p,
+.editorial-blockquote p {
+  font-size: inherit;
+  color: inherit;
+}
+
+/* Pull quote - centered, larger, no border */
+.editorial-pullquote {
+  font-family: var(--font-editorial-heading);
+  font-size: var(--font-size-editorial-2xl);
+  font-style: italic;
+  font-weight: var(--font-weight-editorial-light);
+  line-height: var(--line-height-editorial-snug);
+  text-align: center;
+  color: var(--color-text-primary);
+  margin: var(--spacing-12) auto;
+  padding: var(--spacing-8) var(--spacing-6);
+  max-width: var(--measure-wide);
+  position: relative;
+}
+
+/* Decorative quotation marks */
+.editorial-pullquote::before {
+  content: '\201C';
+  font-family: var(--font-editorial-heading);
+  font-size: 4rem;
+  font-style: normal;
+  color: var(--color-primary-200);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  line-height: 1;
+}
+
+html[data-theme="dark"] .editorial-pullquote::before {
+  color: var(--color-primary-700);
+}
+
+/* Attribution for quotes */
+.editorial-pullquote cite,
+.editorial-blockquote cite,
+.editorial-attribution {
+  display: block;
+  font-family: var(--font-editorial-body);
+  font-size: var(--font-size-editorial-sm);
+  font-style: normal;
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-tertiary);
+  margin-top: var(--spacing-3);
+  letter-spacing: var(--letter-spacing-editorial-wide);
+}
+
+.editorial-attribution::before {
+  content: '\2014\00a0';
+}
+
+/* -----------------------------------------------------------------
+ * Editorial Byline & Metadata
+ * Author, date, reading time, and other article metadata
+ * ----------------------------------------------------------------- */
+.editorial-byline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2) var(--spacing-4);
+  font-family: var(--font-editorial-body);
+  font-size: var(--font-size-editorial-sm);
+  color: var(--color-text-tertiary);
+  letter-spacing: var(--letter-spacing-editorial-wide);
+  margin-top: var(--spacing-4);
+  margin-bottom: var(--spacing-8);
+}
+
+.editorial-byline a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--duration-150) var(--ease-in-out);
+}
+
+.editorial-byline a:hover {
+  color: var(--color-primary);
+}
+
+.editorial-author {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.editorial-date,
+.editorial-readtime {
+  color: var(--color-text-tertiary);
+}
+
+.editorial-byline-separator {
+  color: var(--color-border-dark);
+}
+
+/* -----------------------------------------------------------------
+ * Editorial Kicker & Eyebrow
+ * Category label or topic indicator above headline
+ * ----------------------------------------------------------------- */
+.editorial-kicker,
+.editorial-eyebrow {
+  display: inline-block;
+  font-family: var(--font-editorial-body);
+  font-size: var(--font-size-editorial-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-editorial-caps);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-3);
+}
+
+.editorial-kicker--accent {
+  color: var(--color-accent);
+}
+
+/* -----------------------------------------------------------------
+ * Editorial Subhead
+ * Secondary headline below main title
+ * ----------------------------------------------------------------- */
+.editorial-subhead {
+  font-family: var(--font-editorial-body);
+  font-size: var(--font-size-editorial-md);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-editorial-body);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-4);
+  max-width: var(--measure-normal);
+}
+
+/* -----------------------------------------------------------------
+ * Editorial Section Dividers
+ * Visual separators between article sections
+ * ----------------------------------------------------------------- */
+.editorial-divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: var(--space-editorial-section) auto;
+  max-width: var(--measure-normal);
+}
+
+.editorial-divider::before {
+  content: '';
+  width: var(--divider-width);
+  height: var(--divider-height);
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+/* Decorative divider with dots */
+.editorial-divider--dots {
+  gap: var(--spacing-3);
+}
+
+.editorial-divider--dots::before,
+.editorial-divider--dots::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--color-text-tertiary);
+  border-radius: var(--radius-full);
+}
+
+.editorial-divider--dots::before {
+  box-shadow: -12px 0 0 var(--color-text-disabled);
+}
+
+.editorial-divider--dots::after {
+  box-shadow: 12px 0 0 var(--color-text-disabled);
+}
+
+/* Gradient accent divider */
+.editorial-divider--accent::before {
+  width: 6rem;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-primary) 20%,
+    var(--color-accent) 80%,
+    transparent 100%
+  );
+}
+
+/* -----------------------------------------------------------------
+ * Editorial Captions & Credits
+ * Image captions and photo credits
+ * ----------------------------------------------------------------- */
+.editorial-caption {
+  font-family: var(--font-editorial-body);
+  font-size: var(--font-size-editorial-sm);
+  font-style: italic;
+  color: var(--color-text-tertiary);
+  margin-top: var(--spacing-3);
+  padding-top: var(--spacing-2);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.editorial-credit {
+  font-family: var(--font-editorial-body);
+  font-size: var(--font-size-editorial-xs);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-editorial-caps);
+  color: var(--color-text-disabled);
+  margin-top: var(--spacing-1);
+}
+
+/* -----------------------------------------------------------------
+ * Editorial Lists
+ * Styled lists for article content
+ * ----------------------------------------------------------------- */
+.editorial ul,
+.editorial ol {
+  padding-left: var(--spacing-6);
+  margin: var(--space-editorial-paragraph) 0;
+  max-width: var(--measure-normal);
+}
+
+.editorial li {
+  margin-bottom: var(--spacing-2);
+  color: var(--color-text-secondary);
+}
+
+.editorial li::marker {
+  color: var(--color-primary);
+}
+
+/* -----------------------------------------------------------------
+ * Editorial Links
+ * Styled links within article content
+ * ----------------------------------------------------------------- */
+.editorial a:not(.editorial-byline a) {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--color-primary-200);
+  text-underline-offset: 0.15em;
+  text-decoration-thickness: 1px;
+  transition:
+    color var(--duration-150) var(--ease-in-out),
+    text-decoration-color var(--duration-150) var(--ease-in-out);
+}
+
+.editorial a:not(.editorial-byline a):hover {
+  color: var(--color-primary-dark);
+  text-decoration-color: var(--color-primary);
+}
+
+/* -----------------------------------------------------------------
+ * Standalone Editorial Typography Classes
+ * Use these outside of .editorial container
+ * ----------------------------------------------------------------- */
+.text-editorial-headline {
+  font-family: var(--font-editorial-heading);
+  font-size: var(--font-size-editorial-4xl);
+  font-weight: var(--font-weight-editorial-medium);
+  line-height: var(--line-height-editorial-tight);
+  letter-spacing: var(--letter-spacing-editorial-tight);
+}
+
+.text-editorial-display {
+  font-family: var(--font-editorial-heading);
+  font-size: var(--font-size-editorial-5xl);
+  font-weight: var(--font-weight-editorial-light);
+  line-height: var(--line-height-editorial-tight);
+  letter-spacing: var(--letter-spacing-editorial-tight);
+}
+
+.text-editorial-title {
+  font-family: var(--font-editorial-heading);
+  font-size: var(--font-size-editorial-3xl);
+  font-weight: var(--font-weight-editorial-semibold);
+  line-height: var(--line-height-editorial-heading);
+  letter-spacing: var(--letter-spacing-editorial-heading);
+}
+
+.text-editorial-subtitle {
+  font-family: var(--font-editorial-heading);
+  font-size: var(--font-size-editorial-2xl);
+  font-weight: var(--font-weight-editorial-medium);
+  line-height: var(--line-height-editorial-snug);
+}
+
+.text-editorial-body {
+  font-family: var(--font-editorial-body);
+  font-size: var(--font-size-editorial-base);
+  line-height: var(--line-height-editorial-body);
+}
+
+.text-editorial-lead {
+  font-family: var(--font-editorial-body);
+  font-size: var(--font-size-editorial-md);
+  line-height: var(--line-height-editorial-relaxed);
+}
+
+.text-editorial-caption {
+  font-family: var(--font-editorial-body);
+  font-size: var(--font-size-editorial-sm);
+  letter-spacing: var(--letter-spacing-editorial-wide);
+}
+
+.text-editorial-overline {
+  font-family: var(--font-editorial-body);
+  font-size: var(--font-size-editorial-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-editorial-caps);
+}
+
+/* -----------------------------------------------------------------
+ * Editorial Small Caps
+ * For elegant small caps text
+ * ----------------------------------------------------------------- */
+.editorial-smallcaps {
+  font-variant: small-caps;
+  letter-spacing: var(--letter-spacing-editorial-wide);
+}
+
+/* -----------------------------------------------------------------
+ * Editorial Content Width Utilities
+ * Control the measure (line length) of content
+ * ----------------------------------------------------------------- */
+.editorial-measure-narrow {
+  max-width: var(--measure-narrow);
+}
+
+.editorial-measure-normal {
+  max-width: var(--measure-normal);
+}
+
+.editorial-measure-wide {
+  max-width: var(--measure-wide);
+}
+
+.editorial-measure-full {
+  max-width: var(--measure-full);
+}
+
+/* =================================================================
+ * EDITORIAL TYPOGRAPHY - RESPONSIVE TYPE SCALE
+ * =================================================================
+ * Fluid typography that scales gracefully across viewport sizes
+ * while maintaining optimal reading experience.
+ * =================================================================
+ */
+
+/* -----------------------------------------------------------------
+ * Mobile First Base (< 640px)
+ * Compact but readable sizing for small screens
+ * ----------------------------------------------------------------- */
+@media (max-width: 639px) {
+  .editorial {
+    font-size: 1rem; /* 16px on mobile */
+  }
+
+  .editorial h1,
+  .editorial-headline,
+  .text-editorial-headline {
+    font-size: 2.25rem; /* 36px */
+    letter-spacing: -0.02em;
+  }
+
+  .editorial h2,
+  .editorial-title,
+  .text-editorial-title {
+    font-size: 1.875rem; /* 30px */
+  }
+
+  .editorial h3,
+  .editorial-subtitle,
+  .text-editorial-subtitle {
+    font-size: 1.5rem; /* 24px */
+  }
+
+  .editorial h4 {
+    font-size: 1.25rem; /* 20px */
+  }
+
+  .editorial-lead,
+  .editorial > p:first-of-type,
+  .text-editorial-lead {
+    font-size: 1.125rem; /* 18px */
+  }
+
+  .editorial-pullquote {
+    font-size: 1.5rem; /* 24px */
+    padding: var(--spacing-6) var(--spacing-4);
+    margin: var(--spacing-8) auto;
+  }
+
+  .editorial-pullquote::before {
+    font-size: 3rem;
+  }
+
+  .editorial blockquote,
+  .editorial-blockquote {
+    font-size: 1.125rem; /* 18px */
+    padding-left: var(--spacing-4);
+  }
+
+  .text-editorial-display {
+    font-size: 2.5rem; /* 40px */
+  }
+
+  /* Reduce drop cap size on mobile */
+  .editorial-dropcap::first-letter {
+    font-size: 2.75em;
+  }
+
+  /* Stack byline vertically on mobile */
+  .editorial-byline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-1);
+  }
+
+  .editorial-byline-separator {
+    display: none;
+  }
+}
+
+/* -----------------------------------------------------------------
+ * Tablet (640px - 1023px)
+ * Intermediate sizing for medium screens
+ * ----------------------------------------------------------------- */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .editorial {
+    font-size: 1.0625rem; /* 17px */
+  }
+
+  .editorial h1,
+  .editorial-headline,
+  .text-editorial-headline {
+    font-size: 3rem; /* 48px */
+  }
+
+  .editorial h2,
+  .editorial-title,
+  .text-editorial-title {
+    font-size: 2.25rem; /* 36px */
+  }
+
+  .editorial h3,
+  .editorial-subtitle,
+  .text-editorial-subtitle {
+    font-size: 1.875rem; /* 30px */
+  }
+
+  .editorial h4 {
+    font-size: 1.5rem; /* 24px */
+  }
+
+  .editorial-lead,
+  .editorial > p:first-of-type,
+  .text-editorial-lead {
+    font-size: 1.1875rem; /* 19px */
+  }
+
+  .editorial-pullquote {
+    font-size: 2rem; /* 32px */
+  }
+
+  .text-editorial-display {
+    font-size: 3.5rem; /* 56px */
+  }
+}
+
+/* -----------------------------------------------------------------
+ * Desktop (1024px+)
+ * Full editorial sizing as defined in variables
+ * ----------------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .editorial {
+    font-size: var(--font-size-editorial-base);
+  }
+
+  .editorial h1,
+  .editorial-headline,
+  .text-editorial-headline {
+    font-size: var(--font-size-editorial-4xl);
+  }
+
+  .editorial h2,
+  .editorial-title,
+  .text-editorial-title {
+    font-size: var(--font-size-editorial-3xl);
+  }
+
+  .editorial h3,
+  .editorial-subtitle,
+  .text-editorial-subtitle {
+    font-size: var(--font-size-editorial-2xl);
+  }
+
+  .editorial h4 {
+    font-size: var(--font-size-editorial-xl);
+  }
+
+  .editorial-lead,
+  .editorial > p:first-of-type,
+  .text-editorial-lead {
+    font-size: var(--font-size-editorial-md);
+  }
+
+  .editorial-pullquote {
+    font-size: var(--font-size-editorial-2xl);
+  }
+
+  .text-editorial-display {
+    font-size: var(--font-size-editorial-5xl);
+  }
+}
+
+/* -----------------------------------------------------------------
+ * Large Desktop (1280px+)
+ * Slightly larger type for bigger screens
+ * ----------------------------------------------------------------- */
+@media (min-width: 1280px) {
+  .text-editorial-display {
+    font-size: var(--font-size-editorial-6xl);
+  }
+
+  .editorial h1,
+  .editorial-headline,
+  .text-editorial-headline {
+    font-size: 4rem; /* 64px */
+  }
+}
+
+/* -----------------------------------------------------------------
+ * Editorial Dark Mode Adjustments
+ * Enhanced readability in dark mode
+ * ----------------------------------------------------------------- */
+html[data-theme="dark"] .editorial {
+  color: var(--color-text-primary);
+}
+
+html[data-theme="dark"] .editorial p {
+  color: var(--color-text-secondary);
+}
+
+html[data-theme="dark"] .editorial-lead,
+html[data-theme="dark"] .editorial > p:first-of-type {
+  color: var(--color-text-primary);
+}
+
+html[data-theme="dark"] .editorial blockquote,
+html[data-theme="dark"] .editorial-blockquote {
+  border-left-color: var(--color-primary-400);
+}
+
+html[data-theme="dark"] .editorial-dropcap::first-letter {
+  color: var(--color-primary-300);
+}
+
+html[data-theme="dark"] .editorial-kicker,
+html[data-theme="dark"] .editorial-eyebrow {
+  color: var(--color-primary-300);
+}
+
+html[data-theme="dark"] .editorial a:not(.editorial-byline a) {
+  color: var(--color-primary-300);
+  text-decoration-color: var(--color-primary-600);
+}
+
+html[data-theme="dark"] .editorial a:not(.editorial-byline a):hover {
+  color: var(--color-primary-200);
+  text-decoration-color: var(--color-primary-400);
+}
+
+html[data-theme="dark"] .editorial li::marker {
+  color: var(--color-primary-400);
+}
+
+html[data-theme="dark"] .editorial-divider--dots::before,
+html[data-theme="dark"] .editorial-divider--dots::after {
+  background: var(--color-text-disabled);
+}
+
+html[data-theme="dark"] .editorial-divider--dots::before {
+  box-shadow: -12px 0 0 var(--color-border-dark);
+}
+
+html[data-theme="dark"] .editorial-divider--dots::after {
+  box-shadow: 12px 0 0 var(--color-border-dark);
+}
+
+/* -----------------------------------------------------------------
+ * Reduced Motion Preferences for Editorial
+ * Respects user motion preferences
+ * ----------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .editorial a {
+    transition: none;
+  }
+
+  .editorial-pullquote,
+  .editorial blockquote {
+    transition: none;
+  }
+}
+
+/* -----------------------------------------------------------------
+ * Print Styles for Editorial Content
+ * Optimized typography for printed articles
+ * ----------------------------------------------------------------- */
+@media print {
+  .editorial {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+  }
+
+  .editorial h1,
+  .editorial-headline {
+    font-size: 24pt;
+  }
+
+  .editorial h2,
+  .editorial-title {
+    font-size: 18pt;
+  }
+
+  .editorial h3,
+  .editorial-subtitle {
+    font-size: 14pt;
+  }
+
+  .editorial p {
+    color: #333;
+    max-width: 100%;
+  }
+
+  .editorial-dropcap::first-letter {
+    color: #000;
+  }
+
+  .editorial blockquote {
+    border-left-color: #000;
+  }
+
+  .editorial-pullquote::before {
+    color: #ccc;
+  }
+
+  .editorial-divider {
+    page-break-inside: avoid;
+  }
+
+  .editorial a {
+    color: #000;
+    text-decoration: underline;
   }
 }

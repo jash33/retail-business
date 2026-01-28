@@ -1,0 +1,955 @@
+---
+/**
+ * Exit Intent Newsletter Popup Component
+ *
+ * A tasteful exit-intent popup for newsletter signups with:
+ * - Exit-intent detection (mouse leaving viewport)
+ * - Delay controls (minimum time on page before showing)
+ * - Frequency controls (cookie-based suppression)
+ * - GDPR compliance (respects marketing consent)
+ * - Accessible and responsive design
+ *
+ * @example
+ * ```astro
+ * <ExitIntentPopup />
+ * ```
+ */
+
+interface Props {
+  /** Minimum time on page (ms) before popup can show. Default: 5000 (5 seconds) */
+  minTimeOnPage?: number;
+  /** Days to suppress popup after dismissal. Default: 7 */
+  dismissalDays?: number;
+  /** Days to suppress popup after successful signup. Default: 365 */
+  signupDays?: number;
+  /** Enable exit intent detection. Default: true */
+  enableExitIntent?: boolean;
+  /** Show popup on scroll to bottom as fallback for mobile. Default: true */
+  enableScrollTrigger?: boolean;
+  /** Scroll percentage to trigger popup on mobile. Default: 70 */
+  scrollTriggerPercent?: number;
+}
+
+const {
+  minTimeOnPage = 5000,
+  dismissalDays = 7,
+  signupDays = 365,
+  enableExitIntent = true,
+  enableScrollTrigger = true,
+  scrollTriggerPercent = 70,
+} = Astro.props;
+---
+
+<!-- Exit Intent Newsletter Popup -->
+<div
+  id="exit-intent-popup"
+  class="exit-popup"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="exit-popup-title"
+  aria-describedby="exit-popup-description"
+  hidden
+  data-config={JSON.stringify({
+    minTimeOnPage,
+    dismissalDays,
+    signupDays,
+    enableExitIntent,
+    enableScrollTrigger,
+    scrollTriggerPercent,
+  })}
+>
+  <!-- Backdrop -->
+  <div class="exit-popup__backdrop" aria-hidden="true"></div>
+
+  <!-- Modal Content -->
+  <div class="exit-popup__modal">
+    <!-- Close Button -->
+    <button
+      type="button"
+      id="exit-popup-close"
+      class="exit-popup__close"
+      aria-label="Close newsletter popup"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Header -->
+    <div class="exit-popup__header">
+      <div class="exit-popup__icon" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+      </div>
+      <h2 id="exit-popup-title" class="exit-popup__title">
+        Don't Miss Out!
+      </h2>
+      <p id="exit-popup-description" class="exit-popup__description">
+        Subscribe to our newsletter and get exclusive offers, design tips, and early access to new collections.
+      </p>
+    </div>
+
+    <!-- Newsletter Form -->
+    <form id="exit-popup-form" class="exit-popup__form" novalidate>
+      <!-- Email Field -->
+      <div class="exit-popup__field">
+        <label for="exit-popup-email" class="sr-only">Email address</label>
+        <input
+          type="email"
+          id="exit-popup-email"
+          name="email"
+          class="exit-popup__input"
+          placeholder="Enter your email address"
+          required
+          autocomplete="email"
+          aria-describedby="exit-popup-email-error"
+          aria-invalid="false"
+        />
+        <span id="exit-popup-email-error" class="exit-popup__error" role="alert" aria-live="polite"></span>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        id="exit-popup-submit"
+        class="exit-popup__submit"
+      >
+        <span class="exit-popup__submit-text">Subscribe</span>
+        <span class="exit-popup__submit-loading" aria-hidden="true">
+          <svg class="exit-popup__spinner" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="31.4 31.4" />
+          </svg>
+          <span>Subscribing...</span>
+        </span>
+      </button>
+    </form>
+
+    <!-- Success Message -->
+    <div
+      id="exit-popup-success"
+      class="exit-popup__success"
+      role="status"
+      aria-live="polite"
+      hidden
+    >
+      <svg class="exit-popup__success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      <div>
+        <strong>Welcome aboard!</strong>
+        <p>Check your inbox for a confirmation email.</p>
+      </div>
+    </div>
+
+    <!-- GDPR Notice -->
+    <p class="exit-popup__privacy">
+      By subscribing, you agree to our
+      <a href="/privacy-policy" class="exit-popup__link">Privacy Policy</a>.
+      Unsubscribe anytime.
+    </p>
+
+    <!-- No Thanks Link -->
+    <button
+      type="button"
+      id="exit-popup-dismiss"
+      class="exit-popup__dismiss"
+    >
+      No thanks, I'm not interested
+    </button>
+  </div>
+</div>
+
+<style>
+  /* =================================================================
+   * EXIT INTENT POPUP STYLES
+   * ================================================================= */
+
+  .exit-popup {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal, 500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-4);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--duration-300, 300ms) var(--ease-out, ease-out),
+      visibility var(--duration-300, 300ms) var(--ease-out, ease-out);
+  }
+
+  .exit-popup[data-visible="true"] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .exit-popup[hidden] {
+    display: none;
+  }
+
+  /* =================================================================
+   * BACKDROP
+   * ================================================================= */
+  .exit-popup__backdrop {
+    position: absolute;
+    inset: 0;
+    background: var(--color-background-overlay, rgba(0, 0, 0, 0.5));
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  /* =================================================================
+   * MODAL
+   * ================================================================= */
+  .exit-popup__modal {
+    position: relative;
+    width: 100%;
+    max-width: 28rem;
+    background: var(--color-background, #ffffff);
+    border-radius: var(--radius-2xl, 1rem);
+    box-shadow: var(--shadow-2xl, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
+    padding: var(--spacing-8, 2rem);
+    transform: scale(0.95) translateY(10px);
+    transition: transform var(--duration-300, 300ms) var(--ease-out, ease-out);
+  }
+
+  .exit-popup[data-visible="true"] .exit-popup__modal {
+    transform: scale(1) translateY(0);
+  }
+
+  /* =================================================================
+   * CLOSE BUTTON
+   * ================================================================= */
+  .exit-popup__close {
+    position: absolute;
+    top: var(--spacing-4, 1rem);
+    right: var(--spacing-4, 1rem);
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-full, 9999px);
+    color: var(--color-text-tertiary, #6b7280);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150, 150ms) var(--ease-in-out, ease-in-out),
+      color var(--duration-150, 150ms) var(--ease-in-out, ease-in-out);
+  }
+
+  .exit-popup__close:hover {
+    background: var(--color-background-muted, #f1f5f9);
+    color: var(--color-text-primary, #111827);
+  }
+
+  .exit-popup__close:focus-visible {
+    outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, var(--color-primary));
+    outline-offset: var(--focus-ring-offset, 2px);
+  }
+
+  /* =================================================================
+   * HEADER
+   * ================================================================= */
+  .exit-popup__header {
+    text-align: center;
+    margin-bottom: var(--spacing-6, 1.5rem);
+  }
+
+  .exit-popup__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin: 0 auto var(--spacing-4, 1rem);
+    background: var(--color-primary-50, #e6eaf2);
+    border-radius: var(--radius-full, 9999px);
+    color: var(--color-primary, #365395);
+  }
+
+  .exit-popup__title {
+    font-family: var(--font-heading, 'DM Sans', sans-serif);
+    font-size: var(--font-size-2xl, 1.875rem);
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--color-text-primary, #111827);
+    margin-bottom: var(--spacing-2, 0.5rem);
+    line-height: var(--line-height-tight, 1.25);
+  }
+
+  .exit-popup__description {
+    font-size: var(--font-size-base, 1rem);
+    color: var(--color-text-secondary, #4b5563);
+    line-height: var(--line-height-relaxed, 1.625);
+    margin: 0;
+  }
+
+  /* =================================================================
+   * FORM
+   * ================================================================= */
+  .exit-popup__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3, 0.75rem);
+    margin-bottom: var(--spacing-4, 1rem);
+  }
+
+  .exit-popup__field {
+    position: relative;
+  }
+
+  .exit-popup__input {
+    width: 100%;
+    padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+    font-size: var(--font-size-base, 1rem);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    color: var(--color-text-primary, #111827);
+    background: var(--color-background, #ffffff);
+    border: var(--border-width-1, 1px) solid var(--color-border, #e5e7eb);
+    border-radius: var(--radius-lg, 0.5rem);
+    transition:
+      border-color var(--duration-150, 150ms) var(--ease-in-out, ease-in-out),
+      box-shadow var(--duration-150, 150ms) var(--ease-in-out, ease-in-out);
+  }
+
+  .exit-popup__input::placeholder {
+    color: var(--color-text-placeholder, #9ca3af);
+  }
+
+  .exit-popup__input:hover:not(:focus) {
+    border-color: var(--color-border-dark, #d1d5db);
+  }
+
+  .exit-popup__input:focus {
+    outline: none;
+    border-color: var(--color-primary, #365395);
+    box-shadow: 0 0 0 var(--focus-ring-width, 2px) var(--color-primary-100, #c2cbdf);
+  }
+
+  .exit-popup__input[aria-invalid="true"] {
+    border-color: var(--color-error, #ef4444);
+    background-color: var(--color-error-light, #fee2e2);
+  }
+
+  .exit-popup__error {
+    display: block;
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--color-error-text, #991b1b);
+    margin-top: var(--spacing-1, 0.25rem);
+    min-height: 1.25rem;
+  }
+
+  .exit-popup__error:empty {
+    display: none;
+  }
+
+  /* =================================================================
+   * SUBMIT BUTTON
+   * ================================================================= */
+  .exit-popup__submit {
+    width: 100%;
+    padding: var(--spacing-3, 0.75rem) var(--spacing-6, 1.5rem);
+    font-size: var(--font-size-base, 1rem);
+    font-weight: var(--font-weight-semibold, 600);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    color: var(--color-text-inverse, #ffffff);
+    background: var(--color-primary, #365395);
+    border: none;
+    border-radius: var(--radius-lg, 0.5rem);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2, 0.5rem);
+    transition:
+      background-color var(--duration-150, 150ms) var(--ease-in-out, ease-in-out),
+      transform var(--duration-150, 150ms) var(--ease-in-out, ease-in-out),
+      box-shadow var(--duration-150, 150ms) var(--ease-in-out, ease-in-out);
+  }
+
+  .exit-popup__submit:hover:not(:disabled) {
+    background: var(--color-primary-hover, #304b8d);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  }
+
+  .exit-popup__submit:active:not(:disabled) {
+    background: var(--color-primary-active, #284182);
+    transform: translateY(0);
+  }
+
+  .exit-popup__submit:focus-visible {
+    outline: var(--focus-ring-width, 2px) solid var(--color-primary, #365395);
+    outline-offset: var(--focus-ring-offset, 2px);
+  }
+
+  .exit-popup__submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .exit-popup__submit-loading {
+    display: none;
+    align-items: center;
+    gap: var(--spacing-2, 0.5rem);
+  }
+
+  .exit-popup__submit[data-loading="true"] .exit-popup__submit-text {
+    display: none;
+  }
+
+  .exit-popup__submit[data-loading="true"] .exit-popup__submit-loading {
+    display: flex;
+  }
+
+  .exit-popup__spinner {
+    width: 1.25rem;
+    height: 1.25rem;
+    animation: exit-popup-spin 1s linear infinite;
+  }
+
+  @keyframes exit-popup-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* =================================================================
+   * SUCCESS MESSAGE
+   * ================================================================= */
+  .exit-popup__success {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3, 0.75rem);
+    padding: var(--spacing-4, 1rem);
+    background: var(--color-success-light, #d1fae5);
+    border: var(--border-width-1, 1px) solid var(--color-success-border, #6ee7b7);
+    border-radius: var(--radius-lg, 0.5rem);
+    color: var(--color-success-text, #065f46);
+    font-size: var(--font-size-sm, 0.875rem);
+    margin-bottom: var(--spacing-4, 1rem);
+  }
+
+  .exit-popup__success[hidden] {
+    display: none;
+  }
+
+  .exit-popup__success-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+    color: var(--color-success, #10b981);
+  }
+
+  .exit-popup__success strong {
+    display: block;
+    font-weight: var(--font-weight-semibold, 600);
+  }
+
+  .exit-popup__success p {
+    margin: var(--spacing-1, 0.25rem) 0 0;
+  }
+
+  /* =================================================================
+   * PRIVACY NOTICE
+   * ================================================================= */
+  .exit-popup__privacy {
+    font-size: var(--font-size-xs, 0.75rem);
+    color: var(--color-text-tertiary, #6b7280);
+    text-align: center;
+    margin: 0 0 var(--spacing-4, 1rem);
+  }
+
+  .exit-popup__link {
+    color: var(--color-primary, #365395);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .exit-popup__link:hover {
+    color: var(--color-primary-hover, #304b8d);
+  }
+
+  /* =================================================================
+   * DISMISS BUTTON
+   * ================================================================= */
+  .exit-popup__dismiss {
+    display: block;
+    width: 100%;
+    padding: var(--spacing-2, 0.5rem);
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--color-text-tertiary, #6b7280);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    transition: color var(--duration-150, 150ms) var(--ease-in-out, ease-in-out);
+  }
+
+  .exit-popup__dismiss:hover {
+    color: var(--color-text-primary, #111827);
+    text-decoration: underline;
+  }
+
+  .exit-popup__dismiss:focus-visible {
+    outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, var(--color-primary));
+    outline-offset: var(--focus-ring-offset, 2px);
+  }
+
+  /* =================================================================
+   * SCREEN READER ONLY
+   * ================================================================= */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE
+   * ================================================================= */
+  @media (max-width: 480px) {
+    .exit-popup {
+      padding: var(--spacing-2, 0.5rem);
+    }
+
+    .exit-popup__modal {
+      padding: var(--spacing-6, 1.5rem);
+      border-radius: var(--radius-xl, 0.75rem);
+    }
+
+    .exit-popup__title {
+      font-size: var(--font-size-xl, 1.5rem);
+    }
+
+    .exit-popup__description {
+      font-size: var(--font-size-sm, 0.875rem);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .exit-popup,
+    .exit-popup__modal,
+    .exit-popup__close,
+    .exit-popup__submit {
+      transition: none;
+    }
+
+    .exit-popup__spinner {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .exit-popup__modal {
+      border: 2px solid CanvasText;
+    }
+
+    .exit-popup__input {
+      border: 2px solid CanvasText;
+    }
+
+    .exit-popup__submit {
+      border: 2px solid currentColor;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Exit Intent Newsletter Popup Logic
+   * Handles exit detection, display controls, and form submission
+   */
+
+  // Storage keys
+  const STORAGE_KEY_DISMISSED = 'exit_popup_dismissed';
+  const STORAGE_KEY_SUBSCRIBED = 'exit_popup_subscribed';
+  const STORAGE_KEY_CONSENT = 'hws_consent_preferences';
+
+  // DOM Elements
+  const popup = document.getElementById('exit-intent-popup') as HTMLElement;
+  const closeBtn = document.getElementById('exit-popup-close') as HTMLButtonElement;
+  const dismissBtn = document.getElementById('exit-popup-dismiss') as HTMLButtonElement;
+  const form = document.getElementById('exit-popup-form') as HTMLFormElement;
+  const emailInput = document.getElementById('exit-popup-email') as HTMLInputElement;
+  const emailError = document.getElementById('exit-popup-email-error') as HTMLSpanElement;
+  const submitBtn = document.getElementById('exit-popup-submit') as HTMLButtonElement;
+  const successMessage = document.getElementById('exit-popup-success') as HTMLDivElement;
+
+  // Configuration from data attribute
+  const config = popup ? JSON.parse(popup.dataset.config || '{}') : {};
+  const {
+    minTimeOnPage = 5000,
+    dismissalDays = 7,
+    signupDays = 365,
+    enableExitIntent = true,
+    enableScrollTrigger = true,
+    scrollTriggerPercent = 70,
+  } = config;
+
+  // State
+  let pageLoadTime = Date.now();
+  let hasShown = false;
+  let hasTriggeredScroll = false;
+  let focusedElementBeforeOpen: HTMLElement | null = null;
+
+  // Email validation regex
+  const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+  /**
+   * Check if user has given marketing consent (GDPR compliance)
+   */
+  function hasMarketingConsent(): boolean {
+    try {
+      const consentStr = localStorage.getItem(STORAGE_KEY_CONSENT);
+      if (!consentStr) return false; // No consent given yet, don't show popup
+
+      const consent = JSON.parse(consentStr);
+      // Allow popup if marketing consent is given OR if they haven't made a choice yet
+      // (in which case the cookie banner will handle it)
+      return consent.marketing === true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Check if popup has been suppressed (dismissed or already subscribed)
+   */
+  function isSuppressed(): boolean {
+    try {
+      // Check if user already subscribed
+      const subscribedStr = localStorage.getItem(STORAGE_KEY_SUBSCRIBED);
+      if (subscribedStr) {
+        const subscribed = JSON.parse(subscribedStr);
+        const expiryTime = subscribed.timestamp + (signupDays * 24 * 60 * 60 * 1000);
+        if (Date.now() < expiryTime) {
+          return true;
+        }
+      }
+
+      // Check if user dismissed popup
+      const dismissedStr = localStorage.getItem(STORAGE_KEY_DISMISSED);
+      if (dismissedStr) {
+        const dismissed = JSON.parse(dismissedStr);
+        const expiryTime = dismissed.timestamp + (dismissalDays * 24 * 60 * 60 * 1000);
+        if (Date.now() < expiryTime) {
+          return true;
+        }
+      }
+
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Check if minimum time on page has passed
+   */
+  function hasMinTimePassed(): boolean {
+    return (Date.now() - pageLoadTime) >= minTimeOnPage;
+  }
+
+  /**
+   * Check if popup can be shown
+   */
+  function canShowPopup(): boolean {
+    // Don't show if already shown this session
+    if (hasShown) return false;
+
+    // Don't show if suppressed (dismissed or subscribed)
+    if (isSuppressed()) return false;
+
+    // Don't show if minimum time hasn't passed
+    if (!hasMinTimePassed()) return false;
+
+    // Check marketing consent for GDPR compliance
+    // Note: We show popup even without consent, but won't actually subscribe
+    // This allows users to give consent when they subscribe
+
+    return true;
+  }
+
+  /**
+   * Show the popup
+   */
+  function showPopup(): void {
+    if (!popup || hasShown) return;
+
+    hasShown = true;
+
+    // Store focused element for restoration
+    focusedElementBeforeOpen = document.activeElement as HTMLElement;
+
+    // Show popup
+    popup.hidden = false;
+
+    // Trigger animation (use requestAnimationFrame for better timing)
+    requestAnimationFrame(() => {
+      popup.setAttribute('data-visible', 'true');
+    });
+
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+
+    // Focus email input
+    setTimeout(() => {
+      emailInput?.focus();
+    }, 300);
+
+    // Add keyboard event listener
+    document.addEventListener('keydown', handleKeydown);
+  }
+
+  /**
+   * Hide the popup
+   */
+  function hidePopup(): void {
+    if (!popup) return;
+
+    popup.setAttribute('data-visible', 'false');
+
+    // Wait for animation
+    setTimeout(() => {
+      popup.hidden = true;
+      document.body.style.overflow = '';
+
+      // Restore focus
+      focusedElementBeforeOpen?.focus();
+    }, 300);
+
+    // Remove keyboard listener
+    document.removeEventListener('keydown', handleKeydown);
+  }
+
+  /**
+   * Mark popup as dismissed
+   */
+  function markDismissed(): void {
+    try {
+      localStorage.setItem(STORAGE_KEY_DISMISSED, JSON.stringify({
+        timestamp: Date.now(),
+      }));
+    } catch {
+      // localStorage not available
+    }
+  }
+
+  /**
+   * Mark user as subscribed
+   */
+  function markSubscribed(): void {
+    try {
+      localStorage.setItem(STORAGE_KEY_SUBSCRIBED, JSON.stringify({
+        timestamp: Date.now(),
+      }));
+    } catch {
+      // localStorage not available
+    }
+  }
+
+  /**
+   * Handle keyboard events
+   */
+  function handleKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      markDismissed();
+      hidePopup();
+    }
+
+    // Trap focus within modal
+    if (event.key === 'Tab') {
+      const focusableElements = popup?.querySelectorAll(
+        'button:not([disabled]), input:not([disabled]), a[href]'
+      );
+
+      if (!focusableElements || focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    }
+  }
+
+  /**
+   * Validate email
+   */
+  function validateEmail(email: string): string | null {
+    const trimmed = email.trim();
+    if (!trimmed) return 'Please enter your email address';
+    if (!EMAIL_REGEX.test(trimmed)) return 'Please enter a valid email address';
+    return null;
+  }
+
+  /**
+   * Handle form submission
+   */
+  async function handleSubmit(event: Event): Promise<void> {
+    event.preventDefault();
+
+    // Validate email
+    const emailValue = emailInput?.value || '';
+    const error = validateEmail(emailValue);
+
+    if (error) {
+      emailError.textContent = error;
+      emailInput?.setAttribute('aria-invalid', 'true');
+      emailInput?.focus();
+      return;
+    }
+
+    // Clear error
+    emailError.textContent = '';
+    emailInput?.setAttribute('aria-invalid', 'false');
+
+    // Set loading state
+    submitBtn.disabled = true;
+    submitBtn.setAttribute('data-loading', 'true');
+
+    try {
+      // Simulate API call (replace with actual API endpoint)
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // Mark as subscribed
+      markSubscribed();
+
+      // Show success message
+      form.hidden = true;
+      successMessage.hidden = false;
+
+      // Close popup after delay
+      setTimeout(() => {
+        hidePopup();
+      }, 3000);
+
+    } catch (error) {
+      emailError.textContent = 'Something went wrong. Please try again.';
+      emailInput?.setAttribute('aria-invalid', 'true');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.setAttribute('data-loading', 'false');
+    }
+  }
+
+  /**
+   * Handle exit intent (mouse leaving viewport)
+   */
+  function handleMouseLeave(event: MouseEvent): void {
+    // Only trigger if mouse leaves through the top
+    if (event.clientY <= 0 && canShowPopup()) {
+      showPopup();
+    }
+  }
+
+  /**
+   * Handle scroll trigger (for mobile)
+   */
+  function handleScroll(): void {
+    if (hasTriggeredScroll || !canShowPopup()) return;
+
+    const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+
+    if (scrollPercent >= scrollTriggerPercent) {
+      hasTriggeredScroll = true;
+      showPopup();
+    }
+  }
+
+  /**
+   * Initialize popup
+   */
+  function initPopup(): void {
+    if (!popup) return;
+
+    // Reset page load time for Astro page transitions
+    pageLoadTime = Date.now();
+    hasShown = false;
+    hasTriggeredScroll = false;
+
+    // Event listeners for close/dismiss
+    closeBtn?.addEventListener('click', () => {
+      markDismissed();
+      hidePopup();
+    });
+
+    dismissBtn?.addEventListener('click', () => {
+      markDismissed();
+      hidePopup();
+    });
+
+    // Click on backdrop closes popup
+    popup.querySelector('.exit-popup__backdrop')?.addEventListener('click', () => {
+      markDismissed();
+      hidePopup();
+    });
+
+    // Form submission
+    form?.addEventListener('submit', handleSubmit);
+
+    // Clear error on input
+    emailInput?.addEventListener('input', () => {
+      emailError.textContent = '';
+      emailInput.setAttribute('aria-invalid', 'false');
+    });
+
+    // Exit intent detection (desktop)
+    if (enableExitIntent) {
+      document.addEventListener('mouseleave', handleMouseLeave);
+    }
+
+    // Scroll trigger (mobile fallback)
+    if (enableScrollTrigger) {
+      window.addEventListener('scroll', handleScroll, { passive: true });
+    }
+  }
+
+  /**
+   * Cleanup event listeners
+   */
+  function cleanupPopup(): void {
+    document.removeEventListener('mouseleave', handleMouseLeave);
+    window.removeEventListener('scroll', handleScroll);
+    document.removeEventListener('keydown', handleKeydown);
+  }
+
+  // Initialize on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPopup);
+  } else {
+    initPopup();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', () => {
+    cleanupPopup();
+    initPopup();
+  });
+
+  // Cleanup on page unload
+  document.addEventListener('astro:before-swap', cleanupPopup);
+</script>

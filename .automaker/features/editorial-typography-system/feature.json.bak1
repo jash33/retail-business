@@ -1,0 +1,12 @@
+{
+  "id": "editorial-typography-system",
+  "category": "Core",
+  "title": "Editorial Typography System with Cormorant Garamond",
+  "description": "Implement premium editorial typography using Cormorant Garamond for headings and Inter for body text. Includes proper letter-spacing, line-height optimization, and responsive type scales that create a magazine-like aesthetic.",
+  "status": "in_progress",
+  "priority": 1,
+  "complexity": "moderate",
+  "createdAt": "2026-01-26T01:49:59.693Z",
+  "updatedAt": "2026-01-26T02:22:12.443Z",
+  "descriptionHistory": []
+}

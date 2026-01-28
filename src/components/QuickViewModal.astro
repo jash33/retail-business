@@ -1,0 +1,988 @@
+---
+/**
+ * QuickViewModal Component
+ * A modal overlay for quick product preview from grid view with key details,
+ * primary image, price, and shop link. Includes keyboard navigation and focus management.
+ *
+ * Features:
+ * - Full-screen modal overlay with backdrop
+ * - Product image display with hover image support
+ * - Key details: name, category, description, price
+ * - Shop link with UTM tracking
+ * - Keyboard navigation (ESC to close, Tab trapping)
+ * - Focus management (trap & restore)
+ * - Body scroll lock when open
+ * - Smooth open/close animations
+ * - Full accessibility support (WCAG 2.1 AA)
+ * - Reduced motion support
+ * - Dark mode support
+ *
+ * @example Basic usage
+ * ```astro
+ * <QuickViewModal id="quick-view-modal" />
+ * ```
+ *
+ * The modal is controlled via JavaScript events:
+ * - Dispatch 'quickview:open' with product data to open
+ * - Dispatch 'quickview:close' to close
+ */
+
+interface Props {
+  /** Component ID */
+  id?: string;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  id = 'quick-view-modal',
+  class: className = '',
+} = Astro.props;
+---
+
+<div
+  class={`quick-view-modal ${className}`}
+  id={id}
+  role="dialog"
+  aria-modal="true"
+  aria-label="Quick product view"
+  aria-hidden="true"
+  data-quick-view-modal
+>
+  {/* Backdrop */}
+  <div class="quick-view-modal__backdrop" data-quickview-close></div>
+
+  {/* Main Content */}
+  <div class="quick-view-modal__content" role="document">
+    {/* Close Button */}
+    <button
+      class="quick-view-modal__close"
+      type="button"
+      aria-label="Close quick view"
+      data-quickview-close
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    {/* Modal Body */}
+    <div class="quick-view-modal__body">
+      {/* Product Image Section */}
+      <div class="quick-view-modal__image-section">
+        <div class="quick-view-modal__image-container" data-quickview-image-container>
+          {/* Loading placeholder */}
+          <div class="quick-view-modal__loading" aria-hidden="true" data-quickview-loading>
+            <div class="quick-view-modal__spinner"></div>
+          </div>
+          {/* Primary Image */}
+          <img
+            src=""
+            alt=""
+            class="quick-view-modal__image quick-view-modal__image--primary"
+            data-quickview-primary-image
+          />
+          {/* Hover Image (if available) */}
+          <img
+            src=""
+            alt=""
+            class="quick-view-modal__image quick-view-modal__image--hover"
+            data-quickview-hover-image
+            aria-hidden="true"
+          />
+        </div>
+
+        {/* Badges */}
+        <div class="quick-view-modal__badges" data-quickview-badges></div>
+      </div>
+
+      {/* Product Details Section */}
+      <div class="quick-view-modal__details-section">
+        {/* Category */}
+        <span class="quick-view-modal__category" data-quickview-category></span>
+
+        {/* Product Name */}
+        <h2 class="quick-view-modal__name" data-quickview-name></h2>
+
+        {/* Description */}
+        <p class="quick-view-modal__description" data-quickview-description></p>
+
+        {/* Price */}
+        <div class="quick-view-modal__price-container">
+          <span class="quick-view-modal__price" data-quickview-price></span>
+          <span class="quick-view-modal__price quick-view-modal__price--original" data-quickview-original-price></span>
+        </div>
+
+        {/* Availability */}
+        <div class="quick-view-modal__availability" data-quickview-availability></div>
+
+        {/* Actions */}
+        <div class="quick-view-modal__actions">
+          <a
+            href="#"
+            class="quick-view-modal__shop-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-quickview-shop-link
+          >
+            <span class="quick-view-modal__shop-text">View in Shop</span>
+            <svg
+              class="quick-view-modal__shop-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* =================================================================
+   * QUICK VIEW MODAL COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .quick-view-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-4);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--duration-300) var(--ease-out),
+      visibility var(--duration-300) var(--ease-out);
+  }
+
+  .quick-view-modal[aria-hidden="false"] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* =================================================================
+   * BACKDROP
+   * ================================================================= */
+
+  .quick-view-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    cursor: pointer;
+  }
+
+  /* =================================================================
+   * CONTENT CONTAINER
+   * ================================================================= */
+
+  .quick-view-modal__content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 900px;
+    max-height: calc(100vh - var(--spacing-8));
+    background-color: var(--color-background-elevated);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-2xl);
+    overflow: hidden;
+    transform: scale(0.95) translateY(10px);
+    transition: transform var(--duration-300) var(--ease-out);
+  }
+
+  .quick-view-modal[aria-hidden="false"] .quick-view-modal__content {
+    transform: scale(1) translateY(0);
+  }
+
+  /* =================================================================
+   * CLOSE BUTTON
+   * ================================================================= */
+
+  .quick-view-modal__close {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-out),
+      color var(--duration-150) var(--ease-out),
+      transform var(--duration-150) var(--ease-out);
+    z-index: 10;
+  }
+
+  .quick-view-modal__close:hover {
+    background-color: var(--color-background-muted);
+    color: var(--color-text-primary);
+    transform: scale(1.05);
+  }
+
+  .quick-view-modal__close:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .quick-view-modal__close svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* =================================================================
+   * MODAL BODY
+   * ================================================================= */
+
+  .quick-view-modal__body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-6);
+    padding: var(--spacing-6);
+    overflow-y: auto;
+  }
+
+  /* =================================================================
+   * IMAGE SECTION
+   * ================================================================= */
+
+  .quick-view-modal__image-section {
+    position: relative;
+  }
+
+  .quick-view-modal__image-container {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .quick-view-modal__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: opacity var(--duration-500) var(--ease-out);
+  }
+
+  .quick-view-modal__image--primary {
+    z-index: 2;
+  }
+
+  .quick-view-modal__image--hover {
+    z-index: 1;
+    opacity: 0;
+  }
+
+  /* Show hover image on container hover */
+  .quick-view-modal__image-container:hover .quick-view-modal__image--primary.has-hover {
+    opacity: 0;
+  }
+
+  .quick-view-modal__image-container:hover .quick-view-modal__image--hover.visible {
+    opacity: 1;
+  }
+
+  /* Loading state */
+  .quick-view-modal__loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-background-muted);
+    z-index: 5;
+    transition: opacity var(--duration-300) var(--ease-out);
+  }
+
+  .quick-view-modal__loading[hidden] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .quick-view-modal__spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: quickview-spin 1s linear infinite;
+  }
+
+  @keyframes quickview-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Badges */
+  .quick-view-modal__badges {
+    position: absolute;
+    top: var(--spacing-3);
+    left: var(--spacing-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    z-index: 6;
+  }
+
+  .quick-view-modal__badge {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    border-radius: var(--radius-sm);
+  }
+
+  .quick-view-modal__badge--new {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .quick-view-modal__badge--sale {
+    background-color: var(--color-error);
+    color: var(--color-text-inverse);
+  }
+
+  .quick-view-modal__badge--featured {
+    background-color: var(--color-accent);
+    color: var(--color-text-inverse);
+  }
+
+  .quick-view-modal__badge--sold-out {
+    background-color: var(--color-text-tertiary);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * DETAILS SECTION
+   * ================================================================= */
+
+  .quick-view-modal__details-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    padding-top: var(--spacing-4);
+    padding-right: var(--spacing-12);
+  }
+
+  .quick-view-modal__category {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+  }
+
+  .quick-view-modal__category:empty {
+    display: none;
+  }
+
+  .quick-view-modal__name {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+  }
+
+  .quick-view-modal__description {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .quick-view-modal__description:empty {
+    display: none;
+  }
+
+  /* =================================================================
+   * PRICE DISPLAY
+   * ================================================================= */
+
+  .quick-view-modal__price-container {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-2);
+  }
+
+  .quick-view-modal__price {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .quick-view-modal__price--sale {
+    color: var(--color-error);
+  }
+
+  .quick-view-modal__price--original {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-tertiary);
+    text-decoration: line-through;
+  }
+
+  .quick-view-modal__price--original:empty {
+    display: none;
+  }
+
+  .quick-view-modal__price--sold-out {
+    color: var(--color-text-tertiary);
+    font-style: italic;
+  }
+
+  /* =================================================================
+   * AVAILABILITY
+   * ================================================================= */
+
+  .quick-view-modal__availability {
+    margin-top: var(--spacing-2);
+  }
+
+  .quick-view-modal__availability:empty {
+    display: none;
+  }
+
+  .quick-view-modal__availability-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    padding: var(--spacing-1) var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-sm);
+  }
+
+  .quick-view-modal__availability-badge--low-stock {
+    background-color: var(--color-warning-light);
+    color: var(--color-warning-text);
+  }
+
+  .quick-view-modal__availability-badge--sold-out {
+    background-color: var(--color-error-light);
+    color: var(--color-error-text);
+  }
+
+  .quick-view-modal__availability-badge--pre-order {
+    background-color: var(--color-info-light);
+    color: var(--color-info-text);
+  }
+
+  /* =================================================================
+   * ACTIONS
+   * ================================================================= */
+
+  .quick-view-modal__actions {
+    margin-top: auto;
+    padding-top: var(--spacing-4);
+  }
+
+  .quick-view-modal__shop-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-6);
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    transition:
+      background-color var(--duration-150) var(--ease-out),
+      transform var(--duration-150) var(--ease-out);
+  }
+
+  .quick-view-modal__shop-link:hover {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-2px);
+  }
+
+  .quick-view-modal__shop-link:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .quick-view-modal__shop-link--disabled {
+    background-color: var(--color-text-tertiary);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .quick-view-modal__shop-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  @media screen and (max-width: 767px) {
+    .quick-view-modal {
+      padding: var(--spacing-2);
+      align-items: flex-end;
+    }
+
+    .quick-view-modal__content {
+      max-height: 90vh;
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    }
+
+    .quick-view-modal__body {
+      grid-template-columns: 1fr;
+      padding: var(--spacing-4);
+      gap: var(--spacing-4);
+    }
+
+    .quick-view-modal__close {
+      top: var(--spacing-3);
+      right: var(--spacing-3);
+      width: 40px;
+      height: 40px;
+    }
+
+    .quick-view-modal__image-container {
+      aspect-ratio: 1 / 1;
+    }
+
+    .quick-view-modal__details-section {
+      padding-top: 0;
+      padding-right: 0;
+    }
+
+    .quick-view-modal__name {
+      font-size: var(--font-size-xl);
+    }
+
+    .quick-view-modal__description {
+      font-size: var(--font-size-sm);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+
+  @media (prefers-reduced-motion: reduce) {
+    .quick-view-modal {
+      transition: none;
+    }
+
+    .quick-view-modal__content {
+      transition: none;
+    }
+
+    .quick-view-modal__close,
+    .quick-view-modal__shop-link,
+    .quick-view-modal__image {
+      transition: none;
+    }
+
+    .quick-view-modal__spinner {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+
+  :global(html[data-theme="dark"]) .quick-view-modal__content {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .quick-view-modal__close {
+    background-color: var(--color-background-elevated);
+    border-color: var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .quick-view-modal__close:hover {
+    background-color: var(--color-background-muted);
+  }
+
+  :global(html[data-theme="dark"]) .quick-view-modal__image-container {
+    background-color: var(--color-background-muted);
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+
+  @media (forced-colors: active) {
+    .quick-view-modal__content {
+      border: 2px solid currentColor;
+    }
+
+    .quick-view-modal__close {
+      border: 2px solid currentColor;
+    }
+
+    .quick-view-modal__shop-link {
+      border: 2px solid currentColor;
+    }
+
+    .quick-view-modal__badge {
+      border: 1px solid currentColor;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * QuickViewModal Controller
+   * Handles opening, closing, keyboard events, and focus management
+   */
+  interface QuickViewProduct {
+    id: string;
+    name: string;
+    image: {
+      src: string;
+      alt: string;
+      srcWebP?: string;
+    };
+    hoverImage?: {
+      src: string;
+      alt: string;
+      srcWebP?: string;
+    };
+    price: {
+      amount: number;
+      originalAmount?: number;
+      currency?: string;
+    };
+    shopUrl: string;
+    description?: string;
+    category?: string;
+    isNew?: boolean;
+    onSale?: boolean;
+    soldOut?: boolean;
+    featured?: boolean;
+    preOrder?: boolean;
+    stockQuantity?: number;
+    lowStockThreshold?: number;
+  }
+
+  class QuickViewModal {
+    private modal: HTMLElement;
+    private previousFocus: HTMLElement | null = null;
+    private focusableElements: HTMLElement[] = [];
+
+    constructor(modalElement: HTMLElement) {
+      this.modal = modalElement;
+      this.init();
+    }
+
+    private init() {
+      // Close button handlers
+      this.modal.querySelectorAll('[data-quickview-close]').forEach(el => {
+        el.addEventListener('click', () => this.close());
+      });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => this.handleKeydown(e));
+
+      // Listen for open events
+      document.addEventListener('quickview:open', ((e: CustomEvent<QuickViewProduct>) => {
+        this.open(e.detail);
+      }) as EventListener);
+
+      // Listen for close events
+      document.addEventListener('quickview:close', () => this.close());
+
+      // Update focusable elements
+      this.updateFocusableElements();
+    }
+
+    private updateFocusableElements() {
+      this.focusableElements = Array.from(
+        this.modal.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), a[href]:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      );
+    }
+
+    private handleKeydown(e: KeyboardEvent) {
+      if (this.modal.getAttribute('aria-hidden') === 'true') return;
+
+      switch (e.key) {
+        case 'Escape':
+          e.preventDefault();
+          this.close();
+          break;
+        case 'Tab':
+          this.handleTabKey(e);
+          break;
+      }
+    }
+
+    private handleTabKey(e: KeyboardEvent) {
+      this.updateFocusableElements();
+
+      if (this.focusableElements.length === 0) return;
+
+      const firstElement = this.focusableElements[0];
+      const lastElement = this.focusableElements[this.focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        // Tab
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    }
+
+    public open(product: QuickViewProduct) {
+      // Store current focus
+      this.previousFocus = document.activeElement as HTMLElement;
+
+      // Populate modal with product data
+      this.populateModal(product);
+
+      // Show modal
+      this.modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+
+      // Focus the close button
+      const closeButton = this.modal.querySelector('[data-quickview-close]') as HTMLElement;
+      setTimeout(() => closeButton?.focus(), 100);
+
+      // Track event
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'quick_view_open', {
+          product_id: product.id,
+          product_name: product.name,
+        });
+      }
+    }
+
+    public close() {
+      this.modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+
+      // Restore focus
+      this.previousFocus?.focus();
+
+      // Track event
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'quick_view_close');
+      }
+    }
+
+    private populateModal(product: QuickViewProduct) {
+      // Show loading
+      const loading = this.modal.querySelector('[data-quickview-loading]') as HTMLElement;
+      if (loading) loading.removeAttribute('hidden');
+
+      // Category
+      const categoryEl = this.modal.querySelector('[data-quickview-category]');
+      if (categoryEl) categoryEl.textContent = product.category || '';
+
+      // Name
+      const nameEl = this.modal.querySelector('[data-quickview-name]');
+      if (nameEl) nameEl.textContent = product.name;
+
+      // Description
+      const descEl = this.modal.querySelector('[data-quickview-description]');
+      if (descEl) descEl.textContent = product.description || '';
+
+      // Primary Image
+      const primaryImg = this.modal.querySelector('[data-quickview-primary-image]') as HTMLImageElement;
+      if (primaryImg) {
+        primaryImg.src = product.image.src;
+        primaryImg.alt = product.image.alt;
+        primaryImg.classList.remove('has-hover');
+        primaryImg.onload = () => {
+          if (loading) loading.setAttribute('hidden', '');
+        };
+        primaryImg.onerror = () => {
+          if (loading) loading.setAttribute('hidden', '');
+        };
+      }
+
+      // Hover Image
+      const hoverImg = this.modal.querySelector('[data-quickview-hover-image]') as HTMLImageElement;
+      if (hoverImg) {
+        if (product.hoverImage) {
+          hoverImg.src = product.hoverImage.src;
+          hoverImg.alt = product.hoverImage.alt;
+          hoverImg.classList.add('visible');
+          primaryImg?.classList.add('has-hover');
+        } else {
+          hoverImg.src = '';
+          hoverImg.alt = '';
+          hoverImg.classList.remove('visible');
+        }
+      }
+
+      // Price
+      const priceEl = this.modal.querySelector('[data-quickview-price]');
+      if (priceEl) {
+        const formattedPrice = this.formatPrice(product.price.amount, product.price.currency);
+        priceEl.textContent = product.soldOut ? 'Sold Out' : formattedPrice;
+        priceEl.classList.toggle('quick-view-modal__price--sale', !!(product.onSale && product.price.originalAmount));
+        priceEl.classList.toggle('quick-view-modal__price--sold-out', !!product.soldOut);
+      }
+
+      // Original Price
+      const originalPriceEl = this.modal.querySelector('[data-quickview-original-price]');
+      if (originalPriceEl) {
+        if (product.price.originalAmount && product.onSale && !product.soldOut) {
+          originalPriceEl.textContent = this.formatPrice(product.price.originalAmount, product.price.currency);
+        } else {
+          originalPriceEl.textContent = '';
+        }
+      }
+
+      // Badges
+      const badgesEl = this.modal.querySelector('[data-quickview-badges]');
+      if (badgesEl) {
+        badgesEl.innerHTML = this.buildBadges(product);
+      }
+
+      // Availability
+      const availabilityEl = this.modal.querySelector('[data-quickview-availability]');
+      if (availabilityEl) {
+        availabilityEl.innerHTML = this.buildAvailability(product);
+      }
+
+      // Shop Link
+      const shopLink = this.modal.querySelector('[data-quickview-shop-link]') as HTMLAnchorElement;
+      if (shopLink) {
+        shopLink.href = product.shopUrl;
+        shopLink.classList.toggle('quick-view-modal__shop-link--disabled', !!product.soldOut);
+
+        const shopText = shopLink.querySelector('.quick-view-modal__shop-text');
+        if (shopText) {
+          shopText.textContent = product.soldOut ? 'Out of Stock' : (product.preOrder ? 'Pre-Order Now' : 'View in Shop');
+        }
+      }
+    }
+
+    private formatPrice(amount: number, currency: string = 'USD'): string {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(amount);
+    }
+
+    private buildBadges(product: QuickViewProduct): string {
+      const badges: string[] = [];
+
+      if (product.isNew && !product.soldOut) {
+        badges.push('<span class="quick-view-modal__badge quick-view-modal__badge--new">New</span>');
+      }
+
+      if (product.onSale && product.price.originalAmount && !product.soldOut) {
+        const discount = Math.round(
+          ((product.price.originalAmount - product.price.amount) / product.price.originalAmount) * 100
+        );
+        badges.push(`<span class="quick-view-modal__badge quick-view-modal__badge--sale">-${discount}%</span>`);
+      }
+
+      if (product.featured && !product.soldOut && !product.isNew) {
+        badges.push('<span class="quick-view-modal__badge quick-view-modal__badge--featured">Featured</span>');
+      }
+
+      if (product.soldOut) {
+        badges.push('<span class="quick-view-modal__badge quick-view-modal__badge--sold-out">Sold Out</span>');
+      }
+
+      return badges.join('');
+    }
+
+    private buildAvailability(product: QuickViewProduct): string {
+      if (product.soldOut) {
+        return '<span class="quick-view-modal__availability-badge quick-view-modal__availability-badge--sold-out">Out of Stock</span>';
+      }
+
+      if (product.preOrder) {
+        return '<span class="quick-view-modal__availability-badge quick-view-modal__availability-badge--pre-order">Pre-Order Available</span>';
+      }
+
+      const threshold = product.lowStockThreshold || 5;
+      if (product.stockQuantity !== undefined && product.stockQuantity > 0 && product.stockQuantity <= threshold) {
+        return `<span class="quick-view-modal__availability-badge quick-view-modal__availability-badge--low-stock">Only ${product.stockQuantity} left</span>`;
+      }
+
+      return '';
+    }
+  }
+
+  function initQuickViewModal() {
+    document.querySelectorAll('[data-quick-view-modal]').forEach(el => {
+      if (!(el as any)._quickViewInstance) {
+        (el as any)._quickViewInstance = new QuickViewModal(el as HTMLElement);
+      }
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initQuickViewModal);
+  } else {
+    initQuickViewModal();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initQuickViewModal);
+</script>

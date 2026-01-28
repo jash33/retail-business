@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" fill="none">
+  <rect width="600" height="750" fill="#F5F3EF"/>
+  <!-- Background pattern -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E8E4DC" stroke-width="0.5"/>
+  </pattern>
+  <rect width="600" height="750" fill="url(#grid)"/>
+
+  <!-- Mug 1 - Terracotta -->
+  <ellipse cx="180" cy="400" rx="65" ry="20" fill="#C4A484"/>
+  <path d="M115 400 L115 520 Q115 560 180 560 Q245 560 245 520 L245 400" fill="#D4A574" stroke="#8B6914" stroke-width="1.5"/>
+  <ellipse cx="180" cy="520" rx="65" ry="20" fill="#C19660"/>
+  <!-- Handle -->
+  <path d="M245 430 Q290 430 290 475 Q290 520 245 520" fill="none" stroke="#D4A574" stroke-width="12" stroke-linecap="round"/>
+
+  <!-- Mug 2 - Sage -->
+  <ellipse cx="340" cy="360" rx="60" ry="18" fill="#8FAE7E"/>
+  <path d="M280 360 L280 470 Q280 505 340 505 Q400 505 400 470 L400 360" fill="#9BBF89" stroke="#5A7D4A" stroke-width="1.5"/>
+  <ellipse cx="340" cy="470" rx="60" ry="18" fill="#8FAE7E"/>
+  <!-- Handle -->
+  <path d="M400 390 Q440 390 440 430 Q440 470 400 470" fill="none" stroke="#9BBF89" stroke-width="11" stroke-linecap="round"/>
+
+  <!-- Mug 3 - Cream -->
+  <ellipse cx="450" cy="420" rx="55" ry="16" fill="#E8E0D0"/>
+  <path d="M395 420 L395 520 Q395 550 450 550 Q505 550 505 520 L505 420" fill="#F5EDE0" stroke="#C4B8A4" stroke-width="1.5"/>
+  <ellipse cx="450" cy="520" rx="55" ry="16" fill="#E8E0D0"/>
+  <!-- Handle -->
+  <path d="M505 445 Q540 445 540 482 Q540 520 505 520" fill="none" stroke="#F5EDE0" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- Mug 4 - Slate -->
+  <ellipse cx="130" cy="440" rx="50" ry="14" fill="#6B7B8A"/>
+  <path d="M80 440 L80 530 Q80 558 130 558 Q180 558 180 530 L180 440" fill="#7D8D9C" stroke="#4A5A6A" stroke-width="1.5"/>
+  <ellipse cx="130" cy="530" rx="50" ry="14" fill="#6B7B8A"/>
+  <!-- Handle -->
+  <path d="M180 460 Q210 460 210 495 Q210 530 180 530" fill="none" stroke="#7D8D9C" stroke-width="9" stroke-linecap="round"/>
+
+  <!-- Sale badge -->
+  <circle cx="500" cy="100" r="50" fill="#DC2626"/>
+  <text x="500" y="95" text-anchor="middle" fill="white" font-family="system-ui, sans-serif" font-size="16" font-weight="700">20%</text>
+  <text x="500" y="115" text-anchor="middle" fill="white" font-family="system-ui, sans-serif" font-size="14" font-weight="600">OFF</text>
+
+  <!-- Label text -->
+  <rect x="180" y="80" width="200" height="50" rx="4" fill="#365395"/>
+  <text x="280" y="113" text-anchor="middle" fill="white" font-family="system-ui, sans-serif" font-size="20" font-weight="600">ARTISAN SET</text>
+</svg>

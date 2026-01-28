@@ -1,0 +1,12 @@
+{
+  "id": "product-detail-template",
+  "category": "Core",
+  "title": "Product Detail Page Template",
+  "description": "Create individual product page template with image gallery, product details, external shop CTA, related products section, and Product schema markup. Supports linking to Shopify/Square/Etsy for checkout.",
+  "status": "in_progress",
+  "priority": 1,
+  "complexity": "complex",
+  "createdAt": "2026-01-26T01:49:59.700Z",
+  "updatedAt": "2026-01-26T04:00:00.605Z",
+  "descriptionHistory": []
+}

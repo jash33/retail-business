@@ -1,0 +1,12 @@
+{
+  "id": "social-proof-badges",
+  "category": "UI",
+  "title": "Social Proof and Trust Badges",
+  "description": "Create trust badge component displaying payment security, Instagram follower count, press mentions, or certifications. Configurable icons and descriptions for credibility building.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-26T01:49:59.735Z",
+  "updatedAt": "2026-01-26T01:49:59.735Z"
+}

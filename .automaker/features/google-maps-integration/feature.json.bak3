@@ -1,0 +1,14 @@
+{
+  "id": "google-maps-integration",
+  "category": "Integration",
+  "title": "Google Maps Embed with Directions",
+  "description": "Integrate Google Maps embed on location page with store marker, directions link, and privacy-compliant loading. Includes styled map matching brand aesthetic.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "location-visit-page"
+  ],
+  "createdAt": "2026-01-26T01:49:59.733Z",
+  "updatedAt": "2026-01-26T01:49:59.733Z"
+}

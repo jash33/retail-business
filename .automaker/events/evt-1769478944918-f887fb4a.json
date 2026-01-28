@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769478944918-f887fb4a",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-27T01:55:44.918Z",
+  "projectPath": "C:\\Users\\James\\Repos\\retail-business",
+  "projectName": "retail-business",
+  "featureId": "store-hours-component",
+  "featureName": "Store Hours Display Component",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

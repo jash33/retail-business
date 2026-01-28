@@ -1,0 +1,12 @@
+{
+  "id": "external-shop-integration",
+  "category": "Integration",
+  "title": "External E-commerce Platform Linking System",
+  "description": "Create configuration system for linking to Shopify, Square, Etsy, or Big Cartel. Includes cart icon in header linking to external checkout, product-level shop links, and UTM parameter tracking.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "simple",
+  "createdAt": "2026-01-26T01:49:59.714Z",
+  "updatedAt": "2026-01-26T01:49:59.714Z",
+  "descriptionHistory": []
+}

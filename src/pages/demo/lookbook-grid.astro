@@ -1,0 +1,738 @@
+---
+/**
+ * Lookbook Grid Demo Page
+ * Showcases the LookbookGrid component with various configurations.
+ *
+ * Demonstrates:
+ * - Mixed aspect ratios for editorial layouts
+ * - Text overlays with different positions and themes
+ * - Shoppable product tags with tooltips
+ * - Multiple layout variants (standard, editorial, gallery, masonry)
+ * - Featured items with custom sizing
+ * - Different gap sizes
+ * - Responsive behavior
+ *
+ * @route /demo/lookbook-grid
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import LookbookGrid from '../../components/LookbookGrid.astro';
+import type { LookbookItem } from '../../types/lookbook';
+
+// Demo lookbook items data
+const demoLookbookItems: LookbookItem[] = [
+  {
+    id: 'look-1',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Spring Essentials Look'
+    },
+    aspectRatio: '4:5',
+    featured: true,
+    category: 'Spring',
+    textOverlay: {
+      heading: 'Spring Essentials',
+      subheading: 'Fresh picks for the new season',
+      ctaText: 'Shop the Look',
+      position: 'bottom-left',
+      theme: 'dark',
+    },
+    href: '/collections/spring',
+    productTags: [
+      {
+        id: 'tag-1-1',
+        name: 'Linen Blouse',
+        price: { amount: 89.00 },
+        x: 30,
+        y: 40,
+        shopUrl: 'https://shop.example.com/linen-blouse',
+        description: 'Relaxed fit in organic linen'
+      },
+      {
+        id: 'tag-1-2',
+        name: 'Wide Leg Pants',
+        price: { amount: 129.00 },
+        x: 65,
+        y: 70,
+        shopUrl: 'https://shop.example.com/wide-leg-pants',
+        description: 'High-waisted with pleats'
+      }
+    ]
+  },
+  {
+    id: 'look-2',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Office Ready Collection'
+    },
+    aspectRatio: '1:1',
+    isNew: true,
+    textOverlay: {
+      heading: 'Office Ready',
+      ctaText: 'View Collection',
+      position: 'bottom-center',
+      theme: 'dark',
+      alignment: 'center',
+    },
+    href: '/collections/office',
+    productTags: [
+      {
+        id: 'tag-2-1',
+        name: 'Tailored Blazer',
+        price: { amount: 245.00 },
+        x: 50,
+        y: 35,
+        shopUrl: 'https://shop.example.com/blazer',
+      }
+    ]
+  },
+  {
+    id: 'look-3',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Weekend Casual Look'
+    },
+    aspectRatio: '3:4',
+    textOverlay: {
+      heading: 'Weekend Vibes',
+      subheading: 'Effortless style for days off',
+      ctaText: 'Explore',
+      position: 'bottom-left',
+      theme: 'gradient',
+    },
+    href: '/collections/weekend',
+    productTags: [
+      {
+        id: 'tag-3-1',
+        name: 'Oversized Sweater',
+        price: { amount: 110.00, originalAmount: 145.00 },
+        x: 45,
+        y: 30,
+        shopUrl: 'https://shop.example.com/sweater',
+      },
+      {
+        id: 'tag-3-2',
+        name: 'Denim Jeans',
+        price: { amount: 135.00 },
+        x: 55,
+        y: 75,
+        shopUrl: 'https://shop.example.com/jeans',
+      }
+    ]
+  },
+  {
+    id: 'look-4',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Evening Elegance'
+    },
+    aspectRatio: '4:5',
+    category: 'Evening',
+    textOverlay: {
+      heading: 'Evening Elegance',
+      ctaText: 'Shop Now',
+      position: 'center',
+      theme: 'dark',
+      alignment: 'center',
+    },
+    href: '/collections/evening'
+  },
+  {
+    id: 'look-5',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Minimalist Essentials'
+    },
+    aspectRatio: '1:1',
+    textOverlay: {
+      heading: 'Minimalist',
+      subheading: 'Less is more',
+      position: 'top-left',
+      theme: 'light',
+    },
+    href: '/collections/minimalist',
+    productTags: [
+      {
+        id: 'tag-5-1',
+        name: 'Classic White Tee',
+        price: { amount: 45.00 },
+        x: 50,
+        y: 50,
+        shopUrl: 'https://shop.example.com/white-tee',
+      }
+    ]
+  },
+  {
+    id: 'look-6',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Summer Breeze'
+    },
+    aspectRatio: '16:9',
+    isNew: true,
+    textOverlay: {
+      heading: 'Summer Breeze',
+      subheading: 'Light & airy pieces for warm days',
+      ctaText: 'Discover',
+      position: 'bottom-right',
+      theme: 'dark',
+      alignment: 'right',
+    },
+    href: '/collections/summer',
+    size: {
+      colSpan: 2
+    }
+  },
+  {
+    id: 'look-7',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Athleisure Collection'
+    },
+    aspectRatio: '4:5',
+    category: 'Active',
+    href: '/collections/athleisure',
+    productTags: [
+      {
+        id: 'tag-7-1',
+        name: 'Performance Leggings',
+        price: { amount: 78.00 },
+        x: 40,
+        y: 65,
+        shopUrl: 'https://shop.example.com/leggings',
+      },
+      {
+        id: 'tag-7-2',
+        name: 'Sports Bra',
+        price: { amount: 55.00 },
+        x: 60,
+        y: 25,
+        shopUrl: 'https://shop.example.com/sports-bra',
+      }
+    ]
+  },
+  {
+    id: 'look-8',
+    image: {
+      src: '/images/products/product-placeholder.svg',
+      alt: 'Autumn Layers'
+    },
+    aspectRatio: '3:4',
+    featured: true,
+    textOverlay: {
+      heading: 'Layer Up',
+      subheading: 'Autumn essentials',
+      ctaText: 'Shop Layers',
+      position: 'bottom-left',
+      theme: 'dark',
+    },
+    href: '/collections/autumn'
+  }
+];
+
+// Different item sets for various demos
+const items4 = demoLookbookItems.slice(0, 4);
+const items6 = demoLookbookItems.slice(0, 6);
+const items8 = demoLookbookItems;
+
+// Items configured for editorial layout
+const editorialItems: LookbookItem[] = [
+  {
+    id: 'editorial-1',
+    image: { src: '/images/products/product-placeholder.svg', alt: 'Hero Look' },
+    aspectRatio: '16:9',
+    size: { colSpan: 2, rowSpan: 2 },
+    featured: true,
+    textOverlay: {
+      heading: 'The New Collection',
+      subheading: 'Discover our curated selection for the season',
+      ctaText: 'Explore Now',
+      position: 'center',
+      theme: 'dark',
+      alignment: 'center',
+    },
+    href: '/collections/new',
+    productTags: [
+      { id: 'ed-tag-1', name: 'Designer Coat', price: { amount: 450.00 }, x: 35, y: 50, shopUrl: '#' },
+      { id: 'ed-tag-2', name: 'Silk Scarf', price: { amount: 120.00 }, x: 70, y: 30, shopUrl: '#' },
+    ]
+  },
+  {
+    id: 'editorial-2',
+    image: { src: '/images/products/product-placeholder.svg', alt: 'Accessories' },
+    aspectRatio: '1:1',
+    category: 'Accessories',
+    href: '/collections/accessories'
+  },
+  {
+    id: 'editorial-3',
+    image: { src: '/images/products/product-placeholder.svg', alt: 'Shoes' },
+    aspectRatio: '4:5',
+    textOverlay: {
+      heading: 'Step Into Style',
+      ctaText: 'Shop Shoes',
+      position: 'bottom-center',
+      theme: 'dark',
+      alignment: 'center',
+    },
+    href: '/collections/shoes'
+  },
+  {
+    id: 'editorial-4',
+    image: { src: '/images/products/product-placeholder.svg', alt: 'Bags' },
+    aspectRatio: '1:1',
+    isNew: true,
+    href: '/collections/bags'
+  },
+  {
+    id: 'editorial-5',
+    image: { src: '/images/products/product-placeholder.svg', alt: 'Jewelry' },
+    aspectRatio: '3:4',
+    category: 'Jewelry',
+    textOverlay: {
+      heading: 'Fine Details',
+      position: 'top-left',
+      theme: 'light',
+    },
+    href: '/collections/jewelry'
+  },
+];
+
+// Simple items without overlays for gallery layout
+const galleryItems: LookbookItem[] = Array.from({ length: 9 }, (_, i) => ({
+  id: `gallery-${i + 1}`,
+  image: { src: '/images/products/product-placeholder.svg', alt: `Gallery image ${i + 1}` },
+  aspectRatio: '1:1' as const,
+  href: `/collections/gallery-${i + 1}`,
+}));
+---
+
+<Layout
+  title="Lookbook Grid Demo"
+  description="Demo page showcasing the LookbookGrid component with mixed aspect ratios, text overlays, and shoppable product tags."
+>
+  <main class="demo-page">
+    <div class="demo-page__container">
+      <!-- Page Header -->
+      <header class="demo-page__header">
+        <h1 class="demo-page__title">Lookbook Grid Component</h1>
+        <p class="demo-page__description">
+          A lookbook-style grid component with mixed aspect ratios, text overlays, and shoppable product tags.
+          Perfect for creating curated seasonal collections or style guides.
+        </p>
+      </header>
+
+      <!-- Demo Sections -->
+      <div class="demo-page__sections">
+
+        <!-- Standard 3-Column with Product Tags -->
+        <section class="demo-section" data-testid="lookbook-standard">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Standard Layout with Product Tags</h2>
+            <p class="demo-section__description">3-column grid with shoppable product tags and text overlays</p>
+            <code class="demo-section__code">columns={3} layout="standard" enableTooltips={true}</code>
+          </div>
+          <LookbookGrid
+            items={items6}
+            columns={3}
+            layout="standard"
+            heading="Shop The Look"
+            subheading="Hover over items to discover shoppable products"
+            gap="medium"
+            enableAnimation={false}
+            enableTooltips={true}
+            id="lookbook-standard"
+          />
+        </section>
+
+        <!-- Editorial Layout -->
+        <section class="demo-section" data-testid="lookbook-editorial">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Editorial Layout</h2>
+            <p class="demo-section__description">Magazine-style mixed sizes with featured hero image</p>
+            <code class="demo-section__code">columns={3} layout="editorial"</code>
+          </div>
+          <LookbookGrid
+            items={editorialItems}
+            columns={3}
+            layout="editorial"
+            heading="Editorial Collection"
+            subheading="Curated looks styled by our creative team"
+            gap="medium"
+            enableAnimation={false}
+            enableTooltips={true}
+            id="lookbook-editorial"
+          />
+        </section>
+
+        <!-- Featured First Layout -->
+        <section class="demo-section" data-testid="lookbook-featured-first">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Featured First Layout</h2>
+            <p class="demo-section__description">First item spans 2 columns and 2 rows for emphasis</p>
+            <code class="demo-section__code">columns={3} layout="featured-first"</code>
+          </div>
+          <LookbookGrid
+            items={items6}
+            columns={3}
+            layout="featured-first"
+            heading="Seasonal Highlights"
+            gap="medium"
+            enableAnimation={false}
+            enableTooltips={true}
+            id="lookbook-featured-first"
+          />
+        </section>
+
+        <!-- Gallery Layout -->
+        <section class="demo-section" data-testid="lookbook-gallery">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Gallery Layout</h2>
+            <p class="demo-section__description">Clean photo gallery style with minimal gaps and square images</p>
+            <code class="demo-section__code">columns={3} layout="gallery" gap="none"</code>
+          </div>
+          <LookbookGrid
+            items={galleryItems}
+            columns={3}
+            layout="gallery"
+            heading="Gallery View"
+            gap="none"
+            enableAnimation={false}
+            enableTooltips={false}
+            id="lookbook-gallery"
+          />
+        </section>
+
+        <!-- Masonry Layout -->
+        <section class="demo-section" data-testid="lookbook-masonry">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Masonry Layout</h2>
+            <p class="demo-section__description">Pinterest-style staggered grid with varied heights</p>
+            <code class="demo-section__code">columns={3} layout="masonry"</code>
+          </div>
+          <LookbookGrid
+            items={items6}
+            columns={3}
+            layout="masonry"
+            heading="Inspiration Board"
+            subheading="Visual rhythm with varied proportions"
+            gap="medium"
+            enableAnimation={false}
+            id="lookbook-masonry"
+          />
+        </section>
+
+        <!-- 4-Column Grid -->
+        <section class="demo-section" data-testid="lookbook-4-columns">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">4-Column Grid</h2>
+            <p class="demo-section__description">Dense grid layout for maximum content display</p>
+            <code class="demo-section__code">columns={4} layout="standard"</code>
+          </div>
+          <LookbookGrid
+            items={items8}
+            columns={4}
+            layout="standard"
+            gap="small"
+            enableAnimation={false}
+            enableTooltips={true}
+            id="lookbook-4-col"
+          />
+        </section>
+
+        <!-- 2-Column Grid -->
+        <section class="demo-section" data-testid="lookbook-2-columns">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">2-Column Grid</h2>
+            <p class="demo-section__description">Spacious layout for larger images</p>
+            <code class="demo-section__code">columns={2} layout="standard" gap="large"</code>
+          </div>
+          <LookbookGrid
+            items={items4}
+            columns={2}
+            layout="standard"
+            gap="large"
+            enableAnimation={false}
+            enableTooltips={true}
+            id="lookbook-2-col"
+          />
+        </section>
+
+        <!-- Tags Always Visible -->
+        <section class="demo-section" data-testid="lookbook-tags-visible">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Product Tags Always Visible</h2>
+            <p class="demo-section__description">Show shoppable tags by default, not just on hover</p>
+            <code class="demo-section__code">showTagsByDefault={true}</code>
+          </div>
+          <LookbookGrid
+            items={items4}
+            columns={2}
+            layout="standard"
+            gap="medium"
+            enableAnimation={false}
+            showTagsByDefault={true}
+            enableTooltips={true}
+            id="lookbook-tags-visible"
+          />
+        </section>
+
+        <!-- Text Overlay Positions -->
+        <section class="demo-section" data-testid="lookbook-overlay-positions">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Text Overlay Positions</h2>
+            <p class="demo-section__description">Different overlay positions and themes</p>
+          </div>
+          <LookbookGrid
+            items={[
+              {
+                id: 'pos-1',
+                image: { src: '/images/products/product-placeholder.svg', alt: 'Top Left' },
+                aspectRatio: '1:1',
+                textOverlay: {
+                  heading: 'Top Left',
+                  subheading: 'Light theme',
+                  position: 'top-left',
+                  theme: 'light',
+                },
+                href: '#'
+              },
+              {
+                id: 'pos-2',
+                image: { src: '/images/products/product-placeholder.svg', alt: 'Top Center' },
+                aspectRatio: '1:1',
+                textOverlay: {
+                  heading: 'Top Center',
+                  subheading: 'Dark theme',
+                  position: 'top-center',
+                  theme: 'dark',
+                  alignment: 'center',
+                },
+                href: '#'
+              },
+              {
+                id: 'pos-3',
+                image: { src: '/images/products/product-placeholder.svg', alt: 'Center' },
+                aspectRatio: '1:1',
+                textOverlay: {
+                  heading: 'Center',
+                  subheading: 'Gradient theme',
+                  position: 'center',
+                  theme: 'gradient',
+                  alignment: 'center',
+                },
+                href: '#'
+              },
+              {
+                id: 'pos-4',
+                image: { src: '/images/products/product-placeholder.svg', alt: 'Bottom Left' },
+                aspectRatio: '1:1',
+                textOverlay: {
+                  heading: 'Bottom Left',
+                  ctaText: 'Learn More',
+                  position: 'bottom-left',
+                  theme: 'dark',
+                },
+                href: '#'
+              },
+              {
+                id: 'pos-5',
+                image: { src: '/images/products/product-placeholder.svg', alt: 'Bottom Center' },
+                aspectRatio: '1:1',
+                textOverlay: {
+                  heading: 'Bottom Center',
+                  ctaText: 'Explore',
+                  position: 'bottom-center',
+                  theme: 'dark',
+                  alignment: 'center',
+                },
+                href: '#'
+              },
+              {
+                id: 'pos-6',
+                image: { src: '/images/products/product-placeholder.svg', alt: 'Bottom Right' },
+                aspectRatio: '1:1',
+                textOverlay: {
+                  heading: 'Bottom Right',
+                  ctaText: 'Shop Now',
+                  position: 'bottom-right',
+                  theme: 'dark',
+                  alignment: 'right',
+                },
+                href: '#'
+              },
+            ]}
+            columns={3}
+            layout="standard"
+            gap="medium"
+            enableAnimation={false}
+            id="lookbook-overlay-positions"
+          />
+        </section>
+
+        <!-- Animated Grid -->
+        <section class="demo-section" data-testid="lookbook-animated">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Animated Grid (Scroll)</h2>
+            <p class="demo-section__description">Stagger animation on scroll with Intersection Observer</p>
+            <code class="demo-section__code">enableAnimation={true} maxStaggerItems={12}</code>
+          </div>
+          <LookbookGrid
+            items={items8}
+            columns={4}
+            layout="standard"
+            heading="Scroll to Reveal"
+            subheading="Items animate in as you scroll"
+            gap="medium"
+            enableAnimation={true}
+            maxStaggerItems={12}
+            enableTooltips={true}
+            id="lookbook-animated"
+          />
+        </section>
+
+        <!-- Custom Responsive Columns -->
+        <section class="demo-section" data-testid="lookbook-responsive">
+          <div class="demo-section__header">
+            <h2 class="demo-section__title">Custom Responsive Breakpoints</h2>
+            <p class="demo-section__description">Override default responsive column counts</p>
+            <code class="demo-section__code">responsiveColumns=&#123;mobile: 1, tablet: 2, desktop: 4&#125;</code>
+          </div>
+          <LookbookGrid
+            items={items8}
+            columns={4}
+            layout="standard"
+            gap="medium"
+            enableAnimation={false}
+            responsiveColumns={{
+              mobile: 1,
+              tablet: 2,
+              desktop: 4
+            }}
+            id="lookbook-responsive"
+          />
+        </section>
+
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  /* =================================================================
+   * DEMO PAGE STYLES
+   * ================================================================= */
+
+  .demo-page {
+    padding: var(--spacing-8) 0 var(--spacing-16);
+    background-color: var(--color-background);
+  }
+
+  .demo-page__container {
+    width: 100%;
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  /* =================================================================
+   * HEADER
+   * ================================================================= */
+  .demo-page__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+    padding-bottom: var(--spacing-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .demo-page__title {
+    margin: 0 0 var(--spacing-4);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+  }
+
+  .demo-page__description {
+    margin: 0 auto;
+    max-width: 600px;
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * DEMO SECTIONS
+   * ================================================================= */
+  .demo-page__sections {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-16);
+  }
+
+  .demo-section {
+    padding: var(--spacing-8) 0;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .demo-section:last-child {
+    border-bottom: none;
+  }
+
+  .demo-section__header {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+  }
+
+  .demo-section__title {
+    margin: 0 0 var(--spacing-2);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .demo-section__description {
+    margin: 0 0 var(--spacing-3);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+  }
+
+  .demo-section__code {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-3);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    color: var(--color-primary);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .demo-page {
+      padding: var(--spacing-4) 0 var(--spacing-12);
+    }
+
+    .demo-page__title {
+      font-size: var(--font-size-2xl);
+    }
+
+    .demo-page__description {
+      font-size: var(--font-size-base);
+    }
+
+    .demo-section__title {
+      font-size: var(--font-size-xl);
+    }
+
+    .demo-page__sections {
+      gap: var(--spacing-10);
+    }
+  }
+</style>

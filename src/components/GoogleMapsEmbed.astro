@@ -1,0 +1,760 @@
+---
+/**
+ * Google Maps Embed Component
+ *
+ * A privacy-compliant Google Maps embed with store marker, directions link,
+ * and optional consent-based loading. Styled to match the brand aesthetic.
+ *
+ * @example
+ * ```astro
+ * <GoogleMapsEmbed
+ *   embedUrl="https://www.google.com/maps/embed?pb=..."
+ *   directionsUrl="https://www.google.com/maps/dir/..."
+ *   locationName="Houston Web Services"
+ *   address="1234 Main Street, Houston, TX"
+ *   coordinates={{ lat: 29.7752, lng: -95.6091 }}
+ * />
+ * ```
+ */
+
+export interface Props {
+  /** Google Maps embed URL */
+  embedUrl: string;
+  /** Google Maps directions URL */
+  directionsUrl: string;
+  /** Business/location name for accessibility */
+  locationName: string;
+  /** Full address for display */
+  address?: string;
+  /** Coordinates for the marker */
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+  /** Height of the map container */
+  height?: string;
+  /** Whether to require consent before loading */
+  requireConsent?: boolean;
+  /** Show directions button */
+  showDirections?: boolean;
+  /** Show full address overlay */
+  showAddress?: boolean;
+  /** Custom CSS class */
+  class?: string;
+}
+
+const {
+  embedUrl,
+  directionsUrl,
+  locationName,
+  address,
+  coordinates,
+  height = '400px',
+  requireConsent = true,
+  showDirections = true,
+  showAddress = true,
+  class: className,
+} = Astro.props;
+
+// Generate a unique ID for this instance
+const mapId = `map-${Math.random().toString(36).substring(2, 9)}`;
+---
+
+<div
+  class:list={['google-maps-embed', className]}
+  data-map-id={mapId}
+  data-embed-url={embedUrl}
+  data-require-consent={requireConsent}
+  style={`--map-height: ${height};`}
+>
+  <!-- Privacy Placeholder (shown before consent) -->
+  <div class="google-maps-embed__placeholder" id={`${mapId}-placeholder`}>
+    <div class="google-maps-embed__placeholder-content">
+      <div class="google-maps-embed__placeholder-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+      </div>
+      <h3 class="google-maps-embed__placeholder-title">
+        {locationName}
+      </h3>
+      {address && (
+        <p class="google-maps-embed__placeholder-address">
+          {address}
+        </p>
+      )}
+      <p class="google-maps-embed__placeholder-notice">
+        Click to load the interactive map from Google Maps.
+        <br />
+        <span class="google-maps-embed__placeholder-privacy">
+          Loading this map will connect to Google's servers.
+        </span>
+      </p>
+      <button
+        type="button"
+        class="google-maps-embed__load-btn"
+        id={`${mapId}-load-btn`}
+        aria-label={`Load Google Maps showing ${locationName} location`}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        Load Map
+      </button>
+    </div>
+
+    <!-- Static map preview background -->
+    <div class="google-maps-embed__static-preview" aria-hidden="true">
+      <div class="google-maps-embed__static-grid"></div>
+      <div class="google-maps-embed__static-marker">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Map Container (loaded after consent) -->
+  <div class="google-maps-embed__map-container" id={`${mapId}-container`} hidden>
+    <iframe
+      id={`${mapId}-iframe`}
+      class="google-maps-embed__iframe"
+      width="100%"
+      height="100%"
+      style="border:0;"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      title={`Google Maps showing ${locationName} location`}
+      aria-label={`Interactive map of ${locationName}${address ? ` at ${address}` : ''}`}
+    ></iframe>
+
+    <!-- Loading indicator -->
+    <div class="google-maps-embed__loading" id={`${mapId}-loading`} aria-hidden="true">
+      <div class="google-maps-embed__spinner"></div>
+      <span>Loading map...</span>
+    </div>
+  </div>
+
+  <!-- Map Actions Bar -->
+  <div class="google-maps-embed__actions">
+    {showAddress && address && (
+      <div class="google-maps-embed__location-info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+        <span class="google-maps-embed__address-text">{address}</span>
+      </div>
+    )}
+    {showDirections && (
+      <a
+        href={directionsUrl}
+        class="google-maps-embed__directions-btn"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Get directions to ${locationName}`}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+        Get Directions
+      </a>
+    )}
+  </div>
+</div>
+
+<style>
+  /* =================================================================
+   * GOOGLE MAPS EMBED COMPONENT
+   * ================================================================= */
+  .google-maps-embed {
+    position: relative;
+    width: 100%;
+    border-radius: var(--radius-xl, 1rem);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+    background-color: var(--color-background-subtle, #f9fafb);
+  }
+
+  /* =================================================================
+   * PLACEHOLDER (PRIVACY-COMPLIANT)
+   * ================================================================= */
+  .google-maps-embed__placeholder {
+    position: relative;
+    height: var(--map-height, 400px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .google-maps-embed__placeholder[hidden] {
+    display: none;
+  }
+
+  .google-maps-embed__placeholder-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: var(--spacing-6, 1.5rem);
+    max-width: 24rem;
+  }
+
+  .google-maps-embed__placeholder-icon {
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto var(--spacing-4, 1rem);
+    padding: var(--spacing-3, 0.75rem);
+    background: var(--color-primary-50, #eef2ff);
+    border-radius: var(--radius-full, 9999px);
+    color: var(--color-primary, #365395);
+  }
+
+  .google-maps-embed__placeholder-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .google-maps-embed__placeholder-title {
+    font-family: var(--font-heading, system-ui);
+    font-size: var(--font-size-xl, 1.25rem);
+    font-weight: var(--font-weight-semibold, 600);
+    color: var(--color-text-primary, #111827);
+    margin: 0 0 var(--spacing-2, 0.5rem);
+    line-height: var(--line-height-tight, 1.25);
+  }
+
+  .google-maps-embed__placeholder-address {
+    font-family: var(--font-body, system-ui);
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--color-text-secondary, #6b7280);
+    margin: 0 0 var(--spacing-4, 1rem);
+    line-height: var(--line-height-relaxed, 1.625);
+  }
+
+  .google-maps-embed__placeholder-notice {
+    font-family: var(--font-body, system-ui);
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--color-text-tertiary, #9ca3af);
+    margin: 0 0 var(--spacing-6, 1.5rem);
+    line-height: var(--line-height-relaxed, 1.625);
+  }
+
+  .google-maps-embed__placeholder-privacy {
+    font-size: var(--font-size-xs, 0.75rem);
+    opacity: 0.8;
+  }
+
+  /* Load Map Button */
+  .google-maps-embed__load-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2, 0.5rem);
+    padding: var(--spacing-3, 0.75rem) var(--spacing-6, 1.5rem);
+    background: var(--color-primary, #365395);
+    color: var(--color-text-inverse, #ffffff);
+    font-family: var(--font-body, system-ui);
+    font-size: var(--font-size-base, 1rem);
+    font-weight: var(--font-weight-medium, 500);
+    border: none;
+    border-radius: var(--radius-lg, 0.5rem);
+    cursor: pointer;
+    transition: all var(--duration-200, 200ms) var(--ease-out, ease-out);
+    box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  }
+
+  .google-maps-embed__load-btn:hover {
+    background: var(--color-primary-600, #2d4680);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  }
+
+  .google-maps-embed__load-btn:focus-visible {
+    outline: 2px solid var(--color-primary, #365395);
+    outline-offset: 2px;
+  }
+
+  .google-maps-embed__load-btn:active {
+    transform: translateY(0);
+  }
+
+  .google-maps-embed__load-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  /* Static Preview Background */
+  .google-maps-embed__static-preview {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-50, #eef2ff) 0%,
+      var(--color-background-subtle, #f9fafb) 100%
+    );
+  }
+
+  .google-maps-embed__static-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--color-border-light, #e5e7eb) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-border-light, #e5e7eb) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.5;
+  }
+
+  .google-maps-embed__static-marker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    width: 3rem;
+    height: 3rem;
+    color: var(--color-primary, #365395);
+    filter: drop-shadow(0 4px 6px rgba(54, 83, 149, 0.3));
+    animation: marker-bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes marker-bounce {
+    0%, 100% {
+      transform: translate(-50%, -100%);
+    }
+    50% {
+      transform: translate(-50%, -110%);
+    }
+  }
+
+  .google-maps-embed__static-marker svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* =================================================================
+   * MAP CONTAINER
+   * ================================================================= */
+  .google-maps-embed__map-container {
+    position: relative;
+    height: var(--map-height, 400px);
+  }
+
+  .google-maps-embed__map-container[hidden] {
+    display: none;
+  }
+
+  .google-maps-embed__iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Loading State */
+  .google-maps-embed__loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-3, 0.75rem);
+    background: var(--color-background-subtle, #f9fafb);
+    color: var(--color-text-secondary, #6b7280);
+    font-family: var(--font-body, system-ui);
+    font-size: var(--font-size-sm, 0.875rem);
+    transition: opacity var(--duration-300, 300ms) var(--ease-out, ease-out);
+  }
+
+  .google-maps-embed__loading[hidden] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .google-maps-embed__spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--color-border-light, #e5e7eb);
+    border-top-color: var(--color-primary, #365395);
+    border-radius: var(--radius-full, 9999px);
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* =================================================================
+   * ACTIONS BAR
+   * ================================================================= */
+  .google-maps-embed__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-3, 0.75rem);
+    padding: var(--spacing-4, 1rem);
+    background: var(--color-background, #ffffff);
+    border-top: 1px solid var(--color-border-light, #e5e7eb);
+  }
+
+  .google-maps-embed__location-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2, 0.5rem);
+    color: var(--color-text-secondary, #6b7280);
+    font-family: var(--font-body, system-ui);
+    font-size: var(--font-size-sm, 0.875rem);
+    min-width: 0;
+    flex: 1;
+  }
+
+  .google-maps-embed__location-info svg {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-primary, #365395);
+  }
+
+  .google-maps-embed__address-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .google-maps-embed__directions-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2, 0.5rem);
+    padding: var(--spacing-2, 0.5rem) var(--spacing-4, 1rem);
+    background: var(--color-primary-50, #eef2ff);
+    color: var(--color-primary, #365395);
+    font-family: var(--font-body, system-ui);
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: var(--font-weight-medium, 500);
+    text-decoration: none;
+    border-radius: var(--radius-lg, 0.5rem);
+    transition: all var(--duration-150, 150ms) var(--ease-in-out, ease-in-out);
+    flex-shrink: 0;
+  }
+
+  .google-maps-embed__directions-btn:hover {
+    background: var(--color-primary-100, #dbeafe);
+    color: var(--color-primary-700, #1d4ed8);
+  }
+
+  .google-maps-embed__directions-btn:focus-visible {
+    outline: 2px solid var(--color-primary, #365395);
+    outline-offset: 2px;
+  }
+
+  .google-maps-embed__directions-btn svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* =================================================================
+   * RESPONSIVE ADJUSTMENTS
+   * ================================================================= */
+  @media (max-width: 640px) {
+    .google-maps-embed__placeholder-content {
+      padding: var(--spacing-4, 1rem);
+    }
+
+    .google-maps-embed__placeholder-icon {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    .google-maps-embed__placeholder-title {
+      font-size: var(--font-size-lg, 1.125rem);
+    }
+
+    .google-maps-embed__placeholder-notice {
+      font-size: var(--font-size-xs, 0.75rem);
+    }
+
+    .google-maps-embed__actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .google-maps-embed__location-info {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .google-maps-embed__directions-btn {
+      justify-content: center;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .google-maps-embed {
+    background-color: var(--color-background-subtle);
+  }
+
+  :global(html[data-theme="dark"]) .google-maps-embed__map-container iframe {
+    filter: brightness(0.9) contrast(1.1);
+  }
+
+  :global(html[data-theme="dark"]) .google-maps-embed__placeholder-content {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--radius-xl, 1rem);
+    backdrop-filter: blur(4px);
+  }
+
+  :global(html[data-theme="dark"]) .google-maps-embed__static-preview {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-900, #1e3a5f) 0%,
+      var(--color-background-subtle, #1f2937) 100%
+    );
+  }
+
+  :global(html[data-theme="dark"]) .google-maps-embed__static-grid {
+    background-image:
+      linear-gradient(var(--color-border, #374151) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-border, #374151) 1px, transparent 1px);
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .google-maps-embed__load-btn {
+      transition: none;
+    }
+
+    .google-maps-embed__load-btn:hover {
+      transform: none;
+    }
+
+    .google-maps-embed__static-marker {
+      animation: none;
+    }
+
+    .google-maps-embed__spinner {
+      animation: none;
+      border-color: var(--color-primary, #365395);
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .google-maps-embed__map-container,
+    .google-maps-embed__load-btn {
+      display: none;
+    }
+
+    .google-maps-embed__placeholder {
+      height: auto;
+      padding: var(--spacing-4, 1rem);
+    }
+
+    .google-maps-embed__static-preview {
+      display: none;
+    }
+
+    .google-maps-embed__placeholder-content {
+      text-align: left;
+    }
+
+    .google-maps-embed__placeholder-notice {
+      display: none;
+    }
+
+    .google-maps-embed__actions {
+      border: 1px solid var(--color-border, #d1d5db);
+      border-top: none;
+    }
+
+    .google-maps-embed__directions-btn {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Google Maps Embed Component Script
+   * Handles privacy-compliant lazy loading of maps
+   */
+
+  interface MapInstance {
+    mapId: string;
+    embedUrl: string;
+    requireConsent: boolean;
+    isLoaded: boolean;
+  }
+
+  // Store map instances
+  const mapInstances: Map<string, MapInstance> = new Map();
+
+  /**
+   * Initialize a map instance
+   */
+  function initMapInstance(container: HTMLElement): void {
+    const mapId = container.dataset.mapId;
+    const embedUrl = container.dataset.embedUrl;
+    const requireConsent = container.dataset.requireConsent === 'true';
+
+    if (!mapId || !embedUrl) return;
+
+    // Store instance data
+    mapInstances.set(mapId, {
+      mapId,
+      embedUrl,
+      requireConsent,
+      isLoaded: false,
+    });
+
+    // Get elements
+    const placeholder = document.getElementById(`${mapId}-placeholder`);
+    const loadBtn = document.getElementById(`${mapId}-load-btn`);
+    const mapContainer = document.getElementById(`${mapId}-container`);
+
+    if (!placeholder || !loadBtn || !mapContainer) return;
+
+    // Check if map should auto-load (no consent required)
+    if (!requireConsent) {
+      loadMap(mapId);
+      return;
+    }
+
+    // Check for stored consent
+    const hasConsent = checkMapConsent();
+    if (hasConsent) {
+      loadMap(mapId);
+      return;
+    }
+
+    // Set up load button handler
+    loadBtn.addEventListener('click', () => {
+      storeMapConsent();
+      loadMap(mapId);
+    });
+
+    // Allow clicking anywhere on placeholder
+    placeholder.addEventListener('click', (e) => {
+      if (e.target !== loadBtn && !loadBtn.contains(e.target as Node)) {
+        storeMapConsent();
+        loadMap(mapId);
+      }
+    });
+
+    // Keyboard accessibility - Enter or Space to load
+    placeholder.setAttribute('tabindex', '0');
+    placeholder.setAttribute('role', 'button');
+    placeholder.setAttribute('aria-label', 'Click to load map');
+    placeholder.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        storeMapConsent();
+        loadMap(mapId);
+      }
+    });
+  }
+
+  /**
+   * Load a map by ID
+   */
+  function loadMap(mapId: string): void {
+    const instance = mapInstances.get(mapId);
+    if (!instance || instance.isLoaded) return;
+
+    const placeholder = document.getElementById(`${mapId}-placeholder`);
+    const mapContainer = document.getElementById(`${mapId}-container`);
+    const iframe = document.getElementById(`${mapId}-iframe`) as HTMLIFrameElement;
+    const loading = document.getElementById(`${mapId}-loading`);
+
+    if (!placeholder || !mapContainer || !iframe) return;
+
+    // Show container with loading state
+    placeholder.hidden = true;
+    mapContainer.hidden = false;
+
+    // Set iframe src to load the map
+    iframe.src = instance.embedUrl;
+
+    // Hide loading indicator when iframe loads
+    iframe.addEventListener('load', () => {
+      if (loading) {
+        loading.hidden = true;
+      }
+      instance.isLoaded = true;
+
+      // Announce to screen readers
+      announceToScreenReader('Map loaded successfully');
+    });
+
+    // Handle errors
+    iframe.addEventListener('error', () => {
+      if (loading) {
+        loading.innerHTML = '<span>Unable to load map. Please try again.</span>';
+      }
+    });
+  }
+
+  /**
+   * Check if user has consented to loading maps
+   */
+  function checkMapConsent(): boolean {
+    try {
+      const consent = localStorage.getItem('hws_map_consent');
+      return consent === 'true';
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Store map consent in localStorage
+   */
+  function storeMapConsent(): void {
+    try {
+      localStorage.setItem('hws_map_consent', 'true');
+    } catch {
+      // Silently fail if localStorage is not available
+    }
+  }
+
+  /**
+   * Announce message to screen readers
+   */
+  function announceToScreenReader(message: string): void {
+    const announcement = document.createElement('div');
+    announcement.setAttribute('role', 'status');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.className = 'sr-only';
+    announcement.textContent = message;
+    document.body.appendChild(announcement);
+
+    setTimeout(() => {
+      document.body.removeChild(announcement);
+    }, 1000);
+  }
+
+  /**
+   * Initialize all map instances on the page
+   */
+  function initAllMaps(): void {
+    const mapContainers = document.querySelectorAll('.google-maps-embed');
+    mapContainers.forEach((container) => {
+      initMapInstance(container as HTMLElement);
+    });
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', initAllMaps);
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initAllMaps);
+</script>

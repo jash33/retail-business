@@ -1,0 +1,12 @@
+{
+  "id": "breadcrumb-navigation",
+  "category": "UI",
+  "title": "Breadcrumb Navigation for Product Pages",
+  "description": "Implement breadcrumb navigation showing Home > Shop > Category > Product hierarchy. Includes BreadcrumbList schema markup for SEO and accessibility improvements.",
+  "status": "verified",
+  "priority": 2,
+  "complexity": "simple",
+  "createdAt": "2026-01-26T01:49:59.725Z",
+  "updatedAt": "2026-01-26T14:07:53.707Z",
+  "descriptionHistory": []
+}

@@ -1,0 +1,182 @@
+---
+/**
+ * Cart Icon Component
+ * Displays a shopping cart icon that links to an external shop's cart page.
+ *
+ * Features:
+ * - SVG shopping cart icon
+ * - External link with proper security attributes
+ * - UTM parameter tracking
+ * - Full accessibility support (ARIA labels)
+ * - Hover and focus states
+ * - Consistent with header styling
+ *
+ * @example
+ * ```astro
+ * <CartIcon href="https://shop.example.com/cart" />
+ * ```
+ */
+
+import type { CartIconProps } from '../types/shop';
+import { buildCartUrl, getShopLinkAttributes, getCartAriaLabel } from '../utils/shop-tracking';
+import { shopConfig } from '../config/shop.config';
+
+interface Props extends CartIconProps {}
+
+const {
+  href,
+  ariaLabel,
+  openInNewTab,
+  class: className = '',
+} = Astro.props;
+
+// Build the cart URL with UTM tracking
+const trackedHref = shopConfig.trackingEnabled
+  ? buildCartUrl({ content: 'header_cart_icon' })
+  : href;
+
+// Use provided href as fallback
+const finalHref = trackedHref || href;
+
+// Get link attributes (target, rel)
+const linkAttrs = getShopLinkAttributes(openInNewTab);
+
+// Get accessible label
+const accessibleLabel = ariaLabel || getCartAriaLabel();
+---
+
+<a
+  href={finalHref}
+  class:list={['cart-icon', className]}
+  aria-label={accessibleLabel}
+  title={accessibleLabel}
+  data-shop-link="cart"
+  {...linkAttrs}
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    class="cart-icon__svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="9" cy="21" r="1"></circle>
+    <circle cx="20" cy="21" r="1"></circle>
+    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+  </svg>
+  <span class="cart-icon__label">Shop</span>
+</a>
+
+<style>
+  /* =================================================================
+   * CART ICON COMPONENT STYLES
+   * =================================================================
+   */
+
+  .cart-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-1);
+    min-width: 44px;
+    min-height: 44px;
+    padding: var(--spacing-2);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    position: relative;
+    transition: color var(--animation-duration-fast) var(--ease-smooth),
+                background-color var(--animation-duration-fast) var(--ease-smooth),
+                transform var(--animation-duration-fast) var(--ease-spring-soft);
+  }
+
+  .cart-icon:hover {
+    color: var(--color-primary);
+    background-color: var(--color-primary-50);
+    transform: scale(1.05);
+  }
+
+  .cart-icon:active {
+    transform: scale(0.98);
+  }
+
+  .cart-icon:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .cart-icon__svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .cart-icon__label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+  }
+
+  /* Hide label on mobile, show only icon */
+  @media screen and (max-width: 768px) {
+    .cart-icon__label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  }
+
+  /* -----------------------------------------------------------------
+   * Reduced Motion Preferences
+   * ----------------------------------------------------------------- */
+
+  @media (prefers-reduced-motion: reduce) {
+    .cart-icon {
+      transition: none;
+    }
+
+    .cart-icon:hover,
+    .cart-icon:active {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Cart Icon Click Tracking
+   * Tracks clicks on the cart icon for analytics
+   */
+  function initCartIconTracking() {
+    const cartIcons = document.querySelectorAll('[data-shop-link="cart"]');
+
+    cartIcons.forEach((icon) => {
+      icon.addEventListener('click', () => {
+        // Track the click event if gtag is available
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'cart_click', {
+            source_location: 'header',
+            destination_url: (icon as HTMLAnchorElement).href,
+          });
+        }
+      });
+    });
+  }
+
+  // Initialize on DOM ready
+  document.addEventListener('DOMContentLoaded', initCartIconTracking);
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initCartIconTracking);
+</script>

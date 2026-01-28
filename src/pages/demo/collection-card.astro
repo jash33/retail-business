@@ -1,0 +1,470 @@
+---
+/**
+ * Demo Page - CollectionCard Component
+ * Showcases collection cards with hero images, overlay titles, item counts,
+ * and various layout options.
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import CollectionCard from '../../components/CollectionCard.astro';
+import CollectionGrid from '../../components/CollectionGrid.astro';
+---
+
+<Layout title="Collection Card Demo | Houston Web Services">
+  <main class="demo-page">
+    <section class="demo-header">
+      <div class="demo-container">
+        <h1>CollectionCard Component Demo</h1>
+        <p>Collection cards with hero images, overlay titles, item counts, and links to filtered shop views. Perfect for showcasing product categories and curated collections.</p>
+      </div>
+    </section>
+
+    <!-- Demo 1: Basic Collection Cards -->
+    <section class="demo-section">
+      <div class="demo-container">
+        <h2>Basic Collection Cards</h2>
+        <p>Standard collection cards with overlay titles and hover effects. Default 16:9 aspect ratio.</p>
+
+        <div class="collection-demo-grid collection-demo-grid--3">
+          <CollectionCard
+            id="summer-essentials"
+            name="Summer Essentials"
+            image={{
+              src: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800&h=450&fit=crop",
+              alt: "Summer clothing collection display"
+            }}
+            itemCount={42}
+            href="/shop/collections/summer"
+            description="Light and breezy pieces for warm weather"
+          />
+
+          <CollectionCard
+            id="autumn-collection"
+            name="Autumn Collection"
+            image={{
+              src: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&h=450&fit=crop",
+              alt: "Autumn fashion collection"
+            }}
+            itemCount={36}
+            href="/shop/collections/autumn"
+            description="Cozy layers and warm tones"
+          />
+
+          <CollectionCard
+            id="winter-warmth"
+            name="Winter Warmth"
+            image={{
+              src: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&h=450&fit=crop",
+              alt: "Winter clothing collection"
+            }}
+            itemCount={28}
+            href="/shop/collections/winter"
+            description="Stay warm in style"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 2: Featured & New Collections -->
+    <section class="demo-section demo-section--alt">
+      <div class="demo-container">
+        <h2>Featured &amp; New Collections</h2>
+        <p>Collection cards with featured badges and various overlay positions.</p>
+
+        <div class="collection-demo-grid collection-demo-grid--2">
+          <CollectionCard
+            id="new-arrivals"
+            name="New Arrivals"
+            image={{
+              src: "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800&h=600&fit=crop",
+              alt: "New arrivals collection"
+            }}
+            itemCount={18}
+            href="/shop/collections/new-arrivals"
+            isNew={true}
+            aspectRatio="4:3"
+            overlayPosition="bottom-center"
+            description="Fresh styles just landed"
+          />
+
+          <CollectionCard
+            id="bestsellers"
+            name="Bestsellers"
+            image={{
+              src: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&h=600&fit=crop",
+              alt: "Bestselling products"
+            }}
+            itemCount={24}
+            href="/shop/collections/bestsellers"
+            featured={true}
+            aspectRatio="4:3"
+            overlayPosition="bottom-center"
+            description="Customer favorites"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 3: Different Aspect Ratios -->
+    <section class="demo-section">
+      <div class="demo-container">
+        <h2>Aspect Ratio Variations</h2>
+        <p>Collection cards support multiple aspect ratios for different layout needs.</p>
+
+        <div class="collection-demo-grid collection-demo-grid--4">
+          <CollectionCard
+            id="accessories"
+            name="Accessories"
+            image={{
+              src: "https://images.unsplash.com/photo-1509941943102-10c232fc06b9?w=400&h=400&fit=crop",
+              alt: "Accessories collection"
+            }}
+            itemCount={56}
+            href="/shop/collections/accessories"
+            aspectRatio="1:1"
+            ctaText="Explore"
+          />
+
+          <CollectionCard
+            id="footwear"
+            name="Footwear"
+            image={{
+              src: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=400&fit=crop",
+              alt: "Shoes and footwear collection"
+            }}
+            itemCount={34}
+            href="/shop/collections/footwear"
+            aspectRatio="1:1"
+            ctaText="Explore"
+          />
+
+          <CollectionCard
+            id="bags"
+            name="Bags"
+            image={{
+              src: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop",
+              alt: "Bags collection"
+            }}
+            itemCount={22}
+            href="/shop/collections/bags"
+            aspectRatio="1:1"
+            ctaText="Explore"
+            isNew={true}
+          />
+
+          <CollectionCard
+            id="jewelry"
+            name="Jewelry"
+            image={{
+              src: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop",
+              alt: "Jewelry collection"
+            }}
+            itemCount={48}
+            href="/shop/collections/jewelry"
+            aspectRatio="1:1"
+            ctaText="Explore"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 4: Overlay Positions -->
+    <section class="demo-section demo-section--alt">
+      <div class="demo-container">
+        <h2>Overlay Position Options</h2>
+        <p>Text overlay can be positioned in different areas of the card.</p>
+
+        <div class="collection-demo-grid collection-demo-grid--3">
+          <CollectionCard
+            id="position-bottom-left"
+            name="Bottom Left"
+            image={{
+              src: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=600&h=400&fit=crop",
+              alt: "Fashion photo"
+            }}
+            itemCount={15}
+            href="/shop/demo"
+            overlayPosition="bottom-left"
+            aspectRatio="3:2"
+          />
+
+          <CollectionCard
+            id="position-center"
+            name="Center"
+            image={{
+              src: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&h=400&fit=crop",
+              alt: "Fashion photo"
+            }}
+            itemCount={20}
+            href="/shop/demo"
+            overlayPosition="center"
+            aspectRatio="3:2"
+          />
+
+          <CollectionCard
+            id="position-bottom-right"
+            name="Bottom Right"
+            image={{
+              src: "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=600&h=400&fit=crop",
+              alt: "Fashion photo"
+            }}
+            itemCount={12}
+            href="/shop/demo"
+            overlayPosition="bottom-right"
+            aspectRatio="3:2"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo 5: CollectionGrid Component -->
+    <section class="demo-section">
+      <div class="demo-container">
+        <h2>CollectionGrid Component</h2>
+        <p>Use CollectionGrid for responsive layouts with heading and animations.</p>
+
+        <CollectionGrid
+          collections={[
+            {
+              id: "grid-menswear",
+              name: "Men's Wear",
+              image: {
+                src: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&h=450&fit=crop",
+                alt: "Men's fashion collection"
+              },
+              itemCount: 86,
+              href: "/shop/collections/menswear",
+              description: "Sophisticated styles for the modern man"
+            },
+            {
+              id: "grid-womenswear",
+              name: "Women's Wear",
+              image: {
+                src: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&h=450&fit=crop",
+                alt: "Women's fashion collection"
+              },
+              itemCount: 124,
+              href: "/shop/collections/womenswear",
+              featured: true,
+              description: "Elegant pieces for every occasion"
+            },
+            {
+              id: "grid-kids",
+              name: "Kids' Collection",
+              image: {
+                src: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=800&h=450&fit=crop",
+                alt: "Kids' fashion collection"
+              },
+              itemCount: 52,
+              href: "/shop/collections/kids",
+              isNew: true,
+              description: "Fun and comfortable styles"
+            }
+          ]}
+          columns={3}
+          gap="large"
+          heading="Shop by Category"
+          subheading="Explore our carefully curated collections"
+          enableAnimation={true}
+        />
+      </div>
+    </section>
+
+    <!-- Demo 6: Featured Hero Layout -->
+    <section class="demo-section demo-section--alt">
+      <div class="demo-container">
+        <h2>Featured Hero Layout</h2>
+        <p>The CollectionGrid supports a featured-hero layout where the first item spans full width.</p>
+
+        <CollectionGrid
+          collections={[
+            {
+              id: "hero-spotlight",
+              name: "Spring/Summer 2025",
+              image: {
+                src: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=500&fit=crop",
+                alt: "Spring/Summer collection showcase"
+              },
+              itemCount: 156,
+              href: "/shop/collections/spring-summer-2025",
+              featured: true,
+              description: "Discover the latest trends in our newest seasonal collection"
+            },
+            {
+              id: "hero-sale",
+              name: "Sale",
+              image: {
+                src: "https://images.unsplash.com/photo-1607082350899-7e105aa886ae?w=600&h=400&fit=crop",
+                alt: "Sale items"
+              },
+              itemCount: 78,
+              href: "/shop/collections/sale",
+              description: "Up to 50% off selected items"
+            },
+            {
+              id: "hero-exclusive",
+              name: "Exclusive",
+              image: {
+                src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop",
+                alt: "Exclusive items"
+              },
+              itemCount: 24,
+              href: "/shop/collections/exclusive",
+              isNew: true,
+              description: "Limited edition pieces"
+            }
+          ]}
+          columns={2}
+          gap="medium"
+          layout="featured-hero"
+          enableAnimation={true}
+        />
+      </div>
+    </section>
+
+    <!-- Features List -->
+    <section class="demo-section">
+      <div class="demo-container">
+        <h2>Component Features</h2>
+        <ul class="feature-list">
+          <li><strong>Hero images:</strong> Full-coverage images with gradient overlays for text readability</li>
+          <li><strong>Overlay titles:</strong> Customizable positioning (7 positions available)</li>
+          <li><strong>Item counts:</strong> Display number of items in each collection</li>
+          <li><strong>Hover effects:</strong> Image zoom and CTA reveal animations</li>
+          <li><strong>Multiple aspect ratios:</strong> 16:9, 4:3, 3:2, 1:1, and 2:3</li>
+          <li><strong>Badges:</strong> New and Featured collection indicators</li>
+          <li><strong>Grid layouts:</strong> Standard, featured-first, featured-hero, asymmetric</li>
+          <li><strong>UTM tracking:</strong> Automatic campaign tracking for shop links</li>
+          <li><strong>Accessibility:</strong> ARIA labels, keyboard navigation, focus indicators</li>
+          <li><strong>Reduced motion:</strong> Respects user motion preferences</li>
+          <li><strong>Dark mode:</strong> Full dark mode support</li>
+          <li><strong>Analytics:</strong> GA4 event tracking for collection clicks</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .demo-page {
+    min-height: 100vh;
+  }
+
+  .demo-header {
+    padding: var(--spacing-16) var(--spacing-4) var(--spacing-12);
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-700) 100%
+    );
+    text-align: center;
+  }
+
+  .demo-header h1 {
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .demo-header p {
+    color: var(--color-primary-100);
+    font-size: var(--font-size-lg);
+    max-width: 50rem;
+    margin: 0 auto;
+  }
+
+  .demo-container {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+  }
+
+  .demo-section {
+    padding: var(--spacing-12) 0;
+  }
+
+  .demo-section--alt {
+    background-color: var(--color-background-subtle);
+  }
+
+  .demo-section h2 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .demo-section > .demo-container > p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-8);
+  }
+
+  /* Collection Demo Grid */
+  .collection-demo-grid {
+    display: grid;
+    gap: var(--spacing-6);
+  }
+
+  .collection-demo-grid--2 {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .collection-demo-grid--3 {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .collection-demo-grid--4 {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  @media (min-width: 640px) {
+    .collection-demo-grid--2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .collection-demo-grid--3 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .collection-demo-grid--4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .collection-demo-grid--3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .collection-demo-grid--4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* Feature List */
+  .feature-list {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: var(--spacing-4);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .feature-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .feature-list li {
+    padding: var(--spacing-3) var(--spacing-4);
+    background-color: var(--color-background);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+  }
+
+  .feature-list strong {
+    color: var(--color-text-primary);
+  }
+</style>

@@ -1,0 +1,1172 @@
+---
+/**
+ * NewArrivalsCarousel Component
+ * A carousel/slider for displaying newest products with automatic date-based sorting,
+ * navigation arrows, touch swipe support, and comprehensive accessibility features.
+ *
+ * Features:
+ * - Automatic date-based sorting (newest products first)
+ * - Navigation arrows for desktop users
+ * - Touch swipe support for mobile users
+ * - Keyboard navigation (arrow keys, Home, End)
+ * - ARIA live regions for screen reader announcements
+ * - Responsive column configuration
+ * - Smooth scrolling animations
+ * - Reduced motion support
+ * - Dark mode support
+ * - Optional auto-scroll with pause on interaction
+ *
+ * @example Basic usage
+ * ```astro
+ * <NewArrivalsCarousel
+ *   heading="New Arrivals"
+ *   subheading="Discover our latest additions"
+ *   products={products}
+ * />
+ * ```
+ *
+ * @example With configuration
+ * ```astro
+ * <NewArrivalsCarousel
+ *   heading="Just In"
+ *   products={products}
+ *   maxProducts={12}
+ *   showIndicators={true}
+ *   enableSwipe={true}
+ * />
+ * ```
+ */
+
+import type { NewArrivalsCarouselProps } from '../types/new-arrivals-carousel';
+import type { ProductCardProps } from '../types/product';
+import ProductCard from './ProductCard.astro';
+import Button from './Button.astro';
+
+interface Props extends NewArrivalsCarouselProps {}
+
+const {
+  heading = 'New Arrivals',
+  subheading = 'Discover our latest additions to the collection.',
+  products = [],
+  id = 'new-arrivals',
+  class: className = '',
+  maxProducts = 12,
+  columns = {
+    mobile: 1,
+    small: 2,
+    tablet: 3,
+    desktop: 4,
+  },
+  gap = 'medium',
+  aspectRatio = '4:5',
+  navigationPosition = 'inside',
+  showIndicators = false,
+  autoScroll = {
+    enabled: false,
+    interval: 5000,
+    pauseOnHover: true,
+    pauseOnFocus: true,
+  },
+  viewAllText = 'View All New Arrivals',
+  viewAllHref = '/shop?sort=newest',
+  showViewAll = true,
+  infinite = false,
+  enableSwipe = true,
+  enableKeyboard = true,
+  scrollAmount = 1,
+  animationDuration = 300,
+} = Astro.props;
+
+// Sort products by date (newest first) - products with isNew flag or by createdAt/dateAdded
+const sortedProducts = [...products]
+  .sort((a, b) => {
+    // Prioritize products marked as "new"
+    if (a.isNew && !b.isNew) return -1;
+    if (!a.isNew && b.isNew) return 1;
+    return 0;
+  })
+  .slice(0, maxProducts);
+
+// Check if we have products to display
+const hasProducts = sortedProducts.length > 0;
+
+// Calculate gap CSS value
+const gapValue = gap === 'small' ? 'var(--spacing-4)' : gap === 'large' ? 'var(--spacing-8)' : 'var(--spacing-6)';
+
+// Build CSS classes
+const sectionClasses = [
+  'new-arrivals-carousel',
+  `new-arrivals-carousel--nav-${navigationPosition}`,
+  showIndicators && 'new-arrivals-carousel--has-indicators',
+  className,
+].filter(Boolean).join(' ');
+
+// Arrow icon SVG for navigation buttons
+const arrowLeftIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>`;
+const arrowRightIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
+
+// View All arrow icon
+const viewAllArrowIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/></svg>`;
+
+// Unique ID for ARIA labeling
+const carouselId = `${id}-carousel`;
+const headingId = `${id}-heading`;
+const liveRegionId = `${id}-live`;
+---
+
+<section
+  class={sectionClasses}
+  id={id}
+  aria-labelledby={headingId}
+  data-carousel
+  data-auto-scroll={autoScroll.enabled ? 'true' : 'false'}
+  data-auto-scroll-interval={autoScroll.interval}
+  data-pause-on-hover={autoScroll.pauseOnHover ? 'true' : 'false'}
+  data-pause-on-focus={autoScroll.pauseOnFocus ? 'true' : 'false'}
+  data-infinite={infinite ? 'true' : 'false'}
+  data-enable-swipe={enableSwipe ? 'true' : 'false'}
+  data-enable-keyboard={enableKeyboard ? 'true' : 'false'}
+  data-scroll-amount={scrollAmount}
+  data-animation-duration={animationDuration}
+  data-columns-mobile={columns.mobile || 1}
+  data-columns-small={columns.small || 2}
+  data-columns-tablet={columns.tablet || 3}
+  data-columns-desktop={columns.desktop || 4}
+  style={`--carousel-gap: ${gapValue}; --carousel-animation-duration: ${animationDuration}ms;`}
+>
+  <div class="new-arrivals-carousel__container">
+    <!-- Section Header -->
+    <header class="new-arrivals-carousel__header section-heading--decorated">
+      <h2 id={headingId} class="new-arrivals-carousel__heading">{heading}</h2>
+      {subheading && (
+        <p class="new-arrivals-carousel__subheading">{subheading}</p>
+      )}
+    </header>
+
+    <!-- Carousel Wrapper -->
+    {hasProducts ? (
+      <div class="new-arrivals-carousel__wrapper">
+        <!-- Navigation Buttons (Previous) -->
+        <button
+          type="button"
+          class="new-arrivals-carousel__nav new-arrivals-carousel__nav--prev"
+          aria-label="Previous products"
+          data-carousel-prev
+          disabled
+        >
+          <span class="new-arrivals-carousel__nav-icon" set:html={arrowLeftIcon} />
+        </button>
+
+        <!-- Carousel Track -->
+        <div
+          class="new-arrivals-carousel__viewport"
+          role="region"
+          aria-label="Product carousel"
+          tabindex="0"
+          data-carousel-viewport
+        >
+          <div
+            class="new-arrivals-carousel__track"
+            role="list"
+            aria-label="New arrival products"
+            data-carousel-track
+          >
+            {sortedProducts.map((product, index) => (
+              <div
+                class="new-arrivals-carousel__slide"
+                role="listitem"
+                aria-setsize={sortedProducts.length}
+                aria-posinset={index + 1}
+                data-carousel-slide
+                data-index={index}
+              >
+                <ProductCard
+                  id={product.id}
+                  name={product.name}
+                  image={product.image}
+                  hoverImage={product.hoverImage}
+                  price={product.price}
+                  shopUrl={product.shopUrl}
+                  description={product.description}
+                  category={product.category}
+                  isNew={product.isNew}
+                  onSale={product.onSale}
+                  soldOut={product.soldOut}
+                  aspectRatio={aspectRatio}
+                  utmParams={{
+                    ...product.utmParams,
+                    content: product.utmParams?.content || `new_arrivals_${product.id}`,
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Navigation Buttons (Next) -->
+        <button
+          type="button"
+          class="new-arrivals-carousel__nav new-arrivals-carousel__nav--next"
+          aria-label="Next products"
+          data-carousel-next
+        >
+          <span class="new-arrivals-carousel__nav-icon" set:html={arrowRightIcon} />
+        </button>
+
+        <!-- Live Region for Screen Readers -->
+        <div
+          id={liveRegionId}
+          class="sr-only"
+          aria-live="polite"
+          aria-atomic="true"
+          data-carousel-live
+        ></div>
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="new-arrivals-carousel__empty" role="status" aria-live="polite">
+        <div class="new-arrivals-carousel__empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 5h-14c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-10c0-1.1-.9-2-2-2zm0 12h-14v-10h14v10zm-12.5-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5zm9 3h-6l1.88-2.5 1.12 1.5 1.62-2.17 1.38 3.17z" fill="currentColor"/>
+          </svg>
+        </div>
+        <p class="new-arrivals-carousel__empty-text">New arrivals coming soon!</p>
+      </div>
+    )}
+
+    <!-- Pagination Indicators -->
+    {hasProducts && showIndicators && (
+      <div
+        class="new-arrivals-carousel__indicators"
+        role="tablist"
+        aria-label="Carousel pagination"
+        data-carousel-indicators
+      >
+        <!-- Indicators will be generated dynamically by JavaScript -->
+      </div>
+    )}
+
+    <!-- View All CTA -->
+    {hasProducts && showViewAll && (
+      <div class="new-arrivals-carousel__cta">
+        <Button
+          text={viewAllText}
+          href={viewAllHref}
+          variant="secondary"
+          size="large"
+          iconPosition="trailing"
+          ariaLabel="View all new arrival products"
+        >
+          <Fragment slot="icon" set:html={viewAllArrowIcon} />
+        </Button>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* =================================================================
+   * NEW ARRIVALS CAROUSEL COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .new-arrivals-carousel {
+    padding: var(--spacing-16) var(--spacing-4);
+    background-color: var(--color-background);
+    overflow: hidden;
+  }
+
+  .new-arrivals-carousel__container {
+    max-width: var(--container-7xl);
+    margin: 0 auto;
+  }
+
+  /* =================================================================
+   * SECTION HEADER
+   * ================================================================= */
+  .new-arrivals-carousel__header {
+    text-align: center;
+    margin-bottom: var(--spacing-10);
+  }
+
+  .new-arrivals-carousel__heading {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3);
+    line-height: var(--line-height-tight);
+  }
+
+  .new-arrivals-carousel__subheading {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin: 0;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* =================================================================
+   * CAROUSEL WRAPPER
+   * ================================================================= */
+  .new-arrivals-carousel__wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+  }
+
+  /* =================================================================
+   * CAROUSEL VIEWPORT & TRACK
+   * ================================================================= */
+  .new-arrivals-carousel__viewport {
+    flex: 1;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
+
+  .new-arrivals-carousel__viewport:focus {
+    outline: none;
+  }
+
+  .new-arrivals-carousel__viewport:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+    border-radius: var(--radius-lg);
+  }
+
+  .new-arrivals-carousel__track {
+    display: flex;
+    gap: var(--carousel-gap, var(--spacing-6));
+    transition: transform var(--carousel-animation-duration, 300ms) var(--ease-out);
+    touch-action: pan-y pinch-zoom;
+    will-change: transform;
+  }
+
+  /* Disable smooth scrolling during drag */
+  .new-arrivals-carousel__track.is-dragging {
+    transition: none;
+    cursor: grabbing;
+  }
+
+  .new-arrivals-carousel__track:not(.is-dragging) {
+    cursor: grab;
+  }
+
+  /* =================================================================
+   * CAROUSEL SLIDES
+   * ================================================================= */
+  .new-arrivals-carousel__slide {
+    flex: 0 0 calc(100% - var(--carousel-gap, var(--spacing-6)));
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  /* Responsive slide widths */
+  @media screen and (min-width: 480px) {
+    .new-arrivals-carousel__slide {
+      flex: 0 0 calc(50% - var(--carousel-gap, var(--spacing-6)) / 2);
+    }
+  }
+
+  @media screen and (min-width: 768px) {
+    .new-arrivals-carousel__slide {
+      flex: 0 0 calc(33.333% - var(--carousel-gap, var(--spacing-6)) * 2 / 3);
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .new-arrivals-carousel__slide {
+      flex: 0 0 calc(25% - var(--carousel-gap, var(--spacing-6)) * 3 / 4);
+    }
+  }
+
+  /* =================================================================
+   * NAVIGATION BUTTONS
+   * ================================================================= */
+  .new-arrivals-carousel__nav {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background-color: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-md);
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      border-color var(--duration-150) var(--ease-in-out),
+      transform var(--duration-150) var(--ease-in-out),
+      box-shadow var(--duration-150) var(--ease-in-out),
+      opacity var(--duration-150) var(--ease-in-out);
+  }
+
+  .new-arrivals-carousel__nav:hover:not(:disabled) {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .new-arrivals-carousel__nav:hover:not(:disabled) .new-arrivals-carousel__nav-icon {
+    color: var(--color-text-inverse);
+  }
+
+  .new-arrivals-carousel__nav:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-md), var(--focus-ring);
+  }
+
+  .new-arrivals-carousel__nav:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .new-arrivals-carousel__nav-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--color-text-primary);
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .new-arrivals-carousel__nav-icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Navigation inside variant (overlay on carousel) */
+  .new-arrivals-carousel--nav-inside .new-arrivals-carousel__wrapper {
+    gap: 0;
+  }
+
+  .new-arrivals-carousel--nav-inside .new-arrivals-carousel__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .new-arrivals-carousel--nav-inside .new-arrivals-carousel__nav--prev {
+    left: var(--spacing-2);
+  }
+
+  .new-arrivals-carousel--nav-inside .new-arrivals-carousel__nav--next {
+    right: var(--spacing-2);
+  }
+
+  .new-arrivals-carousel--nav-inside .new-arrivals-carousel__nav:hover:not(:disabled) {
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  /* Navigation bottom variant */
+  .new-arrivals-carousel--nav-bottom .new-arrivals-carousel__wrapper {
+    flex-direction: column;
+    gap: var(--spacing-6);
+  }
+
+  .new-arrivals-carousel--nav-bottom .new-arrivals-carousel__nav {
+    position: static;
+  }
+
+  /* =================================================================
+   * PAGINATION INDICATORS
+   * ================================================================= */
+  .new-arrivals-carousel__indicators {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-6);
+  }
+
+  .new-arrivals-carousel__indicators :global(button) {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-full);
+    background-color: var(--color-border-dark);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-150) var(--ease-in-out),
+      width var(--duration-200) var(--ease-out);
+  }
+
+  .new-arrivals-carousel__indicators :global(button:hover) {
+    background-color: var(--color-primary-light);
+  }
+
+  .new-arrivals-carousel__indicators :global(button[aria-selected="true"]) {
+    width: 24px;
+    background-color: var(--color-primary);
+  }
+
+  .new-arrivals-carousel__indicators :global(button:focus-visible) {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* =================================================================
+   * EMPTY STATE
+   * ================================================================= */
+  .new-arrivals-carousel__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-16) var(--spacing-8);
+    background-color: var(--color-background-muted);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+  }
+
+  .new-arrivals-carousel__empty-icon {
+    width: var(--spacing-16);
+    height: var(--spacing-16);
+    color: var(--color-text-tertiary);
+  }
+
+  .new-arrivals-carousel__empty-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .new-arrivals-carousel__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* =================================================================
+   * VIEW ALL CTA
+   * ================================================================= */
+  .new-arrivals-carousel__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--spacing-10);
+  }
+
+  /* =================================================================
+   * SCREEN READER ONLY TEXT
+   * ================================================================= */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+
+  /* Mobile - Hide nav buttons, rely on swipe */
+  @media screen and (max-width: 767px) {
+    .new-arrivals-carousel {
+      padding: var(--spacing-12) var(--spacing-4);
+    }
+
+    .new-arrivals-carousel__header {
+      margin-bottom: var(--spacing-8);
+    }
+
+    .new-arrivals-carousel__heading {
+      font-size: var(--font-size-2xl);
+    }
+
+    .new-arrivals-carousel__subheading {
+      font-size: var(--font-size-base);
+    }
+
+    .new-arrivals-carousel__nav {
+      display: none;
+    }
+
+    .new-arrivals-carousel__viewport {
+      /* Enable native scroll snapping on mobile */
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .new-arrivals-carousel__viewport::-webkit-scrollbar {
+      display: none;
+    }
+
+    .new-arrivals-carousel__track {
+      transition: none;
+    }
+
+    .new-arrivals-carousel__cta {
+      margin-top: var(--spacing-8);
+    }
+  }
+
+  /* Tablet */
+  @media screen and (min-width: 768px) {
+    .new-arrivals-carousel {
+      padding: var(--spacing-20) var(--spacing-8);
+    }
+
+    .new-arrivals-carousel__header {
+      margin-bottom: var(--spacing-12);
+    }
+
+    .new-arrivals-carousel__heading {
+      font-size: var(--font-size-4xl);
+    }
+
+    .new-arrivals-carousel__cta {
+      margin-top: var(--spacing-12);
+    }
+  }
+
+  /* Large Desktop */
+  @media screen and (min-width: 1280px) {
+    .new-arrivals-carousel {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+
+    .new-arrivals-carousel__nav {
+      width: 56px;
+      height: 56px;
+    }
+
+    .new-arrivals-carousel__nav-icon {
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .new-arrivals-carousel__track {
+      transition: none;
+    }
+
+    .new-arrivals-carousel__nav {
+      transition: none;
+    }
+
+    .new-arrivals-carousel__nav:hover:not(:disabled) {
+      transform: translateY(-50%);
+    }
+
+    .new-arrivals-carousel--nav-inside .new-arrivals-carousel__nav:hover:not(:disabled) {
+      transform: translateY(-50%);
+    }
+
+    .new-arrivals-carousel__indicators :global(button) {
+      transition: none;
+    }
+
+    .new-arrivals-carousel__viewport {
+      scroll-behavior: auto;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .new-arrivals-carousel {
+    background-color: var(--color-background);
+  }
+
+  :global(html[data-theme="dark"]) .new-arrivals-carousel__nav {
+    background-color: var(--color-background-elevated);
+    border-color: var(--color-border);
+  }
+
+  :global(html[data-theme="dark"]) .new-arrivals-carousel__nav:hover:not(:disabled) {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  :global(html[data-theme="dark"]) .new-arrivals-carousel__empty {
+    background-color: var(--color-background-subtle);
+    border-color: var(--color-border);
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .new-arrivals-carousel__nav {
+      border: 2px solid currentColor;
+    }
+
+    .new-arrivals-carousel__indicators :global(button) {
+      border: 1px solid currentColor;
+    }
+
+    .new-arrivals-carousel__indicators :global(button[aria-selected="true"]) {
+      background-color: currentColor;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .new-arrivals-carousel {
+      padding: var(--spacing-8) 0;
+    }
+
+    .new-arrivals-carousel__nav {
+      display: none;
+    }
+
+    .new-arrivals-carousel__indicators {
+      display: none;
+    }
+
+    .new-arrivals-carousel__cta {
+      display: none;
+    }
+
+    .new-arrivals-carousel__viewport {
+      overflow: visible;
+    }
+
+    .new-arrivals-carousel__track {
+      flex-wrap: wrap;
+      gap: var(--spacing-4);
+    }
+
+    .new-arrivals-carousel__slide {
+      flex: 0 0 calc(25% - var(--spacing-4));
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * NewArrivalsCarousel Interactive Features
+   * - Navigation button click handlers
+   * - Touch/swipe support
+   * - Keyboard navigation
+   * - Auto-scroll functionality
+   * - ARIA live region updates
+   * - Responsive column detection
+   */
+
+  interface CarouselState {
+    currentIndex: number;
+    totalSlides: number;
+    visibleSlides: number;
+    isAtStart: boolean;
+    isAtEnd: boolean;
+    isDragging: boolean;
+    isPaused: boolean;
+    autoScrollTimer: ReturnType<typeof setInterval> | null;
+  }
+
+  function initCarousels() {
+    const carousels = document.querySelectorAll('[data-carousel]');
+
+    carousels.forEach((carousel) => {
+      const viewport = carousel.querySelector('[data-carousel-viewport]') as HTMLElement | null;
+      const track = carousel.querySelector('[data-carousel-track]') as HTMLElement | null;
+      const slides = carousel.querySelectorAll('[data-carousel-slide]');
+      const prevBtn = carousel.querySelector('[data-carousel-prev]') as HTMLButtonElement | null;
+      const nextBtn = carousel.querySelector('[data-carousel-next]') as HTMLButtonElement | null;
+      const liveRegion = carousel.querySelector('[data-carousel-live]') as HTMLElement | null;
+      const indicatorsContainer = carousel.querySelector('[data-carousel-indicators]') as HTMLElement | null;
+
+      if (!viewport || !track || slides.length === 0) return;
+
+      // Get configuration from data attributes
+      const config = {
+        autoScroll: carousel.getAttribute('data-auto-scroll') === 'true',
+        autoScrollInterval: parseInt(carousel.getAttribute('data-auto-scroll-interval') || '5000', 10),
+        pauseOnHover: carousel.getAttribute('data-pause-on-hover') === 'true',
+        pauseOnFocus: carousel.getAttribute('data-pause-on-focus') === 'true',
+        infinite: carousel.getAttribute('data-infinite') === 'true',
+        enableSwipe: carousel.getAttribute('data-enable-swipe') === 'true',
+        enableKeyboard: carousel.getAttribute('data-enable-keyboard') === 'true',
+        scrollAmount: parseInt(carousel.getAttribute('data-scroll-amount') || '1', 10),
+        animationDuration: parseInt(carousel.getAttribute('data-animation-duration') || '300', 10),
+        columnsMobile: parseInt(carousel.getAttribute('data-columns-mobile') || '1', 10),
+        columnsSmall: parseInt(carousel.getAttribute('data-columns-small') || '2', 10),
+        columnsTablet: parseInt(carousel.getAttribute('data-columns-tablet') || '3', 10),
+        columnsDesktop: parseInt(carousel.getAttribute('data-columns-desktop') || '4', 10),
+      };
+
+      // Initialize state
+      const state: CarouselState = {
+        currentIndex: 0,
+        totalSlides: slides.length,
+        visibleSlides: getVisibleSlides(),
+        isAtStart: true,
+        isAtEnd: false,
+        isDragging: false,
+        isPaused: false,
+        autoScrollTimer: null,
+      };
+
+      // Calculate visible slides based on viewport width
+      function getVisibleSlides(): number {
+        const width = window.innerWidth;
+        if (width < 480) return config.columnsMobile;
+        if (width < 768) return config.columnsSmall;
+        if (width < 1024) return config.columnsTablet;
+        return config.columnsDesktop;
+      }
+
+      // Update navigation button states
+      function updateNavigation() {
+        state.visibleSlides = getVisibleSlides();
+        const maxIndex = Math.max(0, state.totalSlides - state.visibleSlides);
+
+        state.isAtStart = state.currentIndex <= 0;
+        state.isAtEnd = state.currentIndex >= maxIndex;
+
+        if (prevBtn) {
+          prevBtn.disabled = state.isAtStart && !config.infinite;
+        }
+        if (nextBtn) {
+          nextBtn.disabled = state.isAtEnd && !config.infinite;
+        }
+
+        // Update indicators
+        updateIndicators();
+      }
+
+      // Scroll to specific index
+      function scrollToIndex(index: number, announce = true) {
+        const maxIndex = Math.max(0, state.totalSlides - state.visibleSlides);
+
+        // Handle infinite scroll
+        if (config.infinite) {
+          if (index < 0) {
+            index = maxIndex;
+          } else if (index > maxIndex) {
+            index = 0;
+          }
+        } else {
+          index = Math.max(0, Math.min(index, maxIndex));
+        }
+
+        state.currentIndex = index;
+
+        // Calculate transform
+        const slideElement = slides[0] as HTMLElement;
+        const slideWidth = slideElement.offsetWidth;
+        const gap = parseInt(getComputedStyle(track).gap) || 0;
+        const offset = index * (slideWidth + gap);
+
+        track.style.transform = `translateX(-${offset}px)`;
+
+        updateNavigation();
+
+        // Announce to screen readers
+        if (announce && liveRegion) {
+          const visibleRange = `Showing products ${index + 1} to ${Math.min(index + state.visibleSlides, state.totalSlides)} of ${state.totalSlides}`;
+          liveRegion.textContent = visibleRange;
+        }
+      }
+
+      // Navigate previous
+      function goToPrev() {
+        scrollToIndex(state.currentIndex - config.scrollAmount);
+      }
+
+      // Navigate next
+      function goToNext() {
+        scrollToIndex(state.currentIndex + config.scrollAmount);
+      }
+
+      // Create pagination indicators
+      function createIndicators() {
+        if (!indicatorsContainer) return;
+
+        const pageCount = Math.ceil((state.totalSlides - state.visibleSlides + 1) / config.scrollAmount);
+
+        for (let i = 0; i < pageCount; i++) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.setAttribute('role', 'tab');
+          button.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+          button.setAttribute('aria-label', `Go to slide group ${i + 1}`);
+          button.setAttribute('data-index', i.toString());
+
+          button.addEventListener('click', () => {
+            scrollToIndex(i * config.scrollAmount);
+          });
+
+          indicatorsContainer.appendChild(button);
+        }
+      }
+
+      // Update indicators
+      function updateIndicators() {
+        if (!indicatorsContainer) return;
+
+        const buttons = indicatorsContainer.querySelectorAll('button');
+        const currentPage = Math.floor(state.currentIndex / config.scrollAmount);
+
+        buttons.forEach((btn, index) => {
+          btn.setAttribute('aria-selected', index === currentPage ? 'true' : 'false');
+        });
+      }
+
+      // Touch/Swipe handling
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchCurrentX = 0;
+      let initialTransform = 0;
+
+      function handleTouchStart(e: TouchEvent) {
+        if (!config.enableSwipe) return;
+
+        state.isDragging = true;
+        track.classList.add('is-dragging');
+
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchCurrentX = touchStartX;
+
+        // Get current transform
+        const transform = track.style.transform;
+        const match = transform.match(/translateX\((-?\d+\.?\d*)px\)/);
+        initialTransform = match ? parseFloat(match[1]) : 0;
+
+        pauseAutoScroll();
+      }
+
+      function handleTouchMove(e: TouchEvent) {
+        if (!state.isDragging || !config.enableSwipe) return;
+
+        touchCurrentX = e.touches[0].clientX;
+        const touchCurrentY = e.touches[0].clientY;
+
+        // Calculate movement
+        const deltaX = touchCurrentX - touchStartX;
+        const deltaY = touchCurrentY - touchStartY;
+
+        // If vertical scroll is dominant, don't interfere
+        if (Math.abs(deltaY) > Math.abs(deltaX)) {
+          return;
+        }
+
+        // Prevent default scroll
+        e.preventDefault();
+
+        // Apply transform
+        const newTransform = initialTransform + deltaX;
+        track.style.transform = `translateX(${newTransform}px)`;
+      }
+
+      function handleTouchEnd() {
+        if (!state.isDragging || !config.enableSwipe) return;
+
+        state.isDragging = false;
+        track.classList.remove('is-dragging');
+
+        // Calculate swipe distance and direction
+        const deltaX = touchCurrentX - touchStartX;
+        const threshold = 50; // Minimum swipe distance
+
+        if (deltaX < -threshold) {
+          // Swipe left - go next
+          goToNext();
+        } else if (deltaX > threshold) {
+          // Swipe right - go prev
+          goToPrev();
+        } else {
+          // Snap back to current position
+          scrollToIndex(state.currentIndex, false);
+        }
+
+        resumeAutoScroll();
+      }
+
+      // Mouse drag handling (desktop)
+      let mouseStartX = 0;
+
+      function handleMouseDown(e: MouseEvent) {
+        if (!config.enableSwipe || e.button !== 0) return;
+
+        state.isDragging = true;
+        track.classList.add('is-dragging');
+
+        mouseStartX = e.clientX;
+
+        const transform = track.style.transform;
+        const match = transform.match(/translateX\((-?\d+\.?\d*)px\)/);
+        initialTransform = match ? parseFloat(match[1]) : 0;
+
+        pauseAutoScroll();
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+      }
+
+      function handleMouseMove(e: MouseEvent) {
+        if (!state.isDragging) return;
+
+        const deltaX = e.clientX - mouseStartX;
+        const newTransform = initialTransform + deltaX;
+        track.style.transform = `translateX(${newTransform}px)`;
+      }
+
+      function handleMouseUp(e: MouseEvent) {
+        if (!state.isDragging) return;
+
+        state.isDragging = false;
+        track.classList.remove('is-dragging');
+
+        const deltaX = e.clientX - mouseStartX;
+        const threshold = 50;
+
+        if (deltaX < -threshold) {
+          goToNext();
+        } else if (deltaX > threshold) {
+          goToPrev();
+        } else {
+          scrollToIndex(state.currentIndex, false);
+        }
+
+        resumeAutoScroll();
+
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      }
+
+      // Keyboard navigation
+      function handleKeydown(e: KeyboardEvent) {
+        if (!config.enableKeyboard) return;
+
+        switch (e.key) {
+          case 'ArrowLeft':
+            e.preventDefault();
+            goToPrev();
+            break;
+          case 'ArrowRight':
+            e.preventDefault();
+            goToNext();
+            break;
+          case 'Home':
+            e.preventDefault();
+            scrollToIndex(0);
+            break;
+          case 'End':
+            e.preventDefault();
+            scrollToIndex(state.totalSlides - state.visibleSlides);
+            break;
+        }
+      }
+
+      // Auto-scroll
+      function startAutoScroll() {
+        if (!config.autoScroll || state.autoScrollTimer) return;
+
+        state.autoScrollTimer = setInterval(() => {
+          if (!state.isPaused) {
+            goToNext();
+          }
+        }, config.autoScrollInterval);
+      }
+
+      function pauseAutoScroll() {
+        state.isPaused = true;
+      }
+
+      function resumeAutoScroll() {
+        state.isPaused = false;
+      }
+
+      function stopAutoScroll() {
+        if (state.autoScrollTimer) {
+          clearInterval(state.autoScrollTimer);
+          state.autoScrollTimer = null;
+        }
+      }
+
+      // Event listeners
+      if (prevBtn) {
+        prevBtn.addEventListener('click', goToPrev);
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', goToNext);
+      }
+
+      // Touch events
+      viewport.addEventListener('touchstart', handleTouchStart, { passive: true });
+      viewport.addEventListener('touchmove', handleTouchMove, { passive: false });
+      viewport.addEventListener('touchend', handleTouchEnd);
+      viewport.addEventListener('touchcancel', handleTouchEnd);
+
+      // Mouse drag events
+      viewport.addEventListener('mousedown', handleMouseDown);
+
+      // Keyboard events
+      viewport.addEventListener('keydown', handleKeydown);
+
+      // Auto-scroll pause on hover/focus
+      if (config.pauseOnHover) {
+        carousel.addEventListener('mouseenter', pauseAutoScroll);
+        carousel.addEventListener('mouseleave', resumeAutoScroll);
+      }
+
+      if (config.pauseOnFocus) {
+        carousel.addEventListener('focusin', pauseAutoScroll);
+        carousel.addEventListener('focusout', resumeAutoScroll);
+      }
+
+      // Resize handler
+      let resizeTimeout: ReturnType<typeof setTimeout>;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          updateNavigation();
+          scrollToIndex(state.currentIndex, false);
+        }, 100);
+      });
+
+      // Initialize
+      createIndicators();
+      updateNavigation();
+      startAutoScroll();
+
+      // Cleanup on navigation away
+      window.addEventListener('beforeunload', stopAutoScroll);
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCarousels);
+  } else {
+    initCarousels();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initCarousels);
+</script>

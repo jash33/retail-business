@@ -1,0 +1,12 @@
+{
+  "id": "accessibility-skip-links",
+  "category": "Accessibility",
+  "title": "Enhanced Skip Link Navigation",
+  "description": "Expand skip links to include skip to filters, skip to products, and skip to footer for improved keyboard navigation on complex pages.",
+  "status": "in_progress",
+  "priority": 2,
+  "complexity": "simple",
+  "createdAt": "2026-01-26T01:49:59.762Z",
+  "updatedAt": "2026-01-26T06:11:38.366Z",
+  "descriptionHistory": []
+}

@@ -1,0 +1,1015 @@
+---
+/**
+ * ProductCard Component
+ * A gallery-style product card with hover effects, quick shop functionality,
+ * and optimized image loading for e-commerce integration.
+ *
+ * Features:
+ * - Gallery-style display with 4:5 or 1:1 aspect ratios
+ * - Second-image hover reveal with smooth crossfade
+ * - Quick shop button linking to external shop
+ * - Price display with sale/original price formatting
+ * - Optimized lazy loading with WebP support
+ * - Full accessibility with ARIA labels and keyboard navigation
+ * - Reduced motion support
+ * - Dark mode support
+ *
+ * @example Basic usage
+ * ```astro
+ * <ProductCard
+ *   id="product-1"
+ *   name="Classic T-Shirt"
+ *   image={{ src: '/products/tshirt-front.jpg', alt: 'Classic T-Shirt front view' }}
+ *   price={{ amount: 29.99 }}
+ *   shopUrl="https://shop.example.com/products/classic-tshirt"
+ * />
+ * ```
+ *
+ * @example With hover image and sale price
+ * ```astro
+ * <ProductCard
+ *   id="product-2"
+ *   name="Premium Hoodie"
+ *   image={{ src: '/products/hoodie-front.jpg', alt: 'Premium Hoodie front view' }}
+ *   hoverImage={{ src: '/products/hoodie-back.jpg', alt: 'Premium Hoodie back view' }}
+ *   price={{ amount: 49.99, originalAmount: 69.99 }}
+ *   shopUrl="https://shop.example.com/products/premium-hoodie"
+ *   onSale={true}
+ *   aspectRatio="4:5"
+ * />
+ * ```
+ */
+
+import type { ProductCardProps } from '../types/product';
+import { formatPrice, calculateDiscount, getAspectRatioCss } from '../types/product';
+import {
+  appendUTMParams,
+  mergeUTMParams,
+  getShopLinkAttributes,
+  getShopLinkAriaLabel
+} from '../utils/shop-tracking';
+import { shopConfig } from '../config/shop.config';
+import AvailabilityBadge from './AvailabilityBadge.astro';
+import type { AvailabilityStatus } from './AvailabilityBadge.astro';
+
+interface Props extends ProductCardProps {}
+
+const {
+  id,
+  name,
+  image,
+  hoverImage,
+  price,
+  shopUrl,
+  description,
+  category,
+  featured = false,
+  isNew = false,
+  onSale = false,
+  soldOut = false,
+  preOrder = false,
+  stockQuantity,
+  lowStockThreshold = 5,
+  showAvailability = false,
+  aspectRatio = '4:5',
+  utmParams,
+  class: className = '',
+  showLoadingState = true,
+  quickShopText = 'Quick Shop',
+  openInNewTab,
+  showQuickView = false,
+  quickViewText = 'Quick View',
+} = Astro.props;
+
+// Determine availability status
+function getAvailabilityStatus(): AvailabilityStatus | null {
+  if (soldOut) return 'sold-out';
+  if (preOrder) return 'pre-order';
+  if (stockQuantity !== undefined && stockQuantity > 0 && stockQuantity <= lowStockThreshold) {
+    return 'low-stock';
+  }
+  // Only show 'in-stock' when explicitly requested and stock info is provided
+  if (showAvailability && stockQuantity !== undefined && stockQuantity > lowStockThreshold) {
+    return 'in-stock';
+  }
+  return null;
+}
+
+const availabilityStatus = getAvailabilityStatus();
+
+// Build tracked shop URL
+const mergedParams = mergeUTMParams({
+  ...utmParams,
+  content: utmParams?.content || `product_card_${id}`,
+});
+const trackedShopUrl = shopConfig.trackingEnabled
+  ? appendUTMParams(shopUrl, mergedParams)
+  : shopUrl;
+
+// Get link attributes
+const linkAttrs = getShopLinkAttributes(openInNewTab);
+
+// Calculate discount if on sale
+const discountPercent = calculateDiscount(price);
+
+// Format prices
+const currentPrice = formatPrice(price);
+const originalPrice = price.originalAmount
+  ? formatPrice({ ...price, amount: price.originalAmount })
+  : null;
+
+// Build CSS classes
+const cardClasses = [
+  'product-card',
+  featured && 'product-card--featured',
+  soldOut && 'product-card--sold-out',
+  hoverImage && 'product-card--has-hover-image',
+  className,
+].filter(Boolean).join(' ');
+
+// Aspect ratio CSS value
+const aspectRatioCss = getAspectRatioCss(aspectRatio);
+
+// Aria label for the card link
+const cardAriaLabel = getShopLinkAriaLabel(name);
+
+// Function to get WebP version of an image
+function getWebPSrc(imageSrc: string): string {
+  if (imageSrc.endsWith('.svg')) return imageSrc;
+  const lastDot = imageSrc.lastIndexOf('.');
+  if (lastDot === -1) return imageSrc;
+  return imageSrc.substring(0, lastDot) + '.webp';
+}
+---
+
+<article
+  class={cardClasses}
+  id={`product-${id}`}
+  data-product-id={id}
+  style={`--aspect-ratio: ${aspectRatioCss};`}
+>
+  <!-- Image Container -->
+  <div class="product-card__image-container">
+    {/* Loading placeholder */}
+    {showLoadingState && (
+      <div class="product-card__image-placeholder" aria-hidden="true">
+        <div class="product-card__shimmer"></div>
+      </div>
+    )}
+
+    {/* Primary Image */}
+    <div class="product-card__image-wrapper product-card__image-wrapper--primary">
+      <picture>
+        {image.srcWebP && (
+          <source srcset={image.srcWebP} type="image/webp" />
+        )}
+        {!image.srcWebP && !image.src.endsWith('.svg') && (
+          <source srcset={getWebPSrc(image.src)} type="image/webp" />
+        )}
+        <img
+          src={image.src}
+          alt={image.alt}
+          width={image.width || 400}
+          height={image.height || (aspectRatio === '4:5' ? 500 : 400)}
+          loading="lazy"
+          decoding="async"
+          class="product-card__image product-card__image--primary"
+          onload="this.closest('.product-card__image-container').classList.add('product-card__image-container--loaded')"
+        />
+      </picture>
+    </div>
+
+    {/* Secondary/Hover Image */}
+    {hoverImage && (
+      <div class="product-card__image-wrapper product-card__image-wrapper--hover" aria-hidden="true">
+        <picture>
+          {hoverImage.srcWebP && (
+            <source srcset={hoverImage.srcWebP} type="image/webp" />
+          )}
+          {!hoverImage.srcWebP && !hoverImage.src.endsWith('.svg') && (
+            <source srcset={getWebPSrc(hoverImage.src)} type="image/webp" />
+          )}
+          <img
+            src={hoverImage.src}
+            alt={hoverImage.alt}
+            width={hoverImage.width || 400}
+            height={hoverImage.height || (aspectRatio === '4:5' ? 500 : 400)}
+            loading="lazy"
+            decoding="async"
+            class="product-card__image product-card__image--hover"
+          />
+        </picture>
+      </div>
+    )}
+
+    {/* Badges - Left side (promotional badges) */}
+    <div class="product-card__badges">
+      {isNew && !soldOut && (
+        <span class="product-card__badge product-card__badge--new">New</span>
+      )}
+      {onSale && discountPercent && !soldOut && (
+        <span class="product-card__badge product-card__badge--sale">-{discountPercent}%</span>
+      )}
+      {featured && !soldOut && !isNew && (
+        <span class="product-card__badge product-card__badge--featured">Featured</span>
+      )}
+    </div>
+
+    {/* Availability Badge - Right side (stock status) */}
+    {availabilityStatus && (
+      <div class="product-card__availability">
+        <AvailabilityBadge
+          status={availabilityStatus}
+          stockQuantity={availabilityStatus === 'low-stock' ? stockQuantity : undefined}
+          size="small"
+          variant="badge"
+          showIcon={false}
+        />
+      </div>
+    )}
+
+    {/* Quick Shop / Quick View Overlay */}
+    {!soldOut && (
+      <div class="product-card__overlay">
+        {showQuickView && (
+          <button
+            type="button"
+            class="product-card__quick-view"
+            aria-label={`${quickViewText} - ${name}`}
+            data-quick-view-trigger
+            data-product-id={id}
+          >
+            <svg
+              class="product-card__quick-view-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span class="product-card__quick-view-text">{quickViewText}</span>
+          </button>
+        )}
+        <a
+          href={trackedShopUrl}
+          class="product-card__quick-shop"
+          aria-label={`${quickShopText} - ${name}`}
+          data-product-link
+          {...linkAttrs}
+        >
+          <span class="product-card__quick-shop-text">{quickShopText}</span>
+          <svg
+            class="product-card__quick-shop-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+      </div>
+    )}
+  </div>
+
+  {/* Content */}
+  <div class="product-card__content">
+    {/* Category */}
+    {category && (
+      <span class="product-card__category">{category}</span>
+    )}
+
+    {/* Product Name - Links to shop */}
+    <h3 class="product-card__name">
+      <a
+        href={trackedShopUrl}
+        class="product-card__name-link"
+        data-product-link
+        {...linkAttrs}
+      >
+        {name}
+      </a>
+    </h3>
+
+    {/* Description */}
+    {description && (
+      <p class="product-card__description">{description}</p>
+    )}
+
+    {/* Price */}
+    <div class="product-card__price-container">
+      {soldOut ? (
+        <span class="product-card__price product-card__price--sold-out">Sold Out</span>
+      ) : (
+        <>
+          <span class={`product-card__price ${onSale ? 'product-card__price--sale' : ''}`}>
+            {currentPrice}
+          </span>
+          {originalPrice && onSale && (
+            <span class="product-card__price product-card__price--original">
+              <span class="sr-only">Originally </span>
+              {originalPrice}
+            </span>
+          )}
+        </>
+      )}
+    </div>
+  </div>
+</article>
+
+<style>
+  /* =================================================================
+   * PRODUCT CARD COMPONENT STYLES
+   * =================================================================
+   * Uses design system variables from variables.css
+   * Follows BEM naming convention for maintainability
+   */
+
+  .product-card {
+    /* Layout */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    /* Positioning */
+    position: relative;
+
+    /* Visual */
+    background-color: var(--color-background-elevated);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+
+    /* Animation */
+    transition:
+      box-shadow var(--duration-300) var(--ease-out),
+      transform var(--duration-300) var(--ease-out);
+  }
+
+  .product-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+  }
+
+  .product-card--featured {
+    box-shadow: var(--shadow-md), var(--glow-primary-sm);
+  }
+
+  .product-card--sold-out {
+    opacity: 0.85;
+  }
+
+  .product-card--sold-out:hover {
+    transform: none;
+  }
+
+  /* =================================================================
+   * IMAGE CONTAINER
+   * ================================================================= */
+  .product-card__image-container {
+    position: relative;
+    aspect-ratio: var(--aspect-ratio, 4 / 5);
+    overflow: hidden;
+    background-color: var(--color-background-muted);
+  }
+
+  /* Loading placeholder */
+  .product-card__image-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    transition: opacity var(--duration-300) var(--ease-out);
+  }
+
+  .product-card__image-container--loaded .product-card__image-placeholder {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .product-card__shimmer {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      var(--color-background-muted) 0%,
+      var(--color-background-subtle) 50%,
+      var(--color-background-muted) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* =================================================================
+   * IMAGE WRAPPERS & HOVER EFFECT
+   * ================================================================= */
+  .product-card__image-wrapper {
+    position: absolute;
+    inset: 0;
+    transition: opacity var(--duration-500) var(--ease-out);
+  }
+
+  .product-card__image-wrapper--primary {
+    z-index: 2;
+  }
+
+  .product-card__image-wrapper--hover {
+    z-index: 1;
+    opacity: 0;
+  }
+
+  /* Hover reveal - show secondary image */
+  .product-card--has-hover-image:hover .product-card__image-wrapper--primary {
+    opacity: 0;
+  }
+
+  .product-card--has-hover-image:hover .product-card__image-wrapper--hover {
+    opacity: 1;
+  }
+
+  .product-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform var(--duration-500) var(--ease-out);
+  }
+
+  /* Subtle zoom on hover (when no secondary image) */
+  .product-card:not(.product-card--has-hover-image):hover .product-card__image--primary {
+    transform: scale(1.05);
+  }
+
+  /* =================================================================
+   * BADGES
+   * ================================================================= */
+  .product-card__badges {
+    position: absolute;
+    top: var(--spacing-3);
+    left: var(--spacing-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    z-index: 5;
+  }
+
+  .product-card__badge {
+    display: inline-block;
+    padding: var(--spacing-1) var(--spacing-2);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    border-radius: var(--radius-sm);
+  }
+
+  .product-card__badge--new {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .product-card__badge--sale {
+    background-color: var(--color-error);
+    color: var(--color-text-inverse);
+  }
+
+  .product-card__badge--sold-out {
+    background-color: var(--color-text-tertiary);
+    color: var(--color-text-inverse);
+  }
+
+  .product-card__badge--featured {
+    background-color: var(--color-accent);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * AVAILABILITY BADGE (Right Side)
+   * ================================================================= */
+  .product-card__availability {
+    position: absolute;
+    top: var(--spacing-3);
+    right: var(--spacing-3);
+    z-index: 5;
+  }
+
+  /* =================================================================
+   * QUICK SHOP OVERLAY
+   * ================================================================= */
+  .product-card__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4);
+    z-index: 6;
+
+    /* Gradient overlay for better button visibility */
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.6) 0%,
+      rgba(0, 0, 0, 0.2) 40%,
+      transparent 100%
+    );
+
+    opacity: 0;
+    transition: opacity var(--duration-300) var(--ease-out);
+  }
+
+  .product-card:hover .product-card__overlay {
+    opacity: 1;
+  }
+
+  .product-card__quick-shop {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2-5) var(--spacing-5);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-md);
+
+    /* Initial state */
+    transform: translateY(20px);
+    opacity: 0;
+    transition:
+      transform var(--duration-300) var(--ease-spring-soft),
+      opacity var(--duration-300) var(--ease-out),
+      background-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out);
+  }
+
+  .product-card:hover .product-card__quick-shop {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .product-card__quick-shop:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .product-card__quick-shop:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-md), var(--focus-ring);
+  }
+
+  .product-card__quick-shop-icon {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+  }
+
+  /* =================================================================
+   * QUICK VIEW BUTTON
+   * ================================================================= */
+  .product-card__quick-view {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2-5) var(--spacing-4);
+    background-color: rgba(255, 255, 255, 0.95);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    border: none;
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+
+    /* Initial state */
+    transform: translateY(20px);
+    opacity: 0;
+    transition:
+      transform var(--duration-300) var(--ease-spring-soft),
+      opacity var(--duration-300) var(--ease-out),
+      background-color var(--duration-150) var(--ease-in-out),
+      color var(--duration-150) var(--ease-in-out);
+  }
+
+  .product-card:hover .product-card__quick-view {
+    transform: translateY(0);
+    opacity: 1;
+    /* Slight delay for staggered effect with quick-shop */
+    transition-delay: 50ms;
+  }
+
+  .product-card__quick-view:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  .product-card__quick-view:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-md), var(--focus-ring);
+  }
+
+  .product-card__quick-view-icon {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+  }
+
+  .product-card__quick-view-text {
+    /* Hide text on smaller screens if needed */
+  }
+
+  /* =================================================================
+   * CONTENT AREA
+   * ================================================================= */
+  .product-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    padding: var(--spacing-4);
+    flex: 1;
+  }
+
+  .product-card__category {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+  }
+
+  .product-card__name {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-snug);
+    color: var(--color-text-primary);
+  }
+
+  .product-card__name-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .product-card__name-link:hover {
+    color: var(--color-primary);
+  }
+
+  .product-card__name-link:focus-visible {
+    outline: none;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .product-card__description {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+
+    /* Limit to 2 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* =================================================================
+   * PRICE DISPLAY
+   * ================================================================= */
+  .product-card__price-container {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-2);
+    margin-top: auto;
+    padding-top: var(--spacing-2);
+  }
+
+  .product-card__price {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .product-card__price--sale {
+    color: var(--color-error);
+  }
+
+  .product-card__price--original {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-tertiary);
+    text-decoration: line-through;
+  }
+
+  .product-card__price--sold-out {
+    color: var(--color-text-tertiary);
+    font-style: italic;
+  }
+
+  /* Screen reader only text */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .product-card__content {
+      padding: var(--spacing-3);
+    }
+
+    .product-card__quick-shop {
+      /* Always visible on mobile for touch interaction */
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    /* Show quick shop/view buttons always on touch devices */
+    @media (hover: none) {
+      .product-card__overlay {
+        opacity: 1;
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.5) 0%,
+          transparent 60%
+        );
+      }
+
+      .product-card__quick-shop,
+      .product-card__quick-view {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * Respect user preferences for reduced motion
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .product-card,
+    .product-card__image,
+    .product-card__image-wrapper,
+    .product-card__overlay,
+    .product-card__quick-shop,
+    .product-card__quick-view,
+    .product-card__name-link {
+      transition: none;
+    }
+
+    .product-card:hover {
+      transform: none;
+    }
+
+    .product-card--has-hover-image:hover .product-card__image-wrapper--primary,
+    .product-card--has-hover-image:hover .product-card__image-wrapper--hover {
+      /* Instant switch instead of crossfade */
+      transition: none;
+    }
+
+    .product-card:not(.product-card--has-hover-image):hover .product-card__image--primary {
+      transform: none;
+    }
+
+    .product-card:hover .product-card__quick-shop,
+    .product-card:hover .product-card__quick-view {
+      transform: none;
+    }
+
+    .product-card__shimmer {
+      animation: none;
+    }
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .product-card {
+    background-color: var(--color-background-elevated);
+  }
+
+  :global(html[data-theme="dark"]) .product-card__quick-shop {
+    background-color: var(--color-background-elevated);
+    color: var(--color-text-primary);
+  }
+
+  :global(html[data-theme="dark"]) .product-card__quick-shop:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  :global(html[data-theme="dark"]) .product-card__quick-view {
+    background-color: rgba(30, 41, 59, 0.95);
+    color: var(--color-text-primary);
+  }
+
+  :global(html[data-theme="dark"]) .product-card__quick-view:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+
+  /* =================================================================
+   * HIGH CONTRAST MODE
+   * ================================================================= */
+  @media (forced-colors: active) {
+    .product-card {
+      border: 2px solid currentColor;
+    }
+
+    .product-card__badge {
+      border: 1px solid currentColor;
+    }
+
+    .product-card__quick-shop {
+      border: 2px solid currentColor;
+    }
+
+    .product-card__overlay {
+      background: transparent;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .product-card {
+      box-shadow: none;
+      border: 1px solid var(--color-border);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .product-card:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .product-card__overlay {
+      display: none;
+    }
+
+    .product-card__image-placeholder {
+      display: none;
+    }
+
+    .product-card__image-wrapper--hover {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * ProductCard Interactive Features
+   * - Analytics tracking for shop link clicks
+   * - Preload hover image on mouse enter
+   */
+  function initProductCards() {
+    const productCards = document.querySelectorAll('.product-card');
+
+    productCards.forEach((card) => {
+      const productId = card.getAttribute('data-product-id');
+      const productLinks = card.querySelectorAll('[data-product-link]');
+      const hoverImageWrapper = card.querySelector('.product-card__image-wrapper--hover');
+      const hoverImage = hoverImageWrapper?.querySelector('img') as HTMLImageElement | null;
+
+      // Preload hover image on card hover (if not already loaded)
+      if (hoverImage && !hoverImage.complete) {
+        let preloadTriggered = false;
+
+        card.addEventListener('mouseenter', () => {
+          if (!preloadTriggered) {
+            preloadTriggered = true;
+            // Force load by setting loading to eager
+            hoverImage.loading = 'eager';
+          }
+        }, { once: true });
+      }
+
+      // Track shop link clicks
+      productLinks.forEach((link) => {
+        link.addEventListener('click', () => {
+          // Track via gtag if available
+          if (typeof window !== 'undefined' && window.gtag) {
+            const linkElement = link as HTMLAnchorElement;
+            const productName = card.querySelector('.product-card__name-link')?.textContent?.trim();
+
+            window.gtag('event', 'product_click', {
+              product_id: productId,
+              product_name: productName,
+              destination_url: linkElement.href,
+              click_location: linkElement.classList.contains('product-card__quick-shop')
+                ? 'quick_shop_button'
+                : 'product_name',
+            });
+          }
+        });
+      });
+
+      // Quick View button handler
+      const quickViewTrigger = card.querySelector('[data-quick-view-trigger]') as HTMLButtonElement;
+      if (quickViewTrigger) {
+        quickViewTrigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          // Get product data from the card
+          const productData = {
+            id: productId,
+            name: card.querySelector('.product-card__name-link')?.textContent?.trim() || '',
+            image: {
+              src: (card.querySelector('.product-card__image--primary') as HTMLImageElement)?.src || '',
+              alt: (card.querySelector('.product-card__image--primary') as HTMLImageElement)?.alt || '',
+            },
+            hoverImage: card.querySelector('.product-card__image--hover')
+              ? {
+                  src: (card.querySelector('.product-card__image--hover') as HTMLImageElement)?.src || '',
+                  alt: (card.querySelector('.product-card__image--hover') as HTMLImageElement)?.alt || '',
+                }
+              : undefined,
+            price: {
+              amount: parseFloat(
+                (card.querySelector('.product-card__price:not(.product-card__price--original)')?.textContent || '0')
+                  .replace(/[^0-9.]/g, '')
+              ),
+              originalAmount: card.querySelector('.product-card__price--original')
+                ? parseFloat(
+                    (card.querySelector('.product-card__price--original')?.textContent || '0')
+                      .replace(/[^0-9.]/g, '')
+                  )
+                : undefined,
+              currency: 'USD',
+            },
+            shopUrl: (card.querySelector('.product-card__quick-shop') as HTMLAnchorElement)?.href || '',
+            description: card.querySelector('.product-card__description')?.textContent?.trim(),
+            category: card.querySelector('.product-card__category')?.textContent?.trim(),
+            isNew: !!card.querySelector('.product-card__badge--new'),
+            onSale: !!card.querySelector('.product-card__badge--sale'),
+            soldOut: card.classList.contains('product-card--sold-out'),
+            featured: !!card.querySelector('.product-card__badge--featured'),
+          };
+
+          // Dispatch custom event to open the quick view modal
+          document.dispatchEvent(new CustomEvent('quickview:open', { detail: productData }));
+        });
+      }
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProductCards);
+  } else {
+    initProductCards();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initProductCards);
+</script>
