@@ -1,0 +1,220 @@
+---
+/**
+ * Demo Page - RetailHero Component
+ * Showcases the clean retail hero component with different configurations
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import RetailHero from '../../components/RetailHero.astro';
+---
+
+<Layout title="Retail Hero Demo | Houston Web Services">
+  <!-- Demo 1: Placeholder - No image provided -->
+  <RetailHero
+    id="demo-hero-placeholder"
+    badge="New Collection"
+    headline="New Season Arrivals"
+    subheadline="Discover our curated collection of timeless essentials designed for modern living."
+    cta={{ text: "Shop Now", href: "/shop" }}
+    secondaryCta={{ text: "View Lookbook", href: "/lookbook" }}
+    overlayPosition="center"
+    minHeight="100vh"
+  />
+
+  <!-- Section divider with demo info -->
+  <section class="demo-info">
+    <div class="demo-info__container">
+      <h2>RetailHero Component Demo</h2>
+      <p>This page demonstrates the retail hero component with clean, minimal styling perfect for e-commerce and retail websites.</p>
+
+      <h3>Demo 1: Placeholder Mode (above)</h3>
+      <ul>
+        <li>No background image - shows elegant placeholder</li>
+        <li>Badge label above headline</li>
+        <li>Center-aligned content</li>
+        <li>Primary and secondary CTA buttons</li>
+        <li>Scroll indicator at bottom</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Demo 2: With lifestyle image, bottom-left position -->
+  <RetailHero
+    id="demo-hero-lifestyle"
+    badge="Limited Edition"
+    headline="Summer Collection"
+    subheadline="Effortless style for warm days ahead. Lightweight fabrics, timeless designs."
+    backgroundImage="https://images.unsplash.com/photo-1445205170230-053b83016050?w=1920&q=80"
+    cta={{ text: "Explore Collection", href: "/collections/summer" }}
+    overlayPosition="bottom-left"
+    overlayOpacity={0.45}
+    minHeight="100vh"
+  />
+
+  <section class="demo-info">
+    <div class="demo-info__container">
+      <h3>Demo 2: Lifestyle Image - Bottom Left (above)</h3>
+      <ul>
+        <li>Full lifestyle background image</li>
+        <li>Text positioned bottom-left</li>
+        <li>Custom overlay opacity (0.45)</li>
+        <li>Single CTA button</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Demo 3: Center position with higher contrast -->
+  <RetailHero
+    id="demo-hero-center-image"
+    headline="Crafted for You"
+    subheadline="Premium materials meet exceptional design in every piece we create."
+    backgroundImage="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80"
+    cta={{ text: "Shop All", href: "/shop" }}
+    secondaryCta={{ text: "Our Story", href: "/about", variant: "secondary" }}
+    overlayPosition="center"
+    overlayOpacity={0.55}
+    minHeight="90vh"
+  />
+
+  <section class="demo-info">
+    <div class="demo-info__container">
+      <h3>Demo 3: Center Position (above)</h3>
+      <ul>
+        <li>Center-aligned text</li>
+        <li>Higher overlay opacity (0.55) for readability</li>
+        <li>Dual CTA buttons</li>
+        <li>90vh height</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Demo 4: Bottom-right position -->
+  <RetailHero
+    id="demo-hero-bottom-right"
+    badge="Sale"
+    headline="End of Season"
+    subheadline="Up to 50% off selected items."
+    backgroundImage="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1920&q=80"
+    cta={{ text: "Shop Sale", href: "/sale" }}
+    overlayPosition="bottom-right"
+    minHeight="80vh"
+    showScrollIndicator={false}
+  />
+
+  <section class="demo-info">
+    <div class="demo-info__container">
+      <h3>Demo 4: Bottom-Right Position (above)</h3>
+      <ul>
+        <li>Text positioned bottom-right</li>
+        <li>Sale badge styling</li>
+        <li>Scroll indicator hidden</li>
+        <li>80vh height</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Demo 5: Minimal - headline only -->
+  <RetailHero
+    id="demo-hero-minimal"
+    headline="The Art of Living"
+    backgroundImage="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1920&q=80"
+    overlayPosition="bottom-center"
+    overlayOpacity={0.35}
+    minHeight="70vh"
+  />
+
+  <section class="demo-info">
+    <div class="demo-info__container">
+      <h3>Demo 5: Minimal (above)</h3>
+      <ul>
+        <li>Headline only - no subheadline or CTA</li>
+        <li>Bottom-center position</li>
+        <li>Lower overlay opacity (0.35)</li>
+        <li>70vh height</li>
+      </ul>
+
+      <h3>Component Features</h3>
+      <ul>
+        <li><strong>Placeholder mode:</strong> Elegant gradient with pattern when no image provided</li>
+        <li><strong>Badge support:</strong> Optional label above headline for promotions</li>
+        <li><strong>7 positions:</strong> center, bottom-left/center/right, top-left/center/right</li>
+        <li><strong>Configurable overlay:</strong> Adjustable opacity for text readability</li>
+        <li><strong>Dual CTAs:</strong> Support for primary and secondary buttons</li>
+        <li><strong>Scroll indicator:</strong> Optional animated scroll hint</li>
+        <li><strong>Animations:</strong> Smooth fade-in with staggered timing</li>
+        <li><strong>Responsive:</strong> Mobile-first design with breakpoints</li>
+        <li><strong>Accessible:</strong> WCAG 2.1 AA compliant, reduced motion support</li>
+      </ul>
+
+      <h3>Usage Example</h3>
+      <pre><code>&lt;RetailHero
+  badge="New Collection"
+  headline="Summer Arrivals"
+  subheadline="Discover timeless pieces"
+  backgroundImage="/images/hero.jpg"
+  cta=&#123;&#123; text: "Shop Now", href: "/shop" &#125;&#125;
+  secondaryCta=&#123;&#123; text: "Learn More", href: "/about" &#125;&#125;
+  overlayPosition="bottom-left"
+  overlayOpacity=&#123;0.5&#125;
+/&gt;</code></pre>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .demo-info {
+    padding: var(--spacing-12) var(--spacing-4);
+    background: var(--color-background);
+  }
+
+  .demo-info__container {
+    max-width: 48rem;
+    margin: 0 auto;
+  }
+
+  .demo-info h2 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .demo-info h3 {
+    font-size: var(--font-size-lg);
+    color: var(--color-primary);
+    margin-top: var(--spacing-6);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .demo-info p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .demo-info ul {
+    color: var(--color-text-secondary);
+    padding-left: var(--spacing-6);
+  }
+
+  .demo-info li {
+    margin-bottom: var(--spacing-2);
+  }
+
+  .demo-info li strong {
+    color: var(--color-text-primary);
+  }
+
+  .demo-info pre {
+    background: var(--color-background-muted);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    margin-top: var(--spacing-4);
+  }
+
+  .demo-info code {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    white-space: pre;
+  }
+</style>

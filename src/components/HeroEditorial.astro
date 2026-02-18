@@ -20,7 +20,7 @@
  *   headline="Crafted with Purpose"
  *   subheadline="Thoughtful design for modern businesses"
  *   backgroundImage="/images/hero-lifestyle.jpg"
- *   cta={{ text: "Explore", href: "/services" }}
+ *   cta={{ text: "Explore", href: "/products" }}
  * />
  * ```
  *
@@ -216,7 +216,7 @@ const cssVarsString = Object.entries(cssVars)
   }
 
   /* =================================================================
-   * OVERLAY
+   * OVERLAY - Clean, minimal vignette
    * =================================================================
    */
 
@@ -226,9 +226,9 @@ const cssVarsString = Object.entries(cssVars)
     z-index: 1;
     background: linear-gradient(
       to top,
-      rgba(0, 0, 0, calc(var(--hero-overlay-opacity, 0.4) + 0.2)) 0%,
-      rgba(0, 0, 0, calc(var(--hero-overlay-opacity, 0.4) * 0.5)) 40%,
-      rgba(0, 0, 0, calc(var(--hero-overlay-opacity, 0.4) * 0.3)) 100%
+      rgba(0, 0, 0, calc(var(--hero-overlay-opacity, 0.4) + 0.15)) 0%,
+      rgba(0, 0, 0, calc(var(--hero-overlay-opacity, 0.4) * 0.35)) 50%,
+      rgba(0, 0, 0, calc(var(--hero-overlay-opacity, 0.4) * 0.1)) 100%
     );
     pointer-events: none;
   }
@@ -256,30 +256,28 @@ const cssVarsString = Object.entries(cssVars)
   }
 
   /* =================================================================
-   * TYPOGRAPHY
+   * TYPOGRAPHY - Editorial, refined
    * =================================================================
    */
 
   .hero-editorial__headline {
     font-family: var(--font-heading, system-ui, sans-serif);
-    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-size: clamp(2.25rem, 7vw, 4.5rem);
     font-weight: var(--font-weight-bold, 700);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
     color: var(--color-text-inverse, #ffffff);
     margin: 0;
-    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
   }
 
   .hero-editorial__subheadline {
     font-family: var(--font-body, system-ui, sans-serif);
-    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    font-size: clamp(1rem, 2vw, 1.125rem);
     font-weight: var(--font-weight-normal, 400);
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.8);
     margin: 0;
-    max-width: 40ch;
-    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+    max-width: 38ch;
   }
 
   /* =================================================================
@@ -291,36 +289,34 @@ const cssVarsString = Object.entries(cssVars)
     margin-top: var(--spacing-4, 1rem);
   }
 
-  /* Style overrides for button in editorial context */
+  /* Button styles - clean, editorial aesthetic */
   .hero-editorial :global(.btn--primary) {
     background-color: var(--color-background, #ffffff);
-    color: var(--color-primary-700, #284182);
+    color: var(--color-primary-800, #203777);
     border: none;
-    box-shadow:
-      0 4px 15px rgba(0, 0, 0, 0.2),
-      0 0 0 0 rgba(255, 255, 255, 0);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
   .hero-editorial :global(.btn--primary:hover:not(.btn--disabled)) {
-    background-color: var(--color-primary-50, #e6eaf2);
-    color: var(--color-primary-800, #203777);
-    box-shadow:
-      0 8px 25px rgba(0, 0, 0, 0.25),
-      0 0 0 3px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     transform: translateY(-2px);
   }
 
   .hero-editorial :global(.btn--secondary) {
     background-color: transparent;
     color: var(--color-text-inverse, #ffffff);
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
   }
 
   .hero-editorial :global(.btn--secondary:hover:not(.btn--disabled)) {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.7);
   }
 
   /* =================================================================
@@ -343,10 +339,10 @@ const cssVarsString = Object.entries(cssVars)
   }
 
   .hero-editorial__scroll-arrow {
-    width: 24px;
-    height: 24px;
-    color: var(--color-text-inverse, #ffffff);
-    animation: scrollBounce 2s ease-in-out infinite;
+    width: 20px;
+    height: 20px;
+    color: rgba(255, 255, 255, 0.6);
+    animation: scrollBounce 2.5s ease-in-out infinite;
   }
 
   .hero-editorial__scroll-arrow svg {
@@ -357,9 +353,11 @@ const cssVarsString = Object.entries(cssVars)
   @keyframes scrollBounce {
     0%, 100% {
       transform: translateY(0);
+      opacity: 0.5;
     }
     50% {
-      transform: translateY(8px);
+      transform: translateY(6px);
+      opacity: 0.8;
     }
   }
 
@@ -465,37 +463,43 @@ const cssVarsString = Object.entries(cssVars)
   }
 
   /* =================================================================
-   * TEXT ANIMATIONS
+   * TEXT ANIMATIONS - Subtle, refined entrance
    * =================================================================
    */
 
   .hero-editorial--animate .hero-editorial__headline {
     opacity: 0;
-    transform: translateY(30px);
-    animation: editorialFadeIn 0.8s ease-out 0.2s forwards;
+    transform: translateY(20px);
+    animation: editorialFadeIn 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.15s forwards;
   }
 
   .hero-editorial--animate .hero-editorial__subheadline {
     opacity: 0;
-    transform: translateY(20px);
-    animation: editorialFadeIn 0.8s ease-out 0.4s forwards;
+    transform: translateY(14px);
+    animation: editorialFadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1) 0.3s forwards;
   }
 
   .hero-editorial--animate .hero-editorial__cta {
     opacity: 0;
-    transform: translateY(20px);
-    animation: editorialFadeIn 0.8s ease-out 0.6s forwards;
+    transform: translateY(12px);
+    animation: editorialFadeIn 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0.45s forwards;
   }
 
   .hero-editorial--animate .hero-editorial__scroll-indicator {
     opacity: 0;
-    animation: editorialFadeIn 0.8s ease-out 0.8s forwards;
+    animation: editorialScrollFadeIn 0.6s ease-out 0.6s forwards;
   }
 
   @keyframes editorialFadeIn {
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes editorialScrollFadeIn {
+    to {
+      opacity: 0.7;
     }
   }
 

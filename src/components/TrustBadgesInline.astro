@@ -1,0 +1,348 @@
+---
+/**
+ * TrustBadgesInline Component
+ * A minimal, text-based trust badge component for displaying trust indicators
+ * like free shipping, gift wrapping, and local artisan messaging.
+ *
+ * Features:
+ * - Minimal inline text design (no heavy cards/boxes)
+ * - Optional small icons for visual recognition
+ * - Horizontal, vertical, or wrap layouts
+ * - Customizable separators for horizontal display
+ * - Small and medium size variants
+ * - Optional links for badges
+ * - Dark mode support
+ * - Accessible with proper ARIA attributes
+ *
+ * @example Basic usage
+ * ```astro
+ * <TrustBadgesInline
+ *   badges={[
+ *     { id: 'shipping', type: 'shipping', text: 'Free Shipping over $50' },
+ *     { id: 'gift', type: 'gift-wrap', text: 'Gift Wrapping Available' },
+ *     { id: 'artisan', type: 'artisan', text: 'Handcrafted by Local Artisans' },
+ *   ]}
+ * />
+ * ```
+ *
+ * @example Horizontal with separator
+ * ```astro
+ * <TrustBadgesInline
+ *   badges={badges}
+ *   layout="horizontal"
+ *   separator="|"
+ *   showIcons={false}
+ * />
+ * ```
+ */
+
+import type { TrustBadgesInlineProps, TrustBadge } from '../types/trust-badges';
+
+interface Props extends TrustBadgesInlineProps {}
+
+const {
+  badges = [],
+  layout = 'horizontal',
+  size = 'small',
+  showIcons = true,
+  separator = '·',
+  align = 'center',
+  class: className = '',
+} = Astro.props;
+
+// Build CSS classes
+const containerClasses = [
+  'trust-badges-inline',
+  `trust-badges-inline--${layout}`,
+  `trust-badges-inline--${size}`,
+  `trust-badges-inline--align-${align}`,
+  className,
+].filter(Boolean).join(' ');
+
+// Default icons for each badge type
+const defaultIcons: Record<string, string> = {
+  'shipping': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`,
+  'gift-wrap': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>`,
+  'artisan': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
+  'returns': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`,
+  'secure': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`,
+  'support': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  'quality': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+  'custom': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+};
+
+// Get the icon to display for a badge
+function getIcon(badge: TrustBadge): string {
+  if (badge.icon) return badge.icon;
+  if (badge.showIcon === false) return '';
+  return defaultIcons[badge.type] || defaultIcons['custom'];
+}
+
+// Check if we have badges to display
+const hasBadges = badges && badges.length > 0;
+---
+
+{hasBadges && (
+  <div class={containerClasses} role="list" aria-label="Trust and service information">
+    {badges.map((badge, index) => (
+      <>
+        {badge.link ? (
+          <a
+            href={badge.link.href}
+            class="trust-badges-inline__item trust-badges-inline__item--link"
+            role="listitem"
+            aria-label={badge.link.ariaLabel || badge.text}
+            target={badge.link.openInNewTab ? '_blank' : undefined}
+            rel={badge.link.openInNewTab ? 'noopener noreferrer' : undefined}
+          >
+            {showIcons && badge.showIcon !== false && (
+              <span class="trust-badges-inline__icon" aria-hidden="true">
+                <Fragment set:html={getIcon(badge)} />
+              </span>
+            )}
+            <span class="trust-badges-inline__text">
+              {badge.text}
+              {badge.subtext && (
+                <span class="trust-badges-inline__subtext">{badge.subtext}</span>
+              )}
+            </span>
+          </a>
+        ) : (
+          <span class="trust-badges-inline__item" role="listitem">
+            {showIcons && badge.showIcon !== false && (
+              <span class="trust-badges-inline__icon" aria-hidden="true">
+                <Fragment set:html={getIcon(badge)} />
+              </span>
+            )}
+            <span class="trust-badges-inline__text">
+              {badge.text}
+              {badge.subtext && (
+                <span class="trust-badges-inline__subtext">{badge.subtext}</span>
+              )}
+            </span>
+          </span>
+        )}
+        {layout === 'horizontal' && index < badges.length - 1 && separator && (
+          <span class="trust-badges-inline__separator" aria-hidden="true">{separator}</span>
+        )}
+      </>
+    ))}
+  </div>
+)}
+
+<style>
+  /* =================================================================
+   * TRUST BADGES INLINE COMPONENT STYLES
+   * =================================================================
+   * Minimal, text-based trust indicators
+   * Uses design system variables from variables.css
+   */
+
+  .trust-badges-inline {
+    display: flex;
+    gap: var(--spacing-2);
+  }
+
+  /* =================================================================
+   * LAYOUT VARIANTS
+   * ================================================================= */
+  .trust-badges-inline--horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .trust-badges-inline--vertical {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-1-5);
+  }
+
+  .trust-badges-inline--wrap {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--spacing-3);
+  }
+
+  /* =================================================================
+   * ALIGNMENT VARIANTS
+   * ================================================================= */
+  .trust-badges-inline--align-left {
+    justify-content: flex-start;
+  }
+
+  .trust-badges-inline--align-center {
+    justify-content: center;
+  }
+
+  .trust-badges-inline--align-right {
+    justify-content: flex-end;
+  }
+
+  .trust-badges-inline--vertical.trust-badges-inline--align-center {
+    align-items: center;
+  }
+
+  .trust-badges-inline--vertical.trust-badges-inline--align-right {
+    align-items: flex-end;
+  }
+
+  /* =================================================================
+   * BADGE ITEMS
+   * ================================================================= */
+  .trust-badges-inline__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1-5);
+    font-family: var(--font-body);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-tight);
+  }
+
+  .trust-badges-inline__item--link {
+    text-decoration: none;
+    cursor: pointer;
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .trust-badges-inline__item--link:hover {
+    color: var(--color-primary);
+  }
+
+  .trust-badges-inline__item--link:focus-visible {
+    outline: none;
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* =================================================================
+   * SIZE VARIANTS
+   * ================================================================= */
+  .trust-badges-inline--small .trust-badges-inline__item {
+    font-size: var(--font-size-xs);
+  }
+
+  .trust-badges-inline--small .trust-badges-inline__icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .trust-badges-inline--medium .trust-badges-inline__item {
+    font-size: var(--font-size-sm);
+  }
+
+  .trust-badges-inline--medium .trust-badges-inline__icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* =================================================================
+   * ICONS
+   * ================================================================= */
+  .trust-badges-inline__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--color-text-tertiary);
+    transition: color var(--duration-150) var(--ease-in-out);
+  }
+
+  .trust-badges-inline__icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .trust-badges-inline__item--link:hover .trust-badges-inline__icon {
+    color: var(--color-primary);
+  }
+
+  /* =================================================================
+   * TEXT CONTENT
+   * ================================================================= */
+  .trust-badges-inline__text {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--spacing-1);
+    flex-wrap: wrap;
+  }
+
+  .trust-badges-inline__subtext {
+    font-size: 0.9em;
+    color: var(--color-text-tertiary);
+  }
+
+  /* =================================================================
+   * SEPARATOR
+   * ================================================================= */
+  .trust-badges-inline__separator {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-disabled);
+    margin: 0 var(--spacing-1);
+    user-select: none;
+  }
+
+  .trust-badges-inline--small .trust-badges-inline__separator {
+    font-size: var(--font-size-xs);
+  }
+
+  .trust-badges-inline--medium .trust-badges-inline__separator {
+    font-size: var(--font-size-sm);
+  }
+
+  /* =================================================================
+   * DARK MODE
+   * ================================================================= */
+  :global(html[data-theme="dark"]) .trust-badges-inline__item {
+    color: var(--color-text-secondary);
+  }
+
+  :global(html[data-theme="dark"]) .trust-badges-inline__item--link:hover {
+    color: var(--color-primary-300);
+  }
+
+  :global(html[data-theme="dark"]) .trust-badges-inline__icon {
+    color: var(--color-text-tertiary);
+  }
+
+  :global(html[data-theme="dark"]) .trust-badges-inline__item--link:hover .trust-badges-inline__icon {
+    color: var(--color-primary-300);
+  }
+
+  /* =================================================================
+   * RESPONSIVE STYLES
+   * ================================================================= */
+  @media screen and (max-width: 767px) {
+    .trust-badges-inline--horizontal {
+      gap: var(--spacing-1-5);
+    }
+
+    .trust-badges-inline__separator {
+      margin: 0 var(--spacing-0-5);
+    }
+  }
+
+  /* =================================================================
+   * REDUCED MOTION
+   * ================================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .trust-badges-inline__item,
+    .trust-badges-inline__icon {
+      transition: none;
+    }
+  }
+
+  /* =================================================================
+   * PRINT STYLES
+   * ================================================================= */
+  @media print {
+    .trust-badges-inline__item {
+      color: var(--color-text-primary);
+    }
+
+    .trust-badges-inline__icon {
+      display: none;
+    }
+  }
+</style>

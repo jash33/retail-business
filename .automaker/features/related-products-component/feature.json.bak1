@@ -3,11 +3,11 @@
   "category": "UI",
   "title": "Related Products Section",
   "description": "Build related products section for product detail pages based on category or manual curation. Includes horizontal scroll layout and 'Complete the Look' styling options.",
-  "status": "in_progress",
+  "status": "waiting_approval",
   "priority": 2,
   "complexity": "simple",
   "createdAt": "2026-01-26T01:49:59.729Z",
-  "updatedAt": "2026-01-27T01:26:58.854Z",
+  "updatedAt": "2026-01-27T01:36:09.918Z",
   "descriptionHistory": [],
   "skipTests": true,
   "model": "claude-opus",
@@ -19,5 +19,6 @@
   "planningMode": "skip",
   "requirePlanApproval": false,
   "workMode": "current",
-  "dependencies": []
+  "dependencies": [],
+  "justFinishedAt": "2026-01-27T01:36:09.918Z"
 }

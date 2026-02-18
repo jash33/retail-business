@@ -1,13 +1,13 @@
 ---
 /**
- * About Page - Houston Web Services
- * A comprehensive page establishing credibility and local  Houston connection.
+ * About Page - Main Street Boutique
+ * A comprehensive page establishing credibility and local Houston connection.
  *
  * Features:
  * - Professional introduction with photo placeholder
- * - Skills and expertise showcase
+ * - Retail expertise and sourcing philosophy showcase
  * - Personal touch and community involvement
- * -  Houston local connection emphasis
+ * - Houston local connection emphasis
  * - Full SEO optimization with structured data
  * - WCAG 2.1 AA accessible
  */
@@ -16,34 +16,34 @@ import Layout from '../layouts/Layout.astro';
 import Button from '../components/Button.astro';
 
 /**
- * Skills organized by category for the expertise section
+ * Expertise organized by category for the about section
  */
 const skillCategories = [
   {
-    title: 'Website Design',
+    title: 'Curated Selection',
     skills: [
-      { name: 'Custom Website Design', years: 8 },
-      { name: 'Mobile-Friendly Websites', years: 8 },
-      { name: 'Online Stores & Shopping', years: 6 },
-      { name: 'Easy-to-Update Websites', years: 7 },
+      { name: 'Artisan Ceramics & Pottery', years: 10 },
+      { name: 'Handcrafted Textiles & Linens', years: 10 },
+      { name: 'Unique Home Decor Pieces', years: 8 },
+      { name: 'Thoughtful Gift Collections', years: 7 },
     ],
   },
   {
-    title: 'Getting Found Online',
+    title: 'Sourcing & Quality',
     skills: [
-      { name: 'Google Search Rankings', years: 7 },
-      { name: 'Local Search Visibility', years: 6 },
-      { name: 'Website Performance Tracking', years: 6 },
-      { name: 'Turning Visitors into Customers', years: 5 },
+      { name: 'Local Artisan Partnerships', years: 10 },
+      { name: 'Sustainable & Ethical Sourcing', years: 8 },
+      { name: 'Quality Materials & Craftsmanship', years: 10 },
+      { name: 'Small-Batch & Limited Editions', years: 6 },
     ],
   },
   {
-    title: 'Ongoing Support',
+    title: 'Customer Experience',
     skills: [
-      { name: 'Brand & Visual Identity', years: 5 },
-      { name: 'Website Hosting & Updates', years: 8 },
-      { name: 'Speed & Performance', years: 6 },
-      { name: 'Security & Protection', years: 7 },
+      { name: 'Personal Styling & Recommendations', years: 9 },
+      { name: 'Custom Gift Wrapping', years: 8 },
+      { name: 'Interior Styling Consultations', years: 5 },
+      { name: 'Loyalty & Rewards Program', years: 4 },
     ],
   },
 ];
@@ -52,10 +52,10 @@ const skillCategories = [
  * Key achievements and stats to display
  */
 const achievements = [
-  { number: '8+', label: 'Years Experience' },
-  { number: '150+', label: 'Projects Completed' },
-  { number: '98%', label: 'Client Satisfaction' },
-  { number: '50+', label: 'Local Businesses Served' },
+  { number: '10+', label: 'Years in Business' },
+  { number: '200+', label: 'Local Artisans Supported' },
+  { number: '5,000+', label: 'Happy Customers' },
+  { number: '1', label: 'Passionate Community' },
 ];
 
 /**
@@ -64,18 +64,18 @@ const achievements = [
 const communityHighlights = [
   {
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
-    title: 'Houston Resident',
-    description: "Living and working in Houston for over 10 years. I know our neighborhoods, our businesses, and what makes our community unique.",
+    title: 'Houston Born & Raised',
+    description: "This city is home. I know our neighborhoods, our tastes, and the talented makers who call Houston home — and I bring them all together under one roof.",
   },
   {
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-    title: 'Community Supporter',
-    description: 'Active participant in local business networking groups and proud sponsor of youth sports programs throughout Houston.',
+    title: 'Community Builder',
+    description: 'From hosting artisan pop-up markets to sponsoring local school art programs, we believe in investing in the creative spirit of our community.',
   },
   {
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
-    title: 'Local Business Advocate',
-    description: "I believe in supporting local. That's why I focus exclusively on helping small businesses in  Houston compete and thrive in the digital landscape.",
+    title: 'Shop Local Champion',
+    description: "Every purchase at Main Street Boutique supports independent artisans and makers. We're proud to keep dollars in our local economy and craftsmanship alive.",
   },
 ];
 
@@ -83,36 +83,36 @@ const communityHighlights = [
  * Fun facts to add personality
  */
 const funFacts = [
-  "I've visited every coffee shop within 5 miles of downtown Houston (research, of course!)",
-  "Weekend mornings usually find me at Terry Hershey Park",
-  "Die-hard Texans fan - yes, even through the tough seasons",
-  "Self-taught coder who built my first website at age 15",
+  "I can spot a beautifully glazed ceramic from across a crowded craft fair",
+  "Weekend mornings start at the Heights farmers market — always scouting for new makers",
+  "Die-hard Texans fan — yes, even through the tough seasons",
+  "My house is basically a showroom for items I couldn't resist bringing home from the shop",
 ];
 ---
 
 <Layout
   title="About"
-  description="Meet the team behind Houston Web Services. Based in Houston, we bring 8+ years of web design expertise to help local businesses succeed online."
+  description="Meet the owner behind Main Street Boutique. Based in Houston, we've spent over 10 years curating artisan goods and supporting local makers."
   openGraph={{
     type: 'profile',
   }}
   jsonLd={{
     type: 'AboutPage',
-    name: 'About Houston Web Services',
-    description: 'Learn about the experience, expertise, and local commitment behind Houston Web Services - your  Houston web design partner.',
+    name: 'About Main Street Boutique',
+    description: 'Learn about the passion, expertise, and local commitment behind Main Street Boutique — your Houston destination for curated artisan goods.',
   }}
 >
   <main>
     <!-- Hero Section -->
     <section class="about-hero" aria-labelledby="about-hero-heading">
       <div class="about-hero__container">
-        <span class="about-hero__eyebrow reveal reveal--up">About Us</span>
+        <span class="about-hero__eyebrow reveal reveal--up">Our Story</span>
         <h1 id="about-hero-heading" class="about-hero__title reveal reveal--up reveal--delay-1">
-          Your  Houston<br />Web Partner
+          Your Houston<br />Artisan Boutique
         </h1>
         <p class="about-hero__subtitle reveal reveal--up reveal--delay-2">
-          Building beautiful, effective websites for local businesses since 2016.
-          We're not just developers — we're your neighbors.
+          Curating beautiful, handcrafted goods from local artisans since 2014.
+          We're not just a shop — we're your neighbors.
         </p>
       </div>
     </section>
@@ -123,7 +123,7 @@ const funFacts = [
         <div class="about-intro__content">
           <div class="about-intro__photo-wrapper reveal reveal--left">
             <!-- Professional Photo Placeholder -->
-            <div class="about-intro__photo" role="img" aria-label="Professional headshot of the Houston Web Services founder">
+            <div class="about-intro__photo" role="img" aria-label="Professional headshot of the Main Street Boutique owner">
               <svg class="about-intro__photo-placeholder" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <rect width="200" height="200" fill="currentColor" opacity="0.1"/>
                 <circle cx="100" cy="70" r="35" fill="currentColor" opacity="0.2"/>
@@ -132,45 +132,46 @@ const funFacts = [
               <span class="about-intro__photo-label">Photo Coming Soon</span>
             </div>
             <div class="about-intro__badge">
-              <span class="about-intro__badge-text">Est. 2016</span>
+              <span class="about-intro__badge-text">Est. 2014</span>
             </div>
           </div>
 
           <div class="about-intro__text reveal reveal--up reveal--delay-1">
             <h2 id="about-intro-heading" class="about-intro__heading">
-              Hi, I'm James — and I'm Passionate About Helping Local Businesses Succeed Online
+              Hi, I'm James — and I'm Passionate About Bringing Beautiful, Handcrafted Goods to Houston
             </h2>
 
             <div class="about-intro__bio">
               <p>
-                When I started Houston Web Services back in 2016, I had one simple goal: to give small businesses
-                in my community the same quality web presence that big corporations enjoy, but with the personal
-                attention and care that only a local partner can provide. As a  Houston resident for over a
-                decade, I've watched our neighborhoods grow and evolve throughout the greater Houston area.
+                When I opened Main Street Boutique back in 2014, I had one simple dream: to create a
+                space where talented local artisans could showcase their work and where customers could find
+                truly unique, handcrafted pieces. As a lifelong Houston resident, I've always believed our
+                city's creative community deserves a storefront that celebrates their craft.
               </p>
 
               <p>
-                My journey into web development started long before it became my career. As a teenager, I was
-                fascinated by how websites could connect people and ideas. That curiosity led me through years of
-                self-study, professional certifications, and hands-on experience with businesses of all sizes.
-                But what I discovered along the way is that my real passion isn't just building websites — it's
-                helping local business owners like you turn their digital presence into a powerful tool for growth.
+                My love for artisan goods started long before it became my livelihood. Growing up, I was
+                drawn to the stories behind handmade objects — the potter's hands shaping clay, the weaver's
+                patience at the loom. That appreciation led me to travel across Texas and beyond, building
+                relationships with makers whose work speaks for itself. What I discovered is that my real
+                passion isn't just selling beautiful things — it's connecting people with the stories and
+                the artisans behind every piece.
               </p>
 
               <p>
-                Today, I've had the privilege of working with over 150 businesses right here in the greater
-                Houston area. From the restaurant owner who needed online ordering capabilities to the law firm
-                seeking better local visibility, each project has reinforced my belief that great web design
-                combined with genuine understanding of local needs creates something truly special. When you
-                work with me, you're not getting an outsourced agency — you're getting a neighbor who genuinely
-                cares about your success.
+                Today, Main Street Boutique partners with over 200 independent artisans and has served
+                thousands of customers right here in the greater Houston area. From the couple furnishing
+                their first home with one-of-a-kind ceramics to the gift-giver searching for something
+                truly meaningful, each interaction reminds me why I do this. When you shop with us,
+                you're not just buying a product — you're supporting a maker, investing in quality
+                craftsmanship, and taking home something with a story.
               </p>
             </div>
 
             <div class="about-intro__cta">
               <Button
-                text="Let's Talk About Your Project"
-                href="/contact"
+                text="Visit Our Shop"
+                href="/products"
                 variant="primary"
                 size="large"
               />
@@ -183,7 +184,7 @@ const funFacts = [
     <!-- Achievements Stats Section -->
     <section class="about-stats" aria-labelledby="about-stats-heading">
       <div class="about-stats__container">
-        <h2 id="about-stats-heading" class="sr-only">Our Achievements in Numbers</h2>
+        <h2 id="about-stats-heading" class="sr-only">Main Street Boutique by the Numbers</h2>
         <div class="about-stats__grid">
           {achievements.map((stat, index) => (
             <div class={`about-stats__item reveal reveal--scale-up reveal--delay-${index + 1}`}>
@@ -200,11 +201,11 @@ const funFacts = [
       <div class="about-skills__container">
         <div class="about-skills__header section-heading--decorated reveal reveal--up">
           <h2 id="about-skills-heading" class="about-skills__title">
-            How I Help Your Business
+            What We Bring to You
           </h2>
           <p class="about-skills__subtitle">
-            Over the years, I've focused on what actually matters for small business owners—
-            getting you found online and turning website visitors into paying customers.
+            Over the years, we've honed our eye for exceptional craftsmanship and built
+            an experience that makes finding the perfect piece a joy.
           </p>
         </div>
 
@@ -231,10 +232,10 @@ const funFacts = [
       <div class="about-community__container">
         <div class="about-community__header section-heading--decorated reveal reveal--up">
           <h2 id="about-community-heading" class="about-community__title">
-            Rooted in  Houston
+            Rooted in Houston
           </h2>
           <p class="about-community__subtitle">
-            I'm more than just a web developer — I'm a proud member of the  Houston community.
+            We're more than just a shop — we're a proud part of the Houston community.
           </p>
         </div>
 
@@ -267,22 +268,23 @@ const funFacts = [
     <section class="about-cta" aria-labelledby="about-cta-heading">
       <div class="about-cta__container">
         <h2 id="about-cta-heading" class="about-cta__title reveal reveal--up">
-          Ready to Work with a Local Expert?
+          Ready to Discover Something Special?
         </h2>
         <p class="about-cta__description reveal reveal--up reveal--delay-1">
-          Let's sit down — virtually or at your favorite  Houston coffee shop — and discuss
-          how we can help your business grow online. The first consultation is always free.
+          Stop by the shop, browse our collection online, or reach out to learn about
+          our latest arrivals and upcoming artisan events. We'd love to help you find
+          the perfect piece.
         </p>
         <div class="about-cta__buttons reveal reveal--up reveal--delay-2">
           <Button
-            text="Schedule a Free Consultation"
-            href="/contact"
+            text="Shop Our Collection"
+            href="/products"
             variant="primary"
             size="large"
           />
           <Button
-            text="View My Work"
-            href="/portfolio"
+            text="Get in Touch"
+            href="/contact"
             variant="secondary"
             size="large"
           />

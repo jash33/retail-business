@@ -1,0 +1,29 @@
+{
+  "category": "Uncategorized",
+  "description": "the services route, and components that are exclusive to that route, can be deleted.",
+  "title": "Delete unused services route and components",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "main",
+  "priority": 2,
+  "planningMode": "lite",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769889045407-koxse88a3",
+  "descriptionHistory": [
+    {
+      "description": "the services route, and components that are exclusive to that route, can be deleted.",
+      "timestamp": "2026-01-31T19:50:45.420Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-31T20:12:52.213Z"
+}

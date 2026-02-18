@@ -1,0 +1,37 @@
+{
+  "category": "Uncategorized",
+  "description": "the /gallery route says apge not found right now...but it aslo shows normal features likea search bar which seems good. Let's fix this route.\n\n",
+  "title": "Fix gallery route page not found error",
+  "images": [],
+  "imagePaths": [
+    {
+      "id": "img-1769889097075-aj4aqj8ye",
+      "path": "C:\\Users\\James\\Repos\\retail-business\\.automaker\\features\\feature-1769889099351-q0x8sx1ij\\images\\pasted-image-2026-01-31T19-51-37-063Z-1769889097073.png",
+      "filename": "pasted-image-2026-01-31T19-51-37-063Z.png",
+      "mimeType": "image/png"
+    }
+  ],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "main",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769889099351-q0x8sx1ij",
+  "descriptionHistory": [
+    {
+      "description": "the /gallery route says apge not found right now...but it aslo shows normal features likea search bar which seems good. Let's fix this route.\n\n",
+      "timestamp": "2026-01-31T19:51:39.363Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-31T20:13:04.713Z",
+  "updatedAt": "2026-01-31T20:13:04.889Z"
+}

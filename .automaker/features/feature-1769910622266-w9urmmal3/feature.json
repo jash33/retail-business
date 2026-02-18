@@ -1,0 +1,38 @@
+{
+  "category": "Uncategorized",
+  "description": "there is white space above the header container that needs to be removed\n\n\n",
+  "title": "Remove whitespace above header container",
+  "images": [],
+  "imagePaths": [
+    {
+      "id": "img-1769910619557-f7jch1y35",
+      "path": "C:\\Users\\James\\Repos\\retail-business\\.automaker\\features\\feature-1769910622266-w9urmmal3\\images\\pasted-image-2026-02-01T01-50-19-545Z-1769910619555.png",
+      "filename": "pasted-image-2026-02-01T01-50-19-545Z.png",
+      "mimeType": "image/png"
+    }
+  ],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "main",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769910622266-w9urmmal3",
+  "descriptionHistory": [
+    {
+      "description": "there is white space above the header container that needs to be removed\n\n\n",
+      "timestamp": "2026-02-01T01:50:22.282Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-02-01T01:50:22.300Z",
+  "updatedAt": "2026-02-01T01:51:22.343Z",
+  "justFinishedAt": "2026-02-01T01:51:22.343Z"
+}

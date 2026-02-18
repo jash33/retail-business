@@ -1,0 +1,402 @@
+---
+/**
+ * Trust Badges Demo Page
+ * Demonstrates the minimal inline trust badges component with various
+ * configurations for product pages, carts, and footers.
+ *
+ * @route /demo/trust-badges
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import TrustBadgesInline from '../../components/TrustBadgesInline.astro';
+import {
+  PRODUCT_TRUST_BADGES,
+  CART_TRUST_BADGES,
+  FOOTER_TRUST_BADGES,
+  DETAILED_TRUST_BADGES,
+  PRODUCT_TRUST_BADGES_CONFIG,
+  CART_TRUST_BADGES_CONFIG,
+  FOOTER_TRUST_BADGES_CONFIG,
+  VERTICAL_TRUST_BADGES_CONFIG,
+} from '../../config/trust-badges.config';
+---
+
+<Layout
+  title="Trust Badges Demo | Design System"
+  description="Demonstration of minimal inline trust badges for product pages, carts, and footers."
+>
+  <main class="demo-page">
+    <div class="demo-page__container">
+      <!-- Header -->
+      <header class="demo-page__header">
+        <h1 class="demo-page__title">Trust Badges (Inline)</h1>
+        <p class="demo-page__description">
+          Minimal, text-based trust indicators for free shipping, gift wrapping,
+          and local artisan messaging. Designed to be lightweight and unobtrusive.
+        </p>
+      </header>
+
+      <!-- Primary Product Badges -->
+      <section class="demo-section">
+        <h2 class="demo-section__title">Product Page Badges</h2>
+        <p class="demo-section__description">
+          Primary trust indicators displayed near product details. Horizontal layout with
+          separator dots and small icons.
+        </p>
+        <div class="demo-section__content demo-section__content--light">
+          <TrustBadgesInline {...PRODUCT_TRUST_BADGES_CONFIG} />
+        </div>
+        <div class="demo-section__content demo-section__content--dark">
+          <TrustBadgesInline {...PRODUCT_TRUST_BADGES_CONFIG} />
+        </div>
+      </section>
+
+      <!-- Cart/Checkout Badges -->
+      <section class="demo-section">
+        <h2 class="demo-section__title">Cart/Checkout Badges</h2>
+        <p class="demo-section__description">
+          Compact trust indicators for cart and checkout pages. Centered with pipe separators.
+        </p>
+        <div class="demo-section__content demo-section__content--light">
+          <TrustBadgesInline {...CART_TRUST_BADGES_CONFIG} />
+        </div>
+      </section>
+
+      <!-- Footer Badges -->
+      <section class="demo-section">
+        <h2 class="demo-section__title">Footer Badges</h2>
+        <p class="demo-section__description">
+          Simple trust messaging for footer sections. Centered layout.
+        </p>
+        <div class="demo-section__content demo-section__content--subtle">
+          <TrustBadgesInline {...FOOTER_TRUST_BADGES_CONFIG} />
+        </div>
+      </section>
+
+      <!-- Vertical Layout -->
+      <section class="demo-section">
+        <h2 class="demo-section__title">Vertical Layout</h2>
+        <p class="demo-section__description">
+          Stacked layout for sidebars or product detail sections.
+        </p>
+        <div class="demo-section__content demo-section__content--light demo-section__content--narrow">
+          <TrustBadgesInline {...VERTICAL_TRUST_BADGES_CONFIG} />
+        </div>
+      </section>
+
+      <!-- Detailed Badges -->
+      <section class="demo-section">
+        <h2 class="demo-section__title">Detailed Badges</h2>
+        <p class="demo-section__description">
+          Extended trust badges with subtitles for dedicated sections.
+        </p>
+        <div class="demo-section__content demo-section__content--light">
+          <TrustBadgesInline
+            badges={DETAILED_TRUST_BADGES}
+            layout="wrap"
+            size="medium"
+            showIcons={true}
+            align="center"
+          />
+        </div>
+      </section>
+
+      <!-- Size Variants -->
+      <section class="demo-section">
+        <h2 class="demo-section__title">Size Variants</h2>
+        <p class="demo-section__description">
+          Small (default) and medium size options.
+        </p>
+
+        <h3 class="demo-subsection__title">Small (default)</h3>
+        <div class="demo-section__content demo-section__content--light">
+          <TrustBadgesInline
+            badges={PRODUCT_TRUST_BADGES}
+            size="small"
+          />
+        </div>
+
+        <h3 class="demo-subsection__title">Medium</h3>
+        <div class="demo-section__content demo-section__content--light">
+          <TrustBadgesInline
+            badges={PRODUCT_TRUST_BADGES}
+            size="medium"
+          />
+        </div>
+      </section>
+
+      <!-- Without Icons -->
+      <section class="demo-section">
+        <h2 class="demo-section__title">Text Only (No Icons)</h2>
+        <p class="demo-section__description">
+          Clean text-only version without icons.
+        </p>
+        <div class="demo-section__content demo-section__content--light">
+          <TrustBadgesInline
+            badges={PRODUCT_TRUST_BADGES}
+            showIcons={false}
+            separator="·"
+          />
+        </div>
+      </section>
+
+      <!-- Different Separators -->
+      <section class="demo-section">
+        <h2 class="demo-section__title">Separator Variants</h2>
+        <p class="demo-section__description">
+          Different separator options for horizontal layouts.
+        </p>
+
+        <h3 class="demo-subsection__title">Dot (·)</h3>
+        <div class="demo-section__content demo-section__content--light">
+          <TrustBadgesInline
+            badges={CART_TRUST_BADGES}
+            separator="·"
+          />
+        </div>
+
+        <h3 class="demo-subsection__title">Pipe (|)</h3>
+        <div class="demo-section__content demo-section__content--light">
+          <TrustBadgesInline
+            badges={CART_TRUST_BADGES}
+            separator="|"
+          />
+        </div>
+
+        <h3 class="demo-subsection__title">Bullet (•)</h3>
+        <div class="demo-section__content demo-section__content--light">
+          <TrustBadgesInline
+            badges={CART_TRUST_BADGES}
+            separator="•"
+          />
+        </div>
+
+        <h3 class="demo-subsection__title">No Separator</h3>
+        <div class="demo-section__content demo-section__content--light">
+          <TrustBadgesInline
+            badges={CART_TRUST_BADGES}
+            separator=""
+          />
+        </div>
+      </section>
+
+      <!-- Alignment Options -->
+      <section class="demo-section">
+        <h2 class="demo-section__title">Alignment Options</h2>
+        <p class="demo-section__description">
+          Left, center, and right alignment options.
+        </p>
+
+        <h3 class="demo-subsection__title">Left Aligned</h3>
+        <div class="demo-section__content demo-section__content--light">
+          <TrustBadgesInline
+            badges={CART_TRUST_BADGES}
+            align="left"
+          />
+        </div>
+
+        <h3 class="demo-subsection__title">Center Aligned</h3>
+        <div class="demo-section__content demo-section__content--light">
+          <TrustBadgesInline
+            badges={CART_TRUST_BADGES}
+            align="center"
+          />
+        </div>
+
+        <h3 class="demo-subsection__title">Right Aligned</h3>
+        <div class="demo-section__content demo-section__content--light">
+          <TrustBadgesInline
+            badges={CART_TRUST_BADGES}
+            align="right"
+          />
+        </div>
+      </section>
+
+      <!-- Usage in Context -->
+      <section class="demo-section">
+        <h2 class="demo-section__title">Usage in Context</h2>
+        <p class="demo-section__description">
+          Example of how trust badges appear below product information.
+        </p>
+        <div class="demo-section__content demo-section__content--light">
+          <div class="context-demo">
+            <h3 class="context-demo__name">Artisan Ceramic Mug</h3>
+            <p class="context-demo__price">$32.00</p>
+            <p class="context-demo__description">Hand-thrown ceramic mug with a unique glazed finish. Each piece is one-of-a-kind.</p>
+            <div class="context-demo__trust">
+              <TrustBadgesInline
+                badges={PRODUCT_TRUST_BADGES}
+                layout="horizontal"
+                size="small"
+                align="left"
+              />
+            </div>
+            <button class="context-demo__button">Shop Now</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .demo-page {
+    padding: var(--spacing-8) var(--spacing-4);
+    min-height: 100vh;
+    background-color: var(--color-background-subtle);
+  }
+
+  .demo-page__container {
+    max-width: var(--container-6xl);
+    margin: 0 auto;
+  }
+
+  .demo-page__header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .demo-page__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-4);
+  }
+
+  .demo-page__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    max-width: 40rem;
+    margin: 0 auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .demo-section {
+    margin-bottom: var(--spacing-12);
+  }
+
+  .demo-section__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2);
+  }
+
+  .demo-section__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-6);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .demo-subsection__title {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    margin: var(--spacing-4) 0 var(--spacing-2);
+  }
+
+  .demo-section__content {
+    padding: var(--spacing-6);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .demo-section__content--light {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+  }
+
+  .demo-section__content--dark {
+    background-color: var(--color-primary-900);
+    border: 1px solid var(--color-primary-700);
+  }
+
+  :global(html[data-theme="dark"]) .demo-section__content--dark {
+    background-color: var(--color-primary-900);
+  }
+
+  .demo-section__content--subtle {
+    background-color: var(--color-background-muted);
+    border: 1px solid var(--color-border);
+  }
+
+  .demo-section__content--narrow {
+    max-width: 20rem;
+  }
+
+  /* Context Demo */
+  .context-demo {
+    max-width: 24rem;
+  }
+
+  .context-demo__name {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-2);
+  }
+
+  .context-demo__price {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-3);
+  }
+
+  .context-demo__description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0 0 var(--spacing-4);
+  }
+
+  .context-demo__trust {
+    padding: var(--spacing-3) 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .context-demo__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3) var(--spacing-6);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: background-color var(--duration-150) var(--ease-in-out);
+  }
+
+  .context-demo__button:hover {
+    background-color: var(--color-primary-hover);
+  }
+
+  /* Responsive */
+  @media screen and (max-width: 767px) {
+    .demo-page__title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .demo-section__content {
+      padding: var(--spacing-4);
+    }
+  }
+</style>

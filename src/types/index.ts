@@ -63,6 +63,9 @@ export type {
   HeroParallaxConfig,
   HeroOverlayPosition,
   HeroEditorialProps,
+  RetailHeroProps,
+  VideoHeroGradientType,
+  VideoHeroProps,
 } from './hero';
 
 export type {

@@ -6,8 +6,8 @@
 import type { LocationConfig } from '../types/location';
 
 export const locationConfig: LocationConfig = {
-  name: 'Houston Web Services',
-  tagline: 'Your Local Web Design Partner',
+  name: 'Artisan Goods Co.',
+  tagline: 'Handcrafted Goods for Everyday Living',
 
   address: {
     street: '1234 Main Street',
@@ -24,7 +24,7 @@ export const locationConfig: LocationConfig = {
   },
 
   phone: '(832) 555-0123',
-  email: 'hello@houstonwebservices.com',
+  email: 'hello@artisangoodsco.com',
 
   hours: [
     { days: 'Monday - Friday', open: '9:00 AM', close: '5:00 PM' },
@@ -43,15 +43,15 @@ export const locationConfig: LocationConfig = {
   photos: [
     {
       src: '/images/location/exterior-front.jpg',
-      alt: 'Houston Web Services office building exterior - modern glass facade',
+      alt: 'Artisan Goods Co. storefront exterior - charming brick facade',
       category: 'exterior',
       width: 1200,
       height: 800,
-      caption: 'Our modern office in the heart of Houston',
+      caption: 'Our storefront in the heart of Houston',
     },
     {
       src: '/images/location/exterior-entrance.jpg',
-      alt: 'Main entrance to Houston Web Services with welcoming signage',
+      alt: 'Main entrance to Artisan Goods Co. with welcoming signage',
       category: 'exterior',
       width: 1200,
       height: 800,
@@ -59,27 +59,27 @@ export const locationConfig: LocationConfig = {
     },
     {
       src: '/images/location/interior-lobby.jpg',
-      alt: 'Bright and welcoming lobby with comfortable seating',
+      alt: 'Bright and welcoming store interior with curated displays',
       category: 'interior',
       width: 1200,
       height: 800,
-      caption: 'Our welcoming lobby area',
+      caption: 'Step inside our welcoming store',
     },
     {
       src: '/images/location/interior-meeting.jpg',
-      alt: 'Modern meeting room with video conferencing capabilities',
+      alt: 'Curated product displays with artisan craftsmanship',
       category: 'interior',
       width: 1200,
       height: 800,
-      caption: 'Meeting room for client consultations',
+      caption: 'Browse our curated collections',
     },
     {
       src: '/images/location/interior-workspace.jpg',
-      alt: 'Open workspace with natural lighting and modern design',
+      alt: 'Bright retail space with natural lighting and warm wood displays',
       category: 'interior',
       width: 1200,
       height: 800,
-      caption: 'Where the magic happens',
+      caption: 'Our thoughtfully designed shopping space',
     },
     {
       src: '/images/location/neighborhood-street.jpg',
@@ -95,8 +95,8 @@ export const locationConfig: LocationConfig = {
     {
       type: 'lot',
       name: 'On-Site Parking',
-      details: 'Free parking available in our building lot',
-      cost: 'Free for clients',
+      details: 'Free parking available in our store lot',
+      cost: 'Free for customers',
       distance: 'Adjacent to building',
       notes: 'Please park in visitor-designated spots',
     },
@@ -129,7 +129,7 @@ export const locationConfig: LocationConfig = {
     {
       type: 'rideshare',
       name: 'Uber/Lyft',
-      details: 'Designated pickup/dropoff zone at building entrance',
+      details: 'Designated pickup/dropoff zone at store entrance',
       walkingDistance: 'Direct access',
     },
   ],
@@ -177,11 +177,11 @@ export const locationConfig: LocationConfig = {
   ],
 
   amenities: [
-    'Free Wi-Fi for clients',
-    'Complimentary beverages',
-    'Comfortable waiting area',
-    'Video conferencing facilities',
-    'Secure building access',
+    'Free Wi-Fi for customers',
+    'Complimentary gift wrapping',
+    'Comfortable browsing areas',
+    'Personal shopping assistance',
+    'Loyalty rewards program',
   ],
 };
 

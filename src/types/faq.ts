@@ -21,10 +21,10 @@ export interface FAQItem {
  * FAQ category options for organizing questions
  */
 export type FAQCategory =
-  | 'pricing'
-  | 'timeline'
-  | 'services'
-  | 'process'
+  | 'shipping'
+  | 'returns'
+  | 'orders'
+  | 'store-info'
   | 'general';
 
 /**
@@ -60,68 +60,105 @@ export interface FAQAccordionItemState {
 }
 
 /**
- * Default FAQ items for Houston Web Services
- * Covering pricing, timelines, services, and process
+ * Default FAQ items for retail business homepage
+ * Condensed to the most common questions - full FAQ available on dedicated page
  */
 export const DEFAULT_FAQ_ITEMS: FAQItem[] = [
   {
-    id: 'faq-pricing-structure',
-    question: 'How much does a professional website cost?',
-    answer: `Our website packages start at $899 for a basic 5-page business website. Custom designs and online store setups range from $1,800 to $6,000+ depending on what your business needs. We provide detailed quotes after understanding your specific goals during our free consultation. Every project includes a mobile-friendly design, help getting found on Google, and 30 days of support after launch.`,
-    category: 'pricing',
+    id: 'faq-shipping',
+    question: 'What are your shipping options?',
+    answer: `<strong>Free standard shipping</strong> on orders over $75 (5–7 days). Expedited (2–3 days) for $9.99, or next-day for $14.99. All orders include tracking.`,
+    category: 'shipping',
   },
   {
-    id: 'faq-project-timeline',
-    question: 'How long does it take to build a website?',
-    answer: `A typical business website takes 3-6 weeks from kickoff to launch. Simple one-page sites can be completed in 1-2 weeks, while online stores or more complex projects may take 8-12 weeks. We'll provide a detailed timeline during our initial meeting, and we keep you updated throughout the entire process with regular check-ins and milestone reviews.`,
-    category: 'timeline',
+    id: 'faq-returns',
+    question: 'What is your return policy?',
+    answer: `Easy returns within <strong>30 days</strong> of delivery. Items must be in original condition with tags attached. Refunds processed within 5–7 business days.`,
+    category: 'returns',
   },
   {
-    id: 'faq-services-offered',
-    question: 'What services do you offer beyond web design?',
-    answer: `In addition to custom website design, we offer everything you need to succeed online: ongoing website care and security updates, reliable website hosting with 99.9% uptime, training so you can easily update your own content, logo and brand design, and Google Business Profile setup to attract local Houston customers. Plus, SEO best practices are included with every website we build—so you get help being found on Google without paying for a separate service.`,
-    category: 'services',
+    id: 'faq-store-hours',
+    question: 'What are your store hours?',
+    answer: `<strong>Mon–Sat: 10 AM – 7 PM</strong>, <strong>Sun: 12 PM – 5 PM</strong>. Located at 1234 Main Street in the Heights with free parking available.`,
+    category: 'store-info',
   },
   {
-    id: 'faq-design-process',
-    question: 'What does your design process look like?',
-    answer: `Our process has five clear phases: <strong>Discovery</strong> - We learn about your business, goals, and the customers you want to reach. <strong>Design</strong> - We create visual mockups for your approval so you can see exactly what your site will look like. <strong>Build</strong> - We create your website with speed and search visibility in mind. <strong>Testing</strong> - We make sure everything works perfectly on phones, tablets, and computers. <strong>Launch</strong> - We put your site live and show you how to make updates yourself.`,
-    category: 'process',
-  },
-  {
-    id: 'faq-revisions',
-    question: 'How many revisions are included?',
-    answer: `All our packages include unlimited revisions during the design phase - we want you to be 100% satisfied with the look and feel before we start building. During the build phase, we include 2 rounds of revisions to fine-tune everything. Additional revisions beyond this are billed at our hourly rate, but this is rarely needed when we nail the design phase.`,
-    category: 'process',
-  },
-  {
-    id: 'faq-maintenance',
-    question: 'Do I need ongoing maintenance for my website?',
-    answer: `We strongly recommend ongoing maintenance to keep your website secure, fast, and up-to-date. Our maintenance plans start at $49/month and include security protection, regular backups, speed monitoring, and minor content updates. Without maintenance, websites can become vulnerable to hackers and may eventually stop working properly as internet standards change.`,
-    category: 'services',
-  },
-  {
-    id: 'faq-ownership',
-    question: 'Will I own my website after it\'s completed?',
-    answer: `Absolutely! Once your final payment is received, you own 100% of your website including all custom design work and content. We'll provide all login information and access to your hosting account. If you ever decide to move to a different provider, we'll assist with the transition at no additional charge.`,
+    id: 'faq-rewards',
+    question: 'Do you have a rewards program?',
+    answer: `Yes! Our free <strong>Rewards Club</strong> earns you 1 point per $1 spent. Get $10 back at 100 points, plus birthday discounts and early access to sales.`,
     category: 'general',
   },
   {
-    id: 'faq-local-focus',
-    question: 'Do you only work with Houston-area businesses?',
-    answer: `While we specialize in serving small businesses in Houston, we work with clients throughout Texas and beyond. Our local focus means we understand the Houston market deeply, but we can work with you remotely just as effectively. We're happy to meet in person locally or connect via video call.`,
+    id: 'faq-pickup',
+    question: 'Can I pick up my order in-store?',
+    answer: `Yes! Choose <strong>In-Store Pickup</strong> at checkout—orders are usually ready within 2 hours and held for 7 days.`,
+    category: 'store-info',
+  },
+];
+
+/**
+ * Extended FAQ items for dedicated FAQ page
+ * Complete set of frequently asked questions
+ */
+export const EXTENDED_FAQ_ITEMS: FAQItem[] = [
+  {
+    id: 'faq-shipping-options',
+    question: 'What shipping options do you offer?',
+    answer: `We offer several shipping options to fit your needs. <strong>Standard Shipping</strong> (5–7 business days) is free on orders over $75. <strong>Expedited Shipping</strong> (2–3 business days) is available for a flat rate of $9.99. <strong>Next-Day Shipping</strong> is available for $14.99 on orders placed before 2 PM CT. All orders include tracking information sent to your email as soon as your package ships. We currently ship throughout the continental United States.`,
+    category: 'shipping',
+  },
+  {
+    id: 'faq-return-policy',
+    question: 'What is your return and exchange policy?',
+    answer: `We want you to love your purchase! Items can be returned or exchanged within <strong>30 days</strong> of delivery, provided they are in their original condition with tags attached. To start a return, visit our Returns Center or contact our customer service team. Refunds are processed within 5–7 business days after we receive your item. Please note that sale items, personalized products, and gift cards are final sale and cannot be returned.`,
+    category: 'returns',
+  },
+  {
+    id: 'faq-gift-cards',
+    question: 'Do you sell gift cards?',
+    answer: `Yes! We offer both <strong>physical gift cards</strong> available in-store and <strong>digital e-gift cards</strong> that can be purchased online and delivered instantly via email. Gift cards are available in denominations of $25, $50, $75, $100, and $150. They never expire and can be used for any purchase in-store or online. E-gift cards can also include a personalized message—perfect for birthdays, holidays, or just because.`,
+    category: 'orders',
+  },
+  {
+    id: 'faq-store-hours',
+    question: 'What are your store hours and location?',
+    answer: `Our Houston retail location is open <strong>Monday–Saturday from 10 AM to 7 PM</strong> and <strong>Sunday from 12 PM to 5 PM</strong>. We're located at 1234 Main Street in the Heights neighborhood, with free parking available behind the building. Holiday hours may vary—check our website or social media for seasonal updates. Our online store is always open 24/7 so you can shop anytime!`,
+    category: 'store-info',
+  },
+  {
+    id: 'faq-custom-orders',
+    question: 'Can I place a custom or personalized order?',
+    answer: `Absolutely! We love creating custom pieces for our customers. Popular custom options include <strong>monogramming and engraving</strong>, <strong>custom color or size requests</strong>, <strong>gift baskets and curated bundles</strong>, and <strong>bulk or corporate orders</strong>. Custom orders typically take 2–3 weeks to complete. To get started, visit us in-store or fill out our custom order request form online. We'll follow up within 24 hours with a quote and estimated timeline.`,
+    category: 'orders',
+  },
+  {
+    id: 'faq-order-tracking',
+    question: 'How can I track my order?',
+    answer: `Once your order ships, you'll receive a confirmation email with a tracking number and a link to follow your package in real time. You can also log into your account on our website and view your order status under "My Orders." If your tracking hasn't updated in more than 48 hours or you have any concerns about your delivery, please reach out to our customer service team and we'll look into it right away.`,
+    category: 'shipping',
+  },
+  {
+    id: 'faq-payment-methods',
+    question: 'What payment methods do you accept?',
+    answer: `We accept a wide range of payment options for your convenience. <strong>In-store:</strong> Visa, Mastercard, American Express, Discover, Apple Pay, Google Pay, and cash. <strong>Online:</strong> All major credit and debit cards, PayPal, Apple Pay, Google Pay, and Shop Pay. We also accept gift cards as full or partial payment. For custom or bulk orders over $500, we offer payment plans—just ask our team for details.`,
     category: 'general',
   },
   {
-    id: 'faq-existing-website',
-    question: 'Can you help with my existing website?',
-    answer: `Absolutely! We work with existing websites all the time, even if we didn't build them originally. We can help with <strong>website redesigns</strong> to give your site a fresh, modern look, <strong>updates and improvements</strong> to add new features or fix issues, <strong>ongoing maintenance</strong> to keep your site secure and running smoothly, and <strong>performance optimization</strong> to make your site faster. During a free consultation, we'll review your current site and recommend the best path forward—whether that's a full redesign, targeted improvements, or simply better maintenance.`,
-    category: 'services',
+    id: 'faq-loyalty-program',
+    question: 'Do you have a rewards or loyalty program?',
+    answer: `Yes! Our <strong>Rewards Club</strong> is free to join and lets you earn points on every purchase. For every $1 you spend, you earn 1 point. Once you reach 100 points, you'll receive a $10 reward to use on your next purchase. Members also enjoy <strong>early access to new arrivals and sales</strong>, a <strong>birthday discount of 15% off</strong>, and <strong>exclusive member-only promotions</strong>. Sign up in-store or create an account online to start earning today.`,
+    category: 'general',
   },
   {
-    id: 'faq-business-automation',
-    question: 'Can you help automate my business processes?',
-    answer: `Yes! We specialize in helping small businesses save time and reduce errors through smart automation. Common solutions we implement include <strong>automated appointment scheduling</strong> that syncs with your calendar and sends reminders, <strong>contact form integrations</strong> that automatically add leads to your CRM or email list, <strong>invoice and payment automation</strong> to streamline billing, and <strong>custom workflow solutions</strong> that connect your favorite tools. During our consultation, we'll identify repetitive tasks in your business and show you how automation can free up your time to focus on what matters most—growing your business.`,
-    category: 'services',
+    id: 'faq-damaged-items',
+    question: 'What if my order arrives damaged or incorrect?',
+    answer: `We're sorry if something went wrong with your order! If your item arrives damaged, defective, or isn't what you ordered, please <strong>contact us within 48 hours of delivery</strong> with your order number and a photo of the issue. We'll arrange a free replacement or full refund—no need to ship the damaged item back in most cases. Your satisfaction is our top priority and we'll make it right as quickly as possible.`,
+    category: 'returns',
+  },
+  {
+    id: 'faq-in-store-pickup',
+    question: 'Do you offer in-store pickup for online orders?',
+    answer: `Yes! <strong>Buy Online, Pick Up In-Store (BOPIS)</strong> is available for most items. Simply choose "In-Store Pickup" at checkout and select our Houston location. You'll receive an email notification when your order is ready—usually within 2 hours during business hours. Orders are held for 7 days at our pickup counter. This is a great option if you want to skip shipping costs and get your items the same day.`,
+    category: 'store-info',
   },
 ];

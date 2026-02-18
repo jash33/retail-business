@@ -1,7 +1,7 @@
 ---
 /**
- * Portfolio Page - Houston Web Services
- * Showcases completed projects with filtering capabilities.
+ * Gallery & Lookbook Page - Main Street Boutique
+ * Showcases store aesthetics, seasonal displays, and curated collections.
  */
 
 import Layout from '../layouts/Layout.astro';
@@ -11,308 +11,304 @@ import Button from '../components/Button.astro';
 import type { Project } from '../types/portfolio';
 
 /**
- * Sample portfolio projects
- * These showcase different project types, technologies, and categories
+ * Gallery showcases featuring store aesthetics, seasonal displays, and curated collections.
+ * Each entry represents a retail experience, visual merchandising display, or curated collection.
  */
 const projects: Project[] = [
   {
-    id: 'houston-energy-consulting',
-    title: 'Houston Energy Consulting',
-    description: 'A professional website for a Houston-based energy consulting firm featuring a modern design, custom CMS integration, and lead generation forms that increased client inquiries by 150%.',
+    id: 'spring-garden-collection',
+    title: 'Spring Garden Collection',
+    description: 'Our signature seasonal collection featuring curated home and garden essentials for the spring season. Hand-picked items from local artisans and trusted brands, styled in a vibrant in-store display that drove a 40% increase in foot traffic.',
     thumbnail: {
-      src: '/portfolio/energy-consulting.svg',
-      alt: 'Houston Energy Consulting website homepage showing professional dark blue design with energy industry imagery',
+      src: '/portfolio/spring-garden-collection.svg',
+      alt: 'Spring Garden Collection showcase featuring vibrant floral arrangements and garden essentials in a beautifully styled in-store display',
       width: 600,
       height: 400,
     },
     technologies: [
-      { name: 'Astro', category: 'frontend' },
-      { name: 'TypeScript', category: 'frontend' },
-      { name: 'Tailwind CSS', category: 'frontend' },
-      { name: 'Netlify CMS', category: 'cms' },
+      { name: 'Seasonal Curation', category: 'design' },
+      { name: 'Visual Merchandising', category: 'design' },
+      { name: 'Local Artisans', category: 'ecommerce' },
+      { name: 'In-Store Experience', category: 'frontend' },
     ],
     category: 'website',
     featured: true,
-    completedDate: '2024-11-15',
+    completedDate: '2025-03-01',
     links: [
-      { text: 'View Live Site', href: 'https://example-energy.com', type: 'live-site', openInNewTab: true },
+      { text: 'View Collection', href: '/showcases/spring-garden-collection', type: 'case-study' },
     ],
   },
   {
-    id: 'houston-dental-care',
-    title: 'Houston Family Dental Care',
-    description: 'Complete website redesign for a dental practice in Houston, TX. Includes online appointment booking, patient portal integration, and HIPAA-compliant contact forms.',
+    id: 'summer-coastal-lookbook',
+    title: 'Summer Coastal Lookbook',
+    description: 'A breezy, ocean-inspired lookbook showcasing our summer home decor and lifestyle collection. Featuring handwoven textiles, sea glass accents, and coastal-inspired ceramics styled in our signature window display that tripled social media engagement.',
     thumbnail: {
-      src: '/portfolio/dental-care.svg',
-      alt: 'Houston Family Dental Care website with bright, welcoming design and appointment booking interface',
+      src: '/portfolio/summer-coastal-lookbook.svg',
+      alt: 'Summer Coastal Lookbook featuring ocean-inspired home decor with handwoven textiles and sea glass accents in a bright store display',
       width: 600,
       height: 400,
     },
     technologies: [
-      { name: 'React', category: 'frontend' },
-      { name: 'Next.js', category: 'fullstack' },
-      { name: 'PostgreSQL', category: 'backend' },
-      { name: 'Stripe', category: 'ecommerce' },
-    ],
-    category: 'web-app',
-    featured: true,
-    completedDate: '2024-10-20',
-    links: [
-      { text: 'View Live Site', href: 'https://example-dental.com', type: 'live-site', openInNewTab: true },
-      { text: 'Case Study', href: '/case-studies/dental-care', type: 'case-study' },
-    ],
-  },
-  {
-    id: 'houston-florist',
-    title: 'Houston Florist & Gifts',
-    description: 'E-commerce platform for a local florist shop with same-day delivery options, seasonal collections, and subscription flower services. Built for high-volume traffic during holidays.',
-    thumbnail: {
-      src: '/portfolio/florist-shop.svg',
-      alt: 'Houston Florist online store showcasing beautiful floral arrangements with shopping cart functionality',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'Shopify', category: 'ecommerce' },
-      { name: 'Liquid', category: 'frontend' },
-      { name: 'JavaScript', category: 'frontend' },
-      { name: 'Custom Theme', category: 'design' },
-    ],
-    category: 'ecommerce',
-    featured: false,
-    completedDate: '2024-09-08',
-    links: [
-      { text: 'View Store', href: 'https://example-florist.com', type: 'live-site', openInNewTab: true },
-    ],
-  },
-  {
-    id: '-houston-fitness',
-    title: ' Houston Fitness Center',
-    description: 'Dynamic website with class schedules, membership management, and trainer booking system. Features real-time class availability and automated reminder notifications.',
-    thumbnail: {
-      src: '/portfolio/fitness-center.svg',
-      alt: ' Houston Fitness Center website with bold imagery and class schedule interface',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'Vue.js', category: 'frontend' },
-      { name: 'Node.js', category: 'backend' },
-      { name: 'MongoDB', category: 'backend' },
-      { name: 'Twilio', category: 'backend' },
-    ],
-    category: 'web-app',
-    featured: false,
-    completedDate: '2024-08-25',
-    links: [
-      { text: 'View Live Site', href: 'https://example-fitness.com', type: 'live-site', openInNewTab: true },
-    ],
-  },
-  {
-    id: 'houston-law-group',
-    title: 'Houston Law Group',
-    description: 'Professional legal services website with practice area pages, attorney profiles, and secure client intake forms. Optimized for local SEO to attract Houston-area clients.',
-    thumbnail: {
-      src: '/portfolio/law-firm.svg',
-      alt: 'Houston Law Group website with sophisticated dark design and attorney profile cards',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'WordPress', category: 'cms' },
-      { name: 'PHP', category: 'backend' },
-      { name: 'ACF Pro', category: 'cms' },
-      { name: 'Custom Theme', category: 'design' },
-    ],
-    category: 'website',
-    featured: false,
-    completedDate: '2024-07-30',
-    links: [
-      { text: 'View Live Site', href: 'https://example-law.com', type: 'live-site', openInNewTab: true },
-    ],
-  },
-  {
-    id: 'sweet-treats-bakery',
-    title: 'Sweet Treats Bakery',
-    description: 'Online ordering system for a local bakery with custom cake builder, pickup scheduling, and wholesale ordering portal. Includes inventory management backend.',
-    thumbnail: {
-      src: '/portfolio/bakery-shop.svg',
-      alt: 'Sweet Treats Bakery website with appetizing product photography and custom cake builder',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'React', category: 'frontend' },
-      { name: 'Firebase', category: 'backend' },
-      { name: 'Stripe', category: 'ecommerce' },
-      { name: 'Figma', category: 'design' },
-    ],
-    category: 'ecommerce',
-    featured: false,
-    completedDate: '2024-06-15',
-    links: [
-      { text: 'View Store', href: 'https://example-bakery.com', type: 'live-site', openInNewTab: true },
-      { text: 'GitHub', href: 'https://github.com/example/bakery', type: 'github', openInNewTab: true },
-    ],
-  },
-  {
-    id: 'texas-realty-partners',
-    title: 'Texas Realty Partners',
-    description: 'Real estate listing platform with MLS integration, property search filters, virtual tour support, and agent dashboard. Built for mobile-first browsing experience.',
-    thumbnail: {
-      src: '/portfolio/real-estate.svg',
-      alt: 'Texas Realty Partners website with property listings and advanced search functionality',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'Next.js', category: 'fullstack' },
-      { name: 'GraphQL', category: 'backend' },
-      { name: 'PostgreSQL', category: 'backend' },
-      { name: 'AWS', category: 'backend' },
-    ],
-    category: 'web-app',
-    featured: true,
-    completedDate: '2024-05-20',
-    links: [
-      { text: 'View Live Site', href: 'https://example-realty.com', type: 'live-site', openInNewTab: true },
-    ],
-  },
-  {
-    id: 'spring-branch-restaurant',
-    title: 'Spring Branch Cantina',
-    description: 'Restaurant website with online ordering, reservation system, and loyalty program integration. Features mouth-watering food photography and menu management.',
-    thumbnail: {
-      src: '/portfolio/restaurant.svg',
-      alt: 'Spring Branch Cantina website with vibrant Mexican food imagery and online ordering interface',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'Squarespace', category: 'cms' },
-      { name: 'Square POS', category: 'ecommerce' },
-      { name: 'JavaScript', category: 'frontend' },
-      { name: 'Custom CSS', category: 'design' },
-    ],
-    category: 'website',
-    featured: false,
-    completedDate: '2024-04-10',
-    links: [
-      { text: 'View Live Site', href: 'https://example-cantina.com', type: 'live-site', openInNewTab: true },
-    ],
-  },
-  {
-    id: 'startup-launch-page',
-    title: 'TechStart Landing Page',
-    description: 'High-converting landing page for a tech startup launch. Features animated hero section, testimonial carousel, and email capture with 40% conversion rate.',
-    thumbnail: {
-      src: '/portfolio/startup-landing.svg',
-      alt: 'TechStart modern landing page with bold gradient design and clear call-to-action buttons',
-      width: 600,
-      height: 400,
-    },
-    technologies: [
-      { name: 'HTML/CSS', category: 'frontend' },
-      { name: 'GSAP', category: 'frontend' },
-      { name: 'Mailchimp', category: 'backend' },
-      { name: 'A/B Testing', category: 'design' },
+      { name: 'Lookbook Styling', category: 'design' },
+      { name: 'Window Display', category: 'design' },
+      { name: 'Home Decor', category: 'frontend' },
+      { name: 'Social Media', category: 'cms' },
     ],
     category: 'landing-page',
-    featured: false,
-    completedDate: '2024-03-28',
+    featured: true,
+    completedDate: '2025-06-15',
     links: [
-      { text: 'View Page', href: 'https://example-startup.com', type: 'live-site', openInNewTab: true },
+      { text: 'Browse Lookbook', href: '/showcases/summer-coastal-lookbook', type: 'case-study' },
     ],
   },
   {
-    id: 'nonprofit-redesign',
-    title: 'Houston Hope Foundation',
-    description: 'Complete website redesign for a local nonprofit organization. Improved donation flow, volunteer registration, and event management resulting in 200% increase in online donations.',
+    id: 'holiday-market-event',
+    title: 'Holiday Market Weekend',
+    description: 'A three-day in-store holiday market event featuring live demos, gift wrapping stations, and exclusive seasonal bundles. Over 500 visitors attended, making it our most successful store event with a 60% increase in weekend sales.',
     thumbnail: {
-      src: '/portfolio/nonprofit.svg',
-      alt: 'Houston Hope Foundation website with warm, inviting design and prominent donation buttons',
+      src: '/portfolio/holiday-market-event.svg',
+      alt: 'Holiday Market Weekend event with festive decorations, live product demonstrations, and customers enjoying the in-store experience',
       width: 600,
       height: 400,
     },
     technologies: [
-      { name: 'Astro', category: 'frontend' },
-      { name: 'React', category: 'frontend' },
-      { name: 'Stripe', category: 'ecommerce' },
-      { name: 'Sanity CMS', category: 'cms' },
+      { name: 'Event Planning', category: 'design' },
+      { name: 'Live Demos', category: 'frontend' },
+      { name: 'Gift Bundles', category: 'ecommerce' },
+      { name: 'Seasonal Promotions', category: 'ecommerce' },
     ],
-    category: 'redesign',
-    featured: false,
-    completedDate: '2024-02-14',
+    category: 'landing-page',
+    featured: true,
+    completedDate: '2024-12-15',
     links: [
-      { text: 'View Live Site', href: 'https://example-nonprofit.com', type: 'live-site', openInNewTab: true },
-      { text: 'Case Study', href: '/case-studies/nonprofit', type: 'case-study' },
+      { text: 'Event Recap', href: '/showcases/holiday-market-event', type: 'case-study' },
     ],
   },
   {
-    id: 'custom-crm-dashboard',
-    title: 'SalesFlow CRM Dashboard',
-    description: 'Custom CRM dashboard application for a Houston sales team. Features pipeline visualization, automated reporting, and integration with existing business tools.',
+    id: 'autumn-harvest-display',
+    title: 'Autumn Harvest Display',
+    description: 'A warm, earthy in-store display celebrating the fall season with locally sourced candles, hand-poured pottery, woven throws, and seasonal botanicals. This curated vignette became our most-photographed display, generating organic social media buzz.',
     thumbnail: {
-      src: '/portfolio/crm-dashboard.svg',
-      alt: 'SalesFlow CRM dashboard with colorful charts, pipeline view, and team performance metrics',
+      src: '/portfolio/autumn-harvest-display.svg',
+      alt: 'Autumn Harvest Display featuring warm-toned candles, pottery, woven throws and seasonal botanicals arranged in a cozy store vignette',
       width: 600,
       height: 400,
     },
     technologies: [
-      { name: 'React', category: 'frontend' },
-      { name: 'TypeScript', category: 'frontend' },
-      { name: 'Node.js', category: 'backend' },
-      { name: 'D3.js', category: 'frontend' },
+      { name: 'Visual Merchandising', category: 'design' },
+      { name: 'Seasonal Styling', category: 'design' },
+      { name: 'Local Vendors', category: 'ecommerce' },
+      { name: 'Store Aesthetics', category: 'frontend' },
+    ],
+    category: 'website',
+    featured: false,
+    completedDate: '2024-10-01',
+    links: [
+      { text: 'View Display', href: '/showcases/autumn-harvest-display', type: 'case-study' },
+    ],
+  },
+  {
+    id: 'artisan-spotlight-series',
+    title: 'Artisan Spotlight Series',
+    description: 'A rotating gallery wall dedicated to featuring local makers and artisans each month. From handmade jewelry to small-batch ceramics, this curated corner gives customers a deeper connection to the creators behind our products.',
+    thumbnail: {
+      src: '/portfolio/artisan-spotlight-series.svg',
+      alt: 'Artisan Spotlight Series gallery wall showcasing handmade jewelry, ceramics, and crafts from local makers with artist profile cards',
+      width: 600,
+      height: 400,
+    },
+    technologies: [
+      { name: 'Artist Curation', category: 'design' },
+      { name: 'Gallery Display', category: 'design' },
+      { name: 'Local Makers', category: 'ecommerce' },
+      { name: 'Storytelling', category: 'cms' },
     ],
     category: 'custom-development',
     featured: false,
-    completedDate: '2024-01-25',
+    completedDate: '2024-09-15',
     links: [
-      { text: 'Request Demo', href: '/contact?project=crm-demo', type: 'live-site' },
-      { text: 'GitHub', href: 'https://github.com/example/salesflow', type: 'github', openInNewTab: true },
+      { text: 'Meet the Artisans', href: '/showcases/artisan-spotlight-series', type: 'case-study' },
     ],
   },
   {
-    id: 'product-launch-campaign',
-    title: 'EcoBottle Product Launch',
-    description: 'Multi-page marketing campaign for sustainable product launch. Includes product showcase, pre-order system, and social proof integration.',
+    id: 'community-mural-partnership',
+    title: 'Community Mural Partnership',
+    description: 'A collaborative partnership with local artists and the Houston Arts Alliance to create a community mural on our storefront. The project brought together neighbors, artists, and small businesses, strengthening our ties to the community and boosting brand visibility.',
     thumbnail: {
-      src: '/portfolio/product-launch.svg',
-      alt: 'EcoBottle product launch page with stunning product photography and pre-order countdown timer',
+      src: '/portfolio/community-mural-partnership.svg',
+      alt: 'Community Mural Partnership showing a colorful mural on the storefront created in collaboration with local artists and community members',
       width: 600,
       height: 400,
     },
     technologies: [
-      { name: 'Webflow', category: 'cms' },
-      { name: 'JavaScript', category: 'frontend' },
-      { name: 'Zapier', category: 'backend' },
-      { name: 'Klaviyo', category: 'backend' },
+      { name: 'Community Outreach', category: 'design' },
+      { name: 'Local Artists', category: 'design' },
+      { name: 'Brand Partnership', category: 'cms' },
+      { name: 'Neighborhood Impact', category: 'frontend' },
+    ],
+    category: 'website',
+    featured: false,
+    completedDate: '2024-09-10',
+    links: [
+      { text: 'Read the Story', href: '/showcases/community-mural-partnership', type: 'case-study' },
+    ],
+  },
+  {
+    id: 'valentines-gift-guide',
+    title: "Valentine's Gift Guide",
+    description: "A beautifully styled gift guide collection for Valentine's Day, featuring curated gift sets at every price point. The in-store display included a self-service gift wrapping station and personalized note cards, resulting in a 75% increase in February gift sales.",
+    thumbnail: {
+      src: '/portfolio/valentines-gift-guide.svg',
+      alt: "Valentine's Day gift guide display with curated gift sets, pink and red styling, and self-service gift wrapping station",
+      width: 600,
+      height: 400,
+    },
+    technologies: [
+      { name: 'Gift Curation', category: 'ecommerce' },
+      { name: 'Seasonal Styling', category: 'design' },
+      { name: 'Gift Wrapping', category: 'frontend' },
+      { name: 'Price-Point Tiers', category: 'ecommerce' },
+    ],
+    category: 'ecommerce',
+    featured: false,
+    completedDate: '2025-02-01',
+    links: [
+      { text: 'View Gift Guide', href: '/showcases/valentines-gift-guide', type: 'case-study' },
+    ],
+  },
+  {
+    id: 'minimalist-home-edit',
+    title: 'The Minimalist Home Edit',
+    description: 'A curated capsule collection of clean-lined home essentials designed around the minimalist living trend. Featuring Scandinavian-inspired pieces, neutral palettes, and functional design that resonated with our design-savvy customers.',
+    thumbnail: {
+      src: '/portfolio/minimalist-home-edit.svg',
+      alt: 'The Minimalist Home Edit collection featuring clean-lined Scandinavian-inspired home essentials in neutral tones',
+      width: 600,
+      height: 400,
+    },
+    technologies: [
+      { name: 'Capsule Collection', category: 'design' },
+      { name: 'Trend Styling', category: 'design' },
+      { name: 'Home Essentials', category: 'frontend' },
+      { name: 'Lifestyle Curation', category: 'ecommerce' },
+    ],
+    category: 'redesign',
+    featured: false,
+    completedDate: '2024-08-20',
+    links: [
+      { text: 'Explore Collection', href: '/showcases/minimalist-home-edit', type: 'case-study' },
+    ],
+  },
+  {
+    id: 'kids-corner-launch',
+    title: "Kids' Corner Launch",
+    description: "The debut of our dedicated children's section featuring playful decor, educational toys, and family-friendly products. The colorful, interactive display area invites families to browse together and has become a beloved neighborhood destination.",
+    thumbnail: {
+      src: '/portfolio/kids-corner-launch.svg',
+      alt: "Kids' Corner store section featuring colorful displays of children's toys, books, and playful decor in an interactive browsing area",
+      width: 600,
+      height: 400,
+    },
+    technologies: [
+      { name: 'Space Design', category: 'design' },
+      { name: 'Family Friendly', category: 'frontend' },
+      { name: 'Interactive Display', category: 'frontend' },
+      { name: 'Curated Selection', category: 'ecommerce' },
+    ],
+    category: 'web-app',
+    featured: false,
+    completedDate: '2024-07-10',
+    links: [
+      { text: 'See the Space', href: '/showcases/kids-corner-launch', type: 'case-study' },
+    ],
+  },
+  {
+    id: 'window-display-winter-wonderland',
+    title: 'Winter Wonderland Window',
+    description: 'An enchanting winter window display that transformed our storefront into a snow-dusted wonderland. Featuring twinkling lights, frosted glass vases, and cozy textiles that stopped foot traffic on Main Street and increased walk-ins by 55%.',
+    thumbnail: {
+      src: '/portfolio/winter-wonderland-window.svg',
+      alt: 'Winter Wonderland window display with twinkling lights, frosted glass vases, and cozy textiles in an enchanting storefront scene',
+      width: 600,
+      height: 400,
+    },
+    technologies: [
+      { name: 'Window Design', category: 'design' },
+      { name: 'Lighting Design', category: 'design' },
+      { name: 'Storefront Appeal', category: 'frontend' },
+      { name: 'Foot Traffic', category: 'ecommerce' },
     ],
     category: 'landing-page',
     featured: false,
-    completedDate: '2023-12-01',
+    completedDate: '2024-12-01',
     links: [
-      { text: 'View Campaign', href: 'https://example-ecobottle.com', type: 'live-site', openInNewTab: true },
+      { text: 'View Display', href: '/showcases/winter-wonderland-window', type: 'case-study' },
+    ],
+  },
+  {
+    id: 'local-makers-market-popup',
+    title: 'Local Makers Market Pop-Up',
+    description: 'A weekend pop-up market inside our store bringing together 15 local makers, crafters, and small-batch producers. Live demonstrations, tasting stations, and meet-the-maker moments created an unforgettable community shopping experience.',
+    thumbnail: {
+      src: '/portfolio/local-makers-market.svg',
+      alt: 'Local Makers Market Pop-Up event inside the store with vendor booths, live craft demonstrations, and community shoppers',
+      width: 600,
+      height: 400,
+    },
+    technologies: [
+      { name: 'Pop-Up Events', category: 'frontend' },
+      { name: 'Vendor Curation', category: 'ecommerce' },
+      { name: 'Community Events', category: 'design' },
+      { name: 'Live Demos', category: 'frontend' },
+    ],
+    category: 'ecommerce',
+    featured: false,
+    completedDate: '2024-06-20',
+    links: [
+      { text: 'Event Highlights', href: '/showcases/local-makers-market', type: 'case-study' },
+    ],
+  },
+  {
+    id: 'sustainable-living-collection',
+    title: 'Sustainable Living Collection',
+    description: 'A thoughtfully curated eco-conscious collection featuring reusable household goods, organic textiles, and zero-waste essentials. Styled around our commitment to sustainability, this collection resonated deeply with environmentally-minded shoppers.',
+    thumbnail: {
+      src: '/portfolio/sustainable-living-collection.svg',
+      alt: 'Sustainable Living Collection display featuring eco-friendly reusable goods, organic textiles, and zero-waste essentials in earthy tones',
+      width: 600,
+      height: 400,
+    },
+    technologies: [
+      { name: 'Eco-Conscious', category: 'design' },
+      { name: 'Sustainable Goods', category: 'ecommerce' },
+      { name: 'Zero-Waste', category: 'frontend' },
+      { name: 'Values-Based Curation', category: 'design' },
+    ],
+    category: 'redesign',
+    featured: false,
+    completedDate: '2024-04-15',
+    links: [
+      { text: 'Explore Collection', href: '/showcases/sustainable-living-collection', type: 'case-study' },
     ],
   },
 ];
 ---
 
 <Layout
-  title="Portfolio"
-  description="Browse our portfolio of web design and development projects for Houston businesses. See examples of our custom websites, e-commerce stores, and web applications."
+  title="Gallery & Lookbook"
+  description="Explore the Main Street Boutique gallery featuring seasonal displays, curated collections, store aesthetics, and in-store experiences that make our retail space a neighborhood destination."
   openGraph={{
     type: 'website',
   }}
   jsonLd={{
     type: 'CollectionPage',
-    name: 'Houston Web Services Portfolio',
-    description: 'Portfolio of web design and development projects for Houston businesses.',
-    url: 'https://houstonwebservices.com/portfolio',
+    name: 'Main Street Boutique Gallery & Lookbook',
+    description: 'A visual gallery of our curated retail collections, seasonal displays, and in-store experiences.',
+    url: 'https://mainstreetboutique.com/portfolio',
   }}
 >
   <main>
-    <!-- Portfolio Hero Section -->
+    <!-- Gallery Hero Section -->
     <section class="portfolio-hero" aria-labelledby="portfolio-hero-heading">
       <div class="portfolio-hero__container">
         <div class="portfolio-hero__content">
@@ -320,44 +316,44 @@ const projects: Project[] = [
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
             </svg>
-            <span>Real Results • Local Businesses</span>
+            <span>Curated with Care &bull; Styled with Heart</span>
           </div>
           <h1 id="portfolio-hero-heading" class="portfolio-hero__title">
-            Our Work<br/>
-            <span class="portfolio-hero__title-highlight">Speaks for Itself</span>
+            Our Gallery<br/>
+            <span class="portfolio-hero__title-highlight">& Lookbook</span>
           </h1>
           <p class="portfolio-hero__description">
-            Explore our portfolio of custom web solutions. From small business websites to complex web applications,
-            we've helped Houston businesses establish their online presence and grow their digital footprint.
+            Step inside our world of curated collections, seasonal displays, and thoughtfully styled spaces.
+            Every corner of Main Street Boutique tells a story &mdash; explore the looks and moments that make our store special.
           </p>
           <div class="portfolio-hero__cta-group">
             <Button
-              text="Start Your Project"
+              text="Visit the Store"
               href="/contact"
               variant="primary"
               size="large"
             />
             <Button
-              text="View Services"
-              href="/services"
+              text="Shop Collections"
+              href="/products"
               variant="secondary"
               size="large"
             />
           </div>
           <div class="portfolio-hero__stats">
             <div class="portfolio-hero__stat">
-              <span class="portfolio-hero__stat-value">50+</span>
-              <span class="portfolio-hero__stat-label">Projects Completed</span>
+              <span class="portfolio-hero__stat-value">4</span>
+              <span class="portfolio-hero__stat-label">Seasonal Collections</span>
             </div>
             <div class="portfolio-hero__stat-divider"></div>
             <div class="portfolio-hero__stat">
-              <span class="portfolio-hero__stat-value">100%</span>
-              <span class="portfolio-hero__stat-label">Client Satisfaction</span>
+              <span class="portfolio-hero__stat-value">30+</span>
+              <span class="portfolio-hero__stat-label">Local Artisans</span>
             </div>
             <div class="portfolio-hero__stat-divider"></div>
             <div class="portfolio-hero__stat">
               <span class="portfolio-hero__stat-value">Houston</span>
-              <span class="portfolio-hero__stat-label">Locally Based</span>
+              <span class="portfolio-hero__stat-label">Main Street</span>
             </div>
           </div>
         </div>
@@ -366,29 +362,29 @@ const projects: Project[] = [
             <div class="portfolio-hero__preview-card portfolio-hero__preview-card--1">
               <div class="portfolio-hero__preview-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                  <path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h16v9H4V6zm0 11h16v1H4v-1z"/>
+                  <path d="M12 22c4.97 0 9-4.03 9-9-4.97 0-9 4.03-9 9zM5.6 10.25c0 1.38 1.12 2.5 2.5 2.5.53 0 1.01-.16 1.42-.44l-.02.19c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5l-.02-.19c.4.28.89.44 1.42.44 1.38 0 2.5-1.12 2.5-2.5 0-1-.59-1.85-1.43-2.25.84-.4 1.43-1.25 1.43-2.25 0-1.38-1.12-2.5-2.5-2.5-.53 0-1.01.16-1.42.44l.02-.19C14.5 2.12 13.38 1 12 1S9.5 2.12 9.5 3.5l.02.19c-.4-.28-.89-.44-1.42-.44-1.38 0-2.5 1.12-2.5 2.5 0 1 .59 1.85 1.43 2.25-.84.4-1.43 1.25-1.43 2.25zM12 5.5c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5S9.5 9.38 9.5 8s1.12-2.5 2.5-2.5zM3 13c0 4.97 4.03 9 9 9-4.97 0-9-4.03-9-9z"/>
                 </svg>
               </div>
-              <span class="portfolio-hero__preview-label">Business Websites</span>
-              <span class="portfolio-hero__preview-price">20+ Built</span>
+              <span class="portfolio-hero__preview-label">Seasonal Displays</span>
+              <span class="portfolio-hero__preview-price">4 Per Year</span>
             </div>
             <div class="portfolio-hero__preview-card portfolio-hero__preview-card--2">
               <div class="portfolio-hero__preview-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                  <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                  <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z"/>
                 </svg>
               </div>
-              <span class="portfolio-hero__preview-label">E-commerce Stores</span>
-              <span class="portfolio-hero__preview-price">15+ Launched</span>
+              <span class="portfolio-hero__preview-label">Curated Collections</span>
+              <span class="portfolio-hero__preview-price">12+ Styled</span>
             </div>
             <div class="portfolio-hero__preview-card portfolio-hero__preview-card--3">
               <div class="portfolio-hero__preview-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                  <path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
                 </svg>
               </div>
-              <span class="portfolio-hero__preview-label">Web Applications</span>
-              <span class="portfolio-hero__preview-price">10+ Deployed</span>
+              <span class="portfolio-hero__preview-label">Community Events</span>
+              <span class="portfolio-hero__preview-price">6+ Hosted</span>
             </div>
           </div>
         </div>
@@ -396,10 +392,10 @@ const projects: Project[] = [
       <div class="portfolio-hero__decoration" aria-hidden="true"></div>
     </section>
 
-    <!-- Portfolio Grid Section -->
+    <!-- Gallery Grid Section -->
     <PortfolioSection
-      heading="Featured Projects"
-      subheading="Browse through our recent work to see the quality and diversity of our web development projects."
+      heading="Our Showcases & Collections"
+      subheading="From seasonal window displays to curated lookbooks, explore the visual stories and in-store experiences that define Main Street Boutique."
       projects={projects}
       columns={3}
       enableFiltering={true}
@@ -408,15 +404,15 @@ const projects: Project[] = [
 
     <!-- Contact CTA Section -->
     <ContactCTA
-      headline="Ready to Start Your Project?"
-      supportingText="Whether you need a simple website or a complex web application, we have the expertise to bring your vision to life.  Houston businesses trust us to deliver results that exceed expectations."
+      headline="Inspired by What You See?"
+      supportingText="Visit Main Street Boutique to experience our curated collections in person. Whether you're looking for the perfect gift, seasonal home decor, or unique artisan finds, our team is here to help you discover something special."
       primaryCTA={{
-        text: "Start Your Project",
+        text: "Plan Your Visit",
         href: "/contact",
       }}
       secondaryCTA={{
-        text: "View Services & Pricing",
-        href: "/services",
+        text: "Browse Our Products",
+        href: "/products",
       }}
     />
   </main>
@@ -424,7 +420,7 @@ const projects: Project[] = [
 
 <style>
   /* =================================================================
-   * PORTFOLIO HERO SECTION - Matching Services Page Style
+   * GALLERY HERO SECTION - Retail Gallery & Lookbook Style
    * ================================================================= */
 
   .portfolio-hero {

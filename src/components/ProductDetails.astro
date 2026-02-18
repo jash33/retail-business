@@ -38,6 +38,8 @@ import { shopConfig } from '../config/shop.config';
 import type { UTMParams } from '../types/shop';
 import AvailabilityBadge from './AvailabilityBadge.astro';
 import type { AvailabilityStatus } from './AvailabilityBadge.astro';
+import TrustBadgesInline from './TrustBadgesInline.astro';
+import { PRODUCT_TRUST_BADGES_CONFIG } from '../config/trust-badges.config';
 
 interface Props {
   /** Product name */
@@ -352,6 +354,11 @@ const hasVariants = hasColors || hasSizes || hasMaterials;
         </span>
       </p>
     )}
+
+    {/* Trust Badges - Minimal inline text */}
+    <div class="product-details__trust-badges">
+      <TrustBadgesInline {...PRODUCT_TRUST_BADGES_CONFIG} />
+    </div>
   </div>
 
   {/* SKU */}
@@ -712,6 +719,15 @@ const hasVariants = hasColors || hasSizes || hasMaterials;
     width: 1em;
     height: 1em;
     flex-shrink: 0;
+  }
+
+  /* =================================================================
+   * TRUST BADGES
+   * ================================================================= */
+  .product-details__trust-badges {
+    margin-top: var(--spacing-3);
+    padding-top: var(--spacing-3);
+    border-top: 1px solid var(--color-border-light);
   }
 
   /* =================================================================

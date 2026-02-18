@@ -1,7 +1,7 @@
 {
   "category": "Uncategorized",
   "description": "change the default dev port to 3003",
-  "title": "",
+  "title": "Update default development port to 3003",
   "images": [],
   "imagePaths": [],
   "textFilePaths": [],
@@ -15,7 +15,7 @@
   "requirePlanApproval": false,
   "dependencies": [],
   "workMode": "current",
-  "titleGenerating": "change the default dev port to 3003",
+  "titleGenerating": false,
   "status": "backlog",
   "id": "feature-1769572727839-c1pb9a2ul",
   "descriptionHistory": [

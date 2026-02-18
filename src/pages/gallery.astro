@@ -1,0 +1,14 @@
+---
+/**
+ * Gallery Page - Redirect to Portfolio
+ * Redirects /gallery to /portfolio where the full Gallery & Lookbook content lives.
+ *
+ * This redirect ensures the navigation link (/gallery) resolves correctly
+ * to the Gallery & Lookbook page at /portfolio.
+ *
+ * Returns 301 (permanent redirect) for SEO purposes.
+ */
+
+// Perform server-side redirect to the Gallery & Lookbook page
+return Astro.redirect('/portfolio', 301);
+---

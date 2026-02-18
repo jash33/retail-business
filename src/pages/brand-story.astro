@@ -1,6 +1,6 @@
 ---
 /**
- * Brand Story Page - Houston Web Services
+ * Brand Story Page - Main Street Boutique
  * An editorial-style page showcasing the brand's story, values, and founders.
  * Distinct from the existing about page with a magazine-inspired aesthetic.
  *
@@ -23,28 +23,28 @@ import Button from '../components/Button.astro';
  */
 const brandValues = [
   {
-    id: 'authenticity',
-    title: 'Authenticity',
-    description: 'We believe in honest relationships and transparent communication. No jargon, no hidden fees—just real conversations about what your business needs.',
+    id: 'curation',
+    title: 'Thoughtful Curation',
+    description: 'Every piece in our collection is personally selected for its craftsmanship, quality, and story. We visit studios, meet the makers, and choose only items we\'d proudly bring into our own homes.',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
   },
   {
     id: 'craftsmanship',
-    title: 'Craftsmanship',
-    description: 'Every website we build is crafted with attention to detail. We obsess over the pixels, the performance, and the user experience because your brand deserves nothing less.',
+    title: 'Artisan Craftsmanship',
+    description: 'We celebrate the human hand behind every product. From hand-thrown ceramics to woven textiles, each item carries the mark of its maker and the tradition of their craft.',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,
   },
   {
     id: 'community',
-    title: 'Community',
-    description: 'We\'re rooted in Houston. We support local businesses because when the community thrives, we all thrive. Your success is our success.',
+    title: 'Community First',
+    description: 'We\'re rooted in Houston and proud of it. By partnering with local artisans and independent makers, we keep our community thriving and ensure every purchase makes a difference close to home.',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
   },
   {
-    id: 'innovation',
-    title: 'Innovation',
-    description: 'Technology evolves, and so do we. We stay ahead of trends so you can focus on running your business while we handle the digital landscape.',
-    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,
+    id: 'sustainability',
+    title: 'Sustainable Living',
+    description: 'We believe beautiful things shouldn\'t cost the earth. We prioritize eco-friendly materials, ethical production, and goods built to last a lifetime rather than a season.',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
   },
 ];
 
@@ -54,9 +54,9 @@ const brandValues = [
 const founders = [
   {
     name: 'James',
-    role: 'Founder & Lead Developer',
-    bio: 'James founded Houston Web Services with a simple belief: small businesses deserve big results. With over a decade of experience in web development, he combines technical expertise with a genuine passion for helping local entrepreneurs succeed online.',
-    philosophy: 'I don\'t just build websites—I build partnerships. When you work with me, you\'re not getting an agency; you\'re getting a neighbor who genuinely cares about your success.',
+    role: 'Founder & Owner',
+    bio: 'James opened Main Street Boutique with a simple belief: that beautiful, handcrafted goods should be accessible to everyone. After years of collecting artisan pieces during his travels and seeing mass-produced homewares dominate the market, he set out to create a space where quality craftsmanship and personal connection come first.',
+    philosophy: 'I don\'t just stock shelves—I build relationships. With every artisan I partner with and every customer who walks through our doors, I\'m creating connections that make our community stronger.',
   },
 ];
 
@@ -64,33 +64,33 @@ const founders = [
  * Timeline milestones
  */
 const milestones = [
-  { year: '2016', event: 'Houston Web Services Founded', description: 'Started with a laptop, a dream, and a commitment to serving local businesses.' },
-  { year: '2018', event: 'First 50 Clients', description: 'Reached a milestone of 50 satisfied local business clients.' },
-  { year: '2020', event: 'Pandemic Pivot', description: 'Helped dozens of businesses quickly transition to e-commerce during uncertain times.' },
-  { year: '2022', event: '100+ Projects Completed', description: 'Celebrated completing over 100 successful web projects.' },
-  { year: '2024', event: 'Expanded Services', description: 'Launched comprehensive SEO and digital marketing offerings.' },
+  { year: '2016', event: 'Main Street Boutique Opens', description: 'Opened our doors on Main Street with a curated collection of ceramics, textiles, and handcrafted home goods from 12 local artisans.' },
+  { year: '2018', event: 'First Artisan Market', description: 'Hosted our inaugural weekend artisan market, bringing together 30 makers and over 500 visitors from across Houston.' },
+  { year: '2020', event: 'Online Shop Launches', description: 'Brought our curated collection online so customers could shop their favorite artisan goods from anywhere.' },
+  { year: '2022', event: '100+ Artisan Partners', description: 'Celebrated partnerships with over 100 independent makers and small-batch producers across Texas and beyond.' },
+  { year: '2024', event: 'Expanded Showroom', description: 'Doubled our retail space to include a dedicated gallery for rotating artisan exhibitions and workshops.' },
 ];
 ---
 
 <Layout
   title="Our Story"
-  description="Discover the story behind Houston Web Services. Learn about our journey, values, and commitment to helping Houston businesses succeed online."
+  description="Discover the story behind Main Street Boutique. Learn about our journey from a small curated shop to Houston's destination for handcrafted artisan goods and thoughtful living."
   openGraph={{
     type: 'article',
   }}
   jsonLd={{
     type: 'AboutPage',
     name: 'Our Brand Story',
-    description: 'The story, values, and people behind Houston Web Services.',
+    description: 'The story, values, and people behind Main Street Boutique.',
   }}
 >
   <main class="brand-story">
     <!-- Editorial Hero Section -->
     <HeroEditorial
-      headline="Building Digital Dreams, One Story at a Time"
-      subheadline="We're more than a web design agency—we're storytellers, craftspeople, and neighbors dedicated to helping Houston businesses thrive."
+      headline="Curated with Care, Crafted by Hand"
+      subheadline="We're more than a boutique—we're a gathering place for artisan makers, thoughtful shoppers, and everyone who believes beautiful things should tell a story."
       cta={{
-        text: 'Start Your Story',
+        text: 'Visit Our Shop',
         href: '/contact',
       }}
       overlayPosition="bottom-left"
@@ -105,22 +105,23 @@ const milestones = [
         <div class="story-intro__content editorial">
           <span class="editorial-kicker reveal reveal--up">Our Origin</span>
           <h2 id="story-intro-heading" class="editorial-headline reveal reveal--up reveal--delay-1">
-            It Started with a Question
+            It Started with a Market Table
           </h2>
 
           <div class="story-intro__text">
             <p class="editorial-dropcap reveal reveal--up reveal--delay-2">
-              Why do small businesses struggle to compete online? This was the question that kept
-              James awake at night in 2016. Working in corporate web development, he watched as
-              enterprise companies poured millions into their digital presence while local shops—the
-              bakeries, boutiques, and family restaurants that give neighborhoods their character—were
-              left behind with outdated websites or no web presence at all.
+              In 2016, James set up a small table at a Houston farmers market, displaying a handful of
+              hand-thrown ceramic mugs from a potter he'd met on a road trip through the Texas Hill Country.
+              They sold out in two hours. But it wasn't the sales that surprised him—it was the conversations.
+              Every person who picked up a mug wanted to know the story behind it. Who made it? How was it
+              crafted? What inspired the glaze?
             </p>
 
             <p class="reveal reveal--up reveal--delay-3">
-              The answer wasn't complicated: most web agencies didn't speak the language of small
-              business owners. They used jargon, charged premium prices, and treated local businesses
-              as afterthoughts. There had to be a better way.
+              That morning revealed something powerful: people weren't just shopping for objects. They were
+              looking for meaning, for connection, for something real in a world of mass production. Main Street
+              Boutique was born from that simple truth—and from the belief that every handcrafted piece
+              carries a story worth sharing.
             </p>
           </div>
         </div>
@@ -131,7 +132,7 @@ const milestones = [
     <section class="story-quote" aria-label="Featured quote">
       <div class="story-quote__container">
         <PullQuote
-          quote="Every small business has a story worth telling. Our job is to help the world hear it."
+          quote="Every piece in our shop has a name, a maker, and a story. When you take something home, you're not just buying a product—you're becoming part of that story."
           attribution="James, Founder"
           position="center"
         />
@@ -142,8 +143,8 @@ const milestones = [
     <section class="story-founders" aria-labelledby="story-founders-heading">
       <div class="story-founders__container">
         <div class="story-founders__header section-heading--decorated reveal reveal--up">
-          <h2 id="story-founders-heading">The People Behind the Pixels</h2>
-          <p>Meet the team dedicated to your digital success</p>
+          <h2 id="story-founders-heading">The Heart Behind the Boutique</h2>
+          <p>Meet the person who handpicks every piece on our shelves</p>
         </div>
 
         {founders.map((founder, index) => (
@@ -204,7 +205,7 @@ const milestones = [
     <section class="story-quote story-quote--alt" aria-label="Featured quote">
       <div class="story-quote__container">
         <PullQuote
-          quote="Success isn't measured in page views or rankings—it's measured in the smile on a business owner's face when their phone starts ringing."
+          quote="When a customer tells me they use their favorite mug every single morning, or that a blanket we sold them has become a family heirloom—that's when I know we've done something right."
           position="offset-right"
         />
       </div>
@@ -215,7 +216,7 @@ const milestones = [
       <div class="story-values__container">
         <div class="story-values__header section-heading--decorated reveal reveal--up">
           <h2 id="story-values-heading">What We Stand For</h2>
-          <p>The principles that guide everything we do</p>
+          <p>The principles that guide every piece we curate</p>
         </div>
 
         <div class="story-values__grid">
@@ -238,26 +239,28 @@ const milestones = [
         <div class="story-vision__content editorial">
           <span class="editorial-kicker reveal reveal--up">Looking Ahead</span>
           <h2 id="story-vision-heading" class="editorial-title reveal reveal--up reveal--delay-1">
-            The Future We're Building
+            The Future We're Crafting
           </h2>
 
           <div class="story-vision__text reveal reveal--up reveal--delay-2">
             <p>
-              Our vision extends beyond websites. We're building a future where every local business
-              has the digital tools they need to compete, connect, and thrive. A future where
-              technology serves people, not the other way around.
+              Our vision extends beyond retail. We're building a community where artisan makers can
+              thrive, where customers can discover meaningful goods, and where the art of handcraft
+              is celebrated and preserved for future generations.
             </p>
 
             <p>
-              As Houston continues to grow and evolve, we're committed to growing alongside our
-              community. New technologies will emerge, trends will come and go, but our dedication
-              to personal service and genuine partnership will remain constant.
+              As Houston continues to grow, we're committed to growing alongside our neighborhood.
+              New artisans will join our family, new workshops will fill our gallery, and new stories
+              will line our shelves—but our dedication to quality, authenticity, and personal
+              connection will remain the foundation of everything we do.
             </p>
 
             <p>
-              Because at the end of the day, this isn't just about building websites. It's about
-              building relationships, supporting dreams, and helping our neighbors succeed. That's
-              the story we're proud to tell.
+              Because at the end of the day, this isn't just about selling beautiful things. It's
+              about honoring the hands that made them, supporting the community that sustains us,
+              and helping our customers bring a little more intention and beauty into their everyday
+              lives. That's the story we're proud to tell.
             </p>
           </div>
         </div>
@@ -268,20 +271,20 @@ const milestones = [
     <section class="story-cta" aria-labelledby="story-cta-heading">
       <div class="story-cta__container">
         <h2 id="story-cta-heading" class="story-cta__title reveal reveal--up">
-          Ready to Write Your Chapter?
+          Discover Something Meaningful
         </h2>
         <p class="story-cta__description reveal reveal--up reveal--delay-1">
-          Every great brand has a story. Let's work together to make sure the world hears yours.
+          Every visit to our boutique is a chance to find something you'll treasure. Come see what our artisans have been creating.
         </p>
         <div class="story-cta__buttons reveal reveal--up reveal--delay-2">
           <Button
-            text="Start Your Story"
+            text="Visit Us Today"
             href="/contact"
             variant="primary"
             size="large"
           />
           <Button
-            text="View Our Work"
+            text="Browse Our Collection"
             href="/portfolio"
             variant="secondary"
             size="large"

@@ -17,17 +17,16 @@ export interface HeroCTA {
 
 /**
  * Props for the HeroSection component
+ * Simplified typography: headline + subheadline + max 2 CTAs
  */
 export interface HeroSectionProps {
   /** Main headline - the primary message (h1) */
   headline: string;
-  /** Value proposition - what makes this service unique */
-  valueProposition?: string;
-  /** Subheadline - supporting text describing services */
+  /** Subheadline - supporting descriptive text */
   subheadline?: string;
   /** Primary CTA button */
   primaryCTA?: HeroCTA;
-  /** Secondary CTA button (optional) */
+  /** Secondary CTA button (optional, max 2 CTAs total) */
   secondaryCTA?: HeroCTA;
   /** Section ID for anchoring */
   id?: string;
@@ -124,6 +123,49 @@ export type VideoHeroGradientType = 'linear' | 'radial' | 'solid';
  * - Multiple content positioning options
  * - Configurable overlay gradient styles
  */
+/**
+ * Props for the RetailHero component
+ * Clean, minimal retail hero with lifestyle image and gradient overlay.
+ * Designed for e-commerce and retail websites with elegant typography.
+ *
+ * Features:
+ * - Full-viewport lifestyle image background with placeholder support
+ * - Elegant gradient overlay for text readability
+ * - Optional badge/label above headline
+ * - Flexible content positioning
+ * - Mobile-first responsive design
+ */
+export interface RetailHeroProps {
+  /** Optional badge/label text displayed above the headline */
+  badge?: string;
+  /** Main headline - large statement text */
+  headline: string;
+  /** Optional subheadline - supporting descriptive text */
+  subheadline?: string;
+  /** Primary CTA button */
+  cta?: HeroCTA;
+  /** Optional secondary CTA button */
+  secondaryCta?: HeroCTA;
+  /** Background lifestyle image URL */
+  backgroundImage?: string;
+  /** Alt text for the background image (for accessibility) */
+  backgroundImageAlt?: string;
+  /** Position of the text overlay (default: 'center') */
+  overlayPosition?: HeroOverlayPosition;
+  /** Overlay gradient opacity (0-1, default: 0.5) */
+  overlayOpacity?: number;
+  /** Section ID for anchoring */
+  id?: string;
+  /** Additional CSS classes */
+  class?: string;
+  /** Minimum height of the hero section (default: '100vh') */
+  minHeight?: string;
+  /** Enable subtle text animation on load (default: true) */
+  animateText?: boolean;
+  /** Show scroll indicator (default: true) */
+  showScrollIndicator?: boolean;
+}
+
 export interface VideoHeroProps {
   /** Main headline - large statement text */
   headline: string;

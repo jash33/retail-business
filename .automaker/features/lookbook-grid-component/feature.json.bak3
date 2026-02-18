@@ -8,5 +8,16 @@
   "complexity": "complex",
   "createdAt": "2026-01-26T01:49:59.720Z",
   "updatedAt": "2026-01-26T01:49:59.720Z",
-  "descriptionHistory": []
+  "descriptionHistory": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "current",
+  "dependencies": []
 }

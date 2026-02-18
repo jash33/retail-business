@@ -1,14 +1,14 @@
 /**
  * Featured Projects Configuration
  *
- * This file contains the configuration for the featured projects displayed
- * on the homepage. Update this file to change which projects are featured
- * without modifying component code.
+ * This file contains the configuration for the featured retail showcases
+ * displayed on the homepage. Update this file to change which showcases
+ * are featured without modifying component code.
  *
  * Instructions for updating:
- * 1. To change featured projects, modify the FEATURED_PROJECTS array below
- * 2. Each project should include all required fields (id, title, description, thumbnail, technologies, category)
- * 3. Recommended: Display 2-3 projects for optimal visual balance
+ * 1. To change featured showcases, modify the FEATURED_PROJECTS array below
+ * 2. Each showcase should include all required fields (id, title, description, thumbnail, technologies, category)
+ * 3. Recommended: Display 2-3 showcases for optimal visual balance
  * 4. Images should be placed in the /public/portfolio/ directory
  * 5. Use WebP format for better performance when available
  */
@@ -16,78 +16,77 @@
 import type { Project } from '../types/portfolio';
 
 /**
- * Featured projects to display on the homepage
- * These are a curated selection of the best work to showcase immediately to visitors
+ * Featured retail showcases to display on the homepage
+ * These are a curated selection of our best in-store experiences and community initiatives
  */
 export const FEATURED_PROJECTS: Project[] = [
   {
-    id: 'houston-energy-consulting',
-    title: 'Houston Energy Consulting',
-    description: 'A professional website for a Houston-based energy consulting firm featuring a modern design, custom CMS integration, and lead generation forms that increased client inquiries by 150%.',
+    id: 'spring-garden-collection',
+    title: 'Spring Garden Collection',
+    description: 'Our signature seasonal collection featuring curated home and garden essentials for the spring season. Hand-picked items from local artisans and trusted brands, styled in a vibrant in-store display that drove a 40% increase in foot traffic.',
     thumbnail: {
-      src: '/portfolio/energy-consulting.svg',
-      alt: 'Houston Energy Consulting website homepage showing professional dark blue design with energy industry imagery',
+      src: '/portfolio/spring-garden-collection.svg',
+      alt: 'Spring Garden Collection showcase featuring vibrant floral arrangements and garden essentials in a beautifully styled in-store display',
       width: 600,
       height: 400,
     },
     technologies: [
-      { name: 'Astro', category: 'frontend' },
-      { name: 'TypeScript', category: 'frontend' },
-      { name: 'Tailwind CSS', category: 'frontend' },
-      { name: 'Netlify CMS', category: 'cms' },
+      { name: 'Seasonal Curation', category: 'design' },
+      { name: 'Visual Merchandising', category: 'design' },
+      { name: 'Local Artisans', category: 'ecommerce' },
+      { name: 'In-Store Experience', category: 'frontend' },
     ],
     category: 'website',
     featured: true,
-    completedDate: '2024-11-15',
+    completedDate: '2025-03-01',
     links: [
-      { text: 'View Live Site', href: 'https://example-energy.com', type: 'live-site', openInNewTab: true },
+      { text: 'View Collection', href: '/showcases/spring-garden-collection', type: 'case-study' },
     ],
   },
   {
-    id: 'houston-dental-care',
-    title: 'Houston Family Dental Care',
-    description: 'Complete website redesign for a dental practice in Houston, TX. Includes online appointment booking, patient portal integration, and HIPAA-compliant contact forms.',
+    id: 'holiday-market-event',
+    title: 'Holiday Market Weekend',
+    description: 'A three-day in-store holiday market event featuring live demos, gift wrapping stations, and exclusive seasonal bundles. Over 500 visitors attended, making it our most successful store event with a 60% increase in weekend sales.',
     thumbnail: {
-      src: '/portfolio/dental-care.svg',
-      alt: 'Houston Family Dental Care website with bright, welcoming design and appointment booking interface',
+      src: '/portfolio/holiday-market-event.svg',
+      alt: 'Holiday Market Weekend event with festive decorations, live product demonstrations, and customers enjoying the in-store experience',
       width: 600,
       height: 400,
     },
     technologies: [
-      { name: 'React', category: 'frontend' },
-      { name: 'Next.js', category: 'fullstack' },
-      { name: 'PostgreSQL', category: 'backend' },
-      { name: 'Stripe', category: 'ecommerce' },
+      { name: 'Event Planning', category: 'design' },
+      { name: 'Live Demos', category: 'frontend' },
+      { name: 'Gift Bundles', category: 'ecommerce' },
+      { name: 'Seasonal Promotions', category: 'ecommerce' },
     ],
-    category: 'web-app',
+    category: 'landing-page',
     featured: true,
-    completedDate: '2024-10-20',
+    completedDate: '2024-12-15',
     links: [
-      { text: 'View Live Site', href: 'https://example-dental.com', type: 'live-site', openInNewTab: true },
-      { text: 'Case Study', href: '/case-studies/dental-care', type: 'case-study' },
+      { text: 'Event Recap', href: '/showcases/holiday-market-event', type: 'case-study' },
     ],
   },
   {
-    id: 'texas-realty-partners',
-    title: 'Texas Realty Partners',
-    description: 'Real estate listing platform with MLS integration, property search filters, virtual tour support, and agent dashboard. Built for mobile-first browsing experience.',
+    id: 'community-mural-partnership',
+    title: 'Community Mural Partnership',
+    description: 'A collaborative partnership with local artists and the Houston Arts Alliance to create a community mural on our storefront. The project brought together neighbors, artists, and small businesses, strengthening our ties to the community and boosting brand visibility.',
     thumbnail: {
-      src: '/portfolio/real-estate.svg',
-      alt: 'Texas Realty Partners website with property listings and advanced search functionality',
+      src: '/portfolio/community-mural-partnership.svg',
+      alt: 'Community Mural Partnership showing a colorful mural on the storefront created in collaboration with local artists and community members',
       width: 600,
       height: 400,
     },
     technologies: [
-      { name: 'Next.js', category: 'fullstack' },
-      { name: 'GraphQL', category: 'backend' },
-      { name: 'PostgreSQL', category: 'backend' },
-      { name: 'AWS', category: 'backend' },
+      { name: 'Community Outreach', category: 'design' },
+      { name: 'Local Artists', category: 'design' },
+      { name: 'Brand Partnership', category: 'cms' },
+      { name: 'Neighborhood Impact', category: 'frontend' },
     ],
-    category: 'web-app',
+    category: 'website',
     featured: true,
-    completedDate: '2024-05-20',
+    completedDate: '2024-09-10',
     links: [
-      { text: 'View Live Site', href: 'https://example-realty.com', type: 'live-site', openInNewTab: true },
+      { text: 'Read the Story', href: '/showcases/community-mural-partnership', type: 'case-study' },
     ],
   },
 ];
@@ -98,13 +97,13 @@ export const FEATURED_PROJECTS: Project[] = [
  */
 export const FEATURED_PROJECTS_CONFIG = {
   /** Main heading for the section */
-  heading: 'Featured Work',
+  heading: 'Our Showcases',
 
   /** Subheading/description text */
-  subheading: 'Explore some of our recent projects that showcase our expertise in web design and development for Houston businesses.',
+  subheading: 'From seasonal collections to community partnerships, explore the experiences that make our store a neighborhood favorite.',
 
   /** Text for the "View All" call-to-action button */
-  viewAllText: 'View All Projects',
+  viewAllText: 'View All Showcases',
 
   /** URL for the "View All" call-to-action button */
   viewAllHref: '/portfolio',

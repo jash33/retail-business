@@ -483,6 +483,72 @@
       "dismissed": false,
       "featureId": "feature-1769572727839-c1pb9a2ul",
       "projectPath": "C:\\Users\\James\\Repos\\retail-business"
+    },
+    {
+      "id": "c9b07c2d-9d43-4fbe-b8f0-a7c229a03705",
+      "type": "feature_waiting_approval",
+      "title": "Feature Ready for Review",
+      "message": "\"feature-1769884919484-e1d1mv993\" is ready for your review and approval.",
+      "createdAt": "2026-01-31T19:34:41.496Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769884919484-e1d1mv993",
+      "projectPath": "C:\\Users\\James\\Repos\\retail-business"
+    },
+    {
+      "id": "bdeed6e2-198f-4ae8-b555-54c92a6d0ac1",
+      "type": "feature_waiting_approval",
+      "title": "Feature Ready for Review",
+      "message": "\"feature-1769889099351-q0x8sx1ij\" is ready for your review and approval.",
+      "createdAt": "2026-01-31T20:15:37.712Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769889099351-q0x8sx1ij",
+      "projectPath": "C:\\Users\\James\\Repos\\retail-business"
+    },
+    {
+      "id": "e641fe34-b0fc-4f50-9d54-f56b5cb36594",
+      "type": "feature_waiting_approval",
+      "title": "Feature Ready for Review",
+      "message": "\"feature-1769889045407-koxse88a3\" is ready for your review and approval.",
+      "createdAt": "2026-01-31T20:17:01.228Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769889045407-koxse88a3",
+      "projectPath": "C:\\Users\\James\\Repos\\retail-business"
+    },
+    {
+      "id": "e73d87fd-ffe1-489f-ba55-0a930ff62097",
+      "type": "feature_waiting_approval",
+      "title": "Feature Ready for Review",
+      "message": "\"feature-1769910622266-w9urmmal3\" is ready for your review and approval.",
+      "createdAt": "2026-02-01T01:51:22.346Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769910622266-w9urmmal3",
+      "projectPath": "C:\\Users\\James\\Repos\\retail-business"
+    },
+    {
+      "id": "cf313383-0964-4a26-812f-20911fdcab80",
+      "type": "feature_waiting_approval",
+      "title": "Feature Ready for Review",
+      "message": "\"feature-1770522453819-jy7q65s1e\" is ready for your review and approval.",
+      "createdAt": "2026-02-08T04:21:01.587Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1770522453819-jy7q65s1e",
+      "projectPath": "C:\\Users\\James\\Repos\\retail-business"
+    },
+    {
+      "id": "0e9cd706-f73a-47aa-89a8-be9d29e357c6",
+      "type": "feature_waiting_approval",
+      "title": "Feature Ready for Review",
+      "message": "\"feature-1770524528467-n5nuwenm6\" is ready for your review and approval.",
+      "createdAt": "2026-02-08T04:29:04.887Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1770524528467-n5nuwenm6",
+      "projectPath": "C:\\Users\\James\\Repos\\retail-business"
     }
   ]
 }

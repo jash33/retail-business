@@ -21,7 +21,7 @@ import type {
 /**
  * localStorage key for storing announcement dismissal state
  */
-export const ANNOUNCEMENT_STORAGE_KEY = 'hws_announcement_state';
+export const ANNOUNCEMENT_STORAGE_KEY = 'retail_announcement_state';
 
 /**
  * Current version for storage schema migrations

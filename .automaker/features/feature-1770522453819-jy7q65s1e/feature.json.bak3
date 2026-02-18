@@ -1,0 +1,120 @@
+{
+  "category": "Uncategorized",
+  "description": "There's a lot about this home page that does match what you'd see in a common retail store website. \n\nI'd like to stick with existing patterns customers are used to seeing, but just to be more clean and beautiful.\n\nThink hard about what matters to the business owner and to customers on a home page here.",
+  "title": "Update home page design for retail patterns clarity",
+  "images": [],
+  "imagePaths": [
+    {
+      "id": "img-1770522370428-zkvfb24jj",
+      "path": "C:\\Users\\James\\Repos\\retail-business\\.automaker\\features\\feature-1770522453819-jy7q65s1e\\images\\pasted-image-2026-02-08T03-46-10-395Z-1770522370426.png",
+      "filename": "pasted-image-2026-02-08T03-46-10-395Z.png",
+      "mimeType": "image/png"
+    }
+  ],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "main",
+  "priority": 2,
+  "planningMode": "full",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1770522453819-jy7q65s1e",
+  "descriptionHistory": [
+    {
+      "description": "There's a lot about this home page that does match what you'd see in a common retail store website. \n\nI'd like to stick with existing patterns customers are used to seeing, but just to be more clean and beautiful.\n\nThink hard about what matters to the business owner and to customers on a home page here.",
+      "timestamp": "2026-02-08T03:47:33.831Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-02-08T03:47:33.845Z",
+  "updatedAt": "2026-02-08T04:19:09.771Z",
+  "planSpec": {
+    "status": "approved",
+    "version": 1,
+    "reviewedByUser": false,
+    "content": "🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\.automaker\\\\features\\\\feature-1770522453819-jy7q65s1e\\\\images\\\\pasted-image-2026-02-08T03-46-10-395Z-1770522370426.png\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/*.{tsx,jsx,ts,js}\",\n  \"path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\package.json\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"src/**/*.{astro,tsx,jsx,ts,js,css}\",\n  \"path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\index.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\components\\\\HeroSection.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\styles\\\\globals.css\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\styles\\\\variables.css\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\components\\\\HeroSection.astro\",\n  \"limit\": 400\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\components\\\\FeaturedProductsSection.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\components\\\\ServicesSection.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\components\\\\HeroSection.astro\",\n  \"offset\": 400,\n  \"limit\": 600\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\components\\\\DifferentiatorsSection.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\components\\\\NewArrivalsCarousel.astro\",\n  \"limit\": 200\n}\n# Homepage Redesign Specification\n\n## 1. Problem Statement\n\nThe current retail boutique homepage has visual elements that don't align with typical retail e-commerce patterns customers expect. The page uses a tech/SaaS-style hero section with animated grid backgrounds, browser mockups, floating notification cards, and location coordinates—all inappropriate for a retail storefront. Customers visiting a boutique website expect to immediately see products, clear brand messaging, and intuitive shopping pathways, not website-building service demonstrations.\n\n## 2. User Story\n\n**As a** boutique customer visiting the homepage,  \n**I want** to see a clean, beautiful, product-focused shopping experience that follows familiar retail patterns,  \n**so that** I can quickly understand what the store offers and start shopping confidently.\n\n## 3. Acceptance Criteria\n\n### Happy Path\n- **GIVEN** a customer visits the homepage, **WHEN** the page loads, **THEN** they see a clean hero with a product lifestyle image and clear shopping CTAs\n- **GIVEN** a customer is on the homepage, **WHEN** they scroll down, **THEN** they see featured products, new arrivals, and category navigation in a logical flow\n- **GIVEN** a customer wants to explore, **WHEN** they look at the hero section, **THEN** they see prominent \"Shop Now\" and category browsing options without tech-style distractions\n\n### Edge Cases\n- **GIVEN** the site is viewed on mobile, **WHEN** the hero loads, **THEN** text remains readable and CTAs are easily tappable\n- **GIVEN** a user has reduced motion preferences, **WHEN** viewing the page, **THEN** all animations are disabled gracefully\n\n### Error Handling\n- **GIVEN** hero image fails to load, **WHEN** the page renders, **THEN** a graceful background color fallback is shown\n- **GIVEN** no featured products exist, **WHEN** viewing the homepage, **THEN** the section displays a tasteful placeholder message\n\n## 4. Technical Context\n\n| Aspect | Value |\n|--------|-------|\n| Affected Files | `src/pages/index.astro`, `src/components/HeroSection.astro` |\n| Dependencies | None (Astro-native) |\n| Constraints | Must maintain accessibility, responsive design, dark mode support |\n| Patterns to Follow | BEM CSS naming, CSS variables from `variables.css`, existing component structure |\n\n## 5. Non-Goals\n\n- **NOT** implementing a full e-commerce cart system\n- **NOT** changing the navigation/header component\n- **NOT** modifying product data structures or config files\n- **NOT** adding new external dependencies\n- **NOT** redesigning other pages (About, Contact, etc.)\n\n## 6. Implementation Tasks\n\n```tasks\n## Phase 1: Hero Section Cleanup\n- [ ] T001: Remove browser mockup, floating cards, and tech-style animations from hero | File: src/components/HeroSection.astro\n- [ ] T002: Remove animated grid background, floating orbs, and skyline decorations | File: src/components/HeroSection.astro\n- [ ] T003: Remove location cue with coordinates (inappropriate for retail) | File: src/components/HeroSection.astro\n\n## Phase 2: Hero Section Redesign\n- [ ] T004: Create clean retail hero with lifestyle image placeholder and gradient overlay | File: src/components/HeroSection.astro\n- [ ] T005: Simplify hero typography to headline, subheadline, and 2 CTAs max | File: src/components/HeroSection.astro\n- [ ] T006: Redesign trust badges as minimal inline text (free shipping, gift wrapping, local artisans) | File: src/components/HeroSection.astro\n- [ ] T007: Update hero CSS for clean, minimal aesthetic with subtle animations | File: src/components/HeroSection.astro\n\n## Phase 3: Homepage Content Optimization\n- [ ] T008: Update homepage hero props with retail-appropriate messaging | File: src/pages/index.astro\n- [ ] T009: Reorganize homepage sections for optimal retail flow (Hero → Products → Categories → Social Proof) | File: src/pages/index.astro\n- [ ] T010: Remove or streamline sections that add clutter (condense FAQ, simplify differentiators) | File: src/pages/index.astro\n```\n\n## 7. Success Metrics\n\n| Metric | Target |\n|--------|--------|\n| Hero load time | No complex animations, faster paint |\n| Mobile usability | Hero CTAs 44px+ tap targets |\n| Visual clarity | Hero communicates brand/product in <3 seconds |\n| Code reduction | Hero CSS reduced by ~50% from removing mockup styles |\n\n## 8. Risks & Mitigations\n\n| Risk | Mitigation |\n|------|------------|\n| Removing animations may feel \"flat\" | Add subtle, tasteful CSS transitions on CTAs and hover states |\n| Hero without image placeholder looks empty | Use elegant gradient background as fallback |\n| Loss of \"unique\" visual identity | Focus uniqueness on typography, color palette, and product photography instead |\n\n---",
+    "generatedAt": "2026-02-08T03:49:05.294Z",
+    "tasks": [
+      {
+        "id": "T001",
+        "description": "Remove browser mockup, floating cards, and tech-style animations from hero",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 1: Hero Section Cleanup",
+        "status": "pending"
+      },
+      {
+        "id": "T002",
+        "description": "Remove animated grid background, floating orbs, and skyline decorations",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 1: Hero Section Cleanup",
+        "status": "pending"
+      },
+      {
+        "id": "T003",
+        "description": "Remove location cue with coordinates (inappropriate for retail)",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 1: Hero Section Cleanup",
+        "status": "pending"
+      },
+      {
+        "id": "T004",
+        "description": "Create clean retail hero with lifestyle image placeholder and gradient overlay",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 2: Hero Section Redesign",
+        "status": "pending"
+      },
+      {
+        "id": "T005",
+        "description": "Simplify hero typography to headline, subheadline, and 2 CTAs max",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 2: Hero Section Redesign",
+        "status": "pending"
+      },
+      {
+        "id": "T006",
+        "description": "Redesign trust badges as minimal inline text (free shipping, gift wrapping, local artisans)",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 2: Hero Section Redesign",
+        "status": "pending"
+      },
+      {
+        "id": "T007",
+        "description": "Update hero CSS for clean, minimal aesthetic with subtle animations",
+        "filePath": "src/components/HeroSection.astro",
+        "phase": "Phase 2: Hero Section Redesign",
+        "status": "pending"
+      },
+      {
+        "id": "T008",
+        "description": "Update homepage hero props with retail-appropriate messaging",
+        "filePath": "src/pages/index.astro",
+        "phase": "Phase 3: Homepage Content Optimization",
+        "status": "pending"
+      },
+      {
+        "id": "T009",
+        "description": "Reorganize homepage sections for optimal retail flow (Hero → Products → Categories → Social Proof)",
+        "filePath": "src/pages/index.astro",
+        "phase": "Phase 3: Homepage Content Optimization",
+        "status": "pending"
+      },
+      {
+        "id": "T010",
+        "description": "Remove or streamline sections that add clutter (condense FAQ, simplify differentiators)",
+        "filePath": "src/pages/index.astro",
+        "phase": "Phase 3: Homepage Content Optimization",
+        "status": "pending"
+      }
+    ],
+    "tasksTotal": 10,
+    "tasksCompleted": 9,
+    "approvedAt": "2026-02-08T03:49:05.300Z",
+    "currentTaskId": "T010"
+  }
+}

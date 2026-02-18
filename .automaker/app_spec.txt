@@ -314,6 +314,79 @@
       <name>Social Media Sharing Buttons</name>
       <description>Create social sharing component for blog posts and products with Pinterest, Facebook, Twitter, and email options. Includes analytics event tracking.</description>
     </feature>
+    <feature>
+      <name>Update default development port to 3003</name>
+      <description>change the default dev port to 3003</description>
+    </feature>
+    <feature>
+      <name>Visit/Location Page with Store Information</name>
+      <description>Build location page with store hours, address, interior/exterior photo gallery, neighborhood guide, parking information, and Google Maps embed with directions. Includes LocalBusiness schema enhancement.</description>
+    </feature>
+    <feature>
+      <name>Lookbook Grid with Editorial Layouts</name>
+      <description>Create lookbook-style grid component with mixed aspect ratios, text overlays, and shoppable product tags. Supports creating curated seasonal collections or style guides.</description>
+    </feature>
+    <feature>
+      <name>New Arrivals Carousel Component</name>
+      <description>Create carousel/slider for newest products with automatic date-based sorting, navigation arrows, touch swipe support, and accessibility features. Displays latest inventory additions.</description>
+    </feature>
+    <feature>
+      <name>Stock Availability Indicators</name>
+      <description>Add availability badges to product cards and detail pages (In Stock, Low Stock, Sold Out, Pre-Order). Configurable per product with visual styling variations.</description>
+    </feature>
+    <feature>
+      <name>Product Image Gallery with Lightbox</name>
+      <description>Build image gallery component for product pages with thumbnail navigation, full-screen lightbox, zoom functionality, and touch-gesture support for mobile. Includes keyboard navigation.</description>
+    </feature>
+    <feature>
+      <name>Product Schema Markup for Rich Results</name>
+      <description>Add Product schema JSON-LD to product pages including price, availability, images, brand, and reviews. Enables rich search results with product cards in Google.</description>
+    </feature>
+    <feature>
+      <name>Related Products Section</name>
+      <description>Build related products section for product detail pages based on category or manual curation. Includes horizontal scroll layout and &apos;Complete the Look&apos; styling options.</description>
+    </feature>
+    <feature>
+      <name>Client-Side Product Search</name>
+      <description>Build search functionality with autocomplete, product filtering by name/description/category, and keyboard navigation. Uses Fuse.js for fuzzy search without backend.</description>
+    </feature>
+    <feature>
+      <name>Shipping and Returns Information Page</name>
+      <description>Build dedicated page for shipping policies, return procedures, international shipping details, and packaging information. Includes FAQ format and clear timelines.</description>
+    </feature>
+    <feature>
+      <name>Remove web design business branding and content</name>
+      <description>This whole repo was forked. The original repo had a different purpose - it was for a web design small business. There is still a lot of leftover content present (especially text and site sections) that have to do with a web design business. This doesn&apos;t match the purpose of this repo - to serve as a starter template for me to build sites for small retail businesses.
+
+Please identify these vestigal elements and either remove them, or update them to make them fit the real purpose of this repo, whichever is easier.
+
+I attached a screenshot of the home page as an example - we wouldn&apos;t want that mini-website-mockup element for a restaurant site. we also wouldn&apos;t want the text &quot;Fast-loading, search-friendly websites that turn visitors into customers.&quot; - this is supposed to be an example/starter site for a retail business.</description>
+    </feature>
+    <feature>
+      <name>Delete unused services route and components</name>
+      <description>the services route, and components that are exclusive to that route, can be deleted.</description>
+    </feature>
+    <feature>
+      <name>Fix gallery route page not found error</name>
+      <description>the /gallery route says apge not found right now...but it aslo shows normal features likea search bar which seems good. Let&apos;s fix this route.</description>
+    </feature>
+    <feature>
+      <name>Remove whitespace above header container</name>
+      <description>there is white space above the header container that needs to be removed</description>
+    </feature>
+    <feature>
+      <name>Update home page design for retail patterns clarity</name>
+      <description>There&apos;s a lot about this home page that does match what you&apos;d see in a common retail store website. 
+
+I&apos;d like to stick with existing patterns customers are used to seeing, but just to be more clean and beautiful.
+
+Think hard about what matters to the business owner and to customers on a home page here.</description>
+    </feature>
+    <feature>
+      <name>Update home page header and navbar design</name>
+      <description>the home page top section and navbar are so generic:
+</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

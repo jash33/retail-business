@@ -3,7 +3,7 @@
   "category": "UI",
   "title": "Stock Availability Indicators",
   "description": "Add availability badges to product cards and detail pages (In Stock, Low Stock, Sold Out, Pre-Order). Configurable per product with visual styling variations.",
-  "status": "waiting_approval",
+  "status": "verified",
   "priority": 2,
   "complexity": "simple",
   "createdAt": "2026-01-26T01:49:59.750Z",

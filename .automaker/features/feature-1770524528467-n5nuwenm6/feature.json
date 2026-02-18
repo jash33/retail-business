@@ -1,0 +1,38 @@
+{
+  "category": "Uncategorized",
+  "description": "the home page top section and navbar are so generic:\n",
+  "title": "Update home page header and navbar design",
+  "images": [],
+  "imagePaths": [
+    {
+      "id": "img-1770524504425-rlfpyizoo",
+      "path": "C:\\Users\\James\\Repos\\retail-business\\.automaker\\features\\feature-1770524528467-n5nuwenm6\\images\\pasted-image-2026-02-08T04-21-44-407Z-1770524504423.png",
+      "filename": "pasted-image-2026-02-08T04-21-44-407Z.png",
+      "mimeType": "image/png"
+    }
+  ],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "main",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1770524528467-n5nuwenm6",
+  "descriptionHistory": [
+    {
+      "description": "the home page top section and navbar are so generic:\n",
+      "timestamp": "2026-02-08T04:22:08.481Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-02-08T04:22:08.500Z",
+  "updatedAt": "2026-02-08T04:29:04.884Z",
+  "justFinishedAt": "2026-02-08T04:29:04.884Z"
+}

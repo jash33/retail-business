@@ -3,7 +3,7 @@
   "category": "SEO",
   "title": "Product Schema Markup for Rich Results",
   "description": "Add Product schema JSON-LD to product pages including price, availability, images, brand, and reviews. Enables rich search results with product cards in Google.",
-  "status": "waiting_approval",
+  "status": "verified",
   "priority": 2,
   "complexity": "simple",
   "createdAt": "2026-01-26T01:49:59.718Z",

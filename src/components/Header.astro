@@ -35,8 +35,7 @@ const { currentPath = '/' } = Astro.props;
 // Navigation links configuration
 const navLinks = [
   { href: '/', label: 'Home' },
-  { href: '/services', label: 'Services' },
-  { href: '/portfolio', label: 'Portfolio' },
+  { href: '/gallery', label: 'Gallery' },
   { href: '/about', label: 'About' },
   { href: '/brand-story', label: 'Our Story' },
   { href: '/visit', label: 'Visit' },
@@ -47,8 +46,14 @@ const navLinks = [
 <header class="header" role="banner">
   <div class="header__container">
     <!-- Logo/Brand -->
-    <a href="/" class="header__logo" aria-label="Houston Web Services - Go to homepage">
-      <span class="header__logo-text">HWS</span>
+    <a href="/" class="header__logo" aria-label="Go to homepage">
+      <span class="header__logo-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="header__logo-text">Main Street</span>
+      <span class="header__logo-tagline">Boutique</span>
     </a>
 
     <!-- Desktop Navigation -->
@@ -168,9 +173,14 @@ const navLinks = [
     left: 0;
     right: 0;
     z-index: var(--z-sticky);
-    background-color: var(--color-background);
-    border-bottom: 1px solid var(--color-border);
-    box-shadow: var(--shadow-sm);
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent;
+    background-image: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0.95)),
+                      linear-gradient(to right, var(--color-border), var(--color-primary-100), var(--color-border));
+    background-origin: padding-box, border-box;
+    background-clip: padding-box, border-box;
   }
 
   .header__container {
@@ -179,7 +189,7 @@ const navLinks = [
     justify-content: space-between;
     max-width: var(--container-7xl);
     margin: 0 auto;
-    padding: var(--spacing-4) var(--spacing-6);
+    padding: var(--spacing-3) var(--spacing-6);
   }
 
   /* -----------------------------------------------------------------
@@ -189,16 +199,12 @@ const navLinks = [
   .header__logo {
     display: flex;
     align-items: center;
+    gap: var(--spacing-2);
     text-decoration: none;
     color: var(--color-primary);
-    font-family: var(--font-heading);
-    font-weight: var(--font-weight-bold);
-    font-size: var(--font-size-xl);
-    letter-spacing: var(--letter-spacing-tight);
     min-height: 44px;
-    min-width: 44px;
     padding: var(--spacing-1) var(--spacing-2);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     position: relative;
     transition: color var(--animation-duration-fast) var(--ease-smooth),
                 background-color var(--animation-duration-fast) var(--ease-smooth),
@@ -206,15 +212,40 @@ const navLinks = [
                 box-shadow var(--animation-duration-normal) var(--ease-smooth);
   }
 
+  .header__logo-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-700) 100%);
+    border-radius: var(--radius-md);
+    color: var(--color-text-inverse);
+    box-shadow: 0 2px 8px rgba(54, 83, 149, 0.3);
+    transition: transform var(--animation-duration-fast) var(--ease-spring-soft),
+                box-shadow var(--animation-duration-normal) var(--ease-smooth);
+  }
+
+  .header__logo-badge svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .header__logo:hover .header__logo-badge {
+    transform: rotate(-10deg) scale(1.1);
+    box-shadow: 0 4px 12px rgba(54, 83, 149, 0.4);
+  }
+
   .header__logo:hover {
-    color: var(--color-primary-hover);
     background-color: var(--color-primary-50);
-    transform: scale(1.05);
-    box-shadow: var(--glow-primary-sm);
   }
 
   .header__logo:active {
     transform: scale(0.98);
+  }
+
+  .header__logo:active .header__logo-badge {
+    transform: rotate(-5deg) scale(1.05);
   }
 
   .header__logo:focus-visible {
@@ -224,15 +255,38 @@ const navLinks = [
 
   .header__logo-text {
     display: block;
-    position: relative;
+    font-family: var(--font-editorial-heading);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--color-text-primary);
+    line-height: 1;
+    transition: color var(--animation-duration-fast) var(--ease-smooth);
+  }
+
+  .header__logo-tagline {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+    color: var(--color-accent);
+    line-height: 1;
+    margin-left: -0.5em;
+    transition: color var(--animation-duration-fast) var(--ease-smooth);
   }
 
   /* Gradient text effect on hover */
   .header__logo:hover .header__logo-text {
-    background: var(--gradient-accent-mixed);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-700) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+  }
+
+  .header__logo:hover .header__logo-tagline {
+    color: var(--color-accent-dark);
   }
 
   /* -----------------------------------------------------------------
@@ -263,14 +317,17 @@ const navLinks = [
     min-height: 44px;
     padding: var(--spacing-2) var(--spacing-4);
     font-family: var(--font-body);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
     color: var(--color-text-secondary);
     text-decoration: none;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-full);
     position: relative;
     transition: color var(--animation-duration-fast) var(--ease-smooth),
-                background-color var(--animation-duration-fast) var(--ease-smooth);
+                background-color var(--animation-duration-fast) var(--ease-smooth),
+                transform var(--animation-duration-fast) var(--ease-spring-soft);
   }
 
   /* Animated underline element */
@@ -278,24 +335,24 @@ const navLinks = [
     content: '';
     position: absolute;
     bottom: var(--spacing-1);
-    left: var(--spacing-4);
-    right: var(--spacing-4);
-    height: 2px;
-    background: var(--gradient-underline);
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
     border-radius: var(--radius-full);
-    transform: scaleX(0);
-    transform-origin: left center;
-    transition: transform var(--animation-duration-normal) var(--ease-spring-soft);
+    transform: translateX(-50%) scale(0);
+    transition: transform var(--animation-duration-normal) var(--ease-spring-soft),
+                width var(--animation-duration-normal) var(--ease-spring-soft);
   }
 
   .header__nav-link:hover {
     color: var(--color-primary);
-    background-color: var(--color-primary-50);
+    transform: translateY(-1px);
   }
 
-  /* Underline slides in from left on hover */
+  /* Dot expands on hover */
   .header__nav-link:hover::after {
-    transform: scaleX(1);
+    transform: translateX(-50%) scale(1);
   }
 
   .header__nav-link:focus-visible {
@@ -307,13 +364,14 @@ const navLinks = [
   .header__nav-link--active {
     color: var(--color-primary);
     font-weight: var(--font-weight-semibold);
-    background-color: var(--color-primary-50);
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, rgba(139, 92, 246, 0.08) 100%);
   }
 
-  /* Active link always has the underline visible */
+  /* Active link has underline visible */
   .header__nav-link--active::after {
-    transform: scaleX(1);
-    background: var(--color-primary);
+    transform: translateX(-50%) scale(1);
+    width: calc(100% - var(--spacing-6));
+    height: 2px;
   }
 
   /* -----------------------------------------------------------------
@@ -569,6 +627,64 @@ const navLinks = [
     .header__nav-link::after {
       transition: none;
     }
+
+    .header__logo-badge {
+      transform: none;
+    }
+
+    .header__logo:hover .header__logo-badge {
+      transform: none;
+    }
+
+    .header__nav-link:hover {
+      transform: none;
+    }
+  }
+
+  /* -----------------------------------------------------------------
+   * Dark Mode Styles
+   * ----------------------------------------------------------------- */
+
+  :global(html[data-theme="dark"]) .header {
+    background-color: rgba(17, 24, 39, 0.95);
+    background-image: linear-gradient(to bottom, rgba(17, 24, 39, 1), rgba(17, 24, 39, 0.95)),
+                      linear-gradient(to right, var(--color-border), var(--color-primary-700), var(--color-border));
+  }
+
+  :global(html[data-theme="dark"]) .header__logo-text {
+    color: var(--color-text-inverse);
+  }
+
+  :global(html[data-theme="dark"]) .header__logo-badge {
+    background: linear-gradient(135deg, var(--color-primary-400) 0%, var(--color-primary-600) 100%);
+    box-shadow: 0 2px 12px rgba(54, 83, 149, 0.4);
+  }
+
+  :global(html[data-theme="dark"]) .header__logo:hover .header__logo-text {
+    background: linear-gradient(135deg, var(--color-primary-300) 0%, var(--color-primary-400) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  :global(html[data-theme="dark"]) .header__logo:hover {
+    background-color: rgba(54, 83, 149, 0.2);
+  }
+
+  :global(html[data-theme="dark"]) .header__nav-link {
+    color: var(--color-text-tertiary);
+  }
+
+  :global(html[data-theme="dark"]) .header__nav-link:hover {
+    color: var(--color-primary-300);
+  }
+
+  :global(html[data-theme="dark"]) .header__nav-link--active {
+    color: var(--color-primary-300);
+    background: linear-gradient(135deg, rgba(54, 83, 149, 0.3) 0%, rgba(139, 92, 246, 0.15) 100%);
+  }
+
+  :global(html[data-theme="dark"]) .header__mobile-nav {
+    background-color: var(--color-background);
   }
 </style>
 

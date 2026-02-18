@@ -27,18 +27,18 @@ const searchParams = Astro.url.searchParams;
 // Navigation links for quick access
 const quickLinks = [
   { href: '/', label: 'Homepage', description: 'Return to our main page' },
-  { href: '/services', label: 'Services', description: 'Explore our web solutions' },
-  { href: '/portfolio', label: 'Portfolio', description: 'View our recent projects' },
+  { href: '/products', label: 'Shop Products', description: 'Browse our full collection' },
+  { href: '/brand-story', label: 'Our Story', description: 'Learn about our brand and mission' },
+  { href: '/visit', label: 'Visit Us', description: 'Find our store location and hours' },
   { href: '/contact', label: 'Contact Us', description: 'Get in touch with our team' },
-  { href: '/about', label: 'About Us', description: 'Learn more about our company' },
 ];
 
 // Popular/suggested pages
 const popularPages = [
-  { href: '/services', label: 'Web Design Services' },
-  { href: '/services', label: 'SEO Optimization' },
-  { href: '/portfolio', label: 'Our Work' },
-  { href: '/contact', label: 'Request a Quote' },
+  { href: '/products', label: 'Shop All Products' },
+  { href: '/brand-story', label: 'Our Brand Story' },
+  { href: '/blog', label: 'Latest Blog Posts' },
+  { href: '/shipping-returns', label: 'Shipping & Returns' },
 ];
 
 // Helper function to get contextual suggestions based on URL pattern
@@ -46,38 +46,45 @@ function getContextualSuggestion(path: string): { message: string; suggestedLink
   const pathLower = path.toLowerCase();
 
   // Check for common URL patterns and provide helpful suggestions
-  if (pathLower.includes('service') || pathLower.includes('pricing') || pathLower.includes('plan')) {
+  if (pathLower.includes('product') || pathLower.includes('shop') || pathLower.includes('collection') || pathLower.includes('item') || pathLower.includes('catalog')) {
     return {
-      message: 'Looking for our services?',
-      suggestedLink: { href: '/services', label: 'View Our Services' }
+      message: 'Looking for our products?',
+      suggestedLink: { href: '/products', label: 'Browse Our Collection' }
     };
   }
 
-  if (pathLower.includes('portfolio') || pathLower.includes('project') || pathLower.includes('work') || pathLower.includes('case')) {
+  if (pathLower.includes('shipping') || pathLower.includes('return') || pathLower.includes('delivery') || pathLower.includes('order')) {
     return {
-      message: 'Want to see our work?',
-      suggestedLink: { href: '/portfolio', label: 'View Our Portfolio' }
+      message: 'Need shipping or returns info?',
+      suggestedLink: { href: '/shipping-returns', label: 'Shipping & Returns Policy' }
     };
   }
 
-  if (pathLower.includes('contact') || pathLower.includes('quote') || pathLower.includes('inquiry') || pathLower.includes('email')) {
+  if (pathLower.includes('contact') || pathLower.includes('support') || pathLower.includes('help') || pathLower.includes('email')) {
     return {
       message: 'Need to get in touch?',
       suggestedLink: { href: '/contact', label: 'Contact Us' }
     };
   }
 
-  if (pathLower.includes('about') || pathLower.includes('team') || pathLower.includes('company') || pathLower.includes('who')) {
+  if (pathLower.includes('about') || pathLower.includes('story') || pathLower.includes('brand') || pathLower.includes('who')) {
     return {
       message: 'Want to learn more about us?',
-      suggestedLink: { href: '/about', label: 'About Our Company' }
+      suggestedLink: { href: '/brand-story', label: 'Our Brand Story' }
+    };
+  }
+
+  if (pathLower.includes('visit') || pathLower.includes('store') || pathLower.includes('location') || pathLower.includes('hours') || pathLower.includes('direction')) {
+    return {
+      message: 'Looking for our store?',
+      suggestedLink: { href: '/visit', label: 'Visit Our Store' }
     };
   }
 
   if (pathLower.includes('blog') || pathLower.includes('article') || pathLower.includes('news') || pathLower.includes('post')) {
     return {
       message: 'Looking for articles or news?',
-      suggestedLink: { href: '/', label: 'Visit Our Homepage' }
+      suggestedLink: { href: '/blog', label: 'Read Our Blog' }
     };
   }
 
@@ -190,7 +197,7 @@ const icons = {
               id="search-input"
               name="q"
               class="error-page__search-input"
-              placeholder="Search for pages, services..."
+              placeholder="Search for products, pages..."
               autocomplete="off"
               aria-describedby="search-hint"
             />

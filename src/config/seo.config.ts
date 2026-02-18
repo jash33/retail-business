@@ -11,67 +11,68 @@ import type { SEOConfig, LocalBusinessSchema } from '../types/seo';
  * Enhanced structured data for Google local search results and rich snippets
  */
 export const localBusinessSchema: LocalBusinessSchema = {
-  type: 'ProfessionalService',
-  name: 'Houston Web Services',
-  legalName: 'Houston Web Services',
-  description: 'Professional web design and development services for small businesses in Houston. We specialize in custom websites, SEO optimization, and digital solutions for Houston businesses.',
-  slogan: 'Building Digital Success for Houston Businesses',
-  url: 'https://houstonwebservices.com',
-  telephone: '+1-832-XXX-XXXX', // TODO: Update with actual phone
-  email: 'info@houstonwebservices.com', // TODO: Update with actual email
+  type: 'Store',
+  name: 'Main Street Boutique',
+  legalName: 'Main Street Boutique LLC',
+  description: 'Curated artisan goods and handcrafted products for the modern home. We offer a thoughtfully selected collection of locally sourced ceramics, textiles, and lifestyle accessories.',
+  slogan: 'Curated Goods for Thoughtful Living',
+  url: 'https://mainstreetboutique.com',
+  telephone: '+1-555-123-4567', // TODO: Update with actual phone
+  email: 'hello@mainstreetboutique.com', // TODO: Update with actual email
   address: {
-    streetAddress: '1234 Main Street', // TODO: Update with actual address
-    addressLocality: 'Houston',
-    addressRegion: 'TX',
-    postalCode: '77077',
+    streetAddress: '742 Main Street', // TODO: Update with actual address
+    addressLocality: 'Springfield',
+    addressRegion: 'IL',
+    postalCode: '62704',
     addressCountry: 'US',
   },
   geo: {
-    latitude: 29.7752, // TODO: Update with actual coordinates
-    longitude: -95.6091,
+    latitude: 39.7817, // TODO: Update with actual coordinates
+    longitude: -89.6501,
   },
   areaServed: [
-    { type: 'City', name: 'Houston', addressLocality: 'Houston', addressRegion: 'TX', addressCountry: 'US' },
+    { type: 'City', name: 'Springfield', addressLocality: 'Springfield', addressRegion: 'IL', addressCountry: 'US' },
   ],
   openingHoursSpecification: [
-    { dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '09:00', closes: '17:00' },
+    { dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '10:00', closes: '18:00' },
+    { dayOfWeek: ['Saturday'], opens: '10:00', closes: '17:00' },
   ],
-  openingHours: ['Mo-Fr 09:00-17:00'],
-  logo: 'https://houstonwebservices.com/images/logo.png',
-  image: ['https://houstonwebservices.com/images/storefront.jpg'],
+  openingHours: ['Mo-Fr 10:00-18:00', 'Sa 10:00-17:00'],
+  logo: 'https://mainstreetboutique.com/images/logo.png',
+  image: ['https://mainstreetboutique.com/images/storefront.jpg'],
   priceRange: '$$',
   currenciesAccepted: 'USD',
-  paymentAccepted: ['Cash', 'Credit Card', 'Debit Card', 'Check', 'Invoice', 'Bank Transfer'],
+  paymentAccepted: ['Cash', 'Credit Card', 'Debit Card', 'Apple Pay', 'Google Pay'],
   sameAs: [],
   contactPoint: {
-    telephone: '+1-832-XXX-XXXX', // TODO: Update
-    email: 'info@houstonwebservices.com', // TODO: Update
+    telephone: '+1-555-123-4567', // TODO: Update
+    email: 'hello@mainstreetboutique.com', // TODO: Update
     contactType: 'customer service',
-    availableLanguage: ['English', 'Spanish'],
-    areaServed: ['Houston'],
+    availableLanguage: ['English'],
+    areaServed: ['Springfield'],
   },
   makesOffer: [
-    'Custom Website Design',
-    'Web Development',
-    'Website Maintenance',
-    'Web Hosting',
-    'SEO Optimization',
-    'E-commerce Website Development',
-    'Logo Design',
-    'Content Writing',
+    'Artisan Ceramics',
+    'Handcrafted Textiles',
+    'Home Décor',
+    'Lifestyle Accessories',
+    'Gift Collections',
+    'Locally Sourced Goods',
+    'Seasonal Collections',
+    'Custom Gift Wrapping',
   ],
   knowsAbout: [
-    'Web Design',
-    'Web Development',
-    'Search Engine Optimization',
-    'User Experience Design',
-    'Responsive Design',
-    'Website Security',
-    'Website Performance Optimization',
-    'Small Business Websites',
-    'Houston Web Services',
+    'Artisan Goods',
+    'Handcrafted Products',
+    'Home Décor',
+    'Sustainable Retail',
+    'Local Artisans',
+    'Gift Curation',
+    'Interior Styling',
+    'Small Batch Products',
+    'Retail Boutique',
   ],
-  knowsLanguage: ['English', 'Spanish'],
+  knowsLanguage: ['English'],
 };
 
 /**
@@ -80,21 +81,21 @@ export const localBusinessSchema: LocalBusinessSchema = {
  */
 export const seoConfig: SEOConfig = {
   // Site Identity
-  siteName: 'Houston Web Services',
-  siteUrl: 'https://houstonwebservices.com', // Update with actual domain
+  siteName: 'Main Street Boutique',
+  siteUrl: 'https://mainstreetboutique.com', // Update with actual domain
 
   // Title Configuration
-  titleTemplate: '%s | Houston Web Services',
+  titleTemplate: '%s | Main Street Boutique',
 
   // Default Meta Content
   defaultDescription:
-    'Professional web design and development services for small businesses in West Houston. Custom websites, SEO optimization, and digital solutions.',
+    'Curated artisan goods, handcrafted home décor, and unique lifestyle accessories. Discover thoughtfully sourced products from local makers and independent artisans.',
   defaultLang: 'en',
   defaultLocale: 'en_US',
 
   // Default Social Sharing Image
   defaultImage: '/images/og-default.jpg', // Create this image (1200x630 recommended)
-  defaultImageAlt: 'Houston Web Services - Professional Web Design',
+  defaultImageAlt: 'Main Street Boutique - Curated Artisan Goods',
 
   // Twitter Configuration
   twitterSite: undefined, // Add @username when available

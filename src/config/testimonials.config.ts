@@ -1,9 +1,9 @@
 /**
  * Testimonials Configuration
  *
- * This file contains the configuration for the testimonials section displayed
- * on the homepage. Update this file to change which testimonials are featured
- * without modifying component code.
+ * This file contains the configuration for the customer testimonials section
+ * displayed on the homepage. Update this file to change which testimonials
+ * are featured without modifying component code.
  *
  * Instructions for updating:
  * 1. To change testimonials, modify the TESTIMONIALS array below
@@ -19,18 +19,17 @@ import type { Testimonial, TestimonialsConfig } from '../types/testimonial';
 
 /**
  * Testimonials to display on the homepage
- * These are customer reviews showcasing positive experiences
+ * These are customer reviews showcasing retail shopping experiences
  */
 export const TESTIMONIALS: Testimonial[] = [
   {
     id: 'testimonial-1',
-    content: 'Working with Houston Web Services transformed our online presence completely. Our new website loads incredibly fast, looks professional, and has already helped us attract more local customers. The personalized service made all the difference.',
+    content: 'I stumbled upon this boutique looking for a birthday gift and left with three bags full! The curated selection is unlike anything else in the area. Every piece feels special and thoughtfully chosen. I\'ve become a regular since my first visit.',
     author: 'Sarah Mitchell',
-    role: 'Owner',
-    company: 'Mitchell\'s Home Repair',
+    role: 'Loyal Customer',
     image: {
       src: '/testimonials/avatar-1.svg',
-      alt: 'Sarah Mitchell, Owner of Mitchell\'s Home Repair',
+      alt: 'Sarah Mitchell, loyal customer',
       width: 80,
       height: 80,
     },
@@ -42,13 +41,12 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 'testimonial-2',
-    content: 'I was struggling with my old Squarespace site for months. James took over and fixed everything within a week. Now my website actually shows up in Google searches, and I\'m getting calls from new customers every week!',
+    content: 'The staff here truly knows their products. They helped me pick the perfect anniversary gift for my wife and even wrapped it beautifully. It\'s refreshing to shop somewhere with such genuine, personal attention to every customer.',
     author: 'Michael Rodriguez',
-    role: 'Founder',
-    company: 'Rodriguez Landscaping',
+    role: 'Verified Buyer',
     image: {
       src: '/testimonials/avatar-2.svg',
-      alt: 'Michael Rodriguez, Founder of Rodriguez Landscaping',
+      alt: 'Michael Rodriguez, verified buyer',
       width: 80,
       height: 80,
     },
@@ -60,13 +58,12 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 'testimonial-3',
-    content: 'The transparent pricing was exactly what I needed. No hidden fees, no surprises. The website was delivered on time and within budget. I\'ve already recommended Houston Web Services to three other business owners.',
+    content: 'I ordered online and was amazed at how quickly everything arrived. The packaging was gorgeous — it felt like opening a gift to myself. The quality of every item matched exactly what I saw on the website. Will definitely be ordering again!',
     author: 'Jennifer Chen',
-    role: 'Owner',
-    company: 'Chen\'s Wellness Studio',
+    role: 'Online Shopper',
     image: {
       src: '/testimonials/avatar-3.svg',
-      alt: 'Jennifer Chen, Owner of Chen\'s Wellness Studio',
+      alt: 'Jennifer Chen, online shopper',
       width: 80,
       height: 80,
     },
@@ -78,13 +75,12 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 'testimonial-4',
-    content: 'As a small plumbing business, I didn\'t think I needed a fancy website. But the new site pays for itself every month with the leads it generates. Fast turnaround and great ongoing support.',
+    content: 'This is my go-to shop for unique home décor and hostess gifts. They carry pieces you simply won\'t find at big box stores. Every time I visit there\'s something new to discover — it keeps me coming back again and again.',
     author: 'David Thompson',
-    role: 'Owner',
-    company: 'Thompson Plumbing Co.',
+    role: 'Regular Customer',
     image: {
       src: '/testimonials/avatar-4.svg',
-      alt: 'David Thompson, Owner of Thompson Plumbing Co.',
+      alt: 'David Thompson, regular customer',
       width: 80,
       height: 80,
     },
@@ -96,13 +92,12 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 'testimonial-5',
-    content: 'The business process automation setup has saved me hours every week. What used to take me all Saturday morning now happens automatically. I wish I\'d found this service sooner!',
+    content: 'I love that they source from local artisans and small makers. You can feel the quality and care that goes into every product on the shelves. Shopping here makes me feel good about where my money is going.',
     author: 'Amanda Foster',
-    role: 'CEO',
-    company: 'Foster Event Planning',
+    role: 'Verified Buyer',
     image: {
       src: '/testimonials/avatar-5.svg',
-      alt: 'Amanda Foster, CEO of Foster Event Planning',
+      alt: 'Amanda Foster, verified buyer',
       width: 80,
       height: 80,
     },
@@ -114,13 +109,12 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 'testimonial-6',
-    content: 'Finally, someone who explains things in plain English! James walked me through every step of the process and my new website is exactly what I envisioned. Highly recommended for any local business.',
+    content: 'The seasonal collections are always on point. I redid my entire living room with pieces from their spring collection and get compliments constantly. Fair prices for truly beautiful, well-made items. Highly recommend to anyone looking for something special.',
     author: 'Robert Williams',
-    role: 'Owner',
-    company: 'Williams Auto Detailing',
+    role: 'Loyal Customer',
     image: {
       src: '/testimonials/avatar-6.svg',
-      alt: 'Robert Williams, Owner of Williams Auto Detailing',
+      alt: 'Robert Williams, loyal customer',
       width: 80,
       height: 80,
     },
@@ -141,10 +135,10 @@ export const TESTIMONIALS_SECTION_CONFIG: TestimonialsConfig = {
   id: 'testimonials',
 
   /** Main heading for the section */
-  heading: 'What Our Clients Say',
+  heading: 'What Our Customers Say',
 
   /** Subheading/description text */
-  subheading: 'Real feedback from real Houston-area businesses. See why local entrepreneurs trust us with their web presence.',
+  subheading: 'Real reviews from real shoppers. Discover why our customers keep coming back for unique finds and an exceptional shopping experience.',
 
   /** Maximum number of testimonials to display */
   maxTestimonials: 6,
@@ -196,5 +190,5 @@ export const TESTIMONIALS_SECTION_CONFIG: TestimonialsConfig = {
   animationDuration: 300,
 
   /** Business name for schema markup */
-  businessName: 'Houston Web Services',
+  businessName: 'Main Street Boutique',
 };

@@ -1,0 +1,190 @@
+{
+  "category": "Uncategorized",
+  "description": "This whole repo was forked. The original repo had a different purpose - it was for a web design small business. There is still a lot of leftover content present (especially text and site sections) that have to do with a web design business. This doesn't match the purpose of this repo - to serve as a starter template for me to build sites for small retail businesses.\n\nPlease identify these vestigal elements and either remove them, or update them to make them fit the real purpose of this repo, whichever is easier.\n\nI attached a screenshot of the home page as an example - we wouldn't want that mini-website-mockup element for a restaurant site. we also wouldn't want the text \"Fast-loading, search-friendly websites that turn visitors into customers.\" - this is supposed to be an example/starter site for a retail business.",
+  "title": "Remove web design business branding and content",
+  "images": [],
+  "imagePaths": [
+    {
+      "id": "img-1769884917769-qvwc6im1x",
+      "path": "C:\\Users\\James\\Repos\\retail-business\\.automaker\\features\\feature-1769884919484-e1d1mv993\\images\\pasted-image-2026-01-31T18-41-57-738Z-1769884917767.png",
+      "filename": "pasted-image-2026-01-31T18-41-57-738Z.png",
+      "mimeType": "image/png"
+    }
+  ],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "main",
+  "priority": 2,
+  "planningMode": "full",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "custom",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769884919484-e1d1mv993",
+  "descriptionHistory": [
+    {
+      "description": "This whole repo was forked. The original repo had a different purpose - it was for a web design small business. There is still a lot of leftover content present (especially text and site sections) that have to do with a web design business. This doesn't match the purpose of this repo - to serve as a starter template for me to build sites for small retail businesses.\n\nPlease identify these vestigal elements and either remove them, or update them to make them fit the real purpose of this repo, whichever is easier.\n\nI attached a screenshot of the home page as an example - we wouldn't want that mini-website-mockup element for a restaurant site. we also wouldn't want the text \"Fast-loading, search-friendly websites that turn visitors into customers.\" - this is supposed to be an example/starter site for a retail business.",
+      "timestamp": "2026-01-31T18:41:59.508Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-31T18:42:29.381Z",
+  "updatedAt": "2026-01-31T19:34:41.465Z",
+  "planSpec": {
+    "status": "approved",
+    "version": 1,
+    "reviewedByUser": false,
+    "content": "I need to analyze the codebase and the screenshot first before generating the specification.\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\.automaker\\\\features\\\\feature-1769884919484-e1d1mv993\\\\images\\\\pasted-image-2026-01-31T18-41-57-738Z-1769884917767.png\"\n}\n\n🔧 Tool: Task\nInput: {\n  \"subagent_type\": \"Explore\",\n  \"description\": \"Explore full codebase structure\",\n  \"prompt\": \"Thoroughly explore the codebase at C:\\\\Users\\\\James\\\\Repos\\\\retail-business. I need to understand:\\n\\n1. The full directory structure (all files)\\n2. The technology stack (framework, build tools, etc.)\\n3. Read ALL content files - especially any text content, component files, page files, config files\\n4. Identify ANY content that relates to \\\"web design business\\\", \\\"web development\\\", \\\"websites\\\", \\\"SEO\\\", \\\"digital marketing\\\", or similar web agency/design business themes\\n5. Look for section components, hero text, service descriptions, testimonials, about pages, etc.\\n\\nRead every file that could contain text content. This is a site that was forked from a web design business template and needs to be converted to a retail business starter template.\\n\\nBe VERY thorough - read every .astro, .tsx, .jsx, .ts, .js, .md, .mdx, .json, .yaml, .yml, .css file. List every piece of vestigial web-design-business content you find, with the exact file path and line numbers.\",\n  \"model\": \"opus\"\n}\n\n🔧 Tool: Bash\nInput: {\n  \"command\": \"find \\\"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\" -type f -not -path \\\"*node_modules*\\\" -not -path \\\"*.git/*\\\" -not -path \\\"*/.git/*\\\" -not -path \\\"*/dist/*\\\" -not -path \\\"*/.automaker/*\\\" | sort\",\n  \"description\": \"List all files in repo excluding node_modules and .git\",\n  \"timeout\": 15000\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\package.json\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\astro.config.mjs\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\README.md\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\tsconfig.json\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\index.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\about.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\services.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\portfolio.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\contact.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\brand-story.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\config\\\\seo.config.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\config\\\\testimonials.config.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\config\\\\featured-projects.config.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\config\\\\location.config.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\config\\\\announcement.config.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\types\\\\faq.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\components\\\\Header.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\components\\\\Footer.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\layouts\\\\Layout.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\utils\\\\local-business-jsonld.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\services\\\\website-design.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\services\\\\seo.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\services\\\\hosting.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\services\\\\maintenance.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\visit.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\shipping-returns.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\404.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\components\\\\HeroSection.astro\",\n  \"limit\": 60\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\components\\\\ContactCTA.astro\",\n  \"limit\": 30\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\components\\\\ExitIntentPopup.astro\",\n  \"limit\": 60\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01MQfzfojffVA4uAWh3mdevU.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01WUDvH9TwJn9LfeL9zsgV4Y.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01PgDBJQWz9BZoHJGE5bJ3Py.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01EydunSbfbFm8BRgoHVH3Y2.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01SGPrPc1bCdQ5c4XmTsZQ1x.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01HKWepGXAoMCGswX4aokDGk.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01WqLFhhcnALE5mUhceYV6i3.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01XuZMLutfu7VAztCDmpX65V.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01JgngCs9Amw7csVuVosedmY.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_011QkHMKdf5RhTFNTiYQcQRm.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01M8PJugQz4XByh58TPwTdtt.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_015hCh3b5B7miA2zCj7f32vP.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01CYTZ8xvLuQvgbZZ3FZ7hCr.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01BxfNnMiWPtLmTMFqvCPpiZ.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_011tYCH2aSrDBZxPKEn62jKA.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01S4R9FvZX11piic5i5bEWFX.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_015EPBA67jjKAZjyHhPTzErY.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01J1NVgnSqhLRuyh7ATJhW62.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_016RFxUJT2bJf2yH2o4sJRsv.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01MVcrDtQ9Z1esxhuqfoT3th.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01DGe557RhhSYz4bPSSnKCDg.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_018Q56pVDBh9wKVUaBnCwZE7.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01WGqm2TGBJpFcm7PbxWZe8p.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01GZ8Abx7sGadsqaax1FF1Sf.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01KGoa4GoeMtWuCEKSmRNhh8.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01VSaJPymcDsgbaGDUPjupyg.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01HTd5eQCywz13qYiMM3CWbj.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01CphweHsgyxYg3SDZPrZDy4.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01HKnoAUV7QyhnGZoJMWvfx4.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01XyG1go9VZemsgFyDgDj4qc.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_018BkKzwk8tBBrKy2uJJZoc8.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01MkuKqvWi7FWM7gkcf3Qv5a.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01YAGpNkUiELRD8VMU4SYqAE.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01KXUV5MxgdmSZrL2wHpEe4d.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_012XNWfbJKrNe9Up2PwRgNyW.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01GymMQvFJvNp7Ld1xFs9ack.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01VuE8GUgx2WMrSVTHUN4jk6.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_016hXouB811vvuCTXashJh3e.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01Xzra2s37TyGw9p4gtPpRWP.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01DaN3ZJp5YLjXHQJHN435kf.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01QNUh1nCn3fEwYyDRSzYAAd.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01G9gBULpu66C5DpDQbvBNcD.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01VPgn2GrUcBX84n2p17G4YK.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01HNFyXKmvJaSN8eYEMGMjQQ.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01T1fX1sx9akeXpUxikPs5Up.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_013nztP3sXhmYRfpz5gpZCB1.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01Sptkb6Ex4TE3wuuHE4STfE.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01JbCVrxV28DU6KLbEz2ECVE.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01UNW84xvfKAkWDa82Wu7b5N.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_0163jn9zX8pBXHuvZHjzg3rZ.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01Qz7UDiYCCQ9QKsEhw4XcWE.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01Vg5qh4WB8aJdi4tWuNCkQb.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_017oZr3rWhpdjPPiC6rAxZMQ.txt\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\.claude\\\\projects\\\\C--Users-James-Repos-retail-business\\\\28cb1f31-4acd-427c-8a29-2745ce44d0d2\\\\tool-results\\\\toolu_01DnhbZR3Gn3tN5PcbtV4pNV.txt\"\n}\nNow let me read a few more key files to complete my understanding:\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\index.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\services.astro\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\config\\\\seo.config.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\config\\\\featured-projects.config.ts\"\n}\nNow let me check the remaining key files:\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\config\\\\testimonials.config.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\config\\\\location.config.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\types\\\\faq.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\pages\\\\about.astro\"\n}\nNow let me check the navigation to understand page links:\n\n🔧 Tool: Grep\nInput: {\n  \"pattern\": \"portfolio|services|brand-story\",\n  \"glob\": \"**/components/Nav*.astro\",\n  \"output_mode\": \"content\"\n}\n\n🔧 Tool: Grep\nInput: {\n  \"pattern\": \"portfolio|services|brand-story\",\n  \"glob\": \"**/components/Header*.astro\",\n  \"output_mode\": \"content\"\n}\n\n🔧 Tool: Grep\nInput: {\n  \"pattern\": \"portfolio|services|brand-story\",\n  \"glob\": \"**/components/Footer*.astro\",\n  \"output_mode\": \"content\"\n}\n\n🔧 Tool: Grep\nInput: {\n  \"pattern\": \"navItems|navigation|menuItems|navLinks\",\n  \"glob\": \"**/*.{ts,astro}\",\n  \"output_mode\": \"files_with_matches\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"C:\\\\Users\\\\James\\\\Repos\\\\retail-business\\\\src\\\\components\\\\Header.astro\",\n  \"limit\": 60\n}\n\n🔧 Tool: Grep\nInput: {\n  \"pattern\": \"portfolio|services|brand-story|Houston Web\",\n  \"glob\": \"**/Footer*.astro\",\n  \"output_mode\": \"content\",\n  \"-C\": 2\n}\nNow I have a comprehensive understanding. Let me generate the specification.\n\n---\n\n# Specification: Remove Vestigial Web Design Business Content\n\n## 1. Problem Statement\n\nThis repository was forked from a web design agency site (\"Houston Web Services\") and is intended to serve as a starter template for small retail businesses. Extensive leftover content remains — including web design services, portfolio projects, pricing tiers for website packages, FAQ about website costs, testimonials about web development work, and agency branding — that is completely inappropriate for a retail business template and must be replaced or removed.\n\n## 2. User Story\n\nAs a **developer using this starter template**, I want **all web-design-agency-specific content replaced with retail-business-appropriate content**, so that **the template is immediately usable as a starting point for building sites for small retail businesses (shops, boutiques, restaurants, etc.)**.\n\n## 3. Acceptance Criteria\n\n- **Happy Path**: GIVEN the site is loaded, WHEN a user views any page, THEN all visible text, headings, and descriptions reference a retail business (shop/store) rather than a web design agency\n- **Happy Path**: GIVEN the homepage is loaded, WHEN viewing the hero section, THEN it shows retail-appropriate messaging (e.g., \"Quality products, curated for you\") rather than web design pitches\n- **Happy Path**: GIVEN the navigation, WHEN clicking through all nav links, THEN no page contains web design/agency content\n- **Edge Case**: GIVEN pages that serve dual purpose (Visit, Contact), WHEN content references \"consultation\" or \"office\", THEN it uses retail terms like \"store\" and \"showroom\" instead\n- **Edge Case**: GIVEN the services page with extensive web design pricing/packages, WHEN transformed, THEN it becomes a meaningful retail page (e.g., \"Our Services\" showing gift wrapping, personal shopping, custom orders)\n- **Error Handling**: GIVEN internal links between pages, WHEN portfolio/web-design service pages are repurposed, THEN all internal links still resolve (no broken links)\n\n## 4. Technical Context\n\n| Aspect | Value |\n|--------|-------|\n| Affected Files | ~20+ files across pages, configs, types, components, header |\n| Dependencies | None (content-only changes) |\n| Constraints | Must preserve all component structure/styling/CSS; only change text content and data |\n| Patterns to Follow | Existing config-driven architecture (configs feed components); keep placeholder tone for template |\n\n## 5. Non-Goals\n\n- Redesigning component layouts, CSS, or visual structure\n- Adding new components or pages\n- Changing the tech stack or build configuration\n- Removing the demo pages under `/demo/`\n- Changing already-retail-appropriate content (products, blog, events, shipping-returns)\n\n## 6. Implementation Tasks\n\n```tasks\n## Phase 1: Core Config Files (Data Layer)\n- [ ] T001: Update SEO config - replace all \"Houston Web Services\" branding with generic retail business placeholders (e.g., \"Main Street Boutique\") | File: src/config/seo.config.ts\n- [ ] T002: Rewrite testimonials config - replace web-design testimonials with retail shopping experience testimonials | File: src/config/testimonials.config.ts\n- [ ] T003: Rewrite featured-projects config - replace web design portfolio projects with retail showcases (e.g., seasonal collections, store events, community partnerships) | File: src/config/featured-projects.config.ts\n- [ ] T004: Update location config - replace \"Houston Web Services\" name/tagline/email with retail store placeholders | File: src/config/location.config.ts\n- [ ] T005: Update announcement config storage key from 'hws_' prefix to generic retail prefix | File: src/config/announcement.config.ts\n\n## Phase 2: FAQ & Type Definitions\n- [ ] T006: Rewrite all 10 default FAQ items from web-design questions to retail business questions (shipping, returns, gift cards, store hours, custom orders, etc.) | File: src/types/faq.ts\n\n## Phase 3: Homepage Overhaul\n- [ ] T007: Rewrite index.astro - replace hero text, services array, differentiators, and all web-agency copy with retail business content | File: src/pages/index.astro\n\n## Phase 4: Services Page Transformation\n- [ ] T008: Transform services.astro from web design services/pricing into retail services page (gift wrapping, personal shopping, custom orders, catering/events, delivery) | File: src/pages/services.astro\n- [ ] T009: Update service redirect pages to point to retail service anchors | File: src/pages/services/website-design.astro\n- [ ] T010: Update SEO redirect page | File: src/pages/services/seo.astro\n- [ ] T011: Update hosting redirect page | File: src/pages/services/hosting.astro\n- [ ] T012: Update maintenance redirect page | File: src/pages/services/maintenance.astro\n\n## Phase 5: Portfolio → Gallery/Lookbook Transformation\n- [ ] T013: Transform portfolio.astro from web design portfolio into a retail gallery/lookbook page showcasing store aesthetics, seasonal displays, curated collections | File: src/pages/portfolio.astro\n\n## Phase 6: Other Pages with Vestigial Content\n- [ ] T014: Rewrite brand-story.astro from web agency origin story to retail business brand story | File: src/pages/brand-story.astro\n- [ ] T015: Update about.astro - replace web design skills/bio/expertise with retail business owner profile | File: src/pages/about.astro\n- [ ] T016: Update contact.astro - replace web agency references with retail store contact context | File: src/pages/contact.astro\n- [ ] T017: Update visit.astro - replace \"office\" and \"consultation\" language with \"store\" and \"shopping\" language | File: src/pages/visit.astro\n- [ ] T018: Update 404.astro - replace web design quick links and popular pages with retail equivalents | File: src/pages/404.astro\n\n## Phase 7: Header & Navigation\n- [ ] T019: Update Header.astro - change nav links (Portfolio→Gallery, update logo text from HWS to retail, update aria-label) | File: src/components/Header.astro\n\n## Phase 8: Verification\n- [ ] T020: Search entire codebase for remaining \"web design\", \"Houston Web Services\", \"website\", \"SEO\", \"hosting\", \"maintenance\" references and fix any stragglers | File: multiple\n```\n\n## 7. Success Metrics\n\n- Zero instances of \"Houston Web Services\" in any rendered page content\n- Zero references to web design, SEO services, website hosting, or website maintenance as offered services\n- All navigation links resolve to valid pages\n- The site builds successfully (`npm run build` passes)\n- Every page presents coherent retail business content\n\n## 8. Risks & Mitigations\n\n| Risk | Mitigation |\n|------|------------|\n| Broken internal links after page repurposing | Keep same URL paths where possible; update all cross-references |\n| TypeScript type errors from changed data structures | Keep same data shape, only change string content values |\n| Missing content in components that expect specific props | Verify all config objects maintain same key structure |\n| Overly specific retail content reduces template flexibility | Use generic retail placeholder text that works for shops, boutiques, cafes |\n| Services page CSS depends on specific number of service items | Keep same number of items to preserve grid layout |\n\n---",
+    "generatedAt": "2026-01-31T18:49:48.857Z",
+    "tasks": [
+      {
+        "id": "T001",
+        "description": "Update SEO config - replace all \"Houston Web Services\" branding with generic retail business placeholders (e.g., \"Main Street Boutique\")",
+        "filePath": "src/config/seo.config.ts",
+        "phase": "Phase 1: Core Config Files (Data Layer)",
+        "status": "pending"
+      },
+      {
+        "id": "T002",
+        "description": "Rewrite testimonials config - replace web-design testimonials with retail shopping experience testimonials",
+        "filePath": "src/config/testimonials.config.ts",
+        "phase": "Phase 1: Core Config Files (Data Layer)",
+        "status": "pending"
+      },
+      {
+        "id": "T003",
+        "description": "Rewrite featured-projects config - replace web design portfolio projects with retail showcases (e.g., seasonal collections, store events, community partnerships)",
+        "filePath": "src/config/featured-projects.config.ts",
+        "phase": "Phase 1: Core Config Files (Data Layer)",
+        "status": "pending"
+      },
+      {
+        "id": "T004",
+        "description": "Update location config - replace \"Houston Web Services\" name/tagline/email with retail store placeholders",
+        "filePath": "src/config/location.config.ts",
+        "phase": "Phase 1: Core Config Files (Data Layer)",
+        "status": "pending"
+      },
+      {
+        "id": "T005",
+        "description": "Update announcement config storage key from 'hws_' prefix to generic retail prefix",
+        "filePath": "src/config/announcement.config.ts",
+        "phase": "Phase 1: Core Config Files (Data Layer)",
+        "status": "pending"
+      },
+      {
+        "id": "T006",
+        "description": "Rewrite all 10 default FAQ items from web-design questions to retail business questions (shipping, returns, gift cards, store hours, custom orders, etc.)",
+        "filePath": "src/types/faq.ts",
+        "phase": "Phase 2: FAQ & Type Definitions",
+        "status": "pending"
+      },
+      {
+        "id": "T007",
+        "description": "Rewrite index.astro - replace hero text, services array, differentiators, and all web-agency copy with retail business content",
+        "filePath": "src/pages/index.astro",
+        "phase": "Phase 3: Homepage Overhaul",
+        "status": "pending"
+      },
+      {
+        "id": "T008",
+        "description": "Transform services.astro from web design services/pricing into retail services page (gift wrapping, personal shopping, custom orders, catering/events, delivery)",
+        "filePath": "src/pages/services.astro",
+        "phase": "Phase 4: Services Page Transformation",
+        "status": "pending"
+      },
+      {
+        "id": "T009",
+        "description": "Update service redirect pages to point to retail service anchors",
+        "filePath": "src/pages/services/website-design.astro",
+        "phase": "Phase 4: Services Page Transformation",
+        "status": "pending"
+      },
+      {
+        "id": "T010",
+        "description": "Update SEO redirect page",
+        "filePath": "src/pages/services/seo.astro",
+        "phase": "Phase 4: Services Page Transformation",
+        "status": "pending"
+      },
+      {
+        "id": "T011",
+        "description": "Update hosting redirect page",
+        "filePath": "src/pages/services/hosting.astro",
+        "phase": "Phase 4: Services Page Transformation",
+        "status": "pending"
+      },
+      {
+        "id": "T012",
+        "description": "Update maintenance redirect page",
+        "filePath": "src/pages/services/maintenance.astro",
+        "phase": "Phase 4: Services Page Transformation",
+        "status": "pending"
+      },
+      {
+        "id": "T013",
+        "description": "Transform portfolio.astro from web design portfolio into a retail gallery/lookbook page showcasing store aesthetics, seasonal displays, curated collections",
+        "filePath": "src/pages/portfolio.astro",
+        "phase": "Phase 5: Portfolio → Gallery/Lookbook Transformation",
+        "status": "pending"
+      },
+      {
+        "id": "T014",
+        "description": "Rewrite brand-story.astro from web agency origin story to retail business brand story",
+        "filePath": "src/pages/brand-story.astro",
+        "phase": "Phase 6: Other Pages with Vestigial Content",
+        "status": "pending"
+      },
+      {
+        "id": "T015",
+        "description": "Update about.astro - replace web design skills/bio/expertise with retail business owner profile",
+        "filePath": "src/pages/about.astro",
+        "phase": "Phase 6: Other Pages with Vestigial Content",
+        "status": "pending"
+      },
+      {
+        "id": "T016",
+        "description": "Update contact.astro - replace web agency references with retail store contact context",
+        "filePath": "src/pages/contact.astro",
+        "phase": "Phase 6: Other Pages with Vestigial Content",
+        "status": "pending"
+      },
+      {
+        "id": "T017",
+        "description": "Update visit.astro - replace \"office\" and \"consultation\" language with \"store\" and \"shopping\" language",
+        "filePath": "src/pages/visit.astro",
+        "phase": "Phase 6: Other Pages with Vestigial Content",
+        "status": "pending"
+      },
+      {
+        "id": "T018",
+        "description": "Update 404.astro - replace web design quick links and popular pages with retail equivalents",
+        "filePath": "src/pages/404.astro",
+        "phase": "Phase 6: Other Pages with Vestigial Content",
+        "status": "pending"
+      },
+      {
+        "id": "T019",
+        "description": "Update Header.astro - change nav links (Portfolio→Gallery, update logo text from HWS to retail, update aria-label)",
+        "filePath": "src/components/Header.astro",
+        "phase": "Phase 7: Header & Navigation",
+        "status": "pending"
+      },
+      {
+        "id": "T020",
+        "description": "Search entire codebase for remaining \"web design\", \"Houston Web Services\", \"website\", \"SEO\", \"hosting\", \"maintenance\" references and fix any stragglers",
+        "filePath": "multiple",
+        "phase": "Phase 8: Verification",
+        "status": "pending"
+      }
+    ],
+    "tasksTotal": 20,
+    "tasksCompleted": 20,
+    "approvedAt": "2026-01-31T18:49:48.862Z",
+    "currentTaskId": "T020"
+  }
+}
