@@ -7,6 +7,8 @@
 
 import Layout from '../../layouts/Layout.astro';
 import VideoHero from '../../components/VideoHero.astro';
+
+const base = import.meta.env.BASE_URL;
 ---
 
 <Layout title="Video Hero Demo | Houston Web Services">
@@ -17,7 +19,7 @@ import VideoHero from '../../components/VideoHero.astro';
     subheadline="Immersive video backgrounds that captivate and convert. Designed for brands that want to make a lasting impression."
     videoSrc="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
     fallbackImage="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80"
-    cta={{ text: "Get Started", href: "/contact" }}
+    cta={{ text: "Get Started", href: `${base}contact` }}
     overlayPosition="center"
     overlayGradient="radial"
     minHeight="100vh"
@@ -47,7 +49,7 @@ import VideoHero from '../../components/VideoHero.astro';
     subheadline="Where innovation meets craftsmanship."
     videoSrc="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
     fallbackImage="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1920&q=80"
-    cta={{ text: "Explore", href: "/products", variant: "secondary" }}
+    cta={{ text: "Explore", href: `${base}products`, variant: "secondary" }}
     overlayPosition="bottom-left"
     overlayGradient="linear"
     overlayOpacity={0.4}
@@ -74,7 +76,7 @@ import VideoHero from '../../components/VideoHero.astro';
     subheadline="Creating digital experiences that inspire."
     videoSrc="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
     fallbackImage="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80"
-    cta={{ text: "Start Project", href: "/contact" }}
+    cta={{ text: "Start Project", href: `${base}contact` }}
     overlayPosition="top-right"
     overlayGradient="solid"
     overlayOpacity={0.6}

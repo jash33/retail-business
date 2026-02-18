@@ -31,6 +31,8 @@ import {
 import type { WebPageSchema, BreadcrumbSchema, ProductSchema } from '../../types/seo';
 import { seoConfig } from '../../config/seo.config';
 
+const base = import.meta.env.BASE_URL;
+
 // Get all published products
 const allProducts = await getAllProducts({ publishedOnly: true });
 const sortedProducts = sortProducts(allProducts, 'priority');
@@ -57,7 +59,7 @@ const pageSchema: WebPageSchema = {
 
 // Build Breadcrumb items for visual navigation
 const breadcrumbItems = [
-  { name: 'Home', url: '/' },
+  { name: 'Home', url: base },
   { name: 'Shop' },
 ];
 

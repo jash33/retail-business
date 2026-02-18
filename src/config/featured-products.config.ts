@@ -110,7 +110,7 @@ export const FEATURED_PRODUCTS_SECTION_CONFIG: FeaturedProductsConfig = {
   viewAllText: 'View All Products',
 
   /** URL for the "View All" CTA button */
-  viewAllHref: '/shop',
+  viewAllHref: `${import.meta.env.BASE_URL}shop`,
 
   /** Whether to show the "View All" button */
   showViewAll: true,

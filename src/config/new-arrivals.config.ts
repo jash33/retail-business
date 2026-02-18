@@ -58,7 +58,7 @@ export const NEW_ARRIVALS_CONFIG: NewArrivalsCarouselConfig = {
 
   // View All CTA
   viewAllText: 'View All New Arrivals',
-  viewAllHref: '/shop?sort=newest',
+  viewAllHref: `${import.meta.env.BASE_URL}shop?sort=newest`,
   showViewAll: true,
 
   // Carousel behavior

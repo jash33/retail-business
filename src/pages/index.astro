@@ -40,6 +40,8 @@ const differentiatorIcons = {
 	personalTouch: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`,
 };
 
+const base = import.meta.env.BASE_URL;
+
 // Service offerings for the homepage - retail product categories
 const services: Service[] = [
 	{
@@ -49,7 +51,7 @@ const services: Service[] = [
 		icon: icons.artisanCeramics,
 		cta: {
 			text: 'Shop Ceramics',
-			href: '/products',
+			href: `${base}products`,
 		},
 	},
 	{
@@ -59,7 +61,7 @@ const services: Service[] = [
 		icon: icons.textiles,
 		cta: {
 			text: 'Shop Textiles',
-			href: '/products',
+			href: `${base}products`,
 		},
 	},
 	{
@@ -69,7 +71,7 @@ const services: Service[] = [
 		icon: icons.homeDecor,
 		cta: {
 			text: 'Shop Decor',
-			href: '/products',
+			href: `${base}products`,
 		},
 	},
 	{
@@ -79,7 +81,7 @@ const services: Service[] = [
 		icon: icons.giftCollections,
 		cta: {
 			text: 'Shop Gifts',
-			href: '/products',
+			href: `${base}products`,
 		},
 	},
 	{
@@ -89,7 +91,7 @@ const services: Service[] = [
 		icon: icons.customWrapping,
 		cta: {
 			text: 'Learn More',
-			href: '/contact',
+			href: `${base}contact`,
 		},
 	},
 ];
@@ -139,7 +141,7 @@ const differentiators: Differentiator[] = [
 			subheadline="Shop our curated collection of handcrafted ceramics, artisan textiles, and unique home decor. Thoughtfully sourced from local makers you'll love."
 			primaryCTA={{
 				text: "Shop New Arrivals",
-				href: "/products",
+				href: `${base}products`,
 			}}
 			secondaryCTA={{
 				text: "Browse Categories",
@@ -248,7 +250,7 @@ const differentiators: Differentiator[] = [
 			supportingText="Stop by Main Street Boutique to discover our full collection of handcrafted goods and artisan products. Whether you're shopping for yourself or searching for the perfect gift, our knowledgeable staff is here to help you find something special. We can't wait to welcome you."
 			primaryCTA={{
 				text: "Get Directions",
-				href: "/contact",
+				href: `${base}contact`,
 			}}
 			secondaryCTA={{
 				text: "Call Us",

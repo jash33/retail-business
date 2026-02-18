@@ -8,6 +8,8 @@
 import Layout from '../../layouts/Layout.astro';
 import CollectionCard from '../../components/CollectionCard.astro';
 import CollectionGrid from '../../components/CollectionGrid.astro';
+
+const base = import.meta.env.BASE_URL;
 ---
 
 <Layout title="Collection Card Demo | Houston Web Services">
@@ -34,7 +36,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
               alt: "Summer clothing collection display"
             }}
             itemCount={42}
-            href="/shop/collections/summer"
+            href={`${base}shop/collections/summer`}
             description="Light and breezy pieces for warm weather"
           />
 
@@ -46,7 +48,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
               alt: "Autumn fashion collection"
             }}
             itemCount={36}
-            href="/shop/collections/autumn"
+            href={`${base}shop/collections/autumn`}
             description="Cozy layers and warm tones"
           />
 
@@ -58,7 +60,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
               alt: "Winter clothing collection"
             }}
             itemCount={28}
-            href="/shop/collections/winter"
+            href={`${base}shop/collections/winter`}
             description="Stay warm in style"
           />
         </div>
@@ -80,7 +82,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
               alt: "New arrivals collection"
             }}
             itemCount={18}
-            href="/shop/collections/new-arrivals"
+            href={`${base}shop/collections/new-arrivals`}
             isNew={true}
             aspectRatio="4:3"
             overlayPosition="bottom-center"
@@ -95,7 +97,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
               alt: "Bestselling products"
             }}
             itemCount={24}
-            href="/shop/collections/bestsellers"
+            href={`${base}shop/collections/bestsellers`}
             featured={true}
             aspectRatio="4:3"
             overlayPosition="bottom-center"
@@ -120,7 +122,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
               alt: "Accessories collection"
             }}
             itemCount={56}
-            href="/shop/collections/accessories"
+            href={`${base}shop/collections/accessories`}
             aspectRatio="1:1"
             ctaText="Explore"
           />
@@ -133,7 +135,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
               alt: "Shoes and footwear collection"
             }}
             itemCount={34}
-            href="/shop/collections/footwear"
+            href={`${base}shop/collections/footwear`}
             aspectRatio="1:1"
             ctaText="Explore"
           />
@@ -146,7 +148,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
               alt: "Bags collection"
             }}
             itemCount={22}
-            href="/shop/collections/bags"
+            href={`${base}shop/collections/bags`}
             aspectRatio="1:1"
             ctaText="Explore"
             isNew={true}
@@ -160,7 +162,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
               alt: "Jewelry collection"
             }}
             itemCount={48}
-            href="/shop/collections/jewelry"
+            href={`${base}shop/collections/jewelry`}
             aspectRatio="1:1"
             ctaText="Explore"
           />
@@ -183,7 +185,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
               alt: "Fashion photo"
             }}
             itemCount={15}
-            href="/shop/demo"
+            href={`${base}shop/demo`}
             overlayPosition="bottom-left"
             aspectRatio="3:2"
           />
@@ -196,7 +198,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
               alt: "Fashion photo"
             }}
             itemCount={20}
-            href="/shop/demo"
+            href={`${base}shop/demo`}
             overlayPosition="center"
             aspectRatio="3:2"
           />
@@ -209,7 +211,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
               alt: "Fashion photo"
             }}
             itemCount={12}
-            href="/shop/demo"
+            href={`${base}shop/demo`}
             overlayPosition="bottom-right"
             aspectRatio="3:2"
           />
@@ -233,7 +235,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
                 alt: "Men's fashion collection"
               },
               itemCount: 86,
-              href: "/shop/collections/menswear",
+              href: `${base}shop/collections/menswear`,
               description: "Sophisticated styles for the modern man"
             },
             {
@@ -244,7 +246,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
                 alt: "Women's fashion collection"
               },
               itemCount: 124,
-              href: "/shop/collections/womenswear",
+              href: `${base}shop/collections/womenswear`,
               featured: true,
               description: "Elegant pieces for every occasion"
             },
@@ -256,7 +258,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
                 alt: "Kids' fashion collection"
               },
               itemCount: 52,
-              href: "/shop/collections/kids",
+              href: `${base}shop/collections/kids`,
               isNew: true,
               description: "Fun and comfortable styles"
             }
@@ -286,7 +288,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
                 alt: "Spring/Summer collection showcase"
               },
               itemCount: 156,
-              href: "/shop/collections/spring-summer-2025",
+              href: `${base}shop/collections/spring-summer-2025`,
               featured: true,
               description: "Discover the latest trends in our newest seasonal collection"
             },
@@ -298,7 +300,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
                 alt: "Sale items"
               },
               itemCount: 78,
-              href: "/shop/collections/sale",
+              href: `${base}shop/collections/sale`,
               description: "Up to 50% off selected items"
             },
             {
@@ -309,7 +311,7 @@ import CollectionGrid from '../../components/CollectionGrid.astro';
                 alt: "Exclusive items"
               },
               itemCount: 24,
-              href: "/shop/collections/exclusive",
+              href: `${base}shop/collections/exclusive`,
               isNew: true,
               description: "Limited edition pieces"
             }

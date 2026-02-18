@@ -24,21 +24,23 @@ const currentPath = Astro.url.pathname;
 const searchParams = Astro.url.searchParams;
 // Note: referrer is tracked client-side since this is a statically generated page
 
+const base = import.meta.env.BASE_URL;
+
 // Navigation links for quick access
 const quickLinks = [
-  { href: '/', label: 'Homepage', description: 'Return to our main page' },
-  { href: '/products', label: 'Shop Products', description: 'Browse our full collection' },
-  { href: '/brand-story', label: 'Our Story', description: 'Learn about our brand and mission' },
-  { href: '/visit', label: 'Visit Us', description: 'Find our store location and hours' },
-  { href: '/contact', label: 'Contact Us', description: 'Get in touch with our team' },
+  { href: base, label: 'Homepage', description: 'Return to our main page' },
+  { href: `${base}products`, label: 'Shop Products', description: 'Browse our full collection' },
+  { href: `${base}brand-story`, label: 'Our Story', description: 'Learn about our brand and mission' },
+  { href: `${base}visit`, label: 'Visit Us', description: 'Find our store location and hours' },
+  { href: `${base}contact`, label: 'Contact Us', description: 'Get in touch with our team' },
 ];
 
 // Popular/suggested pages
 const popularPages = [
-  { href: '/products', label: 'Shop All Products' },
-  { href: '/brand-story', label: 'Our Brand Story' },
-  { href: '/blog', label: 'Latest Blog Posts' },
-  { href: '/shipping-returns', label: 'Shipping & Returns' },
+  { href: `${base}products`, label: 'Shop All Products' },
+  { href: `${base}brand-story`, label: 'Our Brand Story' },
+  { href: `${base}blog`, label: 'Latest Blog Posts' },
+  { href: `${base}shipping-returns`, label: 'Shipping & Returns' },
 ];
 
 // Helper function to get contextual suggestions based on URL pattern
@@ -49,42 +51,42 @@ function getContextualSuggestion(path: string): { message: string; suggestedLink
   if (pathLower.includes('product') || pathLower.includes('shop') || pathLower.includes('collection') || pathLower.includes('item') || pathLower.includes('catalog')) {
     return {
       message: 'Looking for our products?',
-      suggestedLink: { href: '/products', label: 'Browse Our Collection' }
+      suggestedLink: { href: `${base}products`, label: 'Browse Our Collection' }
     };
   }
 
   if (pathLower.includes('shipping') || pathLower.includes('return') || pathLower.includes('delivery') || pathLower.includes('order')) {
     return {
       message: 'Need shipping or returns info?',
-      suggestedLink: { href: '/shipping-returns', label: 'Shipping & Returns Policy' }
+      suggestedLink: { href: `${base}shipping-returns`, label: 'Shipping & Returns Policy' }
     };
   }
 
   if (pathLower.includes('contact') || pathLower.includes('support') || pathLower.includes('help') || pathLower.includes('email')) {
     return {
       message: 'Need to get in touch?',
-      suggestedLink: { href: '/contact', label: 'Contact Us' }
+      suggestedLink: { href: `${base}contact`, label: 'Contact Us' }
     };
   }
 
   if (pathLower.includes('about') || pathLower.includes('story') || pathLower.includes('brand') || pathLower.includes('who')) {
     return {
       message: 'Want to learn more about us?',
-      suggestedLink: { href: '/brand-story', label: 'Our Brand Story' }
+      suggestedLink: { href: `${base}brand-story`, label: 'Our Brand Story' }
     };
   }
 
   if (pathLower.includes('visit') || pathLower.includes('store') || pathLower.includes('location') || pathLower.includes('hours') || pathLower.includes('direction')) {
     return {
       message: 'Looking for our store?',
-      suggestedLink: { href: '/visit', label: 'Visit Our Store' }
+      suggestedLink: { href: `${base}visit`, label: 'Visit Our Store' }
     };
   }
 
   if (pathLower.includes('blog') || pathLower.includes('article') || pathLower.includes('news') || pathLower.includes('post')) {
     return {
       message: 'Looking for articles or news?',
-      suggestedLink: { href: '/blog', label: 'Read Our Blog' }
+      suggestedLink: { href: `${base}blog`, label: 'Read Our Blog' }
     };
   }
 
@@ -159,7 +161,7 @@ const icons = {
         <div class="error-page__actions">
           <Button
             text="Go to Homepage"
-            href="/"
+            href={base}
             variant="primary"
             size="large"
           >
@@ -167,7 +169,7 @@ const icons = {
           </Button>
           <Button
             text="Contact Support"
-            href="/contact"
+            href={`${base}contact`}
             variant="secondary"
             size="large"
           />
@@ -247,7 +249,7 @@ const icons = {
       <div class="error-page__help">
         <p class="error-page__help-text">
           Still can't find what you're looking for?
-          <a href="/contact" class="error-page__help-link">Contact us</a> and we'll help you find it.
+          <a href={`${base}contact`} class="error-page__help-link">Contact us</a> and we'll help you find it.
         </p>
       </div>
     </div>

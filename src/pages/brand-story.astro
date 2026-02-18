@@ -18,6 +18,8 @@ import HeroEditorial from '../components/HeroEditorial.astro';
 import PullQuote from '../components/PullQuote.astro';
 import Button from '../components/Button.astro';
 
+const base = import.meta.env.BASE_URL;
+
 /**
  * Brand values data for the values grid section
  */
@@ -91,7 +93,7 @@ const milestones = [
       subheadline="We're more than a boutique—we're a gathering place for artisan makers, thoughtful shoppers, and everyone who believes beautiful things should tell a story."
       cta={{
         text: 'Visit Our Shop',
-        href: '/contact',
+        href: `${base}contact`,
       }}
       overlayPosition="bottom-left"
       overlayOpacity={0.5}
@@ -279,13 +281,13 @@ const milestones = [
         <div class="story-cta__buttons reveal reveal--up reveal--delay-2">
           <Button
             text="Visit Us Today"
-            href="/contact"
+            href={`${base}contact`}
             variant="primary"
             size="large"
           />
           <Button
             text="Browse Our Collection"
-            href="/portfolio"
+            href={`${base}portfolio`}
             variant="secondary"
             size="large"
           />

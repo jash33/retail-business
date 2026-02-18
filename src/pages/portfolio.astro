@@ -10,6 +10,8 @@ import ContactCTA from '../components/ContactCTA.astro';
 import Button from '../components/Button.astro';
 import type { Project } from '../types/portfolio';
 
+const base = import.meta.env.BASE_URL;
+
 /**
  * Gallery showcases featuring store aesthetics, seasonal displays, and curated collections.
  * Each entry represents a retail experience, visual merchandising display, or curated collection.
@@ -35,7 +37,7 @@ const projects: Project[] = [
     featured: true,
     completedDate: '2025-03-01',
     links: [
-      { text: 'View Collection', href: '/showcases/spring-garden-collection', type: 'case-study' },
+      { text: 'View Collection', href: `${base}showcases/spring-garden-collection`, type: 'case-study' },
     ],
   },
   {
@@ -58,7 +60,7 @@ const projects: Project[] = [
     featured: true,
     completedDate: '2025-06-15',
     links: [
-      { text: 'Browse Lookbook', href: '/showcases/summer-coastal-lookbook', type: 'case-study' },
+      { text: 'Browse Lookbook', href: `${base}showcases/summer-coastal-lookbook`, type: 'case-study' },
     ],
   },
   {
@@ -81,7 +83,7 @@ const projects: Project[] = [
     featured: true,
     completedDate: '2024-12-15',
     links: [
-      { text: 'Event Recap', href: '/showcases/holiday-market-event', type: 'case-study' },
+      { text: 'Event Recap', href: `${base}showcases/holiday-market-event`, type: 'case-study' },
     ],
   },
   {
@@ -104,7 +106,7 @@ const projects: Project[] = [
     featured: false,
     completedDate: '2024-10-01',
     links: [
-      { text: 'View Display', href: '/showcases/autumn-harvest-display', type: 'case-study' },
+      { text: 'View Display', href: `${base}showcases/autumn-harvest-display`, type: 'case-study' },
     ],
   },
   {
@@ -127,7 +129,7 @@ const projects: Project[] = [
     featured: false,
     completedDate: '2024-09-15',
     links: [
-      { text: 'Meet the Artisans', href: '/showcases/artisan-spotlight-series', type: 'case-study' },
+      { text: 'Meet the Artisans', href: `${base}showcases/artisan-spotlight-series`, type: 'case-study' },
     ],
   },
   {
@@ -150,7 +152,7 @@ const projects: Project[] = [
     featured: false,
     completedDate: '2024-09-10',
     links: [
-      { text: 'Read the Story', href: '/showcases/community-mural-partnership', type: 'case-study' },
+      { text: 'Read the Story', href: `${base}showcases/community-mural-partnership`, type: 'case-study' },
     ],
   },
   {
@@ -173,7 +175,7 @@ const projects: Project[] = [
     featured: false,
     completedDate: '2025-02-01',
     links: [
-      { text: 'View Gift Guide', href: '/showcases/valentines-gift-guide', type: 'case-study' },
+      { text: 'View Gift Guide', href: `${base}showcases/valentines-gift-guide`, type: 'case-study' },
     ],
   },
   {
@@ -196,7 +198,7 @@ const projects: Project[] = [
     featured: false,
     completedDate: '2024-08-20',
     links: [
-      { text: 'Explore Collection', href: '/showcases/minimalist-home-edit', type: 'case-study' },
+      { text: 'Explore Collection', href: `${base}showcases/minimalist-home-edit`, type: 'case-study' },
     ],
   },
   {
@@ -219,7 +221,7 @@ const projects: Project[] = [
     featured: false,
     completedDate: '2024-07-10',
     links: [
-      { text: 'See the Space', href: '/showcases/kids-corner-launch', type: 'case-study' },
+      { text: 'See the Space', href: `${base}showcases/kids-corner-launch`, type: 'case-study' },
     ],
   },
   {
@@ -242,7 +244,7 @@ const projects: Project[] = [
     featured: false,
     completedDate: '2024-12-01',
     links: [
-      { text: 'View Display', href: '/showcases/winter-wonderland-window', type: 'case-study' },
+      { text: 'View Display', href: `${base}showcases/winter-wonderland-window`, type: 'case-study' },
     ],
   },
   {
@@ -265,7 +267,7 @@ const projects: Project[] = [
     featured: false,
     completedDate: '2024-06-20',
     links: [
-      { text: 'Event Highlights', href: '/showcases/local-makers-market', type: 'case-study' },
+      { text: 'Event Highlights', href: `${base}showcases/local-makers-market`, type: 'case-study' },
     ],
   },
   {
@@ -288,7 +290,7 @@ const projects: Project[] = [
     featured: false,
     completedDate: '2024-04-15',
     links: [
-      { text: 'Explore Collection', href: '/showcases/sustainable-living-collection', type: 'case-study' },
+      { text: 'Explore Collection', href: `${base}showcases/sustainable-living-collection`, type: 'case-study' },
     ],
   },
 ];
@@ -329,13 +331,13 @@ const projects: Project[] = [
           <div class="portfolio-hero__cta-group">
             <Button
               text="Visit the Store"
-              href="/contact"
+              href={`${base}contact`}
               variant="primary"
               size="large"
             />
             <Button
               text="Shop Collections"
-              href="/products"
+              href={`${base}products`}
               variant="secondary"
               size="large"
             />
@@ -408,11 +410,11 @@ const projects: Project[] = [
       supportingText="Visit Main Street Boutique to experience our curated collections in person. Whether you're looking for the perfect gift, seasonal home decor, or unique artisan finds, our team is here to help you discover something special."
       primaryCTA={{
         text: "Plan Your Visit",
-        href: "/contact",
+        href: `${base}contact`,
       }}
       secondaryCTA={{
         text: "Browse Our Products",
-        href: "/products",
+        href: `${base}products`,
       }}
     />
   </main>

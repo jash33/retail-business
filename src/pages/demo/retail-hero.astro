@@ -6,6 +6,8 @@
 
 import Layout from '../../layouts/Layout.astro';
 import RetailHero from '../../components/RetailHero.astro';
+
+const base = import.meta.env.BASE_URL;
 ---
 
 <Layout title="Retail Hero Demo | Houston Web Services">
@@ -15,8 +17,8 @@ import RetailHero from '../../components/RetailHero.astro';
     badge="New Collection"
     headline="New Season Arrivals"
     subheadline="Discover our curated collection of timeless essentials designed for modern living."
-    cta={{ text: "Shop Now", href: "/shop" }}
-    secondaryCta={{ text: "View Lookbook", href: "/lookbook" }}
+    cta={{ text: "Shop Now", href: `${base}shop` }}
+    secondaryCta={{ text: "View Lookbook", href: `${base}lookbook` }}
     overlayPosition="center"
     minHeight="100vh"
   />
@@ -45,7 +47,7 @@ import RetailHero from '../../components/RetailHero.astro';
     headline="Summer Collection"
     subheadline="Effortless style for warm days ahead. Lightweight fabrics, timeless designs."
     backgroundImage="https://images.unsplash.com/photo-1445205170230-053b83016050?w=1920&q=80"
-    cta={{ text: "Explore Collection", href: "/collections/summer" }}
+    cta={{ text: "Explore Collection", href: `${base}collections/summer` }}
     overlayPosition="bottom-left"
     overlayOpacity={0.45}
     minHeight="100vh"
@@ -69,8 +71,8 @@ import RetailHero from '../../components/RetailHero.astro';
     headline="Crafted for You"
     subheadline="Premium materials meet exceptional design in every piece we create."
     backgroundImage="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80"
-    cta={{ text: "Shop All", href: "/shop" }}
-    secondaryCta={{ text: "Our Story", href: "/about", variant: "secondary" }}
+    cta={{ text: "Shop All", href: `${base}shop` }}
+    secondaryCta={{ text: "Our Story", href: `${base}about`, variant: "secondary" }}
     overlayPosition="center"
     overlayOpacity={0.55}
     minHeight="90vh"
@@ -95,7 +97,7 @@ import RetailHero from '../../components/RetailHero.astro';
     headline="End of Season"
     subheadline="Up to 50% off selected items."
     backgroundImage="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1920&q=80"
-    cta={{ text: "Shop Sale", href: "/sale" }}
+    cta={{ text: "Shop Sale", href: `${base}sale` }}
     overlayPosition="bottom-right"
     minHeight="80vh"
     showScrollIndicator={false}

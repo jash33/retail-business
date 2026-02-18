@@ -32,21 +32,23 @@ interface Props {
 
 const { currentPath = '/' } = Astro.props;
 
+const base = import.meta.env.BASE_URL;
+
 // Navigation links configuration
 const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/gallery', label: 'Gallery' },
-  { href: '/about', label: 'About' },
-  { href: '/brand-story', label: 'Our Story' },
-  { href: '/visit', label: 'Visit' },
-  { href: '/contact', label: 'Contact' },
+  { href: base, label: 'Home' },
+  { href: `${base}gallery`, label: 'Gallery' },
+  { href: `${base}about`, label: 'About' },
+  { href: `${base}brand-story`, label: 'Our Story' },
+  { href: `${base}visit`, label: 'Visit' },
+  { href: `${base}contact`, label: 'Contact' },
 ];
 ---
 
 <header class="header" role="banner">
   <div class="header__container">
     <!-- Logo/Brand -->
-    <a href="/" class="header__logo" aria-label="Go to homepage">
+    <a href={base} class="header__logo" aria-label="Go to homepage">
       <span class="header__logo-badge" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

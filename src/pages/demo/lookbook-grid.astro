@@ -19,6 +19,8 @@ import Layout from '../../layouts/Layout.astro';
 import LookbookGrid from '../../components/LookbookGrid.astro';
 import type { LookbookItem } from '../../types/lookbook';
 
+const base = import.meta.env.BASE_URL;
+
 // Demo lookbook items data
 const demoLookbookItems: LookbookItem[] = [
   {
@@ -37,7 +39,7 @@ const demoLookbookItems: LookbookItem[] = [
       position: 'bottom-left',
       theme: 'dark',
     },
-    href: '/collections/spring',
+    href: `${base}collections/spring`,
     productTags: [
       {
         id: 'tag-1-1',
@@ -74,7 +76,7 @@ const demoLookbookItems: LookbookItem[] = [
       theme: 'dark',
       alignment: 'center',
     },
-    href: '/collections/office',
+    href: `${base}collections/office`,
     productTags: [
       {
         id: 'tag-2-1',
@@ -100,7 +102,7 @@ const demoLookbookItems: LookbookItem[] = [
       position: 'bottom-left',
       theme: 'gradient',
     },
-    href: '/collections/weekend',
+    href: `${base}collections/weekend`,
     productTags: [
       {
         id: 'tag-3-1',
@@ -135,7 +137,7 @@ const demoLookbookItems: LookbookItem[] = [
       theme: 'dark',
       alignment: 'center',
     },
-    href: '/collections/evening'
+    href: `${base}collections/evening`
   },
   {
     id: 'look-5',
@@ -150,7 +152,7 @@ const demoLookbookItems: LookbookItem[] = [
       position: 'top-left',
       theme: 'light',
     },
-    href: '/collections/minimalist',
+    href: `${base}collections/minimalist`,
     productTags: [
       {
         id: 'tag-5-1',
@@ -178,7 +180,7 @@ const demoLookbookItems: LookbookItem[] = [
       theme: 'dark',
       alignment: 'right',
     },
-    href: '/collections/summer',
+    href: `${base}collections/summer`,
     size: {
       colSpan: 2
     }
@@ -191,7 +193,7 @@ const demoLookbookItems: LookbookItem[] = [
     },
     aspectRatio: '4:5',
     category: 'Active',
-    href: '/collections/athleisure',
+    href: `${base}collections/athleisure`,
     productTags: [
       {
         id: 'tag-7-1',
@@ -226,7 +228,7 @@ const demoLookbookItems: LookbookItem[] = [
       position: 'bottom-left',
       theme: 'dark',
     },
-    href: '/collections/autumn'
+    href: `${base}collections/autumn`
   }
 ];
 
@@ -251,7 +253,7 @@ const editorialItems: LookbookItem[] = [
       theme: 'dark',
       alignment: 'center',
     },
-    href: '/collections/new',
+    href: `${base}collections/new`,
     productTags: [
       { id: 'ed-tag-1', name: 'Designer Coat', price: { amount: 450.00 }, x: 35, y: 50, shopUrl: '#' },
       { id: 'ed-tag-2', name: 'Silk Scarf', price: { amount: 120.00 }, x: 70, y: 30, shopUrl: '#' },
@@ -262,7 +264,7 @@ const editorialItems: LookbookItem[] = [
     image: { src: '/images/products/product-placeholder.svg', alt: 'Accessories' },
     aspectRatio: '1:1',
     category: 'Accessories',
-    href: '/collections/accessories'
+    href: `${base}collections/accessories`
   },
   {
     id: 'editorial-3',
@@ -275,14 +277,14 @@ const editorialItems: LookbookItem[] = [
       theme: 'dark',
       alignment: 'center',
     },
-    href: '/collections/shoes'
+    href: `${base}collections/shoes`
   },
   {
     id: 'editorial-4',
     image: { src: '/images/products/product-placeholder.svg', alt: 'Bags' },
     aspectRatio: '1:1',
     isNew: true,
-    href: '/collections/bags'
+    href: `${base}collections/bags`
   },
   {
     id: 'editorial-5',
@@ -294,7 +296,7 @@ const editorialItems: LookbookItem[] = [
       position: 'top-left',
       theme: 'light',
     },
-    href: '/collections/jewelry'
+    href: `${base}collections/jewelry`
   },
 ];
 
@@ -303,7 +305,7 @@ const galleryItems: LookbookItem[] = Array.from({ length: 9 }, (_, i) => ({
   id: `gallery-${i + 1}`,
   image: { src: '/images/products/product-placeholder.svg', alt: `Gallery image ${i + 1}` },
   aspectRatio: '1:1' as const,
-  href: `/collections/gallery-${i + 1}`,
+  href: `${base}collections/gallery-${i + 1}`,
 }));
 ---
 

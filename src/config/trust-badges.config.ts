@@ -26,7 +26,7 @@ export const PRODUCT_TRUST_BADGES: TrustBadge[] = [
     text: 'Free Shipping',
     subtext: 'on orders over $50',
     link: {
-      href: '/shipping-returns',
+      href: `${import.meta.env.BASE_URL}shipping-returns`,
       ariaLabel: 'Learn more about our shipping policy',
     },
   },
@@ -35,7 +35,7 @@ export const PRODUCT_TRUST_BADGES: TrustBadge[] = [
     type: 'gift-wrap',
     text: 'Gift Wrapping Available',
     link: {
-      href: '/shipping-returns#gift-wrap',
+      href: `${import.meta.env.BASE_URL}shipping-returns#gift-wrap`,
       ariaLabel: 'Learn more about gift wrapping options',
     },
   },
@@ -44,7 +44,7 @@ export const PRODUCT_TRUST_BADGES: TrustBadge[] = [
     type: 'artisan',
     text: 'Handcrafted by Local Artisans',
     link: {
-      href: '/about#artisans',
+      href: `${import.meta.env.BASE_URL}about#artisans`,
       ariaLabel: 'Meet our local artisans',
     },
   },
@@ -105,7 +105,7 @@ export const DETAILED_TRUST_BADGES: TrustBadge[] = [
     text: 'Free Standard Shipping',
     subtext: 'on all orders over $50 within the US',
     link: {
-      href: '/shipping-returns',
+      href: `${import.meta.env.BASE_URL}shipping-returns`,
       ariaLabel: 'View full shipping policy',
     },
   },
@@ -115,7 +115,7 @@ export const DETAILED_TRUST_BADGES: TrustBadge[] = [
     text: 'Complimentary Gift Wrapping',
     subtext: 'elegant packaging for every order',
     link: {
-      href: '/shipping-returns#gift-wrap',
+      href: `${import.meta.env.BASE_URL}shipping-returns#gift-wrap`,
       ariaLabel: 'Learn about gift wrapping',
     },
   },
@@ -125,7 +125,7 @@ export const DETAILED_TRUST_BADGES: TrustBadge[] = [
     text: 'Handcrafted by Local Artisans',
     subtext: 'supporting Houston-area makers',
     link: {
-      href: '/about#artisans',
+      href: `${import.meta.env.BASE_URL}about#artisans`,
       ariaLabel: 'Meet our artisan partners',
     },
   },
@@ -135,7 +135,7 @@ export const DETAILED_TRUST_BADGES: TrustBadge[] = [
     text: 'Easy 30-Day Returns',
     subtext: 'hassle-free return policy',
     link: {
-      href: '/shipping-returns#returns',
+      href: `${import.meta.env.BASE_URL}shipping-returns#returns`,
       ariaLabel: 'View return policy',
     },
   },
@@ -145,7 +145,7 @@ export const DETAILED_TRUST_BADGES: TrustBadge[] = [
     text: 'Friendly Customer Support',
     subtext: 'here to help via chat or email',
     link: {
-      href: '/contact',
+      href: `${import.meta.env.BASE_URL}contact`,
       ariaLabel: 'Contact customer support',
     },
   },

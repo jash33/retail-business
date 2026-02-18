@@ -852,7 +852,7 @@ const searchableProducts = products.map((product) => ({
 
         // Add "View all results" link if there might be more
         const viewAllHtml = state.results.length >= maxSuggestions
-          ? `<a href="/products?search=${encodeURIComponent(state.query)}" class="product-search__view-all" data-view-all="true">View all results for "${escapeHtml(state.query)}"</a>`
+          ? `<a href="${import.meta.env.BASE_URL}products?search=${encodeURIComponent(state.query)}" class="product-search__view-all" data-view-all="true">View all results for "${escapeHtml(state.query)}"</a>`
           : '';
 
         resultsContainer.innerHTML = resultsHtml + viewAllHtml;
@@ -950,7 +950,7 @@ const searchableProducts = products.map((product) => ({
               }
             } else if (state.query.length >= 2) {
               // Navigate to search results page
-              window.location.href = `/products?search=${encodeURIComponent(state.query)}`;
+              window.location.href = `${import.meta.env.BASE_URL}products?search=${encodeURIComponent(state.query)}`;
             }
             break;
 

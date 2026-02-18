@@ -40,7 +40,7 @@ export const FEATURED_PROJECTS: Project[] = [
     featured: true,
     completedDate: '2025-03-01',
     links: [
-      { text: 'View Collection', href: '/showcases/spring-garden-collection', type: 'case-study' },
+      { text: 'View Collection', href: `${import.meta.env.BASE_URL}showcases/spring-garden-collection`, type: 'case-study' },
     ],
   },
   {
@@ -63,7 +63,7 @@ export const FEATURED_PROJECTS: Project[] = [
     featured: true,
     completedDate: '2024-12-15',
     links: [
-      { text: 'Event Recap', href: '/showcases/holiday-market-event', type: 'case-study' },
+      { text: 'Event Recap', href: `${import.meta.env.BASE_URL}showcases/holiday-market-event`, type: 'case-study' },
     ],
   },
   {
@@ -86,7 +86,7 @@ export const FEATURED_PROJECTS: Project[] = [
     featured: true,
     completedDate: '2024-09-10',
     links: [
-      { text: 'Read the Story', href: '/showcases/community-mural-partnership', type: 'case-study' },
+      { text: 'Read the Story', href: `${import.meta.env.BASE_URL}showcases/community-mural-partnership`, type: 'case-study' },
     ],
   },
 ];
@@ -106,7 +106,7 @@ export const FEATURED_PROJECTS_CONFIG = {
   viewAllText: 'View All Showcases',
 
   /** URL for the "View All" call-to-action button */
-  viewAllHref: '/portfolio',
+  viewAllHref: `${import.meta.env.BASE_URL}portfolio`,
 
   /** Section ID for anchor linking */
   id: 'featured-projects',

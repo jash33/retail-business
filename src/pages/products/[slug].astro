@@ -46,6 +46,7 @@ interface Props {
   product: ProductEntry;
 }
 
+const base = import.meta.env.BASE_URL;
 const { product } = Astro.props;
 const { data } = product;
 
@@ -98,9 +99,9 @@ const productSchema: ProductSchema = {
 
 // Build Breadcrumb items for visual navigation
 const breadcrumbItems = [
-  { name: 'Home', url: '/' },
-  { name: 'Shop', url: '/products' },
-  ...(data.category ? [{ name: data.category, url: `/products?category=${data.category}` }] : []),
+  { name: 'Home', url: base },
+  { name: 'Shop', url: `${base}products` },
+  ...(data.category ? [{ name: data.category, url: `${base}products?category=${data.category}` }] : []),
   { name: data.name },
 ];
 

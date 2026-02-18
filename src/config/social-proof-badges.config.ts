@@ -157,7 +157,7 @@ export const PRESS_BADGES: SocialProofBadge[] = [
     title: 'Forbes',
     description: 'Featured in Forbes Best Local Services 2024',
     link: {
-      href: '/press/forbes-feature',
+      href: `${import.meta.env.BASE_URL}press/forbes-feature`,
       ariaLabel: 'Read our Forbes feature',
     },
     iconAriaLabel: 'Forbes press mention',

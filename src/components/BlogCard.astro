@@ -59,13 +59,15 @@ const cardClasses = [
   className,
 ].filter(Boolean).join(' ');
 
+const base = import.meta.env.BASE_URL;
+
 // Get excerpt (use custom excerpt, description, or truncate content)
 const excerpt = data.excerpt || data.description;
 ---
 
 <article class={cardClasses}>
   <!-- Image Container -->
-  <a href={`/blog/${slug}`} class="blog-card__image-link" tabindex="-1" aria-hidden="true">
+  <a href={`${base}blog/${slug}`} class="blog-card__image-link" tabindex="-1" aria-hidden="true">
     <div class="blog-card__image-container">
       {data.featuredImage ? (
         <img
@@ -127,7 +129,7 @@ const excerpt = data.excerpt || data.description;
 
     {/* Title */}
     <h3 class="blog-card__title">
-      <a href={`/blog/${slug}`} class="blog-card__title-link">
+      <a href={`${base}blog/${slug}`} class="blog-card__title-link">
         {data.title}
       </a>
     </h3>

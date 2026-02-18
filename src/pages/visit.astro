@@ -21,6 +21,8 @@ import GoogleMapsEmbed from '../components/GoogleMapsEmbed.astro';
 import StoreHours from '../components/StoreHours.astro';
 import { locationConfig } from '../config/location.config';
 
+const base = import.meta.env.BASE_URL;
+
 // Destructure location config for easier access
 const {
   name,
@@ -225,7 +227,7 @@ const neighborhoodIcons: Record<string, string> = {
             <div class="visit-hours__cta">
               <Button
                 text="Shop Online"
-                href="/products"
+                href={`${base}products`}
                 variant="secondary"
               />
             </div>
@@ -481,7 +483,7 @@ const neighborhoodIcons: Record<string, string> = {
         <div class="visit-cta__buttons reveal reveal--up reveal--delay-2">
           <Button
             text="Browse Our Products"
-            href="/products"
+            href={`${base}products`}
             variant="primary"
             size="large"
           />
