@@ -1,126 +1,114 @@
 /**
- * Testimonials Configuration
+ * Testimonials Configuration - HTX Flowers
  *
- * This file contains the configuration for the customer testimonials section
- * displayed on the homepage. Update this file to change which testimonials
- * are featured without modifying component code.
- *
- * Instructions for updating:
- * 1. To change testimonials, modify the TESTIMONIALS array below
- * 2. Each testimonial should include all required fields (id, content, author)
- * 3. Recommended: Display 4-6 testimonials for optimal variety
- * 4. Images should be placed in the /public/testimonials/ directory
- * 5. Use WebP format for better performance when available
- * 6. Set priority to control display order (lower numbers appear first)
- * 7. Include dates in ISO format for proper schema markup
+ * Customer testimonials showcasing flower shop experiences.
  */
 
 import type { Testimonial, TestimonialsConfig } from '../types/testimonial';
 
 /**
- * Testimonials to display on the homepage
- * These are customer reviews showcasing retail shopping experiences
+ * Testimonials from happy customers
  */
 export const TESTIMONIALS: Testimonial[] = [
   {
     id: 'testimonial-1',
-    content: 'I stumbled upon this boutique looking for a birthday gift and left with three bags full! The curated selection is unlike anything else in the area. Every piece feels special and thoughtfully chosen. I\'ve become a regular since my first visit.',
-    author: 'Sarah Mitchell',
-    role: 'Loyal Customer',
+    content: 'HTX Flowers made my wedding day absolutely magical. The bridal bouquet was beyond anything I imagined — lush, romantic, and exactly what I dreamed of. Their team was so patient through all my changes and delivered perfection.',
+    author: 'Maria G.',
+    role: 'Wedding Client',
     image: {
       src: '/testimonials/avatar-1.svg',
-      alt: 'Sarah Mitchell, loyal customer',
+      alt: 'Maria G., wedding client',
       width: 80,
       height: 80,
     },
     rating: 5,
     verified: true,
-    date: '2024-11-15',
-    location: 'Houston, TX',
+    date: '2025-01-15',
+    location: 'Katy, TX',
     priority: 1,
   },
   {
     id: 'testimonial-2',
-    content: 'The staff here truly knows their products. They helped me pick the perfect anniversary gift for my wife and even wrapped it beautifully. It\'s refreshing to shop somewhere with such genuine, personal attention to every customer.',
-    author: 'Michael Rodriguez',
-    role: 'Verified Buyer',
+    content: 'I\'ve tried every florist in the area, and HTX Flowers is hands down the best. Their same-day delivery saved me when I forgot my anniversary! The roses were stunning and lasted over two weeks. My wife was thrilled.',
+    author: 'David T.',
+    role: 'Verified Customer',
     image: {
       src: '/testimonials/avatar-2.svg',
-      alt: 'Michael Rodriguez, verified buyer',
+      alt: 'David T., verified customer',
       width: 80,
       height: 80,
     },
     rating: 5,
     verified: true,
-    date: '2024-10-22',
-    location: 'Katy, TX',
+    date: '2024-12-22',
+    location: 'Memorial, TX',
     priority: 2,
   },
   {
     id: 'testimonial-3',
-    content: 'I ordered online and was amazed at how quickly everything arrived. The packaging was gorgeous — it felt like opening a gift to myself. The quality of every item matched exactly what I saw on the website. Will definitely be ordering again!',
-    author: 'Jennifer Chen',
-    role: 'Online Shopper',
+    content: 'I order flowers from HTX Flowers every month for my office reception area. They always create something fresh and beautiful that matches the season. Our clients constantly compliment the arrangements. Wouldn\'t go anywhere else!',
+    author: 'Jennifer C.',
+    role: 'Business Account',
     image: {
       src: '/testimonials/avatar-3.svg',
-      alt: 'Jennifer Chen, online shopper',
+      alt: 'Jennifer C., business account',
       width: 80,
       height: 80,
     },
     rating: 5,
     verified: true,
-    date: '2024-09-30',
-    location: 'Sugar Land, TX',
+    date: '2024-11-30',
+    location: 'Energy Corridor',
     priority: 3,
   },
   {
     id: 'testimonial-4',
-    content: 'This is my go-to shop for unique home décor and hostess gifts. They carry pieces you simply won\'t find at big box stores. Every time I visit there\'s something new to discover — it keeps me coming back again and again.',
-    author: 'David Thompson',
-    role: 'Regular Customer',
+    content: 'When my mother passed, HTX Flowers created the most beautiful sympathy arrangements for the service. They were compassionate, respectful, and handled everything with such care. The flowers brought comfort to our family during a difficult time.',
+    author: 'Robert W.',
+    role: 'Sympathy Customer',
     image: {
       src: '/testimonials/avatar-4.svg',
-      alt: 'David Thompson, regular customer',
+      alt: 'Robert W., sympathy customer',
       width: 80,
       height: 80,
     },
     rating: 5,
     verified: true,
-    date: '2024-08-18',
-    location: 'The Woodlands, TX',
+    date: '2024-10-18',
+    location: 'Sugar Land, TX',
     priority: 4,
   },
   {
     id: 'testimonial-5',
-    content: 'I love that they source from local artisans and small makers. You can feel the quality and care that goes into every product on the shelves. Shopping here makes me feel good about where my money is going.',
-    author: 'Amanda Foster',
-    role: 'Verified Buyer',
+    content: 'Love their weekly flower subscription! Every Friday I get a gorgeous bouquet delivered to my door. It\'s become the highlight of my week. The variety is amazing — I\'ve discovered so many flowers I didn\'t even know existed.',
+    author: 'Amanda F.',
+    role: 'Subscription Member',
     image: {
       src: '/testimonials/avatar-5.svg',
-      alt: 'Amanda Foster, verified buyer',
-      width: 80,
-      height: 80,
-    },
-    rating: 4,
-    verified: true,
-    date: '2024-07-25',
-    location: 'Pearland, TX',
-    priority: 5,
-  },
-  {
-    id: 'testimonial-6',
-    content: 'The seasonal collections are always on point. I redid my entire living room with pieces from their spring collection and get compliments constantly. Fair prices for truly beautiful, well-made items. Highly recommend to anyone looking for something special.',
-    author: 'Robert Williams',
-    role: 'Loyal Customer',
-    image: {
-      src: '/testimonials/avatar-6.svg',
-      alt: 'Robert Williams, loyal customer',
+      alt: 'Amanda F., subscription member',
       width: 80,
       height: 80,
     },
     rating: 5,
     verified: true,
-    date: '2024-06-12',
+    date: '2024-09-25',
+    location: 'The Woodlands, TX',
+    priority: 5,
+  },
+  {
+    id: 'testimonial-6',
+    content: 'Had HTX Flowers do all the arrangements for our company holiday party. They transformed the venue with stunning centerpieces and a gorgeous entryway display. Everyone thought we hired some fancy event designer. Prices were very fair too!',
+    author: 'Michael R.',
+    role: 'Event Client',
+    image: {
+      src: '/testimonials/avatar-6.svg',
+      alt: 'Michael R., event client',
+      width: 80,
+      height: 80,
+    },
+    rating: 5,
+    verified: true,
+    date: '2024-08-12',
     location: 'Houston, TX',
     priority: 6,
   },
@@ -128,7 +116,6 @@ export const TESTIMONIALS: Testimonial[] = [
 
 /**
  * Section configuration for the testimonials section
- * Customize the heading, subheading, and display options
  */
 export const TESTIMONIALS_SECTION_CONFIG: TestimonialsConfig = {
   /** Section ID for anchor linking */
@@ -138,7 +125,7 @@ export const TESTIMONIALS_SECTION_CONFIG: TestimonialsConfig = {
   heading: 'What Our Customers Say',
 
   /** Subheading/description text */
-  subheading: 'Real reviews from real shoppers. Discover why our customers keep coming back for unique finds and an exceptional shopping experience.',
+  subheading: 'From weddings to everyday moments, see why Houston trusts us with their most important occasions.',
 
   /** Maximum number of testimonials to display */
   maxTestimonials: 6,
@@ -190,5 +177,5 @@ export const TESTIMONIALS_SECTION_CONFIG: TestimonialsConfig = {
   animationDuration: 300,
 
   /** Business name for schema markup */
-  businessName: 'Main Street Boutique',
+  businessName: 'HTX Flowers',
 };

@@ -33,38 +33,27 @@ export const ANNOUNCEMENT_STORAGE_VERSION = '1.0.0';
 // =================================================================
 
 /**
- * Default announcements to display
- * Customize these for your store's needs
+ * Default announcements to display - HTX Flowers
  */
 export const defaultAnnouncements: Announcement[] = [
   {
-    id: 'free-shipping-2024',
-    message: 'Free shipping on orders over $50!',
+    id: 'same-day-delivery-2025',
+    message: '🌸 Same-Day Delivery Available — Order by 2 PM!',
     type: 'shipping',
     dismissible: true,
     priority: 10,
   },
-  // Example: Scheduled promotion
+  // Example: Valentine's promotion
   // {
-  //   id: 'summer-sale-2024',
-  //   message: 'Summer Sale: 20% off all items!',
+  //   id: 'valentines-2025',
+  //   message: '💕 Valentine\'s Day Orders — Reserve Early for Guaranteed Delivery!',
   //   type: 'promotion',
-  //   linkUrl: '/shop?sale=summer',
-  //   linkText: 'Shop Now',
-  //   startDate: '2024-06-01T00:00:00',
-  //   endDate: '2024-08-31T23:59:59',
+  //   linkUrl: '/products',
+  //   linkText: 'Shop Roses',
+  //   startDate: '2025-02-01T00:00:00',
+  //   endDate: '2025-02-14T23:59:59',
   //   dismissible: true,
   //   priority: 20,
-  // },
-  // Example: Store update
-  // {
-  //   id: 'new-location-2024',
-  //   message: 'Visit our new downtown location!',
-  //   type: 'update',
-  //   linkUrl: '/contact',
-  //   linkText: 'Get Directions',
-  //   dismissible: true,
-  //   priority: 5,
   // },
 ];
 

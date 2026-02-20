@@ -1077,3 +1077,102 @@ html[data-palette="earthy-organic"][data-theme="dark"] {
   --glow-accent-md: 0 0 25px rgba(124, 154, 110, 0.5);
   --glow-accent-lg: 0 0 35px rgba(124, 154, 110, 0.6);
 }
+
+/* -----------------------------------------------------------------
+ * Floral/Rose Palette - HTX Flowers
+ * Romantic, elegant aesthetic with soft rose pinks and sage greens.
+ * Perfect for florists, wedding vendors, and botanical brands.
+ * ----------------------------------------------------------------- */
+html[data-palette="floral"] {
+  /* Primary - Soft Rose Pink scale */
+  --color-primary-50: #FDF2F4;
+  --color-primary-100: #FCE7EB;
+  --color-primary-200: #FBCCD5;
+  --color-primary-300: #F8A4B5;
+  --color-primary-400: #F27A94;
+  --color-primary-500: #E8527A;
+  --color-primary-600: #D63B66;
+  --color-primary-700: #B42D54;
+  --color-primary-800: #96284A;
+  --color-primary-900: #7D2643;
+  --color-primary-950: #461121;
+
+  --color-primary: #E8527A;
+  --color-primary-light: #F8A4B5;
+  --color-primary-dark: #B42D54;
+  --color-primary-hover: #D63B66;
+
+  /* Backgrounds - Soft cream with blush tint */
+  --color-background: #FFFBFC;
+  --color-background-subtle: #FEF7F8;
+  --color-background-muted: #FCF0F2;
+  --color-background-elevated: #FFFFFF;
+
+  /* Text - Soft charcoal with warm undertone */
+  --color-text-primary: #2D2528;
+  --color-text-secondary: #5C4F53;
+  --color-text-tertiary: #847579;
+  --color-text-inverse: #FFFBFC;
+
+  /* Accent - Sage Green (botanical complement) */
+  --color-accent: #7D9B76;
+  --color-accent-light: #A4BDA0;
+  --color-accent-dark: #5D7B56;
+  --color-accent-subtle: #EDF3EC;
+
+  /* Alternative accent - Lavender */
+  --color-accent-alt: #9B8EB8;
+  --color-accent-alt-light: #C4BBDA;
+  --color-accent-alt-dark: #7A6B9A;
+  --color-accent-alt-subtle: #F3F0F8;
+
+  /* Borders - Soft rose-tinted neutrals */
+  --color-border: #E8DDE0;
+  --color-border-light: #F5EFF1;
+  --color-border-dark: #D4C5CA;
+
+  /* Shadows - Warm rose undertones */
+  --shadow-primary: 0 4px 14px 0 rgb(232 82 122 / 0.15);
+  --shadow-primary-lg: 0 10px 25px -3px rgb(232 82 122 / 0.2);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #E8527A 0%, #B42D54 100%);
+  --gradient-accent: linear-gradient(135deg, #7D9B76 0%, #5D7B56 100%);
+  --gradient-hero: linear-gradient(135deg, #7D2643 0%, #B42D54 50%, #E8527A 100%);
+
+  /* Glows - Soft rose glows */
+  --glow-primary-sm: 0 0 10px rgba(232, 82, 122, 0.25);
+  --glow-primary-md: 0 0 20px rgba(232, 82, 122, 0.35);
+  --glow-primary-lg: 0 0 30px rgba(232, 82, 122, 0.45);
+  --glow-accent-sm: 0 0 10px rgba(125, 155, 118, 0.3);
+  --glow-accent-md: 0 0 20px rgba(125, 155, 118, 0.4);
+  --glow-accent-lg: 0 0 30px rgba(125, 155, 118, 0.5);
+}
+
+/* Floral - Dark mode variant */
+html[data-palette="floral"][data-theme="dark"] {
+  --color-background: #1A1517;
+  --color-background-subtle: #251E21;
+  --color-background-muted: #32282C;
+  --color-background-elevated: #251E21;
+
+  --color-text-primary: #FDF2F4;
+  --color-text-secondary: #E8DDE0;
+  --color-text-tertiary: #B5A3A8;
+  --color-text-inverse: #1A1517;
+
+  --color-border: #3D3336;
+  --color-border-light: #32282C;
+  --color-border-dark: #4D4145;
+
+  --color-primary: #F27A94;
+  --color-primary-hover: #F8A4B5;
+
+  /* Enhanced glows for dark mode */
+  --glow-primary-sm: 0 0 15px rgba(242, 122, 148, 0.35);
+  --glow-primary-md: 0 0 25px rgba(242, 122, 148, 0.45);
+  --glow-primary-lg: 0 0 35px rgba(242, 122, 148, 0.55);
+  --glow-accent-sm: 0 0 15px rgba(164, 189, 160, 0.35);
+  --glow-accent-md: 0 0 25px rgba(164, 189, 160, 0.45);
+  --glow-accent-lg: 0 0 35px rgba(164, 189, 160, 0.55);
+}

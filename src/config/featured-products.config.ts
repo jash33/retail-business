@@ -1,35 +1,25 @@
 /**
- * Featured Products Configuration
+ * Featured Products Configuration - HTX Flowers
  *
- * This file contains the configuration for the featured products displayed
- * on the homepage. Update this file to change which products are featured
- * without modifying component code.
- *
- * Instructions for updating:
- * 1. To change featured products, modify the FEATURED_PRODUCTS array below
- * 2. Each product should include all required fields (id, name, image, price, shopUrl)
- * 3. Recommended: Display 2-3 products for optimal visual balance
- * 4. Images should be placed in the /public/products/ directory
- * 5. Use WebP format for better performance when available
- * 6. Set priority to control display order (lower numbers appear first)
+ * This file contains the configuration for the featured flower arrangements
+ * displayed on the homepage.
  */
 
 import type { FeaturedProduct, FeaturedProductsConfig } from '../types/featured-product';
 
 /**
- * Featured products to display on the homepage
- * These are a curated selection of products to showcase immediately to visitors
+ * Featured flower arrangements to display on the homepage
  */
 export const FEATURED_PRODUCTS: FeaturedProduct[] = [
   {
-    id: 'premium-canvas-tote',
-    name: 'Premium Canvas Tote',
-    tagline: 'Editor\'s Pick',
-    description: 'Handcrafted canvas tote bag with genuine leather accents.',
-    editorialDescription: 'Our signature canvas tote combines timeless design with everyday functionality. Handcrafted from premium waxed canvas with genuine leather handles, this bag is built to last and only gets better with age. Perfect for work, weekend markets, or daily errands.',
+    id: 'signature-rose-bouquet',
+    name: 'Signature Rose Bouquet',
+    tagline: 'Best Seller',
+    description: 'Two dozen premium long-stem roses in a stunning arrangement.',
+    editorialDescription: 'Our signature arrangement features two dozen hand-selected, long-stem roses in a classic vase presentation. Each rose is carefully chosen at peak bloom for maximum freshness and beauty. Perfect for anniversaries, Valentine\'s Day, or whenever you want to make a lasting impression.',
     image: {
-      src: '/products/featured-tote.svg',
-      alt: 'Premium Canvas Tote Bag in natural tan with leather handles',
+      src: 'https://images.unsplash.com/photo-1518709594023-6eab9bab7b23?w=600&h=750&fit=crop',
+      alt: 'Elegant bouquet of red roses in a glass vase',
       width: 600,
       height: 750,
     },
@@ -37,80 +27,79 @@ export const FEATURED_PRODUCTS: FeaturedProduct[] = [
       amount: 89.99,
       currency: 'USD',
     },
-    shopUrl: 'https://shop.example.com/products/premium-canvas-tote',
-    category: 'Bags',
-    isNew: true,
-    ctaText: 'Shop Now',
-    openInNewTab: true,
+    shopUrl: '#order',
+    category: 'Roses',
+    isNew: false,
+    ctaText: 'Order Now',
+    openInNewTab: false,
     priority: 1,
   },
   {
-    id: 'artisan-ceramic-mug',
-    name: 'Artisan Ceramic Mug Set',
-    tagline: 'Best Seller',
-    description: 'Hand-thrown ceramic mugs in our signature glaze.',
-    editorialDescription: 'Each mug in this set of four is individually hand-thrown by local artisans, making every piece unique. The rich, reactive glaze develops beautiful variations during firing, ensuring your morning coffee is always served in style.',
+    id: 'seasonal-wildflower-mix',
+    name: 'Seasonal Wildflower Mix',
+    tagline: 'Staff Favorite',
+    description: 'A vibrant medley of seasonal blooms and greenery.',
+    editorialDescription: 'This cheerful arrangement celebrates the season\'s best flowers, artfully combined with lush greenery and natural textures. Every bouquet is unique, featuring whatever is freshest and most beautiful from our local growers. A wonderful gift that brings the garden indoors.',
     image: {
-      src: '/products/featured-mugs.svg',
-      alt: 'Set of four artisan ceramic mugs in earth-tone glazes',
+      src: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=600&h=750&fit=crop',
+      alt: 'Colorful wildflower bouquet with mixed seasonal blooms',
       width: 600,
       height: 750,
     },
     price: {
       amount: 64.00,
-      originalAmount: 80.00,
+      originalAmount: 75.00,
       currency: 'USD',
     },
-    shopUrl: 'https://shop.example.com/products/artisan-ceramic-mug-set',
-    category: 'Kitchen',
+    shopUrl: '#order',
+    category: 'Mixed Bouquets',
     onSale: true,
-    ctaText: 'Shop Now',
-    openInNewTab: true,
+    ctaText: 'Order Now',
+    openInNewTab: false,
     priority: 2,
   },
   {
-    id: 'merino-wool-throw',
-    name: 'Merino Wool Throw Blanket',
-    tagline: 'Sustainably Made',
-    description: 'Luxuriously soft merino wool throw in natural colors.',
-    editorialDescription: 'Woven from 100% ethically-sourced merino wool, this generous throw blanket brings warmth and texture to any space. The natural fibers are temperature-regulating and incredibly soft against the skin. Available in a palette of undyed natural hues.',
+    id: 'elegant-white-collection',
+    name: 'Elegant White Collection',
+    tagline: 'Luxury',
+    description: 'Pristine white blooms for sophisticated occasions.',
+    editorialDescription: 'Pure elegance in floral form. This stunning all-white arrangement features premium lilies, roses, and hydrangeas, accented with delicate greenery. Perfect for weddings, sympathy, or creating a serene atmosphere in any space. Each stem is chosen for its pristine beauty.',
     image: {
-      src: '/products/featured-throw.svg',
-      alt: 'Merino wool throw blanket draped over chair in cream color',
+      src: 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=600&h=750&fit=crop',
+      alt: 'Elegant white flower arrangement with lilies and roses',
       width: 600,
       height: 750,
     },
     price: {
-      amount: 145.00,
+      amount: 125.00,
       currency: 'USD',
     },
-    shopUrl: 'https://shop.example.com/products/merino-wool-throw',
-    category: 'Home',
-    ctaText: 'Shop Now',
-    openInNewTab: true,
+    shopUrl: '#order',
+    category: 'Luxury',
+    ctaText: 'Order Now',
+    openInNewTab: false,
     priority: 3,
   },
 ];
 
 /**
  * Section configuration for the featured products section
- * Customize the heading, subheading, and CTA text/link
  */
 export const FEATURED_PRODUCTS_SECTION_CONFIG: FeaturedProductsConfig = {
   /** Section ID for anchor linking */
-  id: 'featured-products',
+  id: 'featured-arrangements',
 
   /** Main heading for the section */
-  heading: 'Featured Products',
+  heading: 'Featured Arrangements',
 
   /** Subheading/description text */
-  subheading: 'Handpicked favorites from our collection. Each piece is thoughtfully designed and crafted to bring quality and style to your everyday life.',
+  subheading: 'Our most-loved bouquets, hand-crafted with the freshest seasonal blooms. Each arrangement is designed by our expert florists to create a memorable moment.',
 
   /** Text for the "View All" CTA button */
-  viewAllText: 'View All Products',
+  viewAllText: 'View All Arrangements',
 
   /** URL for the "View All" CTA button */
-  viewAllHref: `${import.meta.env.BASE_URL}shop`,
+  viewAllHref: `${import.meta.env.BASE_URL}products`,
 
   /** Whether to show the "View All" button */
   showViewAll: true,

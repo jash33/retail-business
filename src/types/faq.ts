@@ -60,39 +60,39 @@ export interface FAQAccordionItemState {
 }
 
 /**
- * Default FAQ items for retail business homepage
- * Condensed to the most common questions - full FAQ available on dedicated page
+ * Default FAQ items for HTX Flowers homepage
+ * Condensed to the most common questions about flower delivery
  */
 export const DEFAULT_FAQ_ITEMS: FAQItem[] = [
   {
-    id: 'faq-shipping',
-    question: 'What are your shipping options?',
-    answer: `<strong>Free standard shipping</strong> on orders over $75 (5–7 days). Expedited (2–3 days) for $9.99, or next-day for $14.99. All orders include tracking.`,
+    id: 'faq-delivery',
+    question: 'Do you offer same-day delivery?',
+    answer: `Yes! <strong>Same-day delivery</strong> is available for orders placed before 2 PM on most arrangements. We deliver throughout the Energy Corridor, Memorial, Katy, and Sugar Land. Delivery fees start at $9.99 depending on location.`,
     category: 'shipping',
   },
   {
-    id: 'faq-returns',
-    question: 'What is your return policy?',
-    answer: `Easy returns within <strong>30 days</strong> of delivery. Items must be in original condition with tags attached. Refunds processed within 5–7 business days.`,
-    category: 'returns',
-  },
-  {
-    id: 'faq-store-hours',
-    question: 'What are your store hours?',
-    answer: `<strong>Mon–Sat: 10 AM – 7 PM</strong>, <strong>Sun: 12 PM – 5 PM</strong>. Located at 1234 Main Street in the Heights with free parking available.`,
-    category: 'store-info',
-  },
-  {
-    id: 'faq-rewards',
-    question: 'Do you have a rewards program?',
-    answer: `Yes! Our free <strong>Rewards Club</strong> earns you 1 point per $1 spent. Get $10 back at 100 points, plus birthday discounts and early access to sales.`,
+    id: 'faq-freshness',
+    question: 'How long will my flowers last?',
+    answer: `Our flowers come with a <strong>7-day freshness guarantee</strong>. With proper care (fresh water, flower food, and a cool location), most arrangements last 7–14 days. If your flowers don't meet expectations, we'll replace them—no questions asked.`,
     category: 'general',
   },
   {
-    id: 'faq-pickup',
-    question: 'Can I pick up my order in-store?',
-    answer: `Yes! Choose <strong>In-Store Pickup</strong> at checkout—orders are usually ready within 2 hours and held for 7 days.`,
+    id: 'faq-store-hours',
+    question: 'What are your shop hours?',
+    answer: `<strong>Mon–Fri: 8 AM – 6 PM</strong>, <strong>Sat: 9 AM – 5 PM</strong>, <strong>Sun: 10 AM – 2 PM</strong>. We're located at 12847 Westheimer Rd in the Energy Corridor with free parking.`,
     category: 'store-info',
+  },
+  {
+    id: 'faq-weddings',
+    question: 'Do you do wedding flowers?',
+    answer: `Absolutely! We specialize in <strong>wedding florals</strong> including bridal bouquets, centerpieces, ceremony installations, and corsages. Schedule a free consultation to discuss your vision—we book 3–6 months in advance.`,
+    category: 'general',
+  },
+  {
+    id: 'faq-custom',
+    question: 'Can I request a custom arrangement?',
+    answer: `Yes! Tell us your color preferences, budget, and occasion, and our designers will create something unique. <strong>Custom orders</strong> typically need 24–48 hours notice. Call us at (832) 555-ROSE or stop by the shop.`,
+    category: 'orders',
   },
 ];
 

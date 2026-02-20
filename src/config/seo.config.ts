@@ -11,68 +11,71 @@ import type { SEOConfig, LocalBusinessSchema } from '../types/seo';
  * Enhanced structured data for Google local search results and rich snippets
  */
 export const localBusinessSchema: LocalBusinessSchema = {
-  type: 'Store',
-  name: 'Main Street Boutique',
-  legalName: 'Main Street Boutique LLC',
-  description: 'Curated artisan goods and handcrafted products for the modern home. We offer a thoughtfully selected collection of locally sourced ceramics, textiles, and lifestyle accessories.',
-  slogan: 'Curated Goods for Thoughtful Living',
-  url: 'https://mainstreetboutique.com',
-  telephone: '+1-555-123-4567', // TODO: Update with actual phone
-  email: 'hello@mainstreetboutique.com', // TODO: Update with actual email
+  type: 'Florist',
+  name: 'HTX Flowers',
+  legalName: 'HTX Flowers LLC',
+  description: 'Houston\'s premier flower shop offering fresh bouquets, custom arrangements, wedding flowers, and same-day delivery. Family-owned and serving the Energy Corridor and greater Houston area with beautiful blooms for every occasion.',
+  slogan: 'Fresh Blooms, Heartfelt Moments',
+  url: 'https://htxflowers.com',
+  telephone: '+1-832-555-ROSE',
+  email: 'hello@htxflowers.com',
   address: {
-    streetAddress: '742 Main Street', // TODO: Update with actual address
-    addressLocality: 'Springfield',
-    addressRegion: 'IL',
-    postalCode: '62704',
+    streetAddress: '12847 Westheimer Road',
+    addressLocality: 'Houston',
+    addressRegion: 'TX',
+    postalCode: '77077',
     addressCountry: 'US',
   },
   geo: {
-    latitude: 39.7817, // TODO: Update with actual coordinates
-    longitude: -89.6501,
+    latitude: 29.7373,
+    longitude: -95.5981,
   },
   areaServed: [
-    { type: 'City', name: 'Springfield', addressLocality: 'Springfield', addressRegion: 'IL', addressCountry: 'US' },
+    { type: 'City', name: 'Houston', addressLocality: 'Houston', addressRegion: 'TX', addressCountry: 'US' },
+    { type: 'City', name: 'Katy', addressLocality: 'Katy', addressRegion: 'TX', addressCountry: 'US' },
+    { type: 'City', name: 'Sugar Land', addressLocality: 'Sugar Land', addressRegion: 'TX', addressCountry: 'US' },
+    { type: 'City', name: 'Memorial', addressLocality: 'Memorial', addressRegion: 'TX', addressCountry: 'US' },
   ],
   openingHoursSpecification: [
-    { dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '10:00', closes: '18:00' },
-    { dayOfWeek: ['Saturday'], opens: '10:00', closes: '17:00' },
+    { dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '08:00', closes: '18:00' },
+    { dayOfWeek: ['Saturday'], opens: '09:00', closes: '17:00' },
+    { dayOfWeek: ['Sunday'], opens: '10:00', closes: '14:00' },
   ],
-  openingHours: ['Mo-Fr 10:00-18:00', 'Sa 10:00-17:00'],
-  logo: 'https://mainstreetboutique.com/images/logo.png',
-  image: ['https://mainstreetboutique.com/images/storefront.jpg'],
+  openingHours: ['Mo-Fr 08:00-18:00', 'Sa 09:00-17:00', 'Su 10:00-14:00'],
+  logo: 'https://htxflowers.com/images/logo.png',
+  image: ['https://htxflowers.com/images/storefront.jpg'],
   priceRange: '$$',
   currenciesAccepted: 'USD',
   paymentAccepted: ['Cash', 'Credit Card', 'Debit Card', 'Apple Pay', 'Google Pay'],
   sameAs: [],
   contactPoint: {
-    telephone: '+1-555-123-4567', // TODO: Update
-    email: 'hello@mainstreetboutique.com', // TODO: Update
+    telephone: '+1-832-555-ROSE',
+    email: 'hello@htxflowers.com',
     contactType: 'customer service',
-    availableLanguage: ['English'],
-    areaServed: ['Springfield'],
+    availableLanguage: ['English', 'Spanish'],
+    areaServed: ['Houston', 'Katy', 'Sugar Land', 'Memorial', 'Energy Corridor'],
   },
   makesOffer: [
-    'Artisan Ceramics',
-    'Handcrafted Textiles',
-    'Home Décor',
-    'Lifestyle Accessories',
-    'Gift Collections',
-    'Locally Sourced Goods',
-    'Seasonal Collections',
-    'Custom Gift Wrapping',
+    'Fresh Cut Flowers',
+    'Custom Bouquets',
+    'Wedding Flowers',
+    'Funeral Arrangements',
+    'Event Florals',
+    'Same-Day Delivery',
+    'Plant Gifts',
+    'Subscription Flowers',
   ],
   knowsAbout: [
-    'Artisan Goods',
-    'Handcrafted Products',
-    'Home Décor',
-    'Sustainable Retail',
-    'Local Artisans',
-    'Gift Curation',
-    'Interior Styling',
-    'Small Batch Products',
-    'Retail Boutique',
+    'Floral Design',
+    'Wedding Floristry',
+    'Sympathy Arrangements',
+    'Event Decorations',
+    'Seasonal Flowers',
+    'Luxury Bouquets',
+    'Plant Care',
+    'Houston Flower Delivery',
   ],
-  knowsLanguage: ['English'],
+  knowsLanguage: ['English', 'Spanish'],
 };
 
 /**
@@ -81,24 +84,24 @@ export const localBusinessSchema: LocalBusinessSchema = {
  */
 export const seoConfig: SEOConfig = {
   // Site Identity
-  siteName: 'Main Street Boutique',
-  siteUrl: 'https://mainstreetboutique.com', // Update with actual domain
+  siteName: 'HTX Flowers',
+  siteUrl: 'https://htxflowers.com',
 
   // Title Configuration
-  titleTemplate: '%s | Main Street Boutique',
+  titleTemplate: '%s | HTX Flowers',
 
   // Default Meta Content
   defaultDescription:
-    'Curated artisan goods, handcrafted home décor, and unique lifestyle accessories. Discover thoughtfully sourced products from local makers and independent artisans.',
+    'Houston\'s favorite flower shop. Fresh bouquets, custom arrangements, wedding flowers, and same-day delivery across the Energy Corridor. Family-owned and dedicated to making every moment bloom.',
   defaultLang: 'en',
   defaultLocale: 'en_US',
 
   // Default Social Sharing Image
-  defaultImage: '/images/og-default.jpg', // Create this image (1200x630 recommended)
-  defaultImageAlt: 'Main Street Boutique - Curated Artisan Goods',
+  defaultImage: '/images/og-default.jpg',
+  defaultImageAlt: 'HTX Flowers - Fresh Blooms, Heartfelt Moments',
 
   // Twitter Configuration
-  twitterSite: undefined, // Add @username when available
+  twitterSite: undefined,
   twitterCardType: 'summary_large_image',
 
   // Open Graph Defaults
@@ -108,7 +111,7 @@ export const seoConfig: SEOConfig = {
   defaultRobots: 'index, follow',
 
   // Theme
-  themeColor: '#1a365d', // Navy blue - update to match brand
+  themeColor: '#e879a0', // Soft rose pink
 
   // LocalBusiness Schema (comprehensive, for JSON-LD)
   localBusiness: localBusinessSchema,
@@ -147,7 +150,6 @@ export function truncateText(text: string, maxLength: number): string {
   if (!text || text.length <= maxLength) {
     return text;
   }
-  // Find the last space before maxLength to avoid cutting words
   const truncated = text.substring(0, maxLength - 3);
   const lastSpace = truncated.lastIndexOf(' ');
   if (lastSpace > maxLength * 0.7) {
@@ -182,9 +184,7 @@ export function toAbsoluteUrl(url: string | undefined, baseUrl: string): string 
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
-  // Remove trailing slash from base URL
   const cleanBase = baseUrl.replace(/\/$/, '');
-  // Ensure relative URL starts with /
   const cleanPath = url.startsWith('/') ? url : `/${url}`;
   return `${cleanBase}${cleanPath}`;
 }
@@ -202,7 +202,6 @@ export function validateSEOProps(props: {
 }): string[] {
   const warnings: string[] = [];
 
-  // Title validation
   if (!props.title) {
     warnings.push('SEO Warning: Title is required for optimal SEO.');
   } else if (props.title.length > SEO_LIMITS.TITLE_MAX_LENGTH) {
@@ -211,7 +210,6 @@ export function validateSEOProps(props: {
     );
   }
 
-  // Description validation
   if (!props.description) {
     warnings.push('SEO Warning: Description is required for optimal SEO.');
   } else {
@@ -227,7 +225,6 @@ export function validateSEOProps(props: {
     }
   }
 
-  // Image validation
   if (!props.image) {
     warnings.push('SEO Warning: No social sharing image provided. Using default.');
   }

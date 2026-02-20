@@ -1,16 +1,16 @@
 /**
  * =================================================================
- * COLOR PALETTE CONFIGURATION
+ * COLOR PALETTE CONFIGURATION - HTX Flowers
  * =================================================================
  *
  * Configuration for the retail color palette system.
- * Defines three distinct palette options that can be switched
- * via environment variables or user preference.
+ * Default: Floral palette with soft rose pinks and sage greens.
  *
- * Palettes:
- * 1. Light/Airy - Whites, creams, soft grays (clean, minimalist)
- * 2. Bold/Editorial - High-contrast blacks with accent colors (dramatic)
- * 3. Earthy/Organic - Terracotta, sage, warm neutrals (natural, warm)
+ * Available Palettes:
+ * 1. Floral - Rose pinks, sage greens (default for HTX Flowers)
+ * 2. Light/Airy - Whites, creams, soft grays
+ * 3. Bold/Editorial - High-contrast blacks with accent colors
+ * 4. Earthy/Organic - Terracotta, sage, warm neutrals
  *
  * =================================================================
  */
@@ -27,9 +27,6 @@ import type {
 // ENVIRONMENT VARIABLES
 // =================================================================
 
-/**
- * Read configuration from environment variables
- */
 const getEnvVar = (key: string, defaultValue: string = ''): string => {
   const envValue = import.meta.env[key];
   return typeof envValue === 'string' ? envValue : defaultValue;
@@ -46,9 +43,75 @@ const getBoolEnvVar = (key: string, defaultValue: boolean = false): boolean => {
 // =================================================================
 
 /**
+ * Floral/Rose Palette (HTX Flowers Default)
+ * Romantic, elegant aesthetic with soft rose pinks and sage greens.
+ * Perfect for florists, wedding vendors, and botanical brands.
+ */
+export const FLORAL_PALETTE: ColorPalette = {
+  metadata: {
+    id: 'floral',
+    name: 'Floral Rose',
+    description: 'Romantic rose pinks and sage greens for a botanical, elegant feel',
+    keywords: ['floral', 'romantic', 'botanical', 'elegant', 'rose', 'wedding'],
+    previewColors: {
+      primary: '#E8527A',
+      secondary: '#FFFBFC',
+      accent: '#7D9B76',
+    },
+  },
+  colors: {
+    // Primary - Soft Rose Pink
+    primary: '#E8527A',
+    primaryLight: '#F8A4B5',
+    primaryDark: '#B42D54',
+    primaryHover: '#D63B66',
+
+    // Backgrounds - Soft cream with blush tint
+    background: '#FFFBFC',
+    backgroundSubtle: '#FEF7F8',
+    backgroundMuted: '#FCF0F2',
+    backgroundElevated: '#FFFFFF',
+
+    // Text - Soft charcoal with warm undertone
+    textPrimary: '#2D2528',
+    textSecondary: '#5C4F53',
+    textTertiary: '#847579',
+    textInverse: '#FFFBFC',
+
+    // Accent - Sage Green
+    accent: '#7D9B76',
+    accentLight: '#A4BDA0',
+    accentDark: '#5D7B56',
+    accentSubtle: '#EDF3EC',
+
+    // Alternative accent - Lavender
+    accentAlt: '#9B8EB8',
+    accentAltLight: '#C4BBDA',
+    accentAltDark: '#7A6B9A',
+
+    // Borders - Soft rose-tinted neutrals
+    border: '#E8DDE0',
+    borderLight: '#F5EFF1',
+    borderDark: '#D4C5CA',
+  },
+  darkColors: {
+    background: '#1A1517',
+    backgroundSubtle: '#251E21',
+    backgroundMuted: '#32282C',
+    backgroundElevated: '#251E21',
+    textPrimary: '#FDF2F4',
+    textSecondary: '#E8DDE0',
+    textTertiary: '#B5A3A8',
+    textInverse: '#1A1517',
+    border: '#3D3336',
+    borderLight: '#32282C',
+    borderDark: '#4D4145',
+  },
+};
+
+/**
  * Light/Airy Palette
  * Clean, minimalist aesthetic with whites, creams, and soft grays.
- * Perfect for elegant, sophisticated retail brands.
  */
 export const LIGHT_AIRY_PALETTE: ColorPalette = {
   metadata: {
@@ -63,36 +126,25 @@ export const LIGHT_AIRY_PALETTE: ColorPalette = {
     },
   },
   colors: {
-    // Primary - Soft gray-blue
     primary: '#6B7280',
     primaryLight: '#9CA3AF',
     primaryDark: '#4B5563',
     primaryHover: '#4B5563',
-
-    // Backgrounds - Whites and creams
     background: '#FFFFFF',
     backgroundSubtle: '#FAFAFA',
     backgroundMuted: '#F5F5F4',
     backgroundElevated: '#FFFFFF',
-
-    // Text - Soft charcoal tones
     textPrimary: '#1F2937',
     textSecondary: '#4B5563',
     textTertiary: '#6B7280',
     textInverse: '#FFFFFF',
-
-    // Accent - Warm cream/gold
     accent: '#D4AF37',
     accentLight: '#E5C76B',
     accentDark: '#B8960C',
     accentSubtle: '#FDF8E8',
-
-    // Alternative accent - Soft blush
     accentAlt: '#E8B4B8',
     accentAltLight: '#F5D5D8',
     accentAltDark: '#D4929A',
-
-    // Borders - Light grays
     border: '#E5E7EB',
     borderLight: '#F3F4F6',
     borderDark: '#D1D5DB',
@@ -115,7 +167,6 @@ export const LIGHT_AIRY_PALETTE: ColorPalette = {
 /**
  * Bold/Editorial Palette
  * High-contrast dramatic aesthetic with blacks and striking accent colors.
- * Perfect for fashion-forward, editorial retail brands.
  */
 export const BOLD_EDITORIAL_PALETTE: ColorPalette = {
   metadata: {
@@ -130,36 +181,25 @@ export const BOLD_EDITORIAL_PALETTE: ColorPalette = {
     },
   },
   colors: {
-    // Primary - Deep black
     primary: '#0F0F0F',
     primaryLight: '#262626',
     primaryDark: '#000000',
     primaryHover: '#171717',
-
-    // Backgrounds - Pure white with subtle grays
     background: '#FAFAFA',
     backgroundSubtle: '#F5F5F5',
     backgroundMuted: '#E5E5E5',
     backgroundElevated: '#FFFFFF',
-
-    // Text - Strong blacks
     textPrimary: '#0F0F0F',
     textSecondary: '#404040',
     textTertiary: '#737373',
     textInverse: '#FAFAFA',
-
-    // Accent - Bold red
     accent: '#EF4444',
     accentLight: '#FCA5A5',
     accentDark: '#DC2626',
     accentSubtle: '#FEE2E2',
-
-    // Alternative accent - Electric blue
     accentAlt: '#3B82F6',
     accentAltLight: '#93C5FD',
     accentAltDark: '#2563EB',
-
-    // Borders - Strong definition
     border: '#D4D4D4',
     borderLight: '#E5E5E5',
     borderDark: '#A3A3A3',
@@ -182,7 +222,6 @@ export const BOLD_EDITORIAL_PALETTE: ColorPalette = {
 /**
  * Earthy/Organic Palette
  * Warm, natural aesthetic with terracotta, sage, and warm neutrals.
- * Perfect for sustainable, artisanal, or wellness retail brands.
  */
 export const EARTHY_ORGANIC_PALETTE: ColorPalette = {
   metadata: {
@@ -197,36 +236,25 @@ export const EARTHY_ORGANIC_PALETTE: ColorPalette = {
     },
   },
   colors: {
-    // Primary - Terracotta
     primary: '#9C6644',
     primaryLight: '#C4956E',
     primaryDark: '#7A4F35',
     primaryHover: '#8B5A3C',
-
-    // Backgrounds - Warm cream/linen tones
     background: '#FAF6F1',
     backgroundSubtle: '#F5EFE6',
     backgroundMuted: '#EDE4D8',
     backgroundElevated: '#FFFCF7',
-
-    // Text - Warm browns
     textPrimary: '#3D2B1F',
     textSecondary: '#5D4435',
     textTertiary: '#7D6455',
     textInverse: '#FAF6F1',
-
-    // Accent - Sage green
     accent: '#7C9A6E',
     accentLight: '#A3B899',
     accentDark: '#5B7A4C',
     accentSubtle: '#E8F0E4',
-
-    // Alternative accent - Dusty rose
     accentAlt: '#C9A9A6',
     accentAltLight: '#DEC9C7',
     accentAltDark: '#B08985',
-
-    // Borders - Warm beige tones
     border: '#D9CFC4',
     borderLight: '#EAE4DB',
     borderDark: '#C4B8AA',
@@ -254,6 +282,7 @@ export const EARTHY_ORGANIC_PALETTE: ColorPalette = {
  * Map of all available palettes indexed by their ID
  */
 export const COLOR_PALETTES: PaletteMap = {
+  'floral': FLORAL_PALETTE,
   'light-airy': LIGHT_AIRY_PALETTE,
   'bold-editorial': BOLD_EDITORIAL_PALETTE,
   'earthy-organic': EARTHY_ORGANIC_PALETTE,
@@ -263,6 +292,7 @@ export const COLOR_PALETTES: PaletteMap = {
  * Array of all available palette IDs
  */
 export const AVAILABLE_PALETTE_IDS: ColorPaletteId[] = [
+  'floral',
   'light-airy',
   'bold-editorial',
   'earthy-organic',
@@ -273,13 +303,12 @@ export const AVAILABLE_PALETTE_IDS: ColorPaletteId[] = [
 // =================================================================
 
 /**
- * Active palette from environment variable
- * Defaults to 'light-airy' if not set or invalid
+ * Active palette - defaults to 'floral' for HTX Flowers
  */
-const envPalette = getEnvVar('PUBLIC_COLOR_PALETTE', 'light-airy') as ColorPaletteId;
+const envPalette = getEnvVar('PUBLIC_COLOR_PALETTE', 'floral') as ColorPaletteId;
 export const ACTIVE_PALETTE_ID: ColorPaletteId = AVAILABLE_PALETTE_IDS.includes(envPalette)
   ? envPalette
-  : 'light-airy';
+  : 'floral';
 
 /**
  * Whether palette switching is enabled
@@ -311,37 +340,22 @@ export const colorPaletteConfig: ColorPaletteConfig = {
 // HELPER FUNCTIONS
 // =================================================================
 
-/**
- * Get a palette by its ID
- */
 export function getPalette(id: ColorPaletteId): ColorPalette {
-  return COLOR_PALETTES[id] || COLOR_PALETTES['light-airy'];
+  return COLOR_PALETTES[id] || COLOR_PALETTES['floral'];
 }
 
-/**
- * Get the active palette based on configuration
- */
 export function getActivePalette(): ColorPalette {
   return getPalette(ACTIVE_PALETTE_ID);
 }
 
-/**
- * Get all palette metadata for UI display
- */
 export function getAllPaletteMetadata() {
   return AVAILABLE_PALETTE_IDS.map((id) => COLOR_PALETTES[id].metadata);
 }
 
-/**
- * Check if a palette ID is valid
- */
 export function isValidPaletteId(id: string): id is ColorPaletteId {
   return AVAILABLE_PALETTE_IDS.includes(id as ColorPaletteId);
 }
 
-/**
- * Get the palette configuration
- */
 export function getColorPaletteConfig(): ColorPaletteConfig {
   return { ...colorPaletteConfig };
 }

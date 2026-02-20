@@ -16,16 +16,17 @@
 
 /**
  * Available color palette identifiers
+ * - floral: Rose pinks and sage greens - romantic and botanical (HTX Flowers default)
  * - light-airy: Whites, creams, soft grays - clean and minimalist
  * - bold-editorial: High-contrast blacks with accent colors - dramatic and modern
  * - earthy-organic: Terracotta, sage, warm neutrals - natural and warm
  */
-export type ColorPaletteId = 'light-airy' | 'bold-editorial' | 'earthy-organic';
+export type ColorPaletteId = 'floral' | 'light-airy' | 'bold-editorial' | 'earthy-organic';
 
 /**
  * Default palette to use when none is specified
  */
-export const DEFAULT_PALETTE: ColorPaletteId = 'light-airy';
+export const DEFAULT_PALETTE: ColorPaletteId = 'floral';
 
 // =================================================================
 // COLOR DEFINITION TYPES
